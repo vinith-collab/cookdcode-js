@@ -1,0 +1,6 @@
+{
+  "name": "CookDcode - AI Mentor",
+  "description": "EdTech coding-learning platform powered by the Cook The Code (CTC) 4-stage methodology with a Personalized LLM AI Mentor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
