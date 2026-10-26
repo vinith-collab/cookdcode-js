@@ -6,7 +6,7 @@ function validatePrimeRangeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! What does 'Prime numbers in a range' mean? For example, between 10 and 20, what are all the prime numbers, and how do we check each one?",
+      feedback: "\u{1F31F} Coach Maara here! What does 'Prime numbers in a range' mean? For example, between 10 and 20, what are all the prime numbers, and how do we check each one?",
       correction: "Think about checking every number in the range from start to end by counting its divisors.",
       suggestedInput: "for each number in the range, count how many numbers from 1 to that number divide it with remainder 0, and if the count is exactly 2 it is prime",
       matchedFirebaseInput: "what should we do to find prime numbers in a range"
@@ -18,7 +18,7 @@ function validatePrimeRangeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! A range gives a starting number and an ending number (e.g., 10 to 20). We check each number one by one.\nFor each number, count how many numbers from 1 to that number divide it with remainder 0.\n\u2022 10: Divisors are 1, 2, 5, 10 -> Count = 4 (Not prime)\n\u2022 11: Divisors are 1, 11 -> Count = 2 (Prime!)\n\u2022 12: Divisors are 1, 2, 3, 4, 6, 12 -> Count = 6 (Not prime)\n\u2022 13: Divisors are 1, 13 -> Count = 2 (Prime!)\nIf the count of divisors is exactly 2, it is a Prime Number!",
+      feedback: "\u{1F31F} Coach Maara here! A range gives a starting number and an ending number (e.g., 10 to 20). We check each number one by one.\nFor each number, count how many numbers from 1 to that number divide it with remainder 0.\n\u2022 10: Divisors are 1, 2, 5, 10 -> Count = 4 (Not prime)\n\u2022 11: Divisors are 1, 11 -> Count = 2 (Prime!)\n\u2022 12: Divisors are 1, 2, 3, 4, 6, 12 -> Count = 6 (Not prime)\n\u2022 13: Divisors are 1, 13 -> Count = 2 (Prime!)\nIf the count of divisors is exactly 2, it is a Prime Number!",
       correction: "Iterate through the range and check if divisor count is exactly 2.",
       suggestedInput: "for each number in the range, count how many numbers from 1 to that number divide it with remainder 0, and if the count is exactly 2 it is prime",
       matchedFirebaseInput: "I don't know / puriyala"
@@ -30,7 +30,7 @@ function validatePrimeRangeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: false,
       isMathematicalExplanation: true,
-      feedback: "\u{1F31F} Coach Maya math breakdown: By definition, a prime number has exactly 2 distinct divisors: 1 and itself.\n\u2022 For 7: Divisors are 1 and 7 -> Total divisors = 2 (Prime!)\n\u2022 For 6: Divisors are 1, 2, 3, 6 -> Total divisors = 4 (Not Prime)\n\u2022 For 1: Divisor is only 1 -> Total divisors = 1 (Not Prime).",
+      feedback: "\u{1F31F} Coach Maara math breakdown: By definition, a prime number has exactly 2 distinct divisors: 1 and itself.\n\u2022 For 7: Divisors are 1 and 7 -> Total divisors = 2 (Prime!)\n\u2022 For 6: Divisors are 1, 2, 3, 6 -> Total divisors = 4 (Not Prime)\n\u2022 For 1: Divisor is only 1 -> Total divisors = 1 (Not Prime).",
       correction: "A prime number has exactly 2 divisors (1 and itself).",
       suggestedInput: "for each number in the range, count how many numbers from 1 to that number divide it with remainder 0, and if the count is exactly 2 it is prime",
       matchedFirebaseInput: "why must the count of divisors be exactly 2"
@@ -42,7 +42,7 @@ function validatePrimeRangeLogic(text) {
       hasFatalMisconception: true,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya math rule: Number 1 has only 1 divisor (itself). Since its divisor count is 1 (not 2), 1 is NOT a prime number!",
+      feedback: "\u{1F31F} Coach Maara math rule: Number 1 has only 1 divisor (itself). Since its divisor count is 1 (not 2), 1 is NOT a prime number!",
       correction: "1 is not prime because it has only 1 divisor.",
       suggestedInput: "count divisors from 1 to n and check if count == 2",
       matchedFirebaseInput: "if range starts from 1, is 1 prime because count is small"
@@ -54,7 +54,7 @@ function validatePrimeRangeLogic(text) {
       hasFatalMisconception: true,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya logic alert: Each number in the range is an independent test! When you move to the next number, you must reset divisor count back to 0.",
+      feedback: "\u{1F31F} Coach Maara logic alert: Each number in the range is an independent test! When you move to the next number, you must reset divisor count back to 0.",
       correction: "Reset count to 0 for every number in the range.",
       suggestedInput: "for each number in range, reset count = 0, count divisors from 1 to num, if count == 2 it is prime",
       matchedFirebaseInput: "should we keep adding divisor counts together"
@@ -177,7 +177,7 @@ ${primesInDeclaredRange.map((p) => `${p} had only two divisors 1,${p} it is a pr
     hasFatalMisconception: false,
     isTheoryExplanation: false,
     isMathematicalExplanation: false,
-    feedback: "\u{1F31F} Coach Maya: Good thought! Be specific: For each number in the range [start, end], how do we test if it has exactly 2 divisors (from 1 to that number)?",
+    feedback: "\u{1F31F} Coach Maara: Good thought! Be specific: For each number in the range [start, end], how do we test if it has exactly 2 divisors (from 1 to that number)?",
     correction: "Iterate through the range and check if divisor count is exactly 2.",
     suggestedInput: "for each number in the range, count how many numbers from 1 to that number divide it with remainder 0, and if the count is exactly 2 it is prime"
   };
@@ -242,7 +242,7 @@ function validatePrimeRangeRecipe(text) {
     return {
       isFullyVerified: false,
       hasCodeKeywords: true,
-      feedback: "\u{1F31F} Coach Maya gentle reminder: In the Recipe stage, we write algorithm steps in plain human English without code keywords (no `var`, `for (`, `count++`, `print()`, or `;`). Use natural words like 'Get starting and ending numbers', 'For each number in the range', 'Reset divisor count to 0', 'Test divisors from 1 to number', 'If count is 2, display as prime', and 'Repeat until reaching end number'.",
+      feedback: "\u{1F31F} Coach Maara gentle reminder: In the Recipe stage, we write algorithm steps in plain human English without code keywords (no `var`, `for (`, `count++`, `print()`, or `;`). Use natural words like 'Get starting and ending numbers', 'For each number in the range', 'Reset divisor count to 0', 'Test divisors from 1 to number', 'If count is 2, display as prime', and 'Repeat until reaching end number'.",
       correction: "Remove code syntax and describe the steps in natural English.",
       suggestedInput: !hasStep1 ? "Step 1: Get starting number and ending number" : !hasStep2 ? "Step 2: For each number in the range from start to end" : !hasResetCount ? "Step 3: Reset divisor count to 0" : !hasTestDivisors ? "Step 4: Test divisors from 1 to number" : !hasCheckCount2 ? "Step 5: If divisor count is 2, display as prime" : "Step 6: Repeat this process for the next number until reaching the ending number",
       steps,
@@ -266,7 +266,7 @@ function validatePrimeRangeRecipe(text) {
   }
   let nextStepSuggestion = "Step 1: Get starting number and ending number";
   let nextStepCorrection = "Start with Step 1: Get starting number and ending number.";
-  let nextStepFeedback = "\u{1F31F} Coach Maya here! Let's write the algorithm step-by-step. What is the very first step we need before checking any range?";
+  let nextStepFeedback = "\u{1F31F} Coach Maara here! Let's write the algorithm step-by-step. What is the very first step we need before checking any range?";
   if (!hasStep1) {
     nextStepSuggestion = "Step 1: Get starting number and ending number";
     nextStepCorrection = "Add Step 1: Get starting number and ending number.";
@@ -293,7 +293,7 @@ function validatePrimeRangeRecipe(text) {
     nextStepFeedback = "\u{1F31F} We found one prime check process, but how do we ensure this continues for all numbers in the range? Add Step 6 to repeat for the next number until reaching the end number.";
   }
   if (isStuckQuery) {
-    nextStepFeedback = `\u{1F31F} Coach Maya is here to help! ${nextStepFeedback}`;
+    nextStepFeedback = `\u{1F31F} Coach Maara is here to help! ${nextStepFeedback}`;
   }
   return {
     isFullyVerified: false,
@@ -459,7 +459,7 @@ function validatePrimeRangeIngredients(text) {
     if (innerLoopIdentified && !moduloCheckIdentified) {
       return {
         isFullyVerified: false,
-        feedback: `\u{1F31F} Coach Maya here to help! You have clearly defined your Inner For Loop (testing divisors from 1 to ${outerVar} with loop variable \`${innerVar}\`). Inside this loop, we test if \`${outerVar}\` is divisible by \`${innerVar}\`.
+        feedback: `\u{1F31F} Coach Maara here to help! You have clearly defined your Inner For Loop (testing divisors from 1 to ${outerVar} with loop variable \`${innerVar}\`). Inside this loop, we test if \`${outerVar}\` is divisible by \`${innerVar}\`.
 
 Define the 4 parts of the condition:
 1) Left side: \`${outerVar} % ${innerVar}\`
@@ -485,7 +485,7 @@ Step 5: If condition: left side (${outerVar} % ${innerVar}), operator (==), righ
     if (variablesIdentified && !outerLoopIdentified && !innerLoopIdentified) {
       return {
         isFullyVerified: false,
-        feedback: `\u{1F31F} Coach Maya here to help! You did a great job setting up the range variables (\`start\` and \`end\`). Next, to go through each number in that range using variable \`${outerVar}\`, we need an **Outer For Loop**.
+        feedback: `\u{1F31F} Coach Maara here to help! You did a great job setting up the range variables (\`start\` and \`end\`). Next, to go through each number in that range using variable \`${outerVar}\`, we need an **Outer For Loop**.
 
 Remember, define the 3 key parts:
 1) Start (initial value: \`start\`)
@@ -513,7 +513,7 @@ Step 2: Outer for loop: start (start), stop (${outerVar} <= end), next step (+1)
     if (isInner) {
       return {
         isFullyVerified: false,
-        feedback: `\u{1F31F} Coach Maya here! To define an Inner Loop, you must specify 3 key parts:
+        feedback: `\u{1F31F} Coach Maara here! To define an Inner Loop, you must specify 3 key parts:
 1) Start (initial value: 1)
 2) Stop / End condition (boundary: ${innerVar} <= ${outerVar})
 3) Next step (increment: +1)
@@ -535,7 +535,7 @@ Step 4: Inner for loop: start (1), stop (${innerVar} <= ${outerVar}), next step 
     }
     return {
       isFullyVerified: false,
-      feedback: `\u{1F31F} Coach Maya here! To define an Outer Loop, you must specify 3 key parts:
+      feedback: `\u{1F31F} Coach Maara here! To define an Outer Loop, you must specify 3 key parts:
 1) Start (initial value: start)
 2) Stop / End condition (boundary: ${outerVar} <= end)
 3) Next step (increment: +1)
@@ -560,7 +560,7 @@ Step 2: Outer for loop: start (start), stop (${outerVar} <= end), next step (+1)
     if (isPrimeDecision) {
       return {
         isFullyVerified: false,
-        feedback: `\u{1F31F} Coach Maya here! To define the Prime Check Decision If Condition, specify:
+        feedback: `\u{1F31F} Coach Maara here! To define the Prime Check Decision If Condition, specify:
 1) Left side (count)
 2) Comparison operator (==)
 3) Right side (2)
@@ -583,7 +583,7 @@ Step 6: If condition: left side (count), operator (==), right side (2), action: 
     }
     return {
       isFullyVerified: false,
-      feedback: `\u{1F31F} Coach Maya here! To define the Divisibility Check If Condition, specify:
+      feedback: `\u{1F31F} Coach Maara here! To define the Divisibility Check If Condition, specify:
 1) Left side (${outerVar} % ${innerVar})
 2) Comparison operator (==)
 3) Right side (0)
@@ -793,7 +793,7 @@ Step 6: If condition: left side (count), operator (==), right side (2), action: 
   }
   let nextIngSuggestion = "Step 1: Variables start, end, num";
   let nextIngCorrection = "Identify variables start and end for range limits.";
-  let nextIngFeedback = "\u{1F31F} Coach Maya: Let's list the ingredients one by one. What variables do we need to store the range limits and candidate number?";
+  let nextIngFeedback = "\u{1F31F} Coach Maara: Let's list the ingredients one by one. What variables do we need to store the range limits and candidate number?";
   if (!variablesIdentified) {
     nextIngSuggestion = "Step 1: Variables start, end, num";
     nextIngCorrection = "List variables start, end, and num.";
@@ -1121,7 +1121,7 @@ for (let ${outerVar} = start; ${outerVar} <= end; ${outerVar}++) {
     return {
       allVerified: true,
       sampleCodeStepProgress: sampleCodeStepProgress.map((s) => ({ ...s, completed: true, current: false })),
-      feedback: `\u{1F31F} Coach Maya here! Outstanding work! \u{1F389} You have successfully implemented the complete Prime Numbers in a Given Range program in ${langLabel} with range variables, outer range \`for\` loop, inner divisor \`for\` loop, proper divisor counter scoping (\`count = 0\`), divisibility modulo checking, and final prime verification (\`count == 2\`)! Let's code!`,
+      feedback: `\u{1F31F} Coach Maara here! Outstanding work! \u{1F389} You have successfully implemented the complete Prime Numbers in a Given Range program in ${langLabel} with range variables, outer range \`for\` loop, inner divisor \`for\` loop, proper divisor counter scoping (\`count = 0\`), divisibility modulo checking, and final prime verification (\`count == 2\`)! Let's code!`,
       matchedFirebaseInput: getLanguageSnippet("full"),
       hasStart,
       hasEnd,
@@ -1393,7 +1393,7 @@ Your outer loop candidate variable is \`${outerVar}\`. When \`count == 2\`, prin
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya here! Let's build our Prime Numbers in a Given Range program step by step! First, declare and initialize your range limit variables (e.g. \`start = 10\`, \`end = 20\`).`,
+      feedback: `\u{1F31F} Coach Maara here! Let's build our Prime Numbers in a Given Range program step by step! First, declare and initialize your range limit variables (e.g. \`start = 10\`, \`end = 20\`).`,
       correction: `Step 1: Declare range limits (start = 10, end = 20).`,
       suggestedInput: getLanguageSnippet("step1"),
       matchedFirebaseInput: "how to start sample code",

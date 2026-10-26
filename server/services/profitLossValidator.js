@@ -95,17 +95,17 @@ function validateProfitLossLogic(input) {
       const diff = Math.abs(sellingNumber - costNumber);
       const ruleText = statesCPLossOtherwiseProfit ? "when Cost Price is greater than Selling Price (or Selling Price is less than Cost Price) it is a Loss, otherwise Profit" : "when Selling Price is greater than Cost Price it is a Profit, otherwise Loss";
       if (sellingNumber > costNumber) {
-        feedback = `\u{1F31F} Coach Maya here! Fantastic reasoning! Correct! Logic Approved! \u{1F389}
+        feedback = `\u{1F31F} Coach Maara here! Fantastic reasoning! Correct! Logic Approved! \u{1F389}
 \u2022 **Your example:** Cost Price is ${costNumber} and Selling Price is ${sellingNumber}. Since Selling Price (${sellingNumber}) is greater than Cost Price (${costNumber}), you earned ${diff} more than you spent\u2014which is a **Profit** of ${diff}!
 \u2022 **Your rule:** You stated that ${ruleText}. That logic is 100% sound, correct, and successful! \u{1F389}
 Proceed to the Recipe stage to sequence the steps.`;
       } else if (costNumber > sellingNumber) {
-        feedback = `\u{1F31F} Coach Maya here! Fantastic reasoning! Correct! Logic Approved! \u{1F389}
+        feedback = `\u{1F31F} Coach Maara here! Fantastic reasoning! Correct! Logic Approved! \u{1F389}
 \u2022 **Your example:** Cost Price is ${costNumber} and Selling Price is ${sellingNumber}. Since Cost Price (${costNumber}) is greater than Selling Price (${sellingNumber}), you spent ${diff} more than you received\u2014which is a **Loss** of ${diff}!
 \u2022 **Your rule:** You stated that ${ruleText}. That logic is 100% sound, correct, and successful! \u{1F389}
 Proceed to the Recipe stage to sequence the steps.`;
       } else {
-        feedback = `\u{1F31F} Coach Maya here! Fantastic reasoning! Correct! Logic Approved! \u{1F389} In your example, Cost Price is ${costNumber} and Selling Price is ${sellingNumber}, which breaks even (No Profit No Loss). Your rule correctly covers Profit and Loss! That logic is 100% sound, correct, and successful! \u{1F389}
+        feedback = `\u{1F31F} Coach Maara here! Fantastic reasoning! Correct! Logic Approved! \u{1F389} In your example, Cost Price is ${costNumber} and Selling Price is ${sellingNumber}, which breaks even (No Profit No Loss). Your rule correctly covers Profit and Loss! That logic is 100% sound, correct, and successful! \u{1F389}
 Proceed to the Recipe stage to sequence the steps.`;
       }
     } else if (statesCPLossOtherwiseProfit) {
@@ -117,7 +117,7 @@ Proceed to the Recipe stage to sequence the steps.`;
     suggestedInput = void 0;
     matchedFirebaseInput = "the cost price is 50 and selling price is 100. if selling price is greater than cost price it is profit else loss";
   } else if (isQuestion) {
-    feedback = `\u{1F31F} Coach Maya here! Let's understand this with a real numeric example:
+    feedback = `\u{1F31F} Coach Maara here! Let's understand this with a real numeric example:
 \u2022 **Example 1 (Profit):** Suppose Cost Price is 50 and Selling Price is 100. Since Selling Price (100) is greater than Cost Price (50), you earned 50 more than you spent\u2014that is a **Profit of 50**!
 \u2022 **Example 2 (Loss):** Suppose Cost Price is 100 and Selling Price is 70. Since Cost Price (100) is greater than Selling Price (70), you spent 30 more than you earned\u2014that is a **Loss of 30**!
 \u2022 **General Rule:** If Selling Price is greater than Cost Price, it is Profit; otherwise if Cost Price is greater than Selling Price, it is Loss.
@@ -130,14 +130,14 @@ Now try writing your own rule or test it with numbers in your worksheet!`;
     if (costNumber !== null && sellingNumber !== null) {
       const diff = Math.abs(sellingNumber - costNumber);
       if (sellingNumber > costNumber) {
-        feedback = `\u{1F31F} Coach Maya here! You've clearly identified the rule for **Loss**! Now look at your numbers: Cost Price is ${costNumber} and Selling Price is ${sellingNumber}. Since Selling Price (${sellingNumber}) is greater than Cost Price (${costNumber}), this actually yields a **Profit** of ${diff}! You haven't defined what happens for Profit yet. Complete your logic by adding the rule for **Profit** (for example: 'otherwise Profit' or 'if selling price is greater than cost price it is profit')!`;
+        feedback = `\u{1F31F} Coach Maara here! You've clearly identified the rule for **Loss**! Now look at your numbers: Cost Price is ${costNumber} and Selling Price is ${sellingNumber}. Since Selling Price (${sellingNumber}) is greater than Cost Price (${costNumber}), this actually yields a **Profit** of ${diff}! You haven't defined what happens for Profit yet. Complete your logic by adding the rule for **Profit** (for example: 'otherwise Profit' or 'if selling price is greater than cost price it is profit')!`;
       } else {
-        feedback = `\u{1F31F} Coach Maya here! You've clearly identified the rule for **Loss** (Cost Price > Selling Price), and your example numbers illustrate it (Cost Price ${costNumber} > Selling Price ${sellingNumber} = Loss of ${diff})! However, your logic is not complete yet because you haven't defined **Profit**! What happens in the opposite case when Selling Price is greater than Cost Price? Add the rule for **Profit** (for example: 'otherwise Profit') to complete your logic!`;
+        feedback = `\u{1F31F} Coach Maara here! You've clearly identified the rule for **Loss** (Cost Price > Selling Price), and your example numbers illustrate it (Cost Price ${costNumber} > Selling Price ${sellingNumber} = Loss of ${diff})! However, your logic is not complete yet because you haven't defined **Profit**! What happens in the opposite case when Selling Price is greater than Cost Price? Add the rule for **Profit** (for example: 'otherwise Profit') to complete your logic!`;
       }
       suggestedInput = `Cost price is ${costNumber} and selling price is ${sellingNumber}. If cost price is greater than selling price it is loss, otherwise profit.`;
       correction = "You've defined Loss! Now add the rule for Profit: 'otherwise Profit'.";
     } else {
-      feedback = "\u{1F31F} Coach Maya here! You've clearly identified when a **Loss** happens (when Cost Price > Selling Price)! However, your logic is not complete yet because you haven't defined **Profit**! To make your logic complete for all transactions, what happens in the opposite case when Selling Price is greater than Cost Price? Add the rule for **Profit** (for example: 'otherwise Profit')!";
+      feedback = "\u{1F31F} Coach Maara here! You've clearly identified when a **Loss** happens (when Cost Price > Selling Price)! However, your logic is not complete yet because you haven't defined **Profit**! To make your logic complete for all transactions, what happens in the opposite case when Selling Price is greater than Cost Price? Add the rule for **Profit** (for example: 'otherwise Profit')!";
       correction = "You've defined Loss! Now add what happens when Selling Price > Cost Price: 'otherwise Profit'.";
       suggestedInput = "If cost price is greater than selling price it is loss, otherwise profit.";
     }
@@ -146,14 +146,14 @@ Now try writing your own rule or test it with numbers in your worksheet!`;
     if (costNumber !== null && sellingNumber !== null) {
       const diff = Math.abs(sellingNumber - costNumber);
       if (sellingNumber > costNumber) {
-        feedback = `\u{1F31F} Coach Maya here! Great start! You've defined the rule for **Profit** (Selling Price > Cost Price gives a Profit of ${diff} for your numbers)! However, your logic is not complete yet because you haven't defined **Loss**! What happens in the opposite case when Cost Price is greater than Selling Price? Add 'otherwise Loss' to complete your logic!`;
+        feedback = `\u{1F31F} Coach Maara here! Great start! You've defined the rule for **Profit** (Selling Price > Cost Price gives a Profit of ${diff} for your numbers)! However, your logic is not complete yet because you haven't defined **Loss**! What happens in the opposite case when Cost Price is greater than Selling Price? Add 'otherwise Loss' to complete your logic!`;
       } else {
-        feedback = `\u{1F31F} Coach Maya here! You've defined the rule for **Profit**! Looking at your numbers: Cost Price is ${costNumber} and Selling Price is ${sellingNumber}, which is a Loss of ${diff}. You haven't defined what happens for Loss yet! Add the rule for **Loss** (for example: 'otherwise Loss') to complete your logic!`;
+        feedback = `\u{1F31F} Coach Maara here! You've defined the rule for **Profit**! Looking at your numbers: Cost Price is ${costNumber} and Selling Price is ${sellingNumber}, which is a Loss of ${diff}. You haven't defined what happens for Loss yet! Add the rule for **Loss** (for example: 'otherwise Loss') to complete your logic!`;
       }
       suggestedInput = `Cost price is ${costNumber} and selling price is ${sellingNumber}. If selling price is greater than cost price it is profit, otherwise loss.`;
       correction = "You've defined Profit! Now add what happens when Cost Price > Selling Price: 'otherwise Loss'.";
     } else {
-      feedback = "\u{1F31F} Coach Maya here! You've clearly identified when a **Profit** happens (when Selling Price > Cost Price)! However, your logic is not complete yet because you haven't defined **Loss**! To make your logic complete for all transactions, what happens in the opposite case when Cost Price is greater than Selling Price? Add the rule for **Loss** (for example: 'otherwise Loss')!";
+      feedback = "\u{1F31F} Coach Maara here! You've clearly identified when a **Profit** happens (when Selling Price > Cost Price)! However, your logic is not complete yet because you haven't defined **Loss**! To make your logic complete for all transactions, what happens in the opposite case when Cost Price is greater than Selling Price? Add the rule for **Loss** (for example: 'otherwise Loss')!";
       correction = "You've defined Profit! Now add what happens when Cost Price > Selling Price: 'otherwise Loss'.";
       suggestedInput = "If selling price is greater than cost price it is profit, otherwise loss.";
     }
@@ -162,17 +162,17 @@ Now try writing your own rule or test it with numbers in your worksheet!`;
     if (costNumber !== null && sellingNumber !== null) {
       const diff = Math.abs(sellingNumber - costNumber);
       const isProfitScenario = sellingNumber > costNumber;
-      feedback = `\u{1F31F} Coach Maya here! Great start with your numbers: Cost Price is ${costNumber} and Selling Price is ${sellingNumber}. Since ${isProfitScenario ? `Selling Price (${sellingNumber}) is greater than Cost Price (${costNumber})` : `Cost Price (${costNumber}) is greater than Selling Price (${sellingNumber})`}, this results in a ${isProfitScenario ? `**Profit** of ${diff}` : `**Loss** of ${diff}`}! Now state your general rule: when is it Profit, and when is it Loss?`;
+      feedback = `\u{1F31F} Coach Maara here! Great start with your numbers: Cost Price is ${costNumber} and Selling Price is ${sellingNumber}. Since ${isProfitScenario ? `Selling Price (${sellingNumber}) is greater than Cost Price (${costNumber})` : `Cost Price (${costNumber}) is greater than Selling Price (${sellingNumber})`}, this results in a ${isProfitScenario ? `**Profit** of ${diff}` : `**Loss** of ${diff}`}! Now state your general rule: when is it Profit, and when is it Loss?`;
       correction = "State the rule: Selling Price > Cost Price is Profit, otherwise Loss.";
       suggestedInput = `cost price is ${costNumber} and selling price is ${sellingNumber}. If selling price is greater than cost price it is profit, otherwise loss.`;
     } else {
-      feedback = "\u{1F31F} Coach Maya here! You have Cost Price and Selling Price ready! Now write the decision rule: If Selling Price is greater than Cost Price, what is it? And otherwise, what is it?";
+      feedback = "\u{1F31F} Coach Maara here! You have Cost Price and Selling Price ready! Now write the decision rule: If Selling Price is greater than Cost Price, what is it? And otherwise, what is it?";
       correction = "State the rule: Selling Price > Cost Price is Profit, otherwise Loss.";
       suggestedInput = "If selling price is greater than cost price it is profit, otherwise loss.";
     }
     matchedFirebaseInput = "how to calculate profit or loss";
   } else if ((hasCostPrice || hasSellingPrice) && (hasProfitConcept || hasLossConcept)) {
-    feedback = "\u{1F31F} Coach Maya here! You're very close! Make sure to mention BOTH prices (Cost Price and Selling Price) and BOTH outcomes (Profit and Loss). When Selling Price is greater than Cost Price, it is Profit; otherwise Loss.";
+    feedback = "\u{1F31F} Coach Maara here! You're very close! Make sure to mention BOTH prices (Cost Price and Selling Price) and BOTH outcomes (Profit and Loss). When Selling Price is greater than Cost Price, it is Profit; otherwise Loss.";
     correction = "Explain both: SP > CP is Profit, and SP < CP is Loss.";
     suggestedInput = "If selling price is greater than cost price it is profit, otherwise loss.";
     matchedFirebaseInput = "how to calculate profit or loss";
@@ -238,36 +238,36 @@ function validateProfitLossRecipe(input) {
   let suggestedInput = void 0;
   let matchedFirebaseInput = void 0;
   if (hasContradiction) {
-    feedback = "\u{1F31F} Coach Maya recipe check: Take a moment to think about a shopkeeper! If they bought an item for \u20B9100 (Cost Price) and sold it for \u20B970 (Selling Price), did they make a profit? No, they lost \u20B930! When Cost Price is higher than Selling Price (or Selling Price is less than Cost Price), that means a Loss. When Selling Price is higher, that's a Profit! Let's fix Step 2: 'Step 2: If selling price is greater than cost price, display Profit, else display Loss'.";
+    feedback = "\u{1F31F} Coach Maara recipe check: Take a moment to think about a shopkeeper! If they bought an item for \u20B9100 (Cost Price) and sold it for \u20B970 (Selling Price), did they make a profit? No, they lost \u20B930! When Cost Price is higher than Selling Price (or Selling Price is less than Cost Price), that means a Loss. When Selling Price is higher, that's a Profit! Let's fix Step 2: 'Step 2: If selling price is greater than cost price, display Profit, else display Loss'.";
     correction = "Step 2: If selling price is greater than cost price, display Profit, else display Loss.";
-    suggestedInput = "Step 1: Get cost price and selling price.\nStep 2: If selling price is greater than cost price, display Profit, else display Loss.";
+    suggestedInput = "Step 2: If selling price is greater than cost price, display Profit, else display Loss.";
     matchedFirebaseInput = "what steps to write";
   } else if (!hasStep1Input && hasStep2Decision) {
-    feedback = "\u{1F31F} Coach Maya here! You've already got your comparison decision rule down! \u{1F44F} But before our program can compare, where do the prices come from? We must first obtain the inputs! Add Step 1 first: 'Step 1: Get cost price and selling price'.";
+    feedback = "\u{1F31F} Coach Maara here! You've already got your comparison decision rule down! \u{1F44F} But before our program can compare, where do the prices come from? We must first obtain the inputs! Add Step 1 first: 'Step 1: Get cost price and selling price'.";
     correction = "Step 1: Get cost price and selling price.";
-    suggestedInput = "Step 1: Get cost price and selling price.\nStep 2: If selling price is greater than cost price, display Profit, else display Loss.";
+    suggestedInput = "Step 1: Get cost price and selling price.";
     matchedFirebaseInput = "what steps to write";
   } else if (!hasStep1Input && !hasStep2Decision) {
     if (isQuestion) {
-      feedback = "\u{1F31F} Coach Maya here! In the Recipe stage, we think like a chef writing step-by-step cooking instructions in plain English (strictly zero coding words!):\n\u2022 Step 1: Get the two starting values from the user\u2014cost price and selling price.\n\u2022 Step 2: Compare them\u2014if selling price is greater than cost price, display Profit, else display Loss.\nTry typing Step 1 in your worksheet to get started!";
+      feedback = "\u{1F31F} Coach Maara here! In the Recipe stage, we think like a chef writing step-by-step cooking instructions in plain English (strictly zero coding words!):\n\u2022 Step 1: Get the two starting values from the user\u2014cost price and selling price.\n\u2022 Step 2: Compare them\u2014if selling price is greater than cost price, display Profit, else display Loss.\nTry typing Step 1 in your worksheet to get started!";
     } else {
-      feedback = "\u{1F31F} Coach Maya here! Let's begin our recipe by getting the starting values. What two prices do we need to obtain from the user? Write: 'Step 1: Get cost price and selling price'.";
+      feedback = "\u{1F31F} Coach Maara here! Let's begin our recipe by getting the starting values. What two prices do we need to obtain from the user? Write: 'Step 1: Get cost price and selling price'.";
     }
     correction = "Step 1: Get cost price and selling price.";
     suggestedInput = "Step 1: Get cost price and selling price.";
     matchedFirebaseInput = "what steps to write";
   } else if (hasStep1Input && hasStep2Loss && !hasStep2Profit) {
-    feedback = "\u{1F31F} Coach Maya recipe check: Great work on Step 1, and you've clearly stated when to announce **Loss**! But you haven't defined what happens for **Profit** yet! A complete cooking recipe must tell the computer what to display in BOTH cases! Complete Step 2 by adding the Profit outcome: 'Step 2: If cost price is greater than selling price, display Loss, otherwise display Profit' (or 'Step 2: If selling price is greater than cost price, display Profit, else display Loss').";
+    feedback = "\u{1F31F} Coach Maara recipe check: Great work on Step 1, and you've clearly stated when to announce **Loss**! But you haven't defined what happens for **Profit** yet! A complete cooking recipe must tell the computer what to display in BOTH cases! Complete Step 2 by adding the Profit outcome: 'Step 2: If cost price is greater than selling price, display Loss, otherwise display Profit' (or 'Step 2: If selling price is greater than cost price, display Profit, else display Loss').";
     correction = "Step 2: If selling price is greater than cost price, display Profit, else display Loss.";
     suggestedInput = "Step 2: If selling price is greater than cost price, display Profit, else display Loss.";
     matchedFirebaseInput = "step 1 : Get cost price and selling price";
   } else if (hasStep1Input && hasStep2Profit && !hasStep2Loss) {
-    feedback = "\u{1F31F} Coach Maya recipe check: Great work on Step 1, and you've clearly stated when to announce **Profit**! But you haven't defined what happens for **Loss** yet! A complete cooking recipe must tell the computer what to display in BOTH cases! Complete Step 2 by adding the Loss outcome: 'Step 2: If selling price is greater than cost price, display Profit, else display Loss'.";
+    feedback = "\u{1F31F} Coach Maara recipe check: Great work on Step 1, and you've clearly stated when to announce **Profit**! But you haven't defined what happens for **Loss** yet! A complete cooking recipe must tell the computer what to display in BOTH cases! Complete Step 2 by adding the Loss outcome: 'Step 2: If selling price is greater than cost price, display Profit, else display Loss'.";
     correction = "Step 2: If selling price is greater than cost price, display Profit, else display Loss.";
     suggestedInput = "Step 2: If selling price is greater than cost price, display Profit, else display Loss.";
     matchedFirebaseInput = "step 1 : Get cost price and selling price";
   } else if (hasStep1Input && !hasStep2Decision) {
-    feedback = "\u{1F31F} Coach Maya here! High five! \u270B You nailed Step 1 by getting the cost price and selling price! Now, let's write Step 2: How do we compare selling price with cost price to announce whether it's a Profit or a Loss? Write: 'Step 2: If selling price is greater than cost price, display Profit, else display Loss'.";
+    feedback = "\u{1F31F} Coach Maara here! High five! \u270B You nailed Step 1 by getting the cost price and selling price! Now, let's write Step 2: How do we compare selling price with cost price to announce whether it's a Profit or a Loss? Write: 'Step 2: If selling price is greater than cost price, display Profit, else display Loss'.";
     correction = "Step 2: If selling price is greater than cost price, display Profit, else display Loss.";
     suggestedInput = "Step 2: If selling price is greater than cost price, display Profit, else display Loss.";
     matchedFirebaseInput = "step 1 : Get cost price and selling price";
@@ -363,41 +363,41 @@ function validateProfitLossIngredients(input) {
   let suggestedInput = void 0;
   let matchedFirebaseInput = void 0;
   if (hasWrongConditionForProfit) {
-    feedback = "\u{1F31F} Coach Maya ingredients check: Look closely at your operator and sides! You wrote `cp > sp`. If Cost Price is greater than Selling Price, that means a Loss! For Profit, Selling Price must be greater: Left Side (L.S): sp, Operator: >, Right Side (R.S): cp (or L.S: cp, Operator: <, R.S: sp).";
+    feedback = "\u{1F31F} Coach Maara ingredients check: Look closely at your operator and sides! You wrote `cp > sp`. If Cost Price is greater than Selling Price, that means a Loss! For Profit, Selling Price must be greater: Left Side (L.S): sp, Operator: >, Right Side (R.S): cp (or L.S: cp, Operator: <, R.S: sp).";
     correction = "step 2 : If condition with Left Side: sp, Operator: >, Right Side: cp";
     suggestedInput = "step 2 : If condition with L.S: sp, Operator: >, R.S: cp";
     matchedFirebaseInput = "how to write if condition";
   } else if (hasInvertedIfPrint) {
-    feedback = '\u{1F31F} Coach Maya logic check: When `sp > cp` is true, Selling Price is higher, so it\'s a Profit! Put `print("Profit")` inside the `if` block (Step 3) and save `print("Loss")` for the `else` block (Step 4)!';
+    feedback = '\u{1F31F} Coach Maara logic check: When `sp > cp` is true, Selling Price is higher, so it\'s a Profit! Put `print("Profit")` inside the `if` block (Step 3) and save `print("Loss")` for the `else` block (Step 4)!';
     correction = 'step 3 : Inside if block: print("Profit")';
     suggestedInput = 'step 3 : Inside if block: print("Profit")';
     matchedFirebaseInput = "what is next step";
   } else if (hasUnquotedPrint) {
-    feedback = '\u{1F31F} Coach Maya syntax alert: You\'re super close! Just remember to wrap words inside print in quotation marks: `print("Profit")` and `print("Loss")`. Without quotes, JavaScript treats Profit and Loss as undefined variables!';
+    feedback = '\u{1F31F} Coach Maara syntax alert: You\'re super close! Just remember to wrap words inside print in quotation marks: `print("Profit")` and `print("Loss")`. Without quotes, JavaScript treats Profit and Loss as undefined variables!';
     correction = 'print("Profit");';
     suggestedInput = 'step 3 : Inside if block: print("Profit")\nstep 4 : Inside else block: print("Loss")';
     matchedFirebaseInput = "what is next step";
   } else if (!isStep1Done) {
     if (isQuestion) {
-      feedback = '\u{1F31F} Coach Maya here! Just like gathering ingredients before cooking, let\'s gather our 4 coding ingredients for Profit or Loss:\n1. Input variables: `cp` and `sp`\n2. Condition: Left Side: `sp`, Operator: `>`, Right Side: `cp`\n3. True message: `print("Profit")`\n4. False message: `print("Loss")`\nLet\'s start with Step 1: Write `step 1 : cp and sp variables`!';
+      feedback = '\u{1F31F} Coach Maara here! Just like gathering ingredients before cooking, let\'s gather our 4 coding ingredients for Profit or Loss:\n1. Input variables: `cp` and `sp`\n2. Condition: Left Side: `sp`, Operator: `>`, Right Side: `cp`\n3. True message: `print("Profit")`\n4. False message: `print("Loss")`\nLet\'s start with Step 1: Write `step 1 : cp and sp variables`!';
     } else {
-      feedback = "\u{1F31F} Coach Maya here! Let's start with Step 1: To determine Profit or Loss, we need two input variables\u2014one for Cost Price (`cp`) and one for Selling Price (`sp`). Write: `step 1 : cp and sp variables`.";
+      feedback = "\u{1F31F} Coach Maara here! Let's start with Step 1: To determine Profit or Loss, we need two input variables\u2014one for Cost Price (`cp`) and one for Selling Price (`sp`). Write: `step 1 : cp and sp variables`.";
     }
     correction = "step 1 : cp and sp variables";
     suggestedInput = "step 1 : cp and sp variables";
     matchedFirebaseInput = "what ingredients do we need";
   } else if (!isStep2Done) {
-    feedback = "\u{1F31F} Coach Maya here! Great start! \u{1F3AF} You've got your two input variables: `cp` and `sp`! Now for Step 2: Let's break down the if condition into 3 simple parts:\n\u2022 Left Side (L.S): sp\n\u2022 Operator: >\n\u2022 Right Side (R.S): cp\nWrite: `step 2 : If condition with L.S: sp, Operator: >, R.S: cp`!";
+    feedback = "\u{1F31F} Coach Maara here! Great start! \u{1F3AF} You've got your two input variables: `cp` and `sp`! Now for Step 2: Let's break down the if condition into 3 simple parts:\n\u2022 Left Side (L.S): sp\n\u2022 Operator: >\n\u2022 Right Side (R.S): cp\nWrite: `step 2 : If condition with L.S: sp, Operator: >, R.S: cp`!";
     correction = "step 2 : If condition with Left Side: sp, Operator: >, Right Side: cp";
     suggestedInput = "step 2 : If condition with L.S: sp, Operator: >, R.S: cp";
     matchedFirebaseInput = "how to write if condition";
   } else if (!isStep3Done) {
-    feedback = "\u{1F31F} Coach Maya here! Excellent work! \u{1F680} Variables and condition are ready! Now for Step 3: Inside the 'if' block, when `sp > cp` is true, what message should print? Remember to wrap your text in quotes: `step 3 : Inside if block: print(\"Profit\")`!";
+    feedback = "\u{1F31F} Coach Maara here! Excellent work! \u{1F680} Variables and condition are ready! Now for Step 3: Inside the 'if' block, when `sp > cp` is true, what message should print? Remember to wrap your text in quotes: `step 3 : Inside if block: print(\"Profit\")`!";
     correction = 'step 3 : Inside if block: print("Profit")';
     suggestedInput = 'step 3 : Inside if block: print("Profit")';
     matchedFirebaseInput = "what is next step";
   } else if (!isStep4Done) {
-    feedback = "\u{1F31F} Coach Maya here! You're almost at the finish line! \u{1F44F} Steps 1, 2, and 3 are locked in! Now for the final ingredient: Step 4! Inside the 'else' block (when the condition is false), what message should print? Wrap it in quotes: `step 4 : Inside else block: print(\"Loss\")`!";
+    feedback = "\u{1F31F} Coach Maara here! You're almost at the finish line! \u{1F44F} Steps 1, 2, and 3 are locked in! Now for the final ingredient: Step 4! Inside the 'else' block (when the condition is false), what message should print? Wrap it in quotes: `step 4 : Inside else block: print(\"Loss\")`!";
     correction = 'step 4 : Inside else block: print("Loss")';
     suggestedInput = 'step 4 : Inside else block: print("Loss")';
     matchedFirebaseInput = "what is next step";
@@ -469,52 +469,52 @@ function validateProfitLossSampleCode(input, attemptCount = 1) {
   let correction = "";
   let suggestedInput = void 0;
   if (hasInvertedBranches) {
-    feedback = '\u{1F31F} Coach Maya logic check: Look closely at your test numbers! If Cost Price is 100 and Selling Price is 150, `sp > cp` is TRUE, which is a Profit! Inside the `if` block, print `"Profit"`, and inside the `else` block, print `"Loss"`.';
+    feedback = '\u{1F31F} Coach Maara logic check: Look closely at your test numbers! If Cost Price is 100 and Selling Price is 150, `sp > cp` is TRUE, which is a Profit! Inside the `if` block, print `"Profit"`, and inside the `else` block, print `"Loss"`.';
     correction = 'if (sp > cp) {\n  print("Profit");\n} else {\n  print("Loss");\n}';
     suggestedInput = 'if (sp > cp) {\n  print("Profit");\n} else {\n  print("Loss");\n}';
   } else if (hasElseWithCondition) {
-    feedback = "\u{1F31F} Coach Maya syntax alert: Look closely at your `else` statement: `else(...)`! In programming, `else` is the automatic fallback for everything else\u2014it does NOT take parentheses or a condition. Simply write: `else {`.";
+    feedback = "\u{1F31F} Coach Maara syntax alert: Look closely at your `else` statement: `else(...)`! In programming, `else` is the automatic fallback for everything else\u2014it does NOT take parentheses or a condition. Simply write: `else {`.";
     correction = 'else {\n  print("Loss");\n}';
     suggestedInput = 'else {\n  print("Loss");\n}';
   } else if (!(hasCostVar && hasSellingVar)) {
     if (isQuestion) {
-      feedback = "\u{1F31F} Coach Maya here! Ready to build our code prototype? Don't worry about syntax\u2014we'll build it line by line together!\nLet's start with Step 1: Declare two test variables with numbers:\n`var cp = 100;`\n`var sp = 150;`\nType that first line in your code window!";
+      feedback = "\u{1F31F} Coach Maara here! Ready to build our code prototype? Don't worry about syntax\u2014we'll build it line by line together!\nLet's start with Step 1: Declare two test variables with numbers:\n`var cp = 100;`\n`var sp = 150;`\nType that first line in your code window!";
     } else {
-      feedback = "\u{1F31F} Coach Maya here! Ready to build our prototype? Let's start with Step 1: Declare two variables with test prices\u2014for example `var cp = 100; var sp = 150;`. How would you write that first line?";
+      feedback = "\u{1F31F} Coach Maara here! Ready to build our prototype? Let's start with Step 1: Declare two variables with test prices\u2014for example `var cp = 100; var sp = 150;`. How would you write that first line?";
     }
     correction = "var cp = 100;\nvar sp = 150;";
     suggestedInput = "var cp = 100;\nvar sp = 150;";
   } else if (!hasCondition) {
     if (attemptCount >= 3) {
-      feedback = "\u{1F31F} Coach Maya with a scaffolded syntax tip! Here is how we connect your variables to the condition:\n\u2022 Left Side: `sp`\n\u2022 Comparison: `>`\n\u2022 Right Side: `cp`\nWrap it like this: `if (sp > cp) {`";
+      feedback = "\u{1F31F} Coach Maara with a scaffolded syntax tip! Here is how we connect your variables to the condition:\n\u2022 Left Side: `sp`\n\u2022 Comparison: `>`\n\u2022 Right Side: `cp`\nWrap it like this: `if (sp > cp) {`";
     } else if (attemptCount === 2) {
-      feedback = "\u{1F31F} Coach Maya checking back! Since Selling Price (150) is greater than Cost Price (100), testing `sp > cp` lets the code decide whether to reward profit! Write your comparison: `if (sp > cp) {`.";
+      feedback = "\u{1F31F} Coach Maara checking back! Since Selling Price (150) is greater than Cost Price (100), testing `sp > cp` lets the code decide whether to reward profit! Write your comparison: `if (sp > cp) {`.";
     } else {
-      feedback = "\u{1F31F} Coach Maya here! Fantastic! You've declared your variables `cp = 100` and `sp = 150`! \u{1F44F} Now for Step 2: Write the `if` statement to test if selling price is greater than cost price: `if (sp > cp) {`.";
+      feedback = "\u{1F31F} Coach Maara here! Fantastic! You've declared your variables `cp = 100` and `sp = 150`! \u{1F44F} Now for Step 2: Write the `if` statement to test if selling price is greater than cost price: `if (sp > cp) {`.";
     }
     correction = 'if (sp > cp) {\n  print("Profit");\n}';
     suggestedInput = 'if (sp > cp) {\n  print("Profit");\n}';
   } else if (!hasQuotedPositivePrint) {
     if (hasUnquotedPositivePrint) {
-      feedback = '\u{1F31F} Coach Maya syntax alert: Wrap the word Profit in quotation marks: `print("Profit");`. Without quotes, the compiler looks for an undeclared variable named Profit!';
+      feedback = '\u{1F31F} Coach Maara syntax alert: Wrap the word Profit in quotation marks: `print("Profit");`. Without quotes, the compiler looks for an undeclared variable named Profit!';
       correction = 'print("Profit");';
       suggestedInput = 'print("Profit");';
     } else {
-      feedback = '\u{1F31F} Coach Maya here! Great condition! Now inside the `{` curly braces `}` of your `if` block, print the winning message: `print("Profit");`.';
+      feedback = '\u{1F31F} Coach Maara here! Great condition! Now inside the `{` curly braces `}` of your `if` block, print the winning message: `print("Profit");`.';
       correction = 'print("Profit");';
       suggestedInput = 'print("Profit");';
     }
   } else if (!hasElse) {
-    feedback = "\u{1F31F} Coach Maya here! You have the positive profit branch ready! Now for Step 4: What happens if selling price is not greater than cost price? Add the fallback `else` branch: `else {`.";
+    feedback = "\u{1F31F} Coach Maara here! You have the positive profit branch ready! Now for Step 4: What happens if selling price is not greater than cost price? Add the fallback `else` branch: `else {`.";
     correction = 'else {\n  print("Loss");\n}';
     suggestedInput = 'else {\n  print("Loss");\n}';
   } else if (!hasQuotedNegativePrint) {
     if (hasUnquotedNegativePrint) {
-      feedback = '\u{1F31F} Coach Maya syntax alert: Inside the `else` block, wrap your message in quotation marks: `print("Loss");`.';
+      feedback = '\u{1F31F} Coach Maara syntax alert: Inside the `else` block, wrap your message in quotation marks: `print("Loss");`.';
       correction = 'print("Loss");';
       suggestedInput = 'print("Loss");';
     } else {
-      feedback = '\u{1F31F} Coach Maya here! Almost done! Inside the `else` block, print the loss message: `print("Loss");`.';
+      feedback = '\u{1F31F} Coach Maara here! Almost done! Inside the `else` block, print the loss message: `print("Loss");`.';
       correction = 'print("Loss");';
       suggestedInput = 'print("Loss");';
     }

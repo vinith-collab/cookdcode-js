@@ -15,7 +15,7 @@ function validateGreaterThan100Logic(text) {
       return {
         isFullyVerified: false,
         hasBoundaryContradiction: true,
-        feedback: `\u{1F31F} Coach Maya gentle check: Look closely at your mathematical comparison \`${left} ${op} ${right}\`! ${left} is ${left > right ? "greater than" : "less than"} ${right}, so \`${left} ${op} ${right}\` is mathematically false! For number ${left}, write \`${left} ${left > right ? ">" : "<="} ${right}\`.`,
+        feedback: `\u{1F31F} Coach Maara gentle check: Look closely at your mathematical comparison \`${left} ${op} ${right}\`! ${left} is ${left > right ? "greater than" : "less than"} ${right}, so \`${left} ${op} ${right}\` is mathematically false! For number ${left}, write \`${left} ${left > right ? ">" : "<="} ${right}\`.`,
         correction: `For number ${left}: write \`${left} ${left > right ? ">" : "<="} ${right}\` (${left > 100 ? "Greater than 100" : "Not Greater than 100"}).`,
         suggestedInput: `If num > 100 (e.g. 150 > 100 -> true) -> Greater than 100. If num <= 100 (e.g. 80 <= 100 -> true) -> Not Greater than 100.`,
         matchedFirebaseInput: "if number is greater than 100 then display greater than 100"
@@ -101,27 +101,27 @@ function validateGreaterThan100Logic(text) {
   let suggestedInput = void 0;
   let matchedFirebaseInput = void 0;
   if (claimsUnder100IsGreater) {
-    feedback = "\u{1F31F} Coach Maya logic alert: Look closely at your condition! A number less than 100 (like 50 or 80) is NOT greater than 100. A number is only greater when it is strictly more than 100 (like 101, 120, 200).";
+    feedback = "\u{1F31F} Coach Maara logic alert: Look closely at your condition! A number less than 100 (like 50 or 80) is NOT greater than 100. A number is only greater when it is strictly more than 100 (like 101, 120, 200).";
     correction = "If number is greater than 100 it is Greater, otherwise Not Greater.";
     suggestedInput = "if number is greater than 100 it is greater else not greater";
     matchedFirebaseInput = "if number is greater than 100 it is greater else not greater";
   } else if (claimsOver100IsNotGreater) {
-    feedback = "\u{1F31F} Coach Maya logic alert: A number greater than 100 (like 105 or 150) is Greater than 100! Check your outputs so that numbers over 100 say 'Greater' and numbers 100 or below say 'Not Greater'.";
+    feedback = "\u{1F31F} Coach Maara logic alert: A number greater than 100 (like 105 or 150) is Greater than 100! Check your outputs so that numbers over 100 say 'Greater' and numbers 100 or below say 'Not Greater'.";
     correction = "If number is greater than 100 it is Greater, else Not Greater.";
     suggestedInput = "if number is greater than 100 it is greater else not greater";
     matchedFirebaseInput = "if number is greater than 100 it is greater else not greater";
   } else if (claims100IsGreater) {
-    feedback = "\u{1F31F} Coach Maya boundary alert: Look closely at the number 100! 100 is EQUAL to 100, so it is NOT greater than 100! Strictly greater than 100 starts from 101.";
+    feedback = "\u{1F31F} Coach Maara boundary alert: Look closely at the number 100! 100 is EQUAL to 100, so it is NOT greater than 100! Strictly greater than 100 starts from 101.";
     correction = "If number is greater than 100 it is Greater, otherwise Not Greater.";
     suggestedInput = "if number is greater than 100 it is greater else not greater";
     matchedFirebaseInput = "what if number is 100";
   } else if (hasCodeKeywords) {
-    feedback = "Coach Maya here! You are thinking in programming syntax, which is wonderful! But here in Stage 1 (Logic), explain the rule in everyday words without code like 'var', 'if(...)', or 'print'. How would you explain 'greater than 100' to a friend?";
+    feedback = "Coach Maara here! You are thinking in programming syntax, which is wonderful! But here in Stage 1 (Logic), explain the rule in everyday words without code like 'var', 'if(...)', or 'print'. How would you explain 'greater than 100' to a friend?";
     correction = "If a number is greater than 100 it is Greater, otherwise Not Greater.";
     suggestedInput = "if number is greater than 100 it is greater else not greater";
     matchedFirebaseInput = "if number is greater than 100 it is greater else not greater";
   } else if (isFullyVerified) {
-    feedback = "\u{1F31F} Coach Maya here! Spot on! \u{1F389} If number is greater than 100 -> Greater, otherwise Not Greater. You've clearly mastered the real-world logic! Proceed to the Recipe stage to sequence the steps in everyday words.";
+    feedback = "\u{1F31F} Coach Maara here! Spot on! \u{1F389} If number is greater than 100 -> Greater, otherwise Not Greater. You've clearly mastered the real-world logic! Proceed to the Recipe stage to sequence the steps in everyday words.";
     correction = "Proceed to the Recipe stage.";
     suggestedInput = void 0;
     matchedFirebaseInput = "if number is greater than 100 it is greater else not greater";
@@ -138,22 +138,22 @@ function validateGreaterThan100Logic(text) {
       matchedFirebaseInput = "how to check if number is greater than 100";
     }
   } else if (!has100Concept) {
-    feedback = "Coach Maya here! What benchmark number are we comparing against? Mention 100 in your logic!";
+    feedback = "Coach Maara here! What benchmark number are we comparing against? Mention 100 in your logic!";
     correction = "If number is greater than 100 it is Greater, else Not Greater.";
     suggestedInput = "if number is greater than 100 it is greater else not greater";
     matchedFirebaseInput = "how to check if number is greater than 100";
   } else if (!hasPositiveOutcome) {
-    feedback = "Coach Maya here! State the positive outcome clearly: What should we conclude if the number is greater than 100?";
+    feedback = "Coach Maara here! State the positive outcome clearly: What should we conclude if the number is greater than 100?";
     correction = "If number is greater than 100 it is Greater, else Not Greater.";
     suggestedInput = "if number is greater than 100 it is greater else not greater";
     matchedFirebaseInput = "if number is greater than 100 it is greater else not greater";
   } else if (!hasNegativeOutcome) {
-    feedback = "Coach Maya here! You've defined what to call a number when it is greater than 100! \u{1F44F} Now complete the logic: What should we call it when the number is 100 or less (or otherwise)? Define the second outcome (e.g., 'otherwise it is called as not greatest') so both cases are covered!";
+    feedback = "Coach Maara here! You've defined what to call a number when it is greater than 100! \u{1F44F} Now complete the logic: What should we call it when the number is 100 or less (or otherwise)? Define the second outcome (e.g., 'otherwise it is called as not greatest') so both cases are covered!";
     correction = "Define the second outcome: what happens when the number is 100 or less (e.g., otherwise it is not greatest).";
     suggestedInput = "When a number is greater than 100 it is called as greatest, otherwise it is not greatest";
     matchedFirebaseInput = "if number is greater than 100 it is greater else not greater";
   } else {
-    feedback = "Coach Maya here! To complete Stage 1, state the logic: If a number is greater than 100 it is Greater, otherwise Not Greater.";
+    feedback = "Coach Maara here! To complete Stage 1, state the logic: If a number is greater than 100 it is Greater, otherwise Not Greater.";
     correction = "If number is greater than 100 it is Greater, else Not Greater.";
     suggestedInput = "if number is greater than 100 it is greater else not greater";
     matchedFirebaseInput = "if number is greater than 100 it is greater else not greater";
@@ -224,27 +224,27 @@ function validateGreaterThan100Recipe(text) {
   let suggestedInput = void 0;
   let matchedFirebaseInput = void 0;
   if (hasRecipeUnder100GreaterContradiction) {
-    feedback = "\u{1F31F} Coach Maya logic alert: Look closely at your step for numbers lesser than 100! If a number is less than 100 (like 10, 50, or 80), it cannot be called 'the greatest'. For numbers lesser than 100, it should be called 'lowest' or 'Not greater than 100'.";
+    feedback = "\u{1F31F} Coach Maara logic alert: Look closely at your step for numbers lesser than 100! If a number is less than 100 (like 10, 50, or 80), it cannot be called 'the greatest'. For numbers lesser than 100, it should be called 'lowest' or 'Not greater than 100'.";
     correction = "step 3: if that number is lesser than 100 it is called as the lowest";
     suggestedInput = "step 3: if that number is lesser than 100 it is called as the lowest";
     matchedFirebaseInput = "step 3:if that number is lesser than 100 it is called as the greatest";
   } else if (hasRecipeOver100NotGreaterContradiction) {
-    feedback = "\u{1F31F} Coach Maya logic alert: Check your step for numbers greater than 100! If a number is greater than 100, it is 'greatest' or 'Greater than 100', not lowest.";
+    feedback = "\u{1F31F} Coach Maara logic alert: Check your step for numbers greater than 100! If a number is greater than 100, it is 'greatest' or 'Greater than 100', not lowest.";
     correction = "step 2: if number is greater than 100 it is called as greatest";
     suggestedInput = "step 2: if number is greater than 100 it is called as greatest";
     matchedFirebaseInput = "step 2:if number is greater than 100 it is called as lowest";
   } else if (hasRecipeContradiction) {
-    feedback = "\u{1F31F} Coach Maya logic alert: In your Recipe, check your outputs! If number > 100, display 'Greater than 100'; otherwise display 'Not greater than 100'.";
+    feedback = "\u{1F31F} Coach Maara logic alert: In your Recipe, check your outputs! If number > 100, display 'Greater than 100'; otherwise display 'Not greater than 100'.";
     correction = "step 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
     suggestedInput = "step 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
     matchedFirebaseInput = "step 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
   } else if (isFullyVerified) {
-    feedback = "\u{1F31F} Coach Maya here! Kudos! \u{1F389} Complete step-by-step algorithm in clear everyday words: Step 1 gets the number, and Step 2 checks if number is greater than 100 to display Greater or Not Greater. Proceed to the Ingredients stage!";
+    feedback = "\u{1F31F} Coach Maara here! Kudos! \u{1F389} Complete step-by-step algorithm in clear everyday words: Step 1 gets the number, and Step 2 checks if number is greater than 100 to display Greater or Not Greater. Proceed to the Ingredients stage!";
     correction = "step 1 : Get number input\nstep 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
     suggestedInput = "step 1 : Get number input\nstep 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
     matchedFirebaseInput = "step 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
   } else if (!hasInputStep) {
-    feedback = "Coach Maya here! Let's write our recipe starting with Step 1: How do we take the number as input?";
+    feedback = "Coach Maara here! Let's write our recipe starting with Step 1: How do we take the number as input?";
     correction = "step 1 : Get number input";
     suggestedInput = "step 1 : Get number input";
     matchedFirebaseInput = "step 1 : Get number input";
@@ -259,7 +259,7 @@ function validateGreaterThan100Recipe(text) {
     suggestedInput = "step 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
     matchedFirebaseInput = "step 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
   } else {
-    feedback = "Coach Maya here! Write the 2-step recipe:\nStep 1: Get number input.\nStep 2: If number > 100 display Greater than 100, else display Not greater than 100.";
+    feedback = "Coach Maara here! Write the 2-step recipe:\nStep 1: Get number input.\nStep 2: If number > 100 display Greater than 100, else display Not greater than 100.";
     correction = "step 1 : Get number input\nstep 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
     suggestedInput = "step 1 : Get number input\nstep 2 : If number is greater than 100, display Greater than 100, else display Not greater than 100";
     matchedFirebaseInput = "what steps to write";
@@ -326,17 +326,17 @@ function validateGreaterThan100Ingredients(text) {
   let suggestedInput = void 0;
   let matchedFirebaseInput = void 0;
   if (hasInvertedIfPrint) {
-    feedback = `\u{1F31F} Coach Maya alert: Take a closer look at Step 3! Inside the 'if' block (when condition ${detectedVar} > 100 is true), the number is greater than 100! So you should print: print("Greater than 100") (or print("greatest")). Printing 'not greatest' belongs in the 'else' block (Step 4)! Update Step 3 to: print("Greater than 100").`;
+    feedback = `\u{1F31F} Coach Maara alert: Take a closer look at Step 3! Inside the 'if' block (when condition ${detectedVar} > 100 is true), the number is greater than 100! So you should print: print("Greater than 100") (or print("greatest")). Printing 'not greatest' belongs in the 'else' block (Step 4)! Update Step 3 to: print("Greater than 100").`;
     correction = 'step 3 : Inside if block: print("Greater than 100")';
     suggestedInput = 'step 3 : Inside if block: print("Greater than 100")';
     matchedFirebaseInput = "what is next step after if condition";
   } else if (hasUnquotedPrint) {
-    feedback = 'Coach Maya syntax alert: Wrap the text inside print in quotation marks: `print("Greater than 100")` and `print("Not greater than 100")`. Without quotes, JavaScript treats it as an undeclared variable!';
+    feedback = 'Coach Maara syntax alert: Wrap the text inside print in quotation marks: `print("Greater than 100")` and `print("Not greater than 100")`. Without quotes, JavaScript treats it as an undeclared variable!';
     correction = 'print("Greater than 100");';
     suggestedInput = 'step 3 : Inside if block: print("Greater than 100")\nstep 4 : Inside else block: print("Not greater than 100")';
     matchedFirebaseInput = "how to write if condition";
   } else if (isFullyVerified) {
-    feedback = `\u{1F31F} Coach Maya here! Hurray! \u{1F389} All ingredients identified: input variable '${detectedVar}', if-condition, and quoted print statements. Proceed to Sample Code!`;
+    feedback = `\u{1F31F} Coach Maara here! Hurray! \u{1F389} All ingredients identified: input variable '${detectedVar}', if-condition, and quoted print statements. Proceed to Sample Code!`;
     correction = `step 1 : ${detectedVar} variable
 step 2 : If condition with L.S: ${detectedVar}, R.S: 100, Operator: >
 step 3 : Inside if block: print("Greater than 100")
@@ -344,25 +344,25 @@ step 4 : Inside else block: print("Not greater than 100")`;
     suggestedInput = void 0;
     matchedFirebaseInput = "step 2 : If condition with L.S: num, R.S: 100, Operator: >";
   } else if (!isStep1Done) {
-    feedback = "\u{1F31F} Coach Maya here! Let's identify our ingredients starting with Step 1: What variable holds the input number?";
+    feedback = "\u{1F31F} Coach Maara here! Let's identify our ingredients starting with Step 1: What variable holds the input number?";
     correction = "step 1 : num variable";
     suggestedInput = "step 1 : num variable";
     matchedFirebaseInput = "step 1 : num variable";
   } else if (!isStep2Done) {
     if (hasWrongRightSide) {
-      feedback = `\u{1F31F} Coach Maya alert: Take a closer look at your Right Side (R.S)! You wrote ${parsedRightSideNum}, but our problem specifically checks whether the number is greater than 100, not ${parsedRightSideNum}! Change Right Side to 100:
+      feedback = `\u{1F31F} Coach Maara alert: Take a closer look at your Right Side (R.S)! You wrote ${parsedRightSideNum}, but our problem specifically checks whether the number is greater than 100, not ${parsedRightSideNum}! Change Right Side to 100:
 
 \u2022 Left Side (L.S): ${detectedVar}
 \u2022 Operator: >
 \u2022 Right Side (R.S): 100`;
     } else if (hasWrongOperator) {
-      feedback = `\u{1F31F} Coach Maya alert: Take a closer look at your Operator! You used '${parsedOp}', but our challenge is to check if the number is GREATER than 100! Please use the greater-than operator (>):
+      feedback = `\u{1F31F} Coach Maara alert: Take a closer look at your Operator! You used '${parsedOp}', but our challenge is to check if the number is GREATER than 100! Please use the greater-than operator (>):
 
 \u2022 Left Side (L.S): ${detectedVar}
 \u2022 Operator: >
 \u2022 Right Side (R.S): 100`;
     } else if (isAskingHowToWriteCondition) {
-      feedback = `\u{1F31F} Coach Maya here! No worries at all\u2014writing an \`if\` condition is super easy when we break it down into 3 simple pieces!
+      feedback = `\u{1F31F} Coach Maara here! No worries at all\u2014writing an \`if\` condition is super easy when we break it down into 3 simple pieces!
 
 Since you chose variable '${detectedVar}', we compare it against 100:
 \u2022 Left Side (L.S): ${detectedVar} (your input number)
@@ -372,23 +372,23 @@ Since you chose variable '${detectedVar}', we compare it against 100:
 In your Ingredients worksheet, write:
 step 2 : If condition with L.S: ${detectedVar}, R.S: 100, Operator: >`;
     } else {
-      feedback = `\u{1F31F} Coach Maya here! Great start with variable '${detectedVar}'! Now, how do you write the if-condition to check if '${detectedVar}' is greater than 100 using Left Side (L.S), Right Side (R.S), and Operator (>)?`;
+      feedback = `\u{1F31F} Coach Maara here! Great start with variable '${detectedVar}'! Now, how do you write the if-condition to check if '${detectedVar}' is greater than 100 using Left Side (L.S), Right Side (R.S), and Operator (>)?`;
     }
     correction = `step 2 : If condition with L.S: ${detectedVar}, R.S: 100, Operator: >`;
     suggestedInput = `step 2 : If condition with L.S: ${detectedVar}, R.S: 100, Operator: >`;
     matchedFirebaseInput = "how to write if condition";
   } else if (!isStep3Done) {
-    feedback = isAskingNext ? `\u{1F31F} Coach Maya here! You've already got your variable '${detectedVar}' and your condition (${detectedVar} > 100) set up! For your NEXT step (Step 3): Inside the \`if\` block, what print statement runs when the condition is true? Remember quotation marks: \`print("Greater than 100")\` (or \`print("greatest")\`).` : `\u{1F31F} Coach Maya here! Inside the \`if\` block, what print statement runs when the condition is true? Remember quotation marks: \`print("Greater than 100")\` (or \`print("greatest")\`).`;
+    feedback = isAskingNext ? `\u{1F31F} Coach Maara here! You've already got your variable '${detectedVar}' and your condition (${detectedVar} > 100) set up! For your NEXT step (Step 3): Inside the \`if\` block, what print statement runs when the condition is true? Remember quotation marks: \`print("Greater than 100")\` (or \`print("greatest")\`).` : `\u{1F31F} Coach Maara here! Inside the \`if\` block, what print statement runs when the condition is true? Remember quotation marks: \`print("Greater than 100")\` (or \`print("greatest")\`).`;
     correction = 'step 3 : Inside if block: print("Greater than 100")';
     suggestedInput = 'step 3 : Inside if block: print("Greater than 100")';
     matchedFirebaseInput = "what is next step after if condition";
   } else if (!isStep4Done) {
-    feedback = isAskingNext ? `\u{1F31F} Coach Maya here! Great progress! You've set up your condition and your positive print statement! For your NEXT step (Step 4): Inside the \`else\` block, what print statement runs when the number is not greater than 100? Remember quotation marks: \`print("Not greater than 100")\` (or \`print("lowest")\`).` : `Coach Maya here! Almost there! Inside the \`else\` block, what print statement runs when the number is not greater than 100? Remember quotation marks: \`print("Not greater than 100")\`.`;
+    feedback = isAskingNext ? `\u{1F31F} Coach Maara here! Great progress! You've set up your condition and your positive print statement! For your NEXT step (Step 4): Inside the \`else\` block, what print statement runs when the number is not greater than 100? Remember quotation marks: \`print("Not greater than 100")\` (or \`print("lowest")\`).` : `Coach Maara here! Almost there! Inside the \`else\` block, what print statement runs when the number is not greater than 100? Remember quotation marks: \`print("Not greater than 100")\`.`;
     correction = 'step 4 : Inside else block: print("Not greater than 100")';
     suggestedInput = 'step 4 : Inside else block: print("Not greater than 100")';
     matchedFirebaseInput = "what is next step after if condition";
   } else {
-    feedback = `\u{1F31F} Coach Maya here! Ingredients needed:
+    feedback = `\u{1F31F} Coach Maara here! Ingredients needed:
 1. Input variable: ${detectedVar}
 2. Condition: L.S: ${detectedVar}, Operator: >, R.S: 100
 3. True output: print("Greater than 100")
@@ -453,7 +453,7 @@ function validateGreaterThan100SampleCode(text) {
       hasElseWithCondition: false,
       hasInvertedBranches: false,
       matchedFirebaseInput: `var ${detectedVar} = 120; if (${detectedVar} > 100) print("Greater than 100"); else print("Not greater than 100");`,
-      feedback: "\u{1F31F} Coach Maya here! You gotcha! \u{1F389} Spot on comparison code! You have successfully implemented greater than 100 checking with comparison operator >, proper quotation marks, and clean branching. You are ready to run and test!",
+      feedback: "\u{1F31F} Coach Maara here! You gotcha! \u{1F389} Spot on comparison code! You have successfully implemented greater than 100 checking with comparison operator >, proper quotation marks, and clean branching. You are ready to run and test!",
       sampleCodeStepProgress: allDone,
       correction: void 0,
       suggestedInput: void 0
@@ -463,7 +463,7 @@ function validateGreaterThan100SampleCode(text) {
   let correction = "";
   let suggestedInput = void 0;
   if (hasInvertedBranches) {
-    feedback = `\u{1F31F} Coach Maya logic alert: Look at your print statements! Inside your \`if (${detectedVar} > 100)\` block, you are printing 'Not greater'! When the condition is true, print 'Greater than 100'. In the \`else\` block, print 'Not greater than 100'.`;
+    feedback = `\u{1F31F} Coach Maara logic alert: Look at your print statements! Inside your \`if (${detectedVar} > 100)\` block, you are printing 'Not greater'! When the condition is true, print 'Greater than 100'. In the \`else\` block, print 'Not greater than 100'.`;
     correction = `if (${detectedVar} > 100) {
   print("Greater than 100");
 } else {
@@ -475,7 +475,7 @@ function validateGreaterThan100SampleCode(text) {
   print("Not greater than 100");
 }`;
   } else if (hasElseWithCondition) {
-    feedback = `\u{1F31F} Coach Maya syntax alert: Look closely at your \`else\` statement: \`else(...)\`! In programming, the \`else\` keyword cannot take a condition or parentheses! It acts as the automatic fallback for all other numbers. Write it simply as \`else {\`.`;
+    feedback = `\u{1F31F} Coach Maara syntax alert: Look closely at your \`else\` statement: \`else(...)\`! In programming, the \`else\` keyword cannot take a condition or parentheses! It acts as the automatic fallback for all other numbers. Write it simply as \`else {\`.`;
     correction = `else {
   print("Not greater than 100");
 }`;
@@ -483,11 +483,11 @@ function validateGreaterThan100SampleCode(text) {
   print("Not greater than 100");
 }`;
   } else if (!hasInputVar) {
-    feedback = `\u{1F31F} Coach Maya here! Ready to build our code prototype? Let's begin by declaring an input variable with a test number\u2014like \`var ${detectedVar} = 120;\`! How would you write that first line?`;
+    feedback = `\u{1F31F} Coach Maara here! Ready to build our code prototype? Let's begin by declaring an input variable with a test number\u2014like \`var ${detectedVar} = 120;\`! How would you write that first line?`;
     correction = `var ${detectedVar} = 120;`;
     suggestedInput = `var ${detectedVar} = 120;`;
   } else if (!hasCondition) {
-    feedback = `\u{1F31F} Coach Maya here! Great job setting up your variable \`${detectedVar}\`! Now let's test if it's greater than 100. How do you write an \`if\` statement using \`${detectedVar} > 100\`?`;
+    feedback = `\u{1F31F} Coach Maara here! Great job setting up your variable \`${detectedVar}\`! Now let's test if it's greater than 100. How do you write an \`if\` statement using \`${detectedVar} > 100\`?`;
     correction = `if (${detectedVar} > 100) {
   print("Greater than 100");
 }`;
@@ -496,16 +496,16 @@ function validateGreaterThan100SampleCode(text) {
 }`;
   } else if (!hasQuotedPositivePrint) {
     if (hasUnquotedPositivePrint) {
-      feedback = `\u{1F31F} Coach Maya syntax alert: You have the right print idea, but make sure to wrap your message in quotation marks like \`print("Greater than 100")\`! Without quotes, the computer searches for a variable named Greater!`;
+      feedback = `\u{1F31F} Coach Maara syntax alert: You have the right print idea, but make sure to wrap your message in quotation marks like \`print("Greater than 100")\`! Without quotes, the computer searches for a variable named Greater!`;
       correction = 'print("Greater than 100");';
       suggestedInput = 'print("Greater than 100");';
     } else {
-      feedback = `\u{1F31F} Coach Maya here! Wonderful condition! Now inside the \`if\` block, when \`${detectedVar} > 100\` is true, what message should we announce? Try: \`print("Greater than 100");\`.`;
+      feedback = `\u{1F31F} Coach Maara here! Wonderful condition! Now inside the \`if\` block, when \`${detectedVar} > 100\` is true, what message should we announce? Try: \`print("Greater than 100");\`.`;
       correction = 'print("Greater than 100");';
       suggestedInput = 'print("Greater than 100");';
     }
   } else if (!hasElse) {
-    feedback = `\u{1F31F} Coach Maya here! You've got the positive branch ready! Now for Step 4: What keyword handles all other numbers 100 or below? Add the fallback branch: \`else {\`.`;
+    feedback = `\u{1F31F} Coach Maara here! You've got the positive branch ready! Now for Step 4: What keyword handles all other numbers 100 or below? Add the fallback branch: \`else {\`.`;
     correction = `else {
   print("Not greater than 100");
 }`;
@@ -514,16 +514,16 @@ function validateGreaterThan100SampleCode(text) {
 }`;
   } else if (!hasQuotedNegativePrint) {
     if (hasUnquotedNegativePrint) {
-      feedback = `\u{1F31F} Coach Maya syntax alert: Inside the \`else\` block, remember to wrap your display text in quotation marks: \`print("Not greater than 100")\`.`;
+      feedback = `\u{1F31F} Coach Maara syntax alert: Inside the \`else\` block, remember to wrap your display text in quotation marks: \`print("Not greater than 100")\`.`;
       correction = 'print("Not greater than 100");';
       suggestedInput = 'print("Not greater than 100");';
     } else {
-      feedback = `\u{1F31F} Coach Maya here! You're right at the finish line! Inside your \`else\` block, what message should print when the number is not greater than 100? Try: \`print("Not greater than 100");\`.`;
+      feedback = `\u{1F31F} Coach Maara here! You're right at the finish line! Inside your \`else\` block, what message should print when the number is not greater than 100? Try: \`print("Not greater than 100");\`.`;
       correction = 'print("Not greater than 100");';
       suggestedInput = 'print("Not greater than 100");';
     }
   } else {
-    feedback = `\u{1F31F} Coach Maya here! Let's assemble our prototype code step by step using your variable \`${detectedVar}\`!`;
+    feedback = `\u{1F31F} Coach Maara here! Let's assemble our prototype code step by step using your variable \`${detectedVar}\`!`;
     correction = `var ${detectedVar} = 120;
 if (${detectedVar} > 100) {
   print("Greater than 100");

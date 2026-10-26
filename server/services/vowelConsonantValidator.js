@@ -3,7 +3,7 @@ function validateVowelConsonantLogic(input, attemptCount = 1) {
   if (norm.length < 4) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! How do you determine whether an input character is a Vowel or a Consonant?",
+      feedback: "\u{1F31F} Coach Maara here! How do you determine whether an input character is a Vowel or a Consonant?",
       correction: "If the character equals 'a', 'e', 'i', 'o', or 'u', it is a Vowel. Otherwise, it is a Consonant.",
       suggestedInput: "Check if the character equals 'a', 'e', 'i', 'o', or 'u'. If it matches any vowel (e.g. 'e'), it is a Vowel; otherwise (e.g. 'x'), it is a Consonant."
     };
@@ -12,7 +12,7 @@ function validateVowelConsonantLogic(input, attemptCount = 1) {
   if (isQuestion) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! A character is a **Vowel** if it equals `'a'`, `'e'`, `'i'`, `'o'`, or `'u'`. Matching any ONE vowel makes it a Vowel!\n\nIf the character is not equal to any of the 5 vowels, it is a **Consonant**.\n\nExamples:\n\u2022 Input 'e' \u2794 Matches vowel 'e' \u2794 Output: Vowel\n\u2022 Input 'x' \u2794 Does not match any vowel \u2794 Output: Consonant",
+      feedback: "\u{1F31F} Coach Maara here! A character is a **Vowel** if it equals `'a'`, `'e'`, `'i'`, `'o'`, or `'u'`. Matching any ONE vowel makes it a Vowel!\n\nIf the character is not equal to any of the 5 vowels, it is a **Consonant**.\n\nExamples:\n\u2022 Input 'e' \u2794 Matches vowel 'e' \u2794 Output: Vowel\n\u2022 Input 'x' \u2794 Does not match any vowel \u2794 Output: Consonant",
       correction: "If character equals 'a', 'e', 'i', 'o', or 'u' then Vowel, otherwise Consonant.",
       suggestedInput: "If the character equals 'a', 'e', 'i', 'o', or 'u', it is a Vowel (e.g. 'e'). Otherwise, it is a Consonant (e.g. 'x').",
       matchedFirebaseInput: "what is vowel or consonant"
@@ -23,7 +23,7 @@ function validateVowelConsonantLogic(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       hasContradiction: true,
-      feedback: "\u{1F31F} Coach Maya logic alert: A single character cannot be 'a' AND 'e' AND 'i' simultaneously! Use **or** logic because matching ANY ONE vowel makes it a Vowel.",
+      feedback: "\u{1F31F} Coach Maara logic alert: A single character cannot be 'a' AND 'e' AND 'i' simultaneously! Use **or** logic because matching ANY ONE vowel makes it a Vowel.",
       correction: "If character equals 'a' OR 'e' OR 'i' OR 'o' OR 'u', then Vowel; otherwise Consonant.",
       suggestedInput: "If character equals 'a' or 'e' or 'i' or 'o' or 'u', it is a Vowel; otherwise it is a Consonant."
     };
@@ -33,7 +33,7 @@ function validateVowelConsonantLogic(input, attemptCount = 1) {
   if (!hasVowelsMentioned) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! Remember to list the vowels: **a, e, i, o, u**. How do we check if an input character matches any of these 5 vowels?",
+      feedback: "\u{1F31F} Coach Maara here! Remember to list the vowels: **a, e, i, o, u**. How do we check if an input character matches any of these 5 vowels?",
       correction: "Check if character is equal to 'a', 'e', 'i', 'o', or 'u'.",
       suggestedInput: "If character equals 'a', 'e', 'i', 'o', or 'u', it is a Vowel; otherwise it is a Consonant."
     };
@@ -41,7 +41,7 @@ function validateVowelConsonantLogic(input, attemptCount = 1) {
   if (!hasConsonantMentioned) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! Great start explaining Vowels! Now also explain what happens if the character is NOT a vowel\u2014it is a **Consonant**.",
+      feedback: "\u{1F31F} Coach Maara here! Great start explaining Vowels! Now also explain what happens if the character is NOT a vowel\u2014it is a **Consonant**.",
       correction: "If character is 'a','e','i','o','u' display Vowel, otherwise display Consonant.",
       suggestedInput: "If character equals 'a', 'e', 'i', 'o', or 'u', it is a Vowel. If it does not match any vowel, it is a Consonant."
     };
@@ -61,7 +61,7 @@ function validateVowelConsonantRecipe(input, attemptCount = 1) {
   if (hasCodeSyntax) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya recipe tip: Avoid code terms and symbols in the Recipe stage. Write in plain everyday English steps!",
+      feedback: "\u{1F31F} Coach Maara recipe tip: Avoid code terms and symbols in the Recipe stage. Write in plain everyday English steps!",
       correction: "Step 1: Get character input from the user."
     };
   }
@@ -85,7 +85,7 @@ function validateVowelConsonantRecipe(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Let's write the recipe one step at a time. First, start with **Step 1**: Get the character input from the user.",
+      feedback: "\u{1F31F} Coach Maara here! Let's write the recipe one step at a time. First, start with **Step 1**: Get the character input from the user.",
       correction: "Step 1: Get character input from the user.",
       suggestedInput: "Step 1: Get character input from the user."
     };
@@ -94,7 +94,7 @@ function validateVowelConsonantRecipe(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Step 1 looks good! \u{1F44F} Now write **Step 2**: Check if the character is 'a', 'e', 'i', 'o', or 'u' and display Vowel.",
+      feedback: "\u{1F31F} Coach Maara here! Step 1 looks good! \u{1F44F} Now write **Step 2**: Check if the character is 'a', 'e', 'i', 'o', or 'u' and display Vowel.",
       correction: "Step 2: If character is 'a', 'e', 'i', 'o', or 'u', display Vowel.",
       suggestedInput: "Step 2: If character is equal to 'a', 'e', 'i', 'o', or 'u', display Vowel."
     };
@@ -102,7 +102,7 @@ function validateVowelConsonantRecipe(input, attemptCount = 1) {
   return {
     isFullyVerified: false,
     recipeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Steps 1 & 2 are complete! \u{1F44F} Now add **Step 3**: Otherwise display Consonant.",
+    feedback: "\u{1F31F} Coach Maara here! Steps 1 & 2 are complete! \u{1F44F} Now add **Step 3**: Otherwise display Consonant.",
     correction: "Step 3: Otherwise display Consonant.",
     suggestedInput: "Step 3: Otherwise display Consonant."
   };
@@ -135,7 +135,7 @@ function validateVowelConsonantIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya syntax alert: Look closely at Step 2 (`operator : =`)! In programming, a single `=` is an assignment operator, while `==` (double equals) is used to check equality. Change your operator to `operator : ==` or `==`!",
+      feedback: "\u{1F31F} Coach Maara syntax alert: Look closely at Step 2 (`operator : =`)! In programming, a single `=` is an assignment operator, while `==` (double equals) is used to check equality. Change your operator to `operator : ==` or `==`!",
       correction: "operator : ==",
       suggestedInput: "operator : =="
     };
@@ -144,7 +144,7 @@ function validateVowelConsonantIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya logic alert: Look closely at Step 3! Inside the `if` block (when the vowel check is true), we must print **"Vowel"**, not constant/consonant! Update Step 3 to: `step 3 : Inside if block: print("Vowel")`.',
+      feedback: '\u{1F31F} Coach Maara logic alert: Look closely at Step 3! Inside the `if` block (when the vowel check is true), we must print **"Vowel"**, not constant/consonant! Update Step 3 to: `step 3 : Inside if block: print("Vowel")`.',
       correction: 'step 3 : Inside if block: print("Vowel")',
       suggestedInput: 'step 3 : Inside if block: print("Vowel")'
     };
@@ -153,7 +153,7 @@ function validateVowelConsonantIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Let's list the ingredients step by step. First, start with **Step 1**: Declare a character variable (e.g. `step 1 : ch variable`).",
+      feedback: "\u{1F31F} Coach Maara here! Let's list the ingredients step by step. First, start with **Step 1**: Declare a character variable (e.g. `step 1 : ch variable`).",
       correction: "step 1 : ch variable",
       suggestedInput: "step 1 : ch variable"
     };
@@ -162,7 +162,7 @@ function validateVowelConsonantIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Step 1 looks great! \u{1F44F} Now write **Step 2**: The if condition checking if `ch` equals any vowel: `step 2 : If condition checking ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u'`.",
+      feedback: "\u{1F31F} Coach Maara here! Step 1 looks great! \u{1F44F} Now write **Step 2**: The if condition checking if `ch` equals any vowel: `step 2 : If condition checking ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u'`.",
       correction: "step 2 : If condition checking ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u'",
       suggestedInput: "step 2 : If condition checking ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u'"
     };
@@ -171,7 +171,7 @@ function validateVowelConsonantIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Steps 1 & 2 are complete! \u{1F44F} Now write **Step 3**: Inside the if block, display Vowel: `step 3 : Inside if block: print("Vowel")`.',
+      feedback: '\u{1F31F} Coach Maara here! Steps 1 & 2 are complete! \u{1F44F} Now write **Step 3**: Inside the if block, display Vowel: `step 3 : Inside if block: print("Vowel")`.',
       correction: 'step 3 : Inside if block: print("Vowel")',
       suggestedInput: 'step 3 : Inside if block: print("Vowel")'
     };
@@ -180,7 +180,7 @@ function validateVowelConsonantIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Steps 1, 2, & 3 look awesome! \u{1F44F} Now write **Step 4**: The fallback else block for consonants: `step 4 : Fallback else block`.",
+      feedback: "\u{1F31F} Coach Maara here! Steps 1, 2, & 3 look awesome! \u{1F44F} Now write **Step 4**: The fallback else block for consonants: `step 4 : Fallback else block`.",
       correction: "step 4 : Fallback else block",
       suggestedInput: "step 4 : Fallback else block"
     };
@@ -188,7 +188,7 @@ function validateVowelConsonantIngredients(input, attemptCount = 1) {
   return {
     isFullyVerified: false,
     ingredientsStepProgress,
-    feedback: '\u{1F31F} Coach Maya here! Almost there! \u{1F44F} Add **Step 5**: Inside the else block, display Consonant: `step 5 : Inside else block: print("Consonant")`.',
+    feedback: '\u{1F31F} Coach Maara here! Almost there! \u{1F44F} Add **Step 5**: Inside the else block, display Consonant: `step 5 : Inside else block: print("Consonant")`.',
     correction: 'step 5 : Inside else block: print("Consonant")',
     suggestedInput: 'step 5 : Inside else block: print("Consonant")'
   };
@@ -240,7 +240,7 @@ function validateVowelConsonantSampleCode(input, attemptCount = 1) {
         { stepNumber: 5, title: 'Step 5: Print "Consonant" with quotes inside else block', completed: false, current: false }
       ],
       operationTestCases: testCases,
-      feedback: `\u{1F31F} Coach Maya here! Let's build our prototype code step by step. First, start with **Step 1**: Declare a sample character variable in the editor (e.g. \`var ${extractedVar} = '${extractedVal}';\`).`,
+      feedback: `\u{1F31F} Coach Maara here! Let's build our prototype code step by step. First, start with **Step 1**: Declare a sample character variable in the editor (e.g. \`var ${extractedVar} = '${extractedVal}';\`).`,
       correction: `var ${extractedVar} = '${extractedVal}';`,
       suggestedInput: `var ${extractedVar} = '${extractedVal}';`
     };
@@ -258,7 +258,7 @@ function validateVowelConsonantSampleCode(input, attemptCount = 1) {
         { stepNumber: 5, title: 'Step 5: Print "Consonant" with quotes inside else block', completed: false, current: false }
       ],
       operationTestCases: testCases,
-      feedback: `\u{1F31F} Coach Maya logic alert: You used \`&&\` (AND) in your vowel condition! Variable \`${extractedVar}\` cannot equal 'a' AND 'e' at the same time. Replace \`&&\` with \`||\` (OR) so it checks if \`${extractedVar}\` equals 'a' OR 'e' OR 'i' OR 'o' OR 'u'.`,
+      feedback: `\u{1F31F} Coach Maara logic alert: You used \`&&\` (AND) in your vowel condition! Variable \`${extractedVar}\` cannot equal 'a' AND 'e' at the same time. Replace \`&&\` with \`||\` (OR) so it checks if \`${extractedVar}\` equals 'a' OR 'e' OR 'i' OR 'o' OR 'u'.`,
       correction: `if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {`,
       suggestedInput: `if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {
   ${extractedPrint}("Vowel");
@@ -284,7 +284,7 @@ function validateVowelConsonantSampleCode(input, attemptCount = 1) {
         { stepNumber: 5, title: 'Step 5: Print "Consonant" with quotes inside else block', completed: false, current: false }
       ],
       operationTestCases: testCases,
-      feedback: `\u{1F31F} Coach Maya logic alert: Look closely at your condition \`if(${varName}==${varName})\`! You are comparing the variable \`${varName}\` with itself, which is always true. You need to check if variable \`${varName}\` is equal to vowel literals, e.g. \`if (${varName} == 'a' || ${varName} == 'e' || ${varName} == 'i' || ${varName} == 'o' || ${varName} == 'u')\`!`,
+      feedback: `\u{1F31F} Coach Maara logic alert: Look closely at your condition \`if(${varName}==${varName})\`! You are comparing the variable \`${varName}\` with itself, which is always true. You need to check if variable \`${varName}\` is equal to vowel literals, e.g. \`if (${varName} == 'a' || ${varName} == 'e' || ${varName} == 'i' || ${varName} == 'o' || ${varName} == 'u')\`!`,
       correction: `if (${varName} == 'a' || ${varName} == 'e' || ${varName} == 'i' || ${varName} == 'o' || ${varName} == 'u') {`,
       suggestedInput: `if (${varName} == 'a' || ${varName} == 'e' || ${varName} == 'i' || ${varName} == 'o' || ${varName} == 'u') {
   ${extractedPrint}("Vowel");
@@ -304,7 +304,7 @@ function validateVowelConsonantSampleCode(input, attemptCount = 1) {
         { stepNumber: 5, title: 'Step 5: Print "Consonant" with quotes inside else block', completed: false, current: false }
       ],
       operationTestCases: testCases,
-      feedback: `\u{1F31F} Coach Maya syntax alert: You used a single \`=\` inside your \`if\` condition! In programming, \`=\` assigns a value, whereas \`==\` (double equals) checks if values are equal. Change single \`=\` to \`==\`: \`if (${extractedVar} == 'a' || ...)\`!`,
+      feedback: `\u{1F31F} Coach Maara syntax alert: You used a single \`=\` inside your \`if\` condition! In programming, \`=\` assigns a value, whereas \`==\` (double equals) checks if values are equal. Change single \`=\` to \`==\`: \`if (${extractedVar} == 'a' || ...)\`!`,
       correction: `if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {`,
       suggestedInput: `if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {
   ${extractedPrint}("Vowel");
@@ -366,7 +366,7 @@ function validateVowelConsonantSampleCode(input, attemptCount = 1) {
   }
   if (hasVarDeclaration && hasCondition && (hasUnquotedPrintVowel || hasUnquotedPrintConsonant)) {
     const isBothUnquoted = hasUnquotedPrintVowel && hasUnquotedPrintConsonant;
-    const feedback = isBothUnquoted ? `\u{1F31F} Coach Maya syntax alert: You wrote \`${extractedPrint}(Vowel)\` and \`${extractedPrint}(Consonant)\` without quotes! In programming, text messages MUST be enclosed in quotation marks, like \`${extractedPrint}("Vowel");\` and \`${extractedPrint}("Consonant");\`. Add quotes around your print text to verify your code!` : hasUnquotedPrintVowel ? `\u{1F31F} Coach Maya syntax alert: Quotes are missing in your if print statement! In programming, text must be wrapped in quotation marks: \`${extractedPrint}("Vowel");\`.` : `\u{1F31F} Coach Maya syntax alert: Quotes are missing in your else print statement! In programming, text must be wrapped in quotation marks: \`${extractedPrint}("Consonant");\`.`;
+    const feedback = isBothUnquoted ? `\u{1F31F} Coach Maara syntax alert: You wrote \`${extractedPrint}(Vowel)\` and \`${extractedPrint}(Consonant)\` without quotes! In programming, text messages MUST be enclosed in quotation marks, like \`${extractedPrint}("Vowel");\` and \`${extractedPrint}("Consonant");\`. Add quotes around your print text to verify your code!` : hasUnquotedPrintVowel ? `\u{1F31F} Coach Maara syntax alert: Quotes are missing in your if print statement! In programming, text must be wrapped in quotation marks: \`${extractedPrint}("Vowel");\`.` : `\u{1F31F} Coach Maara syntax alert: Quotes are missing in your else print statement! In programming, text must be wrapped in quotation marks: \`${extractedPrint}("Consonant");\`.`;
     return {
       isFullyVerified: false,
       allVerified: false,
@@ -396,7 +396,7 @@ if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' |
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: "\u{1F31F} Coach Maya syntax alert: You attached a condition to `else`! In JavaScript/Python, `else` is an automatic fallback that takes no condition. Just write `} else {`.",
+      feedback: "\u{1F31F} Coach Maara syntax alert: You attached a condition to `else`! In JavaScript/Python, `else` is an automatic fallback that takes no condition. Just write `} else {`.",
       correction: "} else {",
       suggestedInput: `var ${extractedVar} = '${extractedVal}';
 if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {
@@ -413,7 +413,7 @@ if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' |
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: `\u{1F31F} Coach Maya here! Let's build our code line by line. Start with Step 1 by declaring your test variable in the editor: \`var ${extractedVar} = '${extractedVal}';\`.`,
+      feedback: `\u{1F31F} Coach Maara here! Let's build our code line by line. Start with Step 1 by declaring your test variable in the editor: \`var ${extractedVar} = '${extractedVal}';\`.`,
       correction: `var ${extractedVar} = '${extractedVal}';`,
       suggestedInput: `var ${extractedVar} = '${extractedVal}';
 if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {
@@ -430,7 +430,7 @@ if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' |
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: `\u{1F31F} Coach Maya here! I see you declared \`${extractedVar} = '${extractedVal}'\`! \u{1F44F} Now add Step 2: Write the \`if\` condition comparing \`${extractedVar}\` against all 5 vowels using \`||\`: \`if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {\`.`,
+      feedback: `\u{1F31F} Coach Maara here! I see you declared \`${extractedVar} = '${extractedVal}'\`! \u{1F44F} Now add Step 2: Write the \`if\` condition comparing \`${extractedVar}\` against all 5 vowels using \`||\`: \`if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {\`.`,
       correction: `if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {`,
       suggestedInput: `if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' || ${extractedVar} == 'o' || ${extractedVar} == 'u') {
   ${extractedPrint}("Vowel");
@@ -444,7 +444,7 @@ if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' |
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: `\u{1F31F} Coach Maya here! Your variable \`${extractedVar}\` and vowel condition look great! \u{1F44F} Now write **Step 3**: Inside the \`if\` block, display "Vowel" in quotes: \`${extractedPrint}("Vowel");\`.`,
+      feedback: `\u{1F31F} Coach Maara here! Your variable \`${extractedVar}\` and vowel condition look great! \u{1F44F} Now write **Step 3**: Inside the \`if\` block, display "Vowel" in quotes: \`${extractedPrint}("Vowel");\`.`,
       correction: `${extractedPrint}("Vowel");`,
       suggestedInput: `  ${extractedPrint}("Vowel");`,
       matchedFirebaseInput: "how to write sample code"
@@ -456,7 +456,7 @@ if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' |
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: "\u{1F31F} Coach Maya here! Steps 1, 2, & 3 look awesome! \u{1F44F} Now write **Step 4**: Add the fallback `else` block for consonants: `} else {`.",
+      feedback: "\u{1F31F} Coach Maara here! Steps 1, 2, & 3 look awesome! \u{1F44F} Now write **Step 4**: Add the fallback `else` block for consonants: `} else {`.",
       correction: "} else {",
       suggestedInput: `} else {
   ${extractedPrint}("Consonant");
@@ -469,7 +469,7 @@ if (${extractedVar} == 'a' || ${extractedVar} == 'e' || ${extractedVar} == 'i' |
     allVerified: false,
     sampleCodeStepProgress,
     operationTestCases: testCases,
-    feedback: `\u{1F31F} Coach Maya here! Almost there! \u{1F44F} Now write **Step 5**: Inside the \`else\` block, display "Consonant" in quotes: \`${extractedPrint}("Consonant"); }\`.`,
+    feedback: `\u{1F31F} Coach Maara here! Almost there! \u{1F44F} Now write **Step 5**: Inside the \`else\` block, display "Consonant" in quotes: \`${extractedPrint}("Consonant"); }\`.`,
     correction: `${extractedPrint}("Consonant");`,
     suggestedInput: `  ${extractedPrint}("Consonant");
 }`,

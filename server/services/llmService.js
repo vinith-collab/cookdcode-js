@@ -20,9 +20,11 @@ function getGenAI() {
 }
 const CANDIDATE_MODELS = [
   "gemini-3.1-flash-lite",
+  "gemini-3-flash-preview",
   "gemini-flash-latest",
-  "gemini-3.8-flash",
-  "gemini-3.1-pro-preview"
+  "gemini-flash-lite-latest",
+  "gemini-2.5-flash",
+  "gemini-3.5-flash-lite"
 ];
 const modelCooldownMap = /* @__PURE__ */ new Map();
 function isTransientError(err) {
@@ -39,9 +41,39 @@ function isQuotaError(err) {
   const raw = typeof err === "object" ? JSON.stringify(err).toLowerCase() : String(err).toLowerCase();
   return status === "429" || msg.includes("429") || msg.includes("resource_exhausted") || msg.includes("quota") || msg.includes("rate limit") || raw.includes("429") || raw.includes("resource_exhausted");
 }
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+let globalQuotaCooldownUntil = 0;
+
+function isStarterInput(text) {
+  if (!text || text.trim().length < 2) return true;
+  const norm = text.toLowerCase().trim();
+  return (
+    norm === "what should we do" ||
+    norm === "what should i do" ||
+    norm === "what to do" ||
+    norm === "what do i do" ||
+    norm === "how to start" ||
+    norm === "where to start" ||
+    norm === "how to do" ||
+    norm === "help" ||
+    norm === "start" ||
+    norm === "i don't know" ||
+    norm === "i dont know" ||
+    norm === "dont know" ||
+    norm === "don't know" ||
+    norm === "puriyala" ||
+    norm === "theriyala" ||
+    norm === "no idea" ||
+    /^(what should (we|i) do|how to start|where to start|what do i do|what to do)\b/i.test(norm)
+  );
+}
+
 class LLMService {
   async generateHint(context) {
+    // If quota cooldown is active across Gemini models, immediately invoke fallback engine
+    if (globalQuotaCooldownUntil > Date.now()) {
+      return this.generateFallbackHint(context);
+    }
+
     const ai = getGenAI();
     if (!ai) {
       console.warn("[LLMService] No GEMINI_API_KEY found, invoking pedagogical fallback engine.");
@@ -68,6 +100,7 @@ class LLMService {
           modelCooldownMap.delete(modelName);
           const rawText = response.text || "";
           if (rawText.trim()) {
+            console.info(`[LLMService] ✅ AI Hint successfully generated using model: ${modelName}`);
             return this.parseLLMResponse(rawText, context);
           }
         } catch (err) {
@@ -79,7 +112,7 @@ class LLMService {
               cooldownSec = Math.ceil(parseFloat(match[1])) + 2;
             }
             modelCooldownMap.set(modelName, Date.now() + cooldownSec * 1e3);
-            console.info(`[LLMService Notice] Model ${modelName} rate-limited/quota exceeded (429), cooling down for ${cooldownSec}s. Switching model...`);
+            console.info(`[LLMService Notice] Model ${modelName} quota reached (429). Setting ${cooldownSec}s cooldown on this model and trying next candidate model...`);
             break;
           }
           const transient = isTransientError(err);
@@ -95,7 +128,8 @@ class LLMService {
         }
       }
     }
-    console.warn("[LLMService Notice] Gemini models currently experiencing high demand; delivering pedagogical guidance directly.");
+    globalQuotaCooldownUntil = Date.now() + 30 * 1e3;
+    console.warn("[LLMService Notice] All candidate models busy/exhausted; delivering pedagogical guidance directly.");
     return this.generateFallbackHint(context);
   }
   parseLLMResponse(rawText, context) {
@@ -146,7 +180,7 @@ class LLMService {
       if (section === "ingredients") {
         if (ws.includes("= 0") || inp.includes("= 0") || ws.includes("=0") || inp.includes("=0")) {
           return {
-            hint: "\u{1F31F} Coach Maya here! Notice how your container is set to 0. In Factorial, we are repeatedly multiplying: if we start at 0, multiplying 0 by any number leaves us with 0! What number should we initialize our container to instead so our multiplications work?",
+            hint: "\u{1F31F} Coach Maara here! Notice how your container is set to 0. In Factorial, we are repeatedly multiplying: if we start at 0, multiplying 0 by any number leaves us with 0! What number should we initialize our container to instead so our multiplications work?",
             hintLevel: level,
             concept: "multiplicative identity",
             section: "ingredients",
@@ -159,7 +193,7 @@ class LLMService {
         const stopM = normCombined.match(/(?:stop|end|i\s*<=|i\s*>=)\s*[:=]?\s*([a-z0-9_]+)/i);
         if (startM && stopM && startM[1].toLowerCase() === stopM[1].toLowerCase()) {
           return {
-            hint: `\u{1F31F} Coach Maya here! Notice how your loop has Start: ${startM[1]} and Stop: ${stopM[1]}. Because start and stop are the same, the loop won't cycle through your numbers! If counting down from ${startM[1]} with '--', where should the loop stop so it reaches the end of the factorial chain? (Hint: 1)`,
+            hint: `\u{1F31F} Coach Maara here! Notice how your loop has Start: ${startM[1]} and Stop: ${stopM[1]}. Because start and stop are the same, the loop won't cycle through your numbers! If counting down from ${startM[1]} with '--', where should the loop stop so it reaches the end of the factorial chain? (Hint: 1)`,
             hintLevel: level,
             concept: "loop boundaries",
             section: "ingredients",
@@ -169,7 +203,7 @@ class LLMService {
         const pool = {
           1: [
             {
-              hint: "\u{1F31F} Coach Maya here! In Factorial, we need 6 essential programming ingredients: an input variable, a container initialized to 1, a loop construct, loop controls (start, end, next step), our multiplication update, and a print statement outside the loop. Which one shall we add next?",
+              hint: "\u{1F31F} Coach Maara here! In Factorial, we need 6 essential programming ingredients: an input variable, a container initialized to 1, a loop construct, loop controls (start, end, next step), our multiplication update, and a print statement outside the loop. Which one shall we add next?",
               hintLevel: 1,
               concept: "programming ingredients",
               section: "ingredients",
@@ -178,7 +212,7 @@ class LLMService {
           ],
           2: [
             {
-              hint: "\u{1F31F} Coach Maya here! For your container variable, make sure it starts with 1 (`fact = 1`), and for your loop, tell it where to start (1), where to stop (n), and your next step (+1).",
+              hint: "\u{1F31F} Coach Maara here! For your container variable, make sure it starts with 1 (`fact = 1`), and for your loop, tell it where to start (1), where to stop (n), and your next step (+1).",
               hintLevel: 2,
               concept: "container and loop controls",
               section: "ingredients",
@@ -191,7 +225,7 @@ class LLMService {
       }
       if (section === "recipe") {
         return {
-          hint: "\u{1F31F} Coach Maya here! Our Factorial recipe has 4 chronological steps: 1) Read input n, 2) Initialize container fact = 1, 3) Multiply each number from 1 to n into fact, and 4) Print the final factorial. Where are you currently?",
+          hint: "\u{1F31F} Coach Maara here! Our Factorial recipe has 4 chronological steps: 1) Read input n, 2) Initialize container fact = 1, 3) Multiply each number from 1 to n into fact, and 4) Print the final factorial. Where are you currently?",
           hintLevel: level,
           concept: "factorial algorithm",
           section: "recipe",
@@ -431,7 +465,7 @@ class LLMService {
     if (isDivisors) {
       if (section === "logic") {
         return {
-          hint: "\u{1F31F} Coach Maya here! To find divisors, test each number from 1 up to the given number. Check if dividing leaves a remainder of 0.\nFor example, if input n = 4:\n\u2022 4 % 1 = 0 (Remainder 0 \u2192 1 is a divisor)\n\u2022 4 % 2 = 0 (Remainder 0 \u2192 2 is a divisor)\n\u2022 4 % 3 = 1 (Remainder 1 \u2192 3 is not a divisor)\n\u2022 4 % 4 = 0 (Remainder 0 \u2192 4 is a divisor)\nSo the numbers that divide 4 completely (divisors of 4) are: 1, 2, and 4!",
+          hint: "\u{1F31F} Coach Maara here! To find divisors, test each number from 1 up to the given number. Check if dividing leaves a remainder of 0.\nFor example, if input n = 4:\n\u2022 4 % 1 = 0 (Remainder 0 \u2192 1 is a divisor)\n\u2022 4 % 2 = 0 (Remainder 0 \u2192 2 is a divisor)\n\u2022 4 % 3 = 1 (Remainder 1 \u2192 3 is not a divisor)\n\u2022 4 % 4 = 0 (Remainder 0 \u2192 4 is a divisor)\nSo the numbers that divide 4 completely (divisors of 4) are: 1, 2, and 4!",
           hintLevel: level,
           concept: "divisors logic and testing remainder",
           section: "logic",
@@ -441,7 +475,7 @@ class LLMService {
       if (section === "ingredients") {
         if (ws.includes("if") || inp.includes("if") || ws.includes("step 2") || inp.includes("step 2") || ws.includes("step 3") || inp.includes("step 3") || !ws.includes("n % i == 0")) {
           return {
-            hint: "\u{1F31F} Coach Maya here! In an If condition we have two sides: Left Side & Right Side of the operator.\n\u2022 Left Side (L.S) : n % i (calculates remainder when input n is divided by loop counter i)\n\u2022 Operator : == (equality comparison)\n\u2022 Right Side (R.S) : 0 (checks if remainder is 0)\nSo your 'if condition' looks like: if (n % i == 0)",
+            hint: "\u{1F31F} Coach Maara here! In an If condition we have two sides: Left Side & Right Side of the operator.\n\u2022 Left Side (L.S) : n % i (calculates remainder when input n is divided by loop counter i)\n\u2022 Operator : == (equality comparison)\n\u2022 Right Side (R.S) : 0 (checks if remainder is 0)\nSo your 'if condition' looks like: if (n % i == 0)",
             hintLevel: level,
             concept: "conditional structure (L.S, R.S, Operator)",
             section: "ingredients",
@@ -466,7 +500,7 @@ class LLMService {
         if (combinedText.includes("20") && !combinedText.includes("60")) {
           const pool20 = [
             {
-              hint: "\u{1F31F} Coach Maya gentle check: Look at your comparison benchmark: 20! For Senior Citizen status, the legal threshold is age 60, not 20! If someone is 20: 20 >= 60 is false (under 60). If someone is 75: 75 >= 60 is true (Senior Citizen). Please compare age against 60 using `>=`: `age >= 60`.",
+              hint: "\u{1F31F} Coach Maara gentle check: Look at your comparison benchmark: 20! For Senior Citizen status, the legal threshold is age 60, not 20! If someone is 20: 20 >= 60 is false (under 60). If someone is 75: 75 >= 60 is true (Senior Citizen). Please compare age against 60 using `>=`: `age >= 60`.",
               hintLevel: level,
               concept: "relational operator >= with threshold 60",
               section: "logic",
@@ -474,7 +508,7 @@ class LLMService {
               nextSuggestedAction: "Compare age with 60 using >= operator."
             },
             {
-              hint: "\u{1F31F} Coach Maya checking back! Remember that age 20 is a young adult. The criteria for a Senior Citizen requires being 60 years or older. In your worksheet, test whether `age >= 60` rather than 20!",
+              hint: "\u{1F31F} Coach Maara checking back! Remember that age 20 is a young adult. The criteria for a Senior Citizen requires being 60 years or older. In your worksheet, test whether `age >= 60` rather than 20!",
               hintLevel: Math.max(2, level),
               concept: "threshold correction to 60",
               section: "logic",
@@ -489,7 +523,7 @@ class LLMService {
           const poolWithAge = {
             1: [
               {
-                hint: `\u{1F31F} Coach Maya here! You tested with age ${testNum}! Let's check ${testNum} mathematically: ${testNum} >= 60 is ${isSenior ? "true \u2794 Senior Citizen" : "false \u2794 Not Senior Citizen"}. \u{1F44F} What is the general rule for anyone aged 60 or above?`,
+                hint: `\u{1F31F} Coach Maara here! You tested with age ${testNum}! Let's check ${testNum} mathematically: ${testNum} >= 60 is ${isSenior ? "true \u2794 Senior Citizen" : "false \u2794 Not Senior Citizen"}. \u{1F44F} What is the general rule for anyone aged 60 or above?`,
                 hintLevel: 1,
                 concept: "mathematical comparison example",
                 section: "logic",
@@ -499,7 +533,7 @@ class LLMService {
             ],
             2: [
               {
-                hint: `\u{1F31F} Coach Maya checking back! Your calculation for age ${testNum} (${testNum} >= 60 is ${isSenior ? "true" : "false"}) is spot on. To complete Logic, state both the general rule and your calculation: 'A person aged 60 or older (age >= 60) is a Senior Citizen; otherwise not. For age = ${testNum}: ${testNum} >= 60 is ${isSenior ? "true (Senior Citizen)" : "false (Not Senior Citizen)"}.'`,
+                hint: `\u{1F31F} Coach Maara checking back! Your calculation for age ${testNum} (${testNum} >= 60 is ${isSenior ? "true" : "false"}) is spot on. To complete Logic, state both the general rule and your calculation: 'A person aged 60 or older (age >= 60) is a Senior Citizen; otherwise not. For age = ${testNum}: ${testNum} >= 60 is ${isSenior ? "true (Senior Citizen)" : "false (Not Senior Citizen)"}.'`,
                 hintLevel: 2,
                 concept: "combining rule with mathematical example",
                 section: "logic",
@@ -509,7 +543,7 @@ class LLMService {
             ],
             3: [
               {
-                hint: `\u{1F31F} Coach Maya with a fresh tip! Here is the exact two-part structure needed for Logic:
+                hint: `\u{1F31F} Coach Maara with a fresh tip! Here is the exact two-part structure needed for Logic:
 1) Rule: age >= 60 is Senior Citizen, otherwise Not Senior Citizen.
 2) Proof: For age = ${testNum}, ${testNum} >= 60 is ${isSenior ? "true -> Senior Citizen" : "false -> Not Senior Citizen"}.
 Write this right into your worksheet!`,
@@ -522,7 +556,7 @@ Write this right into your worksheet!`,
             ],
             4: [
               {
-                hint: `\u{1F31F} Coach Maya worked walkthrough! Here is the complete logic to finish this stage:
+                hint: `\u{1F31F} Coach Maara worked walkthrough! Here is the complete logic to finish this stage:
 "A person aged 60 or above (age >= 60) is considered a Senior Citizen; otherwise Not a Senior Citizen. For example, if age = ${testNum}, ${testNum} >= 60 is ${isSenior ? "true (Senior Citizen)" : "false (Not Senior Citizen)"}."`,
                 hintLevel: 4,
                 concept: "complete logic verification",
@@ -538,7 +572,7 @@ Write this right into your worksheet!`,
         const generalPool = {
           1: [
             {
-              hint: "\u{1F31F} Coach Maya here! A person aged 60 or above (age >= 60) is considered a Senior Citizen; otherwise Not a Senior Citizen. State the rule and provide a numerical calculation (e.g. 65 >= 60 -> Senior Citizen)!",
+              hint: "\u{1F31F} Coach Maara here! A person aged 60 or above (age >= 60) is considered a Senior Citizen; otherwise Not a Senior Citizen. State the rule and provide a numerical calculation (e.g. 65 >= 60 -> Senior Citizen)!",
               hintLevel: 1,
               concept: "relational comparison",
               section: "logic",
@@ -548,7 +582,7 @@ Write this right into your worksheet!`,
           ],
           2: [
             {
-              hint: "\u{1F31F} Coach Maya checking in! In the Logic stage, we test our condition using actual numbers. Choose an age like 75 or 45, and check it against 60 using `>=`. Is 75 >= 60 true or false?",
+              hint: "\u{1F31F} Coach Maara checking in! In the Logic stage, we test our condition using actual numbers. Choose an age like 75 or 45, and check it against 60 using `>=`. Is 75 >= 60 true or false?",
               hintLevel: 2,
               concept: "testing numerical values",
               section: "logic",
@@ -558,7 +592,7 @@ Write this right into your worksheet!`,
           ],
           3: [
             {
-              hint: "\u{1F31F} Coach Maya with a fresh clue! In your worksheet, write both cases: 1) Positive case: if age = 65, 65 >= 60 is true (Senior Citizen). 2) Negative case: if age = 45, 45 >= 60 is false (Not Senior Citizen).",
+              hint: "\u{1F31F} Coach Maara with a fresh clue! In your worksheet, write both cases: 1) Positive case: if age = 65, 65 >= 60 is true (Senior Citizen). 2) Negative case: if age = 45, 45 >= 60 is false (Not Senior Citizen).",
               hintLevel: 3,
               concept: "positive and negative test cases",
               section: "logic",
@@ -568,7 +602,7 @@ Write this right into your worksheet!`,
           ],
           4: [
             {
-              hint: '\u{1F31F} Coach Maya worked example! Here is the full mathematical logic to pass Stage 1:\n"A person aged 60 or above (age >= 60) is considered a Senior Citizen; otherwise Not a Senior Citizen. For example, if age = 65, 65 >= 60 is true -> Senior Citizen. If age = 45, 45 >= 60 is false -> Not Senior Citizen."',
+              hint: '\u{1F31F} Coach Maara worked example! Here is the full mathematical logic to pass Stage 1:\n"A person aged 60 or above (age >= 60) is considered a Senior Citizen; otherwise Not a Senior Citizen. For example, if age = 65, 65 >= 60 is true -> Senior Citizen. If age = 45, 45 >= 60 is false -> Not Senior Citizen."',
               hintLevel: 4,
               concept: "complete logic specification",
               section: "logic",
@@ -585,7 +619,7 @@ Write this right into your worksheet!`,
         if (!hasStep1) {
           const rec1Pool = [
             {
-              hint: "\u{1F31F} Coach Maya here! What is the very first step of our algorithm? Before we can check if someone is a Senior Citizen, we need their age. Write Step 1: Get age input from the user.",
+              hint: "\u{1F31F} Coach Maara here! What is the very first step of our algorithm? Before we can check if someone is a Senior Citizen, we need their age. Write Step 1: Get age input from the user.",
               hintLevel: level,
               concept: "recipe step 1",
               section: "recipe",
@@ -593,7 +627,7 @@ Write this right into your worksheet!`,
               nextSuggestedAction: "Step 1: Get age input"
             },
             {
-              hint: "\u{1F31F} Coach Maya checking back! Every recipe starts with ingredients or inputs. For this program, start with: 'Step 1: Get age input from the user.'",
+              hint: "\u{1F31F} Coach Maara checking back! Every recipe starts with ingredients or inputs. For this program, start with: 'Step 1: Get age input from the user.'",
               hintLevel: Math.max(2, level),
               concept: "recipe input step",
               section: "recipe",
@@ -605,7 +639,7 @@ Write this right into your worksheet!`,
         }
         const rec2Pool = [
           {
-            hint: "\u{1F31F} Coach Maya here! Step 1 is done! \u{1F44F} Now for Step 2: In plain everyday English without code words, check if age is 60 or greater: if true display Senior Citizen, otherwise display Not Senior Citizen.",
+            hint: "\u{1F31F} Coach Maara here! Step 1 is done! \u{1F44F} Now for Step 2: In plain everyday English without code words, check if age is 60 or greater: if true display Senior Citizen, otherwise display Not Senior Citizen.",
             hintLevel: level,
             concept: "recipe step 2",
             section: "recipe",
@@ -613,7 +647,7 @@ Write this right into your worksheet!`,
             nextSuggestedAction: "Step 2: If age is 60 or greater, display Senior Citizen, else display Not Senior Citizen"
           },
           {
-            hint: "\u{1F31F} Coach Maya with the next clue! For Step 2, describe the decision in everyday words: 'Step 2: If age is 60 or greater, display Senior Citizen; otherwise display Not Senior Citizen.'",
+            hint: "\u{1F31F} Coach Maara with the next clue! For Step 2, describe the decision in everyday words: 'Step 2: If age is 60 or greater, display Senior Citizen; otherwise display Not Senior Citizen.'",
             hintLevel: Math.max(2, level),
             concept: "recipe step 2 complete",
             section: "recipe",
@@ -626,7 +660,7 @@ Write this right into your worksheet!`,
       if (section === "ingredients") {
         if (!combinedText.includes("age") && !combinedText.includes("step 1")) {
           return {
-            hint: "\u{1F31F} Coach Maya here! What variable do we need to store the person's age input? Write Step 1: age variable.",
+            hint: "\u{1F31F} Coach Maara here! What variable do we need to store the person's age input? Write Step 1: age variable.",
             hintLevel: level,
             concept: "input variable",
             section: "ingredients",
@@ -636,7 +670,7 @@ Write this right into your worksheet!`,
         }
         if (!combinedText.includes(">=") && !combinedText.includes("60")) {
           return {
-            hint: "\u{1F31F} Coach Maya here! Step 1 is in place! For Step 2, define the `if` condition using Left Side (L.S: age), Right Side (R.S: 60), and Operator (>=).",
+            hint: "\u{1F31F} Coach Maara here! Step 1 is in place! For Step 2, define the `if` condition using Left Side (L.S: age), Right Side (R.S: 60), and Operator (>=).",
             hintLevel: level,
             concept: "if condition components",
             section: "ingredients",
@@ -645,7 +679,7 @@ Write this right into your worksheet!`,
           };
         }
         return {
-          hint: "\u{1F31F} Coach Maya here! In an If condition, we test `age >= 60`. If true print 'Senior Citizen', else print 'Not Senior Citizen'!",
+          hint: "\u{1F31F} Coach Maara here! In an If condition, we test `age >= 60`. If true print 'Senior Citizen', else print 'Not Senior Citizen'!",
           hintLevel: level,
           concept: "ingredients branching",
           section: "ingredients",
@@ -653,7 +687,7 @@ Write this right into your worksheet!`,
         };
       }
       return {
-        hint: '\u{1F31F} Coach Maya here! Draft your code step-by-step: 1) `var age = 65;`, 2) `if (age >= 60) print("Senior Citizen");`, 3) `else print("Not Senior Citizen");`',
+        hint: '\u{1F31F} Coach Maara here! Draft your code step-by-step: 1) `var age = 65;`, 2) `if (age >= 60) print("Senior Citizen");`, 3) `else print("Not Senior Citizen");`',
         hintLevel: level,
         concept: "sample code implementation",
         section: "samplecode",

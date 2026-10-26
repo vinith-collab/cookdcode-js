@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CookDCode - Online Compiler</title>
+  <link rel="icon" type="image/png" href="../Images/logo.png">
+  <link rel="stylesheet" href="../css/compiler.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+</head>
+<body>
+
+  <!-- TOP HEADER (BLUE BAR) -->
+  <header class="compiler-navbar">
+    <div class="compiler-navbar-left">
+      <a href="ctc.html" id="backToCtcBtn" class="btn-back-ctc" title="Back to Challenge Workspace">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to CTC</span>
+      </a>
+
+      <a href="ctc.html" class="compiler-brand" title="Back to Dashboard">
+        <img src="../Images/logo.png" alt="cookDcode Logo" class="compiler-brand-logo" />
+        <span class="compiler-brand-title">cookDcode</span>
+        <span class="compiler-badge-pill">COMPILER</span>
+      </a>
+    </div>
+
+    <div class="compiler-navbar-right">
+      <div class="lang-selector-group">
+        <span class="lang-label">Language:</span>
+        <select id="languageSelect" class="lang-select" onchange="handleLanguageChange()">
+          <optgroup label="Popular Languages">
+            <option value="javascript" selected>JavaScript (Node.js 22)</option>
+            <option value="python">Python (3.12)</option>
+            <option value="java">Java (JDK 17)</option>
+            <option value="cpp">C++ (GCC 14.1)</option>
+            <option value="c">C (GCC 14.1)</option>
+            <option value="typescript">TypeScript (5.6)</option>
+            <option value="csharp">C# (Mono 6.6)</option>
+            <option value="go">Go (1.23)</option>
+            <option value="rust">Rust (1.85)</option>
+            <option value="kotlin">Kotlin (2.1)</option>
+            <option value="swift">Swift (5.2)</option>
+            <option value="php">PHP (8.3)</option>
+            <option value="ruby">Ruby (2.7)</option>
+            <option value="sql">SQL (SQLite 3.27)</option>
+          </optgroup>
+          <optgroup label="Web &amp; Scripting">
+            <option value="bash">Bash (5.0)</option>
+            <option value="perl">Perl (5.28)</option>
+            <option value="lua">Lua (5.3)</option>
+            <option value="r">R (4.4)</option>
+            <option value="dart">Dart (2.19)</option>
+            <option value="python2">Python 2 (2.7)</option>
+          </optgroup>
+          <optgroup label="JVM &amp; Functional">
+            <option value="scala">Scala (3.4)</option>
+            <option value="groovy">Groovy (3.0)</option>
+            <option value="clojure">Clojure (1.10)</option>
+            <option value="haskell">Haskell (GHC 8.8)</option>
+            <option value="elixir">Elixir (1.9)</option>
+            <option value="erlang">Erlang (OTP 22)</option>
+            <option value="fsharp">F# (.NET Core)</option>
+            <option value="ocaml">OCaml (4.09)</option>
+            <option value="commonlisp">Common Lisp (SBCL)</option>
+          </optgroup>
+          <optgroup label="Compiled &amp; Systems">
+            <option value="c-clang">C (Clang 19.1)</option>
+            <option value="cpp-clang">C++ (Clang 7.0)</option>
+            <option value="d">D (DMD 2.08)</option>
+            <option value="fortran">Fortran (GFortran 9.2)</option>
+            <option value="pascal">Pascal (FPC 3.0)</option>
+            <option value="assembly">Assembly (NASM 2.14)</option>
+            <option value="objectivec">Objective-C (Clang 7.0)</option>
+            <option value="octave">Octave / MATLAB (5.1)</option>
+            <option value="prolog">Prolog (GNU Prolog)</option>
+            <option value="cobol">COBOL (GnuCOBOL 2.2)</option>
+            <option value="basic">Basic (FBC 1.07)</option>
+            <option value="vbnet">Visual Basic.Net</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <button id="runCodeBtn" class="btn-run-code" onclick="executeCode()">
+        <i class="fas fa-play"></i>
+        <span>Run Code</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- PROBLEM META SUB-HEADER -->
+  <section class="compiler-subheader">
+    <div class="subheader-left">
+      <div class="badges-row">
+        <span id="problemNumBadge" class="badge-num">PROBLEM 1</span>
+        <span id="phaseBadge" class="badge-phase">Phase 1: Fundamentals</span>
+        <span id="statusBadge" class="badge-status-completed">
+          <i class="fas fa-check-circle"></i> CTC Stages Completed
+        </span>
+      </div>
+      <h1 id="problemHeaderTitle" class="problem-main-title">
+        <span class="problem-prompt-prefix">&gt;_</span>
+        <span id="problemTitleText">Problem 1: Odd or Even</span>
+      </h1>
+    </div>
+
+    <div class="subheader-right">
+      <button class="btn-sub-action" onclick="openProblemModal()">
+        <i class="fas fa-info-circle text-blue-500"></i>
+        <span>Problem Statement</span>
+      </button>
+      <button class="btn-sub-action" onclick="resetEditorCode()">
+        <i class="fas fa-rotate-left"></i>
+        <span>Reset Code</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- MAIN TWO-COLUMN WORKSPACE (TEST CASES REMOVED) -->
+  <main class="compiler-workspace">
+    <!-- LEFT COLUMN: CODE EDITOR & CUSTOM STDIN -->
+    <div class="flex flex-col">
+      <div class="editor-card">
+        <div class="editor-window-header">
+          <div class="window-dots">
+            <span class="window-dot dot-red"></span>
+            <span class="window-dot dot-yellow"></span>
+            <span class="window-dot dot-green"></span>
+          </div>
+
+          <span id="currentFileName" class="editor-tab-name">solution.js</span>
+
+          <div class="editor-window-actions">
+            <button class="btn-editor-tool" onclick="copyEditorCode()" title="Copy Code">
+              <i class="fas fa-copy"></i>
+              <span id="copyBtnText">Copy</span>
+            </button>
+            <button class="btn-editor-tool" onclick="clearEditor()" title="Clear Editor">
+              <i class="fas fa-trash-alt"></i>
+              <span>Clear</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="editor-body-wrapper">
+          <div id="lineNumbers" class="line-numbers-gutter">1</div>
+          <textarea id="codeEditor" class="code-textarea" spellcheck="false" placeholder="Write your code here..."></textarea>
+        </div>
+      </div>
+
+      <!-- CUSTOM INPUT (STDIN) -->
+      <div class="stdin-container">
+        <div class="stdin-header">
+          <div class="stdin-title">
+            <i class="fas fa-keyboard text-blue-500"></i>
+            <span>CUSTOM INPUT (STDIN):</span>
+          </div>
+          <span class="stdin-hint">Passed to standard input when executing</span>
+        </div>
+        <textarea id="customStdin" class="stdin-textarea" placeholder="Enter custom STDIN input (e.g. 45)..."></textarea>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: FULL-HEIGHT TERMINAL OUTPUT -->
+    <div class="terminal-column">
+      <div class="terminal-card">
+        <div class="terminal-header">
+          <div class="terminal-header-title">
+            <i class="fas fa-terminal text-blue-400"></i>
+            <span>Terminal Output</span>
+          </div>
+          <div class="terminal-header-right">
+            <span id="terminalTimeBadge" class="execution-pill">--</span>
+            <button class="btn-terminal-clear" onclick="clearTerminal()">Clear</button>
+          </div>
+        </div>
+
+        <div id="terminalBody" class="terminal-body">
+          <div id="terminalStatusBanner" class="terminal-status-banner status-idle">
+            <i class="fas fa-info-circle"></i>
+            <span id="terminalStatusText">Compiler Ready. Click "Run Code" to compile and execute.</span>
+          </div>
+          <div id="terminalOutputText" class="terminal-output-text"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- PROBLEM STATEMENT MODAL -->
+  <div id="problemModal" class="compiler-modal">
+    <div class="compiler-modal-content">
+      <button class="compiler-modal-close" onclick="closeProblemModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span id="modalProblemBadge" class="badge-num">Problem</span>
+        <span id="modalPhaseBadge" class="badge-phase">Phase 1</span>
+      </div>
+      <h2 id="modalProblemTitle" style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 1rem;">
+        Problem Details
+      </h2>
+      <div style="border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+        <h4 style="font-size: 0.85rem; font-weight: 700; color: #3a86cc; text-transform: uppercase; margin-bottom: 0.5rem;">
+          <i class="fas fa-book-open"></i> Problem Statement &amp; Concept
+        </h4>
+        <div id="modalProblemDesc" style="color: #334155; font-size: 0.95rem; line-height: 1.6;">
+          Loading problem details...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHALLENGE COMPLETED MODAL (appears after Execution Successful) -->
+  <div id="challengeCompletedModal" class="compiler-modal">
+    <div class="compiler-modal-content" style="max-width: 460px; text-align: center; padding: 2.25rem 2rem; border-radius: 20px;">
+      <button class="compiler-modal-close" onclick="closeChallengeCompletedModal()" title="Close">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div style="width: 68px; height: 68px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 30px; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);">
+        <i class="fas fa-trophy"></i>
+      </div>
+
+      <h3 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+        Challenge Completed! 🎉
+      </h3>
+
+      <p id="challengeCompletedMsg" style="font-size: 0.92rem; color: #475569; margin-bottom: 1.75rem; line-height: 1.6;">
+        Your code executed successfully with 0 errors! You have successfully mastered this challenge. Click 'Next Challenge' to continue.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center;">
+        <button id="modalBtnNextChallenge" onclick="goToNextChallenge()" style="width: 100%; padding: 0.85rem 1.5rem; background: #3a86cc; color: #ffffff; font-weight: 800; font-size: 0.95rem; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 14px rgba(58, 134, 204, 0.35); transition: all 0.2s ease;">
+          <span id="nextChallengeBtnText">Next Challenge</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+
+        <button onclick="closeChallengeCompletedModal()" style="width: 100%; padding: 0.75rem 1.5rem; background: #f8fafc; color: #64748b; font-weight: 700; font-size: 0.9rem; border-radius: 12px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s ease;">
+          Stay in Compiler
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getProblemTemplates } from "./compilerTemplates.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBoAb7b3DJDMRmNwOSAHTnscM_-JuVnILI",
+      authDomain: "cookdcode-4ce23.firebaseapp.com",
+      databaseURL: "https://cookdcode-4ce23-default-rtdb.firebaseio.com",
+      projectId: "cookdcode-4ce23",
+      storageBucket: "cookdcode-4ce23.firebasestorage.app",
+      messagingSenderId: "419836764054",
+      appId: "1:419836764054:web:ab9968082fb793029f07b7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Context & URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const rawProblemID = params.get("problemID") || params.get("problemId") || params.get("programId") || "problem01";
+    const cleanProblemID = rawProblemID.toLowerCase().trim();
+    const mProb = cleanProblemID.match(/^problem0?(\d+)$/);
+    const problemID = mProb ? `problem${parseInt(mProb[1], 10) < 10 ? '0' + mProb[1] : mProb[1]}` : cleanProblemID;
+    const category = (params.get("category") || "fundamentals").toLowerCase().trim();
+
+    // Set Back to CTC button URL
+    const backBtn = document.getElementById("backToCtcBtn");
+    if (backBtn) {
+      backBtn.href = `tryctc.html?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`;
+    }
+
+    const currentUid = localStorage.getItem("userId") || localStorage.getItem("uid") || "";
+    const currentUserEmail = localStorage.getItem("userEmail") || localStorage.getItem("currentEmail") || "";
+    function getEmailKey(email) {
+      if (!email) return "";
+      return email.replace(/[@.]/g, '_').toLowerCase();
+    }
+
+    // Language file extension & templates map
+    const LANG_FILE_MAP = {
+      javascript: "solution.js",
+      typescript: "solution.ts",
+      python: "solution.py",
+      python2: "solution.py",
+      cpp: "solution.cpp",
+      "cpp-clang": "solution.cpp",
+      c: "solution.c",
+      "c-clang": "solution.c",
+      java: "Main.java",
+      csharp: "Program.cs",
+      go: "main.go",
+      rust: "main.rs",
+      kotlin: "Main.kt",
+      swift: "main.swift",
+      php: "solution.php",
+      ruby: "solution.rb",
+      sql: "query.sql",
+      dart: "main.dart",
+      r: "solution.r",
+      scala: "Main.scala",
+      perl: "solution.pl",
+      lua: "solution.lua",
+      bash: "script.sh",
+      haskell: "Main.hs",
+      elixir: "solution.exs",
+      erlang: "solution.erl",
+      clojure: "solution.clj",
+      fsharp: "Program.fs",
+      fortran: "main.f90",
+      pascal: "main.pas",
+      d: "main.d",
+      objectivec: "main.m",
+      ocaml: "main.ml",
+      octave: "solution.m",
+      groovy: "Main.groovy",
+      commonlisp: "main.lisp",
+      cobol: "main.cob",
+      vbnet: "Program.vb",
+      assembly: "main.asm",
+      prolog: "main.pl",
+      basic: "main.bas"
+    };
+
+    let userStage4Code = "";
+    let problemMetadata = null;
+    let currentLanguage = "javascript";
+    const userCodeByLang = {};
+
+    // Load problem-specific templates and default STDIN for all languages
+    const currentProblemConfig = getProblemTemplates(problemID);
+    const currentProblemTemplates = currentProblemConfig.templates || {};
+
+    function getDefaultStarterCode(lang) {
+      if (currentProblemTemplates[lang]) return currentProblemTemplates[lang];
+      const pTitle = (problemMetadata?.title || "Challenge").replace(/^Challenge:\s*/i, '');
+      const STARTERS = {
+        typescript: `// ${pTitle} in TypeScript\nfunction solve(): void {\n    console.log("${pTitle} in TypeScript");\n}\nsolve();\n`,
+        go: `package main\nimport "fmt"\n\n// ${pTitle} in Go\nfunc main() {\n    fmt.Println("${pTitle} in Go")\n}\n`,
+        rust: `// ${pTitle} in Rust\nfn main() {\n    println!("${pTitle} in Rust");\n}\n`,
+        csharp: `using System;\n\n// ${pTitle} in C#\nclass Program {\n    static void Main(string[] args) {\n        Console.WriteLine("${pTitle} in C#");\n    }\n}\n`,
+        php: `<?php\n// ${pTitle} in PHP\necho "${pTitle} in PHP\\n";\n`,
+        ruby: `# ${pTitle} in Ruby\nputs "${pTitle} in Ruby"\n`,
+        kotlin: `// ${pTitle} in Kotlin\nfun main() {\n    println("${pTitle} in Kotlin")\n}\n`,
+        swift: `import Foundation\n// ${pTitle} in Swift\nprint("${pTitle} in Swift")\n`,
+        sql: `-- SQL Query for ${pTitle}\nSELECT '${pTitle}' AS challenge;\n`,
+        dart: `// ${pTitle} in Dart\nvoid main() {\n  print("${pTitle} in Dart");\n}\n`,
+        r: `# ${pTitle} in R\ncat("${pTitle} in R\\n")\n`,
+        scala: `// ${pTitle} in Scala\nobject Main {\n  def main(args: Array[String]): Unit = {\n    println("${pTitle} in Scala")\n  }\n}\n`,
+        perl: `#!/usr/bin/perl\n# ${pTitle} in Perl\nprint "${pTitle} in Perl\\n";\n`,
+        lua: `-- ${pTitle} in Lua\nprint("${pTitle} in Lua")\n`,
+        bash: `#!/bin/bash\n# ${pTitle} in Bash\necho "${pTitle} in Bash"\n`,
+        haskell: `-- ${pTitle} in Haskell\nmain = putStrLn "${pTitle} in Haskell"\n`,
+        elixir: `# ${pTitle} in Elixir\nIO.puts "${pTitle} in Elixir"\n`,
+        erlang: `% ${pTitle} in Erlang\n-module(solution).\n-export([start/0]).\nstart() -> io:fwrite("${pTitle} in Erlang~n").\n`,
+        clojure: `; ${pTitle} in Clojure\n(println "${pTitle} in Clojure")\n`,
+        fsharp: `// ${pTitle} in F#\nopen System\nprintfn "${pTitle} in F#"\n`,
+        fortran: `! ${pTitle} in Fortran\nprogram main\n    print *, "${pTitle} in Fortran"\nend program main\n`,
+        pascal: `// ${pTitle} in Pascal\nprogram Solution;\nbegin\n    writeln('${pTitle} in Pascal');\nend.\n`,
+        d: `import std.stdio;\n// ${pTitle} in D\nvoid main() {\n    writeln("${pTitle} in D");\n}\n`,
+        objectivec: `#import <Foundation/Foundation.h>\n// ${pTitle} in Objective-C\nint main() {\n    @autoreleasepool {\n        printf("${pTitle} in Objective-C\\n");\n    }\n    return 0;\n}\n`,
+        ocaml: `(* ${pTitle} in OCaml *)\nprint_endline "${pTitle} in OCaml";;\n`,
+        octave: `% ${pTitle} in Octave\ndisp("${pTitle} in Octave");\n`,
+        groovy: `// ${pTitle} in Groovy\nprintln "${pTitle} in Groovy"\n`,
+        commonlisp: `; ${pTitle} in Common Lisp\n(format t "${pTitle} in Common Lisp~%")\n`,
+        cobol: `       IDENTIFICATION DIVISION.\n       PROGRAM-ID. HELLO.\n       PROCEDURE DIVISION.\n           DISPLAY "${pTitle.toUpperCase()} IN COBOL".\n           STOP RUN.\n`,
+        vbnet: `' ${pTitle} in VB.Net\nImports System\nModule Program\n    Sub Main()\n        Console.WriteLine("${pTitle} in VB.Net")\n    End Sub\nEnd Module\n`,
+        assembly: `; ${pTitle} in NASM Assembly\nsection .data\n    msg db "${pTitle}", 10\n    len equ $ - msg\nsection .text\n    global _start\n_start:\n    mov eax, 4\n    mov ebx, 1\n    mov ecx, msg\n    mov edx, len\n    int 0x80\n    mov eax, 1\n    xor ebx, ebx\n    int 0x80\n`,
+        prolog: `:- initialization(main).\nmain :- write('${pTitle} in Prolog'), nl, halt.\n`,
+        basic: `PRINT "${pTitle} in Basic"\n`,
+        "c-clang": currentProblemTemplates["c"] || `// ${pTitle} in C (Clang)\n#include <stdio.h>\nint main() {\n    printf("${pTitle}\\n");\n    return 0;\n}\n`,
+        "cpp-clang": currentProblemTemplates["cpp"] || `// ${pTitle} in C++ (Clang)\n#include <iostream>\nusing namespace std;\nint main() {\n    cout << "${pTitle}" << endl;\n    return 0;\n}\n`,
+        python2: currentProblemTemplates["python"] || `# ${pTitle} in Python 2\nprint "${pTitle}"\n`
+      };
+
+      return STARTERS[lang] || `// ${pTitle} in ${lang}\n`;
+    }
+
+    // Initialize line numbers gutter sync
+    const editor = document.getElementById("codeEditor");
+    const lineNumbers = document.getElementById("lineNumbers");
+
+    function updateLineNumbers() {
+      const lines = editor.value.split("\n").length;
+      let numbersHtml = "";
+      for (let i = 1; i <= Math.max(lines, 1); i++) {
+        numbersHtml += `${i}<br>`;
+      }
+      lineNumbers.innerHTML = numbersHtml;
+    }
+
+    editor.addEventListener("input", updateLineNumbers);
+    editor.addEventListener("scroll", () => {
+      lineNumbers.scrollTop = editor.scrollTop;
+    });
+
+    // Support Tab key in editor
+    editor.addEventListener("keydown", function(e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 4;
+        updateLineNumbers();
+      }
+    });
+
+    // Language Change Handler
+    window.handleLanguageChange = function() {
+      const prevLang = currentLanguage;
+      const lang = document.getElementById("languageSelect").value;
+      currentLanguage = lang;
+
+      // Save user edits for the previous language
+      userCodeByLang[prevLang] = editor.value;
+
+      const fileNameEl = document.getElementById("currentFileName");
+      if (fileNameEl) {
+        fileNameEl.innerText = LANG_FILE_MAP[lang] || "solution.txt";
+      }
+
+      // Restore user-typed code if available, or load taste the sample code across all languages
+      if (userCodeByLang[lang] && userCodeByLang[lang].trim().length > 0) {
+        editor.value = userCodeByLang[lang];
+      } else if (userStage4Code && userStage4Code.trim().length > 0) {
+        editor.value = userStage4Code;
+        userCodeByLang[lang] = userStage4Code;
+      } else if (currentProblemTemplates[lang]) {
+        editor.value = currentProblemTemplates[lang];
+      } else {
+        editor.value = getDefaultStarterCode(lang);
+      }
+      updateLineNumbers();
+    };
+
+    // Load problem metadata from server
+    async function loadProblemData() {
+      try {
+        const res = await fetch(`/api/getProblemDetails?problemID=${encodeURIComponent(problemID)}&category=${encodeURIComponent(category)}`);
+        if (res.ok) {
+          problemMetadata = await res.json();
+          document.getElementById("problemTitleText").innerText = `${problemMetadata.problemBadge || 'Problem'}: ${problemMetadata.title.replace(/^Challenge:\s*/i, '')}`;
+          document.getElementById("problemNumBadge").innerText = (problemMetadata.problemBadge || 'Problem').toUpperCase();
+          document.getElementById("phaseBadge").innerText = `${problemMetadata.phase || 'Phase 1'}: ${category.charAt(0).toUpperCase() + category.slice(1)}`;
+
+          document.getElementById("modalProblemBadge").innerText = problemMetadata.problemBadge || 'Problem';
+          document.getElementById("modalPhaseBadge").innerText = problemMetadata.phase || 'Phase 1';
+          document.getElementById("modalProblemTitle").innerText = problemMetadata.title;
+          document.getElementById("modalProblemDesc").innerHTML = `<p>${problemMetadata.description}</p>${problemMetadata.concept ? `<p style="margin-top: 8px; font-weight: 600; color: #1e293b;">Key Concept: ${problemMetadata.concept}</p>` : ''}`;
+        }
+      } catch (err) {
+        console.warn("Failed to load problem metadata:", err);
+      }
+    }
+
+    // Load Stage 4 Code from Firebase RTDB or localStorage
+    async function loadStage4UserCode() {
+      let loadedCode = "";
+
+      if (currentUid && currentUid !== "guest_user") {
+        try {
+          const snapUid = await get(ref(db, `userProgress/${currentUid}/programs/${category}/${problemID}`));
+          if (snapUid.exists()) {
+            const data = snapUid.val();
+            loadedCode = data.samplecode || data.sampleCode || (data.inputs && data.inputs.samplecode) || "";
+          }
+        } catch (e) {}
+      }
+
+      // Check localStorage fallbacks
+      if (!loadedCode || !loadedCode.trim()) {
+        try {
+          loadedCode = localStorage.getItem(`ctc_saved_samplecode_${problemID}`) ||
+                       localStorage.getItem(`ctc_completed_code_${problemID}`) || "";
+          if (!loadedCode) {
+            const localKey = `ctc_progress_${category}_${problemID}`;
+            const localData = JSON.parse(localStorage.getItem(localKey) || '{}');
+            loadedCode = localData.samplecode || localData.sampleCode || (localData.inputs && localData.inputs.samplecode) || "";
+          }
+        } catch (e) {}
+      }
+
+      if (loadedCode && loadedCode.trim().length > 0) {
+        userStage4Code = loadedCode.trim();
+        const curLang = document.getElementById("languageSelect") ? document.getElementById("languageSelect").value : "javascript";
+        userCodeByLang[curLang] = userStage4Code;
+        userCodeByLang["javascript"] = userStage4Code;
+        editor.value = userStage4Code;
+      } else {
+        editor.value = currentProblemTemplates["javascript"] || "";
+        userCodeByLang["javascript"] = editor.value;
+      }
+
+      // Default STDIN matching the current problem
+      const stdinEl = document.getElementById("customStdin");
+      if (stdinEl && (!stdinEl.value || stdinEl.value.trim() === "" || stdinEl.value === "45")) {
+        stdinEl.value = currentProblemConfig.stdin || "6";
+      }
+
+      updateLineNumbers();
+    }
+
+    // Copy Code Action
+    window.copyEditorCode = function() {
+      navigator.clipboard.writeText(editor.value).then(() => {
+        const textEl = document.getElementById("copyBtnText");
+        if (textEl) {
+          textEl.innerText = "Copied!";
+          setTimeout(() => { textEl.innerText = "Copy"; }, 2000);
+        }
+      });
+    };
+
+    // Clear Code Action
+    window.clearEditor = function() {
+      editor.value = "";
+      updateLineNumbers();
+      editor.focus();
+    };
+
+    // Reset Code Action
+    window.resetEditorCode = function() {
+      const lang = document.getElementById("languageSelect").value;
+      if (userStage4Code && userStage4Code.trim().length > 0) {
+        editor.value = userStage4Code;
+      } else if (currentProblemTemplates[lang]) {
+        editor.value = currentProblemTemplates[lang];
+      } else {
+        editor.value = getDefaultStarterCode(lang);
+      }
+      userCodeByLang[lang] = editor.value;
+
+      const stdinEl = document.getElementById("customStdin");
+      if (stdinEl) {
+        stdinEl.value = currentProblemConfig.stdin || "";
+      }
+      updateLineNumbers();
+    };
+
+    // Clear Terminal Action
+    window.clearTerminal = function() {
+      const statusBanner = document.getElementById("terminalStatusBanner");
+      const statusText = document.getElementById("terminalStatusText");
+      const outText = document.getElementById("terminalOutputText");
+      const timeBadge = document.getElementById("terminalTimeBadge");
+
+      statusBanner.className = "terminal-status-banner status-idle";
+      statusBanner.innerHTML = `<i class="fas fa-info-circle"></i> <span>Terminal cleared. Ready for next execution.</span>`;
+      outText.innerHTML = "";
+      timeBadge.innerText = "--";
+    };
+
+    // Problem Statement Modal
+    window.openProblemModal = function() {
+      document.getElementById("problemModal").classList.add("active");
+    };
+
+    window.closeProblemModal = function() {
+      document.getElementById("problemModal").classList.remove("active");
+    };
+
+    // Execute Code via Real Compiler API
+    window.executeCode = async function() {
+      const runBtn = document.getElementById("runCodeBtn");
+      const lang = document.getElementById("languageSelect").value;
+      const code = editor.value;
+      const stdin = document.getElementById("customStdin").value;
+
+      const statusBanner = document.getElementById("terminalStatusBanner");
+      const outText = document.getElementById("terminalOutputText");
+      const timeBadge = document.getElementById("terminalTimeBadge");
+
+      // UI Loading State
+      runBtn.disabled = true;
+      runBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Compiling...</span>`;
+
+      statusBanner.className = "terminal-status-banner status-idle";
+      statusBanner.innerHTML = `<i class="fas fa-spinner fa-spin text-blue-400"></i> <span>Executing code with real compiler...</span>`;
+      outText.innerHTML = `<span style="color: #64748b;">Waiting for compiler output...</span>`;
+
+      try {
+        const response = await fetch("/api/compile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ language: lang, code, stdin })
+        });
+
+        const result = await response.json();
+        timeBadge.innerText = result.executionTime || "1ms";
+
+        if (result.success) {
+          // Execution Successful
+          statusBanner.className = "terminal-status-banner status-success";
+          statusBanner.innerHTML = `<i class="fas fa-check-circle"></i> <span>✓ Execution Successful (${result.executionTime})</span>`;
+
+          const output = (result.stdout || "").trim();
+          if (output) {
+            outText.className = "terminal-output-text";
+            outText.innerText = output;
+          } else {
+            outText.className = "terminal-output-text";
+            outText.innerHTML = `<span style="color: #94a3b8;">Program finished with code 0 (no output produced).</span>`;
+          }
+
+          // Mark challenge completed in Firebase RTDB
+          markChallengeCompletedInFirebase();
+
+          // Show Challenge Completed popup after execution succeeds
+          setTimeout(() => {
+            openChallengeCompletedModal();
+          }, 650);
+        } else {
+          // Compilation or Runtime Error
+          const isCompileError = result.statusCode === 6 || result.status?.toLowerCase().includes("compilation");
+          statusBanner.className = "terminal-status-banner status-error";
+          statusBanner.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>❌ ${result.status || 'Execution Error'}</span>`;
+
+          let errorContent = result.compileOutput || result.stderr || result.stdout || "Unknown error occurred.";
+          outText.className = "terminal-error-text";
+          outText.innerText = errorContent;
+        }
+      } catch (err) {
+        statusBanner.className = "terminal-status-banner status-error";
+        statusBanner.innerHTML = `<i class="fas fa-times-circle"></i> <span>❌ Network / Server Error</span>`;
+        outText.className = "terminal-error-text";
+        outText.innerText = `Failed to connect to compiler server: ${err.message}`;
+      } finally {
+        runBtn.disabled = false;
+        runBtn.innerHTML = `<i class="fas fa-play"></i> <span>Run Code</span>`;
+      }
+    };
+
+    const PROBLEM_TITLES = {
+      "problem01": "Odd or Even",
+      "problem02": "Sum of N Numbers",
+      "problem03": "Factorial of a Number",
+      "problem04": "Divisors of a Number",
+      "problem05": "Multiplication Table",
+      "problem06": "Prime Number Checker",
+      "problem07": "Next Prime Number",
+      "problem08": "Prime Numbers in Range",
+      "problem09": "Sexy Prime Pairs",
+      "problem10": "Positive or Negative",
+      "problem11": "Three-Digit Number",
+      "problem12": "Voting Eligibility",
+      "problem13": "Pass or Fail",
+      "problem14": "Greater Than 100",
+      "problem15": "Profit or Loss",
+      "problem16": "Leap Year or Not",
+      "problem17": "Adult or Minor",
+      "problem18": "Divisible by 5 or Not",
+      "problem19": "Maximum of Two Numbers",
+      "problem20": "Vowel or Consonant",
+      "problem21": "Multiplication Table"
+    };
+
+    window.openChallengeCompletedModal = function() {
+      const modal = document.getElementById("challengeCompletedModal");
+      const btnText = document.getElementById("nextChallengeBtnText");
+      const msgEl = document.getElementById("challengeCompletedMsg");
+
+      const m = problemID.match(/^problem0?(\d+)$/i);
+      if (m) {
+        const currentNum = parseInt(m[1], 10);
+        const nextNum = currentNum + 1;
+        const nextKey = `problem${nextNum < 10 ? '0' + nextNum : nextNum}`;
+        const currentTitle = PROBLEM_TITLES[problemID] || problemMetadata?.title?.replace(/^Challenge:\s*/i, '') || `Problem ${currentNum}`;
+        const nextTitle = PROBLEM_TITLES[nextKey];
+
+        if (msgEl) {
+          msgEl.innerHTML = `Your code for <strong>${currentTitle}</strong> executed successfully with zero errors! You have mastered this challenge. Ready for the next challenge?`;
+        }
+
+        if (nextNum <= 21) {
+          if (btnText) {
+            btnText.innerText = nextTitle ? `Next Challenge: ${nextTitle}` : `Next Challenge (Problem ${nextNum})`;
+          }
+        } else {
+          if (btnText) {
+            btnText.innerText = "Back to CTC Dashboard";
+          }
+        }
+      }
+
+      if (modal) modal.classList.add("active");
+    };
+
+    window.closeChallengeCompletedModal = function() {
+      const modal = document.getElementById("challengeCompletedModal");
+      if (modal) modal.classList.remove("active");
+    };
+
+    window.goToNextChallenge = function() {
+      const m = problemID.match(/^problem0?(\d+)$/i);
+      if (m) {
+        const currentNum = parseInt(m[1], 10);
+        const nextNum = currentNum + 1;
+        if (nextNum <= 21) {
+          const nextKey = `problem${nextNum < 10 ? '0' + nextNum : nextNum}`;
+          window.location.href = `tryctc.html?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(nextKey)}`;
+          return;
+        }
+      }
+      window.location.href = "ctc.html";
+    };
+
+    async function markChallengeCompletedInFirebase() {
+      const emailKey = getEmailKey(currentUserEmail);
+      try {
+        if (currentUid && currentUid !== "guest_user") {
+          localStorage.setItem(`ctc_completed_code_${currentUid}_${problemID}`, editor.value);
+          localStorage.setItem(`ctc_compiler_executed_${currentUid}_${problemID}`, "true");
+        }
+        localStorage.setItem(`ctc_completed_code_${problemID}`, editor.value);
+        localStorage.setItem(`ctc_compiler_executed_${problemID}`, "true");
+      } catch (e) {}
+
+      if (!emailKey && !currentUid) return;
+
+      const completionUpdate = {
+        category: category,
+        problemID: problemID,
+        programID: problemID,
+        samplecode: editor.value,
+        "inputs/samplecode": editor.value,
+        compilerCode: editor.value,
+        progress: 100,
+        status: "completed",
+        compilerExecuted: true,
+        "completedStages/samplecode": true,
+        "completedStages/logic": true,
+        "completedStages/recipe": true,
+        "completedStages/ingredients": true,
+        lastUpdated: Date.now(),
+        updatedAt: Date.now()
+      };
+
+      try {
+        if (currentUid && currentUid !== "guest_user") {
+          await update(ref(db, `userProgress/${currentUid}/programs/${category}/${problemID}`), completionUpdate);
+        }
+      } catch (e) {
+        console.warn("Could not sync completion to Firebase:", e);
+      }
+    }
+
+    // Initialize
+    loadProblemData();
+    loadStage4UserCode();
+  </script>
+</body>
+</html>

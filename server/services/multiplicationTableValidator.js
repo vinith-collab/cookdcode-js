@@ -5,7 +5,7 @@ function validateMultiplicationLogic(text) {
     if (!hasEquationLines) {
       return {
         isFullyVerified: false,
-        feedback: "\u{1F31F} Coach Maya here! What is a multiplication table? For example, for the number 5, what are the values when we multiply 5 by numbers starting from 1 up to 10?",
+        feedback: "\u{1F31F} Coach Maara here! What is a multiplication table? For example, for the number 5, what are the values when we multiply 5 by numbers starting from 1 up to 10?",
         correction: "Think about what multiplying 5 by numbers from 1 to 10 produces.",
         suggestedInput: "Keep the given number fixed and multiply it with each number from 1 up to the limit (e.g. 10) to get the product.",
         matchedFirebaseInput: "what should we do to generate the multiplication table of a number"
@@ -15,7 +15,7 @@ function validateMultiplicationLogic(text) {
   if (norm.includes("dont know") || norm.includes("don't know") || norm.includes("puriyala") || norm.includes("theriyala") || norm.includes("no idea")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! Multiplication is repeated addition. For table 5:\n\u2022 5 \xD7 1 = 5, 5 \xD7 2 = 10, 5 \xD7 3 = 15, 5 \xD7 4 = 20 ... up to 5 \xD7 10 = 50.\nHow does each step produce the result?",
+      feedback: "\u{1F31F} Coach Maara here! Multiplication is repeated addition. For table 5:\n\u2022 5 \xD7 1 = 5, 5 \xD7 2 = 10, 5 \xD7 3 = 15, 5 \xD7 4 = 20 ... up to 5 \xD7 10 = 50.\nHow does each step produce the result?",
       correction: "State that we multiply the fixed number with consecutive multipliers from 1 to 10.",
       suggestedInput: "keep the given number fixed and multiply it with each number from 1 up to 10",
       matchedFirebaseInput: "I don't know / puriyala"
@@ -24,7 +24,7 @@ function validateMultiplicationLogic(text) {
   if ((norm.includes("add") || norm.includes("addition") || norm.includes("n + i") || norm.includes("add the number")) && !norm.includes("multiply") && !norm.includes("*") && !norm.includes("\xD7")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya note: While multiplication can be thought of as repeated addition, for any specific row (like step 4), we multiply the given number directly by the step multiplier: 5 \xD7 4 = 20! How do we write that formula?",
+      feedback: "\u{1F31F} Coach Maara note: While multiplication can be thought of as repeated addition, for any specific row (like step 4), we multiply the given number directly by the step multiplier: 5 \xD7 4 = 20! How do we write that formula?",
       correction: "Use direct multiplication: Given Number \xD7 Multiplier.",
       suggestedInput: "keep the given number fixed and multiply it with each number from 1 up to 10",
       matchedFirebaseInput: "we just add the number in every step / we add n + i"
@@ -33,7 +33,7 @@ function validateMultiplicationLogic(text) {
   if (norm.includes("divide") || norm.includes("remainder") || norm.includes("modulo") || norm.includes("%")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya note: Division splits a number into parts or finds remainders. To build a multiplication table, we must multiply the given number with consecutive multiplier numbers (1, 2, 3...).",
+      feedback: "\u{1F31F} Coach Maara note: Division splits a number into parts or finds remainders. To build a multiplication table, we must multiply the given number with consecutive multiplier numbers (1, 2, 3...).",
       correction: "Use multiplication instead of division/modulo.",
       suggestedInput: "keep the given number fixed and multiply it with each number from 1 up to 10",
       matchedFirebaseInput: "we should divide or find remainder"
@@ -42,7 +42,7 @@ function validateMultiplicationLogic(text) {
   if (norm.includes("start multiplying from 0") || norm.includes("from 0 to 10") || norm.includes("starting from 0") || norm.includes("start from 0") || norm.includes("5*0") || norm.includes("5 * 0") || norm.includes("5x0") || norm.includes("5 x 0")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya note: Multiplying by 0 gives 0 (e.g. 5 \xD7 0 = 0). Standard multiplication tables start from 1 up to a specified limit (like 10 or 12). Start from 1!",
+      feedback: "\u{1F31F} Coach Maara note: Multiplying by 0 gives 0 (e.g. 5 \xD7 0 = 0). Standard multiplication tables start from 1 up to a specified limit (like 10 or 12). Start from 1!",
       correction: "Start multipliers from 1: 'Multiply the fixed number with numbers from 1 to 10'.",
       suggestedInput: "keep the given number fixed and multiply it with each number from 1 up to 10",
       matchedFirebaseInput: "start multiplying from 0"
@@ -64,7 +64,7 @@ function validateMultiplicationLogic(text) {
       if (eq.a * eq.b !== eq.c) {
         return {
           isFullyVerified: false,
-          feedback: `\u{1F31F} Coach Maya note: Look at "${eq.raw}". Multiplying ${eq.a} \xD7 ${eq.b} equals ${eq.a * eq.b}, but you wrote ${eq.c}. Double check your multiplication arithmetic!`,
+          feedback: `\u{1F31F} Coach Maara note: Look at "${eq.raw}". Multiplying ${eq.a} \xD7 ${eq.b} equals ${eq.a * eq.b}, but you wrote ${eq.c}. Double check your multiplication arithmetic!`,
           correction: `Correct calculation: ${eq.a} * ${eq.b} = ${eq.a * eq.b}.`,
           suggestedInput: `keep the given number fixed and multiply it with each number from 1 up to 10`,
           matchedFirebaseInput: "arithmetic calculation error in table"
@@ -93,7 +93,7 @@ function validateMultiplicationLogic(text) {
         const faulty = equationMatches.find((e) => e.a !== firstA);
         return {
           isFullyVerified: false,
-          feedback: `\u{1F31F} Coach Maya here! You are off to a great start with your examples! In a multiplication table for ${firstA}, the number ${firstA} must stay fixed as our base for every step. In your step "${faulty.raw}", you changed the base to ${faulty.a}. Keep the base number ${firstA} the same while increasing the multiplier one by one!`,
+          feedback: `\u{1F31F} Coach Maara here! You are off to a great start with your examples! In a multiplication table for ${firstA}, the number ${firstA} must stay fixed as our base for every step. In your step "${faulty.raw}", you changed the base to ${faulty.a}. Keep the base number ${firstA} the same while increasing the multiplier one by one!`,
           correction: `Keep the base number ${firstA} fixed: ${firstA} * 1 = ${firstA * 1}, ${firstA} * 2 = ${firstA * 2}, ${firstA} * 3 = ${firstA * 3} ... up to ${firstA} * 10 = ${firstA * 10}.`,
           suggestedInput: `keep the base number ${firstA} fixed and multiply with multipliers 1 to 10`,
           matchedFirebaseInput: "change the main number in every step"
@@ -102,7 +102,7 @@ function validateMultiplicationLogic(text) {
         const faulty = equationMatches.find((e) => e.b !== firstB);
         return {
           isFullyVerified: false,
-          feedback: `\u{1F31F} Coach Maya here! You are off to a great start with your examples! In a multiplication table for ${firstB}, the number ${firstB} must stay fixed as our base for every step. In your step "${faulty.raw}", you changed the base to ${faulty.b}. Keep the base number ${firstB} the same while increasing the multiplier one by one!`,
+          feedback: `\u{1F31F} Coach Maara here! You are off to a great start with your examples! In a multiplication table for ${firstB}, the number ${firstB} must stay fixed as our base for every step. In your step "${faulty.raw}", you changed the base to ${faulty.b}. Keep the base number ${firstB} the same while increasing the multiplier one by one!`,
           correction: `Keep the base number ${firstB} fixed: 1 * ${firstB} = ${1 * firstB}, 2 * ${firstB} = ${2 * firstB}, 3 * ${firstB} = ${3 * firstB} ... up to 10 * ${firstB} = ${10 * firstB}.`,
           suggestedInput: `keep the base number ${firstB} fixed and multiply with multipliers 1 to 10`,
           matchedFirebaseInput: "change the main number in every step"
@@ -112,7 +112,7 @@ function validateMultiplicationLogic(text) {
     if (multipliers.includes(0)) {
       return {
         isFullyVerified: false,
-        feedback: "\u{1F31F} Coach Maya note: Multiplying by 0 gives 0 (e.g. 5 \xD7 0 = 0). Standard multiplication tables start from 1 up to a specified limit (like 10 or 12). Start from 1!",
+        feedback: "\u{1F31F} Coach Maara note: Multiplying by 0 gives 0 (e.g. 5 \xD7 0 = 0). Standard multiplication tables start from 1 up to a specified limit (like 10 or 12). Start from 1!",
         correction: "Start multipliers from 1: 'Multiply the fixed number with numbers from 1 to 10'.",
         suggestedInput: `keep the base number ${baseNum} fixed and multiply with numbers from 1 to 10`,
         matchedFirebaseInput: "start multiplying from 0"
@@ -123,7 +123,7 @@ function validateMultiplicationLogic(text) {
     if (maxMultiplier < 10 && !hasExplicit10OrRange) {
       return {
         isFullyVerified: false,
-        feedback: `\u{1F31F} Coach Maya here! You did a wonderful job showing the multiplication pattern for ${baseNum} from 1 up to ${maxMultiplier} (${equationMatches[0].raw} to ${equationMatches[equationMatches.length - 1].raw})! However, the problem requires generating the multiplication table all the way up to 10. Please continue your sequence up to 10 (${baseNum} * 10 = ${baseNum * 10} or 10 * ${baseNum} = ${10 * baseNum}).`,
+        feedback: `\u{1F31F} Coach Maara here! You did a wonderful job showing the multiplication pattern for ${baseNum} from 1 up to ${maxMultiplier} (${equationMatches[0].raw} to ${equationMatches[equationMatches.length - 1].raw})! However, the problem requires generating the multiplication table all the way up to 10. Please continue your sequence up to 10 (${baseNum} * 10 = ${baseNum * 10} or 10 * ${baseNum} = ${10 * baseNum}).`,
         correction: `Continue the table up to 10: write steps all the way through 10 * ${baseNum} = ${10 * baseNum} (or ${baseNum} * 10 = ${baseNum * 10}).`,
         suggestedInput: `keep the given number ${baseNum} fixed and multiply with numbers from 1 to 10`,
         matchedFirebaseInput: "incomplete table equations"
@@ -131,7 +131,7 @@ function validateMultiplicationLogic(text) {
     }
     return {
       isFullyVerified: true,
-      feedback: `\u{1F31F} Coach Maya here! Fantastic example! You have clearly shown the mathematical pattern: keeping the base number ${baseNum} fixed and multiplying sequentially with multipliers from 1 up to 10 (${equationMatches[0].raw} ... ${equationMatches[equationMatches.length - 1].raw}) to calculate each product! You have mastered this stage, so let's move on to the Recipe stage!`,
+      feedback: `\u{1F31F} Coach Maara here! Fantastic example! You have clearly shown the mathematical pattern: keeping the base number ${baseNum} fixed and multiplying sequentially with multipliers from 1 up to 10 (${equationMatches[0].raw} ... ${equationMatches[equationMatches.length - 1].raw}) to calculate each product! You have mastered this stage, so let's move on to the Recipe stage!`,
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "concrete table values example"
@@ -140,7 +140,7 @@ function validateMultiplicationLogic(text) {
   if (norm.includes("change the main number") || norm.includes("change the given number") || norm.includes("change base number")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya note: The main table number stays constant (e.g. 5). It is the multiplier that changes consecutively (1, 2, 3, 4, ...).",
+      feedback: "\u{1F31F} Coach Maara note: The main table number stays constant (e.g. 5). It is the multiplier that changes consecutively (1, 2, 3, 4, ...).",
       correction: "Keep the base number fixed and increment the multiplier.",
       suggestedInput: "keep the given number fixed and multiply it with each number from 1 up to 10",
       matchedFirebaseInput: "change the main number in every step"
@@ -149,7 +149,7 @@ function validateMultiplicationLogic(text) {
   if ((norm.includes("just multiply the number by 10") || norm.includes("only multiply by 10") || norm.includes("multiply by 10")) && !norm.includes("from 1") && !norm.includes("each number") && !norm.includes("every number")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya note: Multiplying only by 10 gives a single value (e.g. 50). A table requires calculating and showing the product for every consecutive number from 1 to 10.",
+      feedback: "\u{1F31F} Coach Maara note: Multiplying only by 10 gives a single value (e.g. 50). A table requires calculating and showing the product for every consecutive number from 1 to 10.",
       correction: "Mention testing each multiplier from 1 to 10.",
       suggestedInput: "keep the given number fixed and multiply it with each number from 1 up to 10",
       matchedFirebaseInput: "just multiply the number by 10"
@@ -158,7 +158,7 @@ function validateMultiplicationLogic(text) {
   if (norm.includes("result = number * multiplier") || norm.includes("number * multiplier") || norm.includes("given number * multiplier") || norm.includes("n * i")) {
     return {
       isFullyVerified: true,
-      feedback: "\u{1F31F} Coach Maya here! Fantastic! That is the core formula: Result = Given Number \xD7 Multiplier, where the given number is kept fixed and the multiplier steps sequentially from 1 up to 10! Proceed to Recipe!",
+      feedback: "\u{1F31F} Coach Maara here! Fantastic! That is the core formula: Result = Given Number \xD7 Multiplier, where the given number is kept fixed and the multiplier steps sequentially from 1 up to 10! Proceed to Recipe!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "for any step we calculate result = number * multiplier"
@@ -170,7 +170,7 @@ function validateMultiplicationLogic(text) {
   if (hasFixedNumber && hasMultipliers && hasMultiply || norm.includes("keep the given number fixed") && norm.includes("multiply") || norm.includes("multiply") && norm.includes("from 1 to 10") || norm.includes("multiply") && norm.includes("1 up to 10")) {
     return {
       isFullyVerified: true,
-      feedback: "\u{1F31F} Coach Maya here! Fantastic! That is the exact mathematical logic: Take the fixed number, multiply it sequentially with numbers from 1 to the limit (e.g. 10), and display each product! Proceed to Recipe!",
+      feedback: "\u{1F31F} Coach Maara here! Fantastic! That is the exact mathematical logic: Take the fixed number, multiply it sequentially with numbers from 1 to the limit (e.g. 10), and display each product! Proceed to Recipe!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "keep the given number fixed and multiply it with each number from 1 up to the limit to get the product"
@@ -179,14 +179,14 @@ function validateMultiplicationLogic(text) {
   if (hasMultiply) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya note: You correctly mentioned multiplication! Which number stays fixed, and what range of multipliers should we multiply it by (e.g., from 1 up to 10)?",
+      feedback: "\u{1F31F} Coach Maara note: You correctly mentioned multiplication! Which number stays fixed, and what range of multipliers should we multiply it by (e.g., from 1 up to 10)?",
       correction: "Specify that the given number is kept fixed and multiplied by consecutive numbers from 1 to 10.",
       suggestedInput: "keep the given number fixed and multiply it with each number from 1 up to the limit to get the product"
     };
   }
   return {
     isFullyVerified: false,
-    feedback: "\u{1F31F} Coach Maya here! To generate a multiplication table for a number (like 5), what sequence of numbers do we multiply by 5 starting from 1?",
+    feedback: "\u{1F31F} Coach Maara here! To generate a multiplication table for a number (like 5), what sequence of numbers do we multiply by 5 starting from 1?",
     correction: "Describe keeping the given number fixed and multiplying it with each number from 1 to 10.",
     suggestedInput: "keep the given number fixed and multiply it with each number from 1 up to 10 to get the product"
   };
@@ -194,13 +194,53 @@ function validateMultiplicationLogic(text) {
 function validateMultiplicationRecipe(text) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/]/g, " ").replace(/\s+/g, " ").trim();
   const hasCodeKeywords = norm.includes("for (") || norm.includes("for(") || norm.includes("let i") || norm.includes("var i") || norm.includes("i++") || norm.includes("print(") || norm.includes("console.log");
-  const hasStep1 = norm.includes("get the input") || norm.includes("get input") || norm.includes("input number") || norm.includes("table number") || norm.includes("accept a number") || norm.includes("take number") || norm.includes("read number") || /\bstep\s*1\s*:\s*.*n\b/.test(norm);
+
+  const stepMap = {};
+  const stepLines = (text || "").split("\n");
+  for (const line of stepLines) {
+    const trimmed = line.trim();
+    const m = trimmed.match(/^step\s*([0-9]+(?:\.[0-9]+)?)\s*[:.-]?\s*(.*)$/i);
+    if (m) {
+      stepMap[m[1]] = m[2].toLowerCase();
+    }
+  }
+
+  const s1Text = stepMap["1"] || "";
+  const s2Text = stepMap["2"] || "";
+  const s21Text = stepMap["2.1"] || stepMap["3"] || "";
+  const s22Text = stepMap["2.2"] || stepMap["4"] || "";
+
+  const hasStep1InMap = s1Text.length > 0 && (
+    s1Text.includes("number") || s1Text.includes("table") || s1Text.includes("input") ||
+    s1Text.includes("accept") || s1Text.includes("take") || s1Text.includes("read") ||
+    /\b[0-9]+\b/.test(s1Text)
+  );
+
+  const hasStep1 = hasStep1InMap || norm.includes("get the input") || norm.includes("get input") || norm.includes("input number") || norm.includes("table number") || norm.includes("number for the table") || norm.includes("the number for the table") || norm.includes("number for table") || norm.includes("accept a number") || norm.includes("take number") || norm.includes("read number") || /\bstep\s*1\s*:\s*.*n\b/.test(norm);
   const hasStartingZero = norm.includes("from 0 to 10") || norm.includes("starting from 0") || norm.includes("start from 0") || norm.includes("0 to 10");
-  const hasStep2 = !hasStartingZero && (norm.includes("from 1 up to 10") || norm.includes("from 1 to 10") || norm.includes("1 up to 10") || norm.includes("1 to 10") || norm.includes("from 1 up to the limit") || norm.includes("multiplier numbers starting from 1") || norm.includes("for each multiplier") || norm.includes("every number from 1"));
-  const hasStep21 = (norm.includes("multipli") || norm.includes("multiply") || norm.includes("product") || norm.includes("*") || norm.includes("times") || norm.includes("calculate") || norm.includes("compute")) && (norm.includes("multiplier") || norm.includes("number by") || norm.includes("each number") || norm.includes("input number by") || norm.includes("input with") || norm.includes("input and") || norm.includes("input by") || norm.includes("generated number") || norm.includes("generated numbers") || norm.includes("one by one") || norm.includes("current") || norm.includes("each") || norm.includes("with number") || norm.includes("with numbers") || norm.includes("with the number") || norm.includes("by number") || norm.includes("by numbers") || norm.includes("from 1 to 10") || norm.includes("1 to 10") || norm.includes("them"));
+
+  const hasStep2InMap = s2Text.length > 0 && (
+    s2Text.includes("1 to 10") || s2Text.includes("1 up to 10") || s2Text.includes("from 1 to 10") ||
+    s2Text.includes("from 1 up to 10") || s2Text.includes("multiplier") || s2Text.includes("create numbers") ||
+    s2Text.includes("take numbers") || s2Text.includes("generate numbers")
+  );
+
+  const hasStep2 = !hasStartingZero && (hasStep2InMap || norm.includes("from 1 up to 10") || norm.includes("from 1 to 10") || norm.includes("1 up to 10") || norm.includes("1 to 10") || norm.includes("from 1 up to the limit") || norm.includes("multiplier numbers starting from 1") || norm.includes("for each multiplier") || norm.includes("every number from 1") || norm.includes("create numbers from 1 to 10") || norm.includes("numbers from 1 to 10"));
+
+  const hasStep21InMap = s21Text.length > 0 && (
+    s21Text.includes("multipli") || s21Text.includes("multiply") || s21Text.includes("product") ||
+    s21Text.includes("*") || s21Text.includes("times") || s21Text.includes("calculate")
+  );
+  const hasStep21 = hasStep21InMap || ((norm.includes("multipli") || norm.includes("multiply") || norm.includes("product") || norm.includes("*") || norm.includes("times") || norm.includes("calculate") || norm.includes("compute")) && (norm.includes("multiplier") || norm.includes("number by") || norm.includes("each number") || norm.includes("input number by") || norm.includes("input with") || norm.includes("input and") || norm.includes("input by") || norm.includes("generated number") || norm.includes("generated numbers") || norm.includes("one by one") || norm.includes("current") || norm.includes("each") || norm.includes("with number") || norm.includes("with numbers") || norm.includes("with the number") || norm.includes("by number") || norm.includes("by numbers") || norm.includes("from 1 to 10") || norm.includes("1 to 10") || norm.includes("them")));
+
   const hasSingleStepMistake = (norm.includes("multiply the number by 10") || norm.includes("multiply by 10")) && !norm.includes("current") && !norm.includes("each") && !norm.includes("from 1") && !norm.includes("one by one");
   const hasEarlyStop = (norm.includes("display result and stop") || norm.includes("stop after one") || norm.includes("stop the process")) && !norm.includes("until");
-  const hasStep22 = !hasEarlyStop && (norm.includes("display") || norm.includes("print") || norm.includes("show") || norm.includes("record") || norm.includes("write down") || norm.includes("output") || norm.includes("publish")) && (norm.includes("product") || norm.includes("result") || norm.includes("multiplier") || norm.includes("table") || norm.includes("output") || norm.includes("multiplication") || norm.includes("answer") || norm.includes("value") || norm.includes("it") || norm.includes("each"));
+
+  const hasStep22InMap = s22Text.length > 0 && (
+    s22Text.includes("display") || s22Text.includes("print") || s22Text.includes("show") || s22Text.includes("output")
+  );
+  const hasStep22 = !hasEarlyStop && (hasStep22InMap || ((norm.includes("display") || norm.includes("print") || norm.includes("show") || norm.includes("record") || norm.includes("write down") || norm.includes("output") || norm.includes("publish")) && (norm.includes("product") || norm.includes("result") || norm.includes("multiplier") || norm.includes("table") || norm.includes("output") || norm.includes("multiplication") || norm.includes("answer") || norm.includes("value") || norm.includes("it") || norm.includes("each"))));
+
   const completedStepsCount = [hasStep1, hasStep2, hasStep21, hasStep22].filter(Boolean).length;
   const recipeStepProgress = [
     { stepNumber: 1, title: "Get the input number for the table", completed: hasStep1, current: !hasStep1 },
@@ -217,9 +257,9 @@ function validateMultiplicationRecipe(text) {
       isFullyVerified: false,
       completedStepsCount,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: In the Recipe stage, describe the steps in plain human English without code syntax (no `for`, `i++`, or `print()`). For example: 'For every multiplier from 1 to 10' and 'Display the result'.",
+      feedback: "\u{1F31F} Coach Maara note: In the Recipe stage, describe the steps in plain human English without code syntax (no `for`, `i++`, or `print()`). For example: 'For every multiplier from 1 to 10' and 'Display the result'.",
       correction: "Describe the algorithm in natural plain English.",
-      suggestedInput: "step 1: Get the input number\nstep 2: Take multiplier numbers from 1 to 10\nstep 2.1: Multiply input number by current multiplier\nstep 2.2: Display the result and repeat until 10"
+      suggestedInput: !hasStep1 ? "step 1: Get the input number" : !hasStep2 ? "step 2: Take multiplier numbers starting from 1 up to 10" : !hasStep21 ? "step 2.1 : Multiply the input number by the current multiplier" : "step 2.2 : Display the multiplier and product"
     };
   }
   if (hasStartingZero) {
@@ -236,7 +276,7 @@ function validateMultiplicationRecipe(text) {
         { stepNumber: 3, title: "Multiply the input number by the current multiplier", completed: false, current: false },
         { stepNumber: 4, title: "Display the result and repeat until 10", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Standard multiplication tables start from 1! Adjust your starting multiplier from 0 to 1.",
+      feedback: "\u{1F31F} Coach Maara note: Standard multiplication tables start from 1! Adjust your starting multiplier from 0 to 1.",
       correction: "Change Step 2: 'step 2 : Take multiplier numbers starting from 1 up to 10'.",
       suggestedInput: "step 2 : Take multiplier numbers starting from 1 up to 10",
       matchedFirebaseInput: "step 2 : Take numbers starting from 0 to 10"
@@ -251,7 +291,7 @@ function validateMultiplicationRecipe(text) {
       isFullyVerified: false,
       completedStepsCount: 2,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: You need to repeat the calculation for every multiplier from 1 to 10, not just multiply by 10 once! Step 2.1: Multiply the input number by the current multiplier.",
+      feedback: "\u{1F31F} Coach Maara note: You need to repeat the calculation for every multiplier from 1 to 10, not just multiply by 10 once! Step 2.1: Multiply the input number by the current multiplier.",
       correction: "Step 2.1: Multiply the input number by the current multiplier.",
       suggestedInput: "step 2.1 : Multiply the input number by the current multiplier",
       matchedFirebaseInput: "step 2.1 : multiply the number by 10"
@@ -266,9 +306,9 @@ function validateMultiplicationRecipe(text) {
       isFullyVerified: false,
       completedStepsCount: 3,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: Do not stop after one multiplier! Continue the repeating process until all multipliers up to 10 are completed.",
+      feedback: "\u{1F31F} Coach Maara note: Do not stop after one multiplier! Continue the repeating process until all multipliers up to 10 are completed.",
       correction: "Repeat until reaching 10: 'step 2.3 : Repeat the process until the multiplier reaches 10'.",
-      suggestedInput: "step 2.2 : Display the multiplier and product\nstep 2.3 : Repeat the process until multiplier reaches 10",
+      suggestedInput: "step 2.3 : Repeat the process until multiplier reaches 10",
       matchedFirebaseInput: "step 2.2 : display result and stop"
     };
   }
@@ -282,7 +322,7 @@ function validateMultiplicationRecipe(text) {
       isFullyVerified: true,
       completedStepsCount: 4,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Kudos! You have written down the clear step-by-step algorithm without any code jargon. Proceed to Ingredients!",
+      feedback: "\u{1F31F} Coach Maara here! Kudos! You have written down the clear step-by-step algorithm without any code jargon. Proceed to Ingredients!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "step 2.3 : repeat the process until the multiplier reaches 10"
@@ -297,7 +337,7 @@ function validateMultiplicationRecipe(text) {
       isFullyVerified: false,
       completedStepsCount: 1,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Great! What is the next step to systematically go through each multiplier starting from 1 up to 10?",
+      feedback: "\u{1F31F} Coach Maara here! Great! What is the next step to systematically go through each multiplier starting from 1 up to 10?",
       correction: "Write Step 2: 'Take multiplier numbers starting from 1 up to 10'.",
       suggestedInput: "step 2 : Take multiplier numbers starting from 1 up to 10",
       matchedFirebaseInput: "step 1 : Get the input number for the table"
@@ -312,7 +352,7 @@ function validateMultiplicationRecipe(text) {
       isFullyVerified: false,
       completedStepsCount: 2,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Nice! For each multiplier in this repeating process, what calculation should be performed?",
+      feedback: "\u{1F31F} Coach Maara here! Nice! For each multiplier in this repeating process, what calculation should be performed?",
       correction: "Write Step 2.1: 'Multiply the input number by the current multiplier'.",
       suggestedInput: "step 2.1 : Multiply the input number by the current multiplier",
       matchedFirebaseInput: "step 2 : Take multiplier numbers starting from 1 up to 10"
@@ -327,9 +367,9 @@ function validateMultiplicationRecipe(text) {
       isFullyVerified: false,
       completedStepsCount: 3,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Superb! After calculating the product for the current multiplier, what should you do with the result?",
+      feedback: "\u{1F31F} Coach Maara here! Superb! After calculating the product for the current multiplier, what should you do with the result?",
       correction: "Write Step 2.2: 'Display the multiplier and the calculated product'.",
-      suggestedInput: "step 2.2 : Display the multiplier and the calculated product\nstep 2.3 : Repeat the process until the multiplier reaches 10",
+      suggestedInput: "step 2.2 : Display the multiplier and the calculated product",
       matchedFirebaseInput: "step 2.1 : Multiply the input number by the current multiplier"
     };
   }
@@ -341,7 +381,7 @@ function validateMultiplicationRecipe(text) {
     isFullyVerified: false,
     completedStepsCount: 0,
     recipeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Based on our mathematical logic, write down the sequential steps one by one.\nExample:\nStep 1: Get the table number\nStep 2: ...",
+    feedback: "\u{1F31F} Coach Maara here! Based on our mathematical logic, write down the sequential steps one by one.\nExample:\nStep 1: Get the table number\nStep 2: ...",
     correction: "Write Step 1: 'step 1 : Get the input number for the table'.",
     suggestedInput: "step 1 : Get the input number for the table",
     matchedFirebaseInput: "what should i do here"
@@ -383,7 +423,7 @@ function validateMultiplicationIngredients(text) {
         { stepNumber: 3, title: "Calculation: product = n * i", completed: false, current: false },
         { stepNumber: 4, title: "Print statement inside loop", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Multiplication tables start at 1 (e.g. 5 \xD7 1 = 5). Initialize your loop counter with i = 1 (not 0).",
+      feedback: "\u{1F31F} Coach Maara note: Multiplication tables start at 1 (e.g. 5 \xD7 1 = 5). Initialize your loop counter with i = 1 (not 0).",
       correction: "Change loop start to 1: 'step 2 : For loop with Start: 1 (i), Stop: 10 (i <= 10), Step: +1 (i++)'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: 10 (i <= 10), Step: +1 (i++)",
       matchedFirebaseInput: "step 2 : For loop starting from i = 0"
@@ -404,7 +444,7 @@ function validateMultiplicationIngredients(text) {
         { stepNumber: 3, title: "Calculation: product = n * i", completed: false, current: false },
         { stepNumber: 4, title: "Print statement inside loop", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: If you write i < 10, the loop stops at 9, missing the 10th row! Use i <= 10 (or Stop at 10 inclusive).",
+      feedback: "\u{1F31F} Coach Maara note: If you write i < 10, the loop stops at 9, missing the 10th row! Use i <= 10 (or Stop at 10 inclusive).",
       correction: "Use i <= 10: 'step 2 : For loop with Start: 1, Stop: 10 (i <= 10), Step: +1'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: 10 (i <= 10), Step: +1 (i++)",
       matchedFirebaseInput: "step 2 : For loop with Start: 1, Stop: i < 10, Step: +1"
@@ -425,7 +465,7 @@ function validateMultiplicationIngredients(text) {
         { stepNumber: 3, title: "Calculation: product = n * i", completed: false, current: false },
         { stepNumber: 4, title: "Print statement inside loop", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Look at your loop step where you wrote `step: -1`! Since your loop starts at 1 and counts up to 10, decrementing by -1 will count downwards into negative numbers (1, 0, -1, -2...)! To count upwards from 1 to 10, your step must increment with **`+1`** (or `i++`).",
+      feedback: "\u{1F31F} Coach Maara note: Look at your loop step where you wrote `step: -1`! Since your loop starts at 1 and counts up to 10, decrementing by -1 will count downwards into negative numbers (1, 0, -1, -2...)! To count upwards from 1 to 10, your step must increment with **`+1`** (or `i++`).",
       correction: "Change loop step to +1: 'step 2 : For loop with Start: 1 (i), Stop: 10 (i <= 10), Step: +1 (i++)'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: 10 (i <= 10), Step: +1 (i++)",
       matchedFirebaseInput: "loop step -1 in multiplication"
@@ -446,7 +486,7 @@ function validateMultiplicationIngredients(text) {
         { stepNumber: 3, title: "Calculation: product = n * i", completed: false, current: true },
         { stepNumber: 4, title: "Print statement inside loop", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: `product = n + i` performs addition (e.g. 5 + 1 = 6)! To calculate the table product, use the multiplication operator `*`: **`product = n * i`**.",
+      feedback: "\u{1F31F} Coach Maara note: `product = n + i` performs addition (e.g. 5 + 1 = 6)! To calculate the table product, use the multiplication operator `*`: **`product = n * i`**.",
       correction: "Use multiplication: 'step 2.1 : product = n * i'.",
       suggestedInput: "step 2.1 : product = n * i",
       matchedFirebaseInput: "step 2.1 : product = n + i"
@@ -467,7 +507,7 @@ function validateMultiplicationIngredients(text) {
         { stepNumber: 3, title: "Calculation: product = n * i", completed: true, current: false },
         { stepNumber: 4, title: "Print statement inside the loop showing n, i, and product", completed: false, current: true }
       ],
-      feedback: "\u{1F31F} Coach Maya note: If print is outside the loop, it will only print the very last product (50). To display every line of the multiplication table, place the print statement **inside the loop**!",
+      feedback: "\u{1F31F} Coach Maara note: If print is outside the loop, it will only print the very last product (50). To display every line of the multiplication table, place the print statement **inside the loop**!",
       correction: "Place print inside loop: 'step 2.2 : print statement inside the loop showing n, i, and product'.",
       suggestedInput: "step 2.2 : print statement inside the loop showing n, i, and product",
       matchedFirebaseInput: "step 2.2 : print statement outside the loop"
@@ -482,7 +522,7 @@ function validateMultiplicationIngredients(text) {
       isFullyVerified: true,
       completedStepsCount: 4,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Awesome! You have all the ingredients ready: variable n, for loop (1 to 10), product = n * i, and print statement inside the loop. Now let's proceed to Taste the Sample!",
+      feedback: "\u{1F31F} Coach Maara here! Awesome! You have all the ingredients ready: variable n, for loop (1 to 10), product = n * i, and print statement inside the loop. Now let's proceed to Taste the Sample!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "step 2.2 : print statement inside the loop showing n, i, and product"
@@ -497,7 +537,7 @@ function validateMultiplicationIngredients(text) {
       isFullyVerified: false,
       completedStepsCount: 1,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Spot on! Now, what loop construct is needed to iterate multipliers from 1 to 10? Specify its Start, Stop, and Step.",
+      feedback: "\u{1F31F} Coach Maara here! Spot on! Now, what loop construct is needed to iterate multipliers from 1 to 10? Specify its Start, Stop, and Step.",
       correction: "Write Step 2: 'For loop with Start: 1 (i), Stop: 10 (i <= 10), Step: +1 (i++)'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: 10 (i <= 10), Step: +1 (i++)",
       matchedFirebaseInput: "step 1 : n for the table number"
@@ -512,7 +552,7 @@ function validateMultiplicationIngredients(text) {
       isFullyVerified: false,
       completedStepsCount: 2,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! You are doing fantastic! That loop setup is perfectly defined to handle the multipliers from 1 to 10. Now, inside the loop, we need a variable (like `result` or `product`) to store the answer of each multiplication. What variable and calculation formula should we write to calculate and store the product (e.g. `result = a * i` or `product = n * i`)?",
+      feedback: "\u{1F31F} Coach Maara here! You are doing fantastic! That loop setup is perfectly defined to handle the multipliers from 1 to 10. Now, inside the loop, we need a variable (like `result` or `product`) to store the answer of each multiplication. What variable and calculation formula should we write to calculate and store the product (e.g. `result = a * i` or `product = n * i`)?",
       correction: "Specify a variable to store the calculated value: Write Step 2.1: 'result = a * i' (or 'product = n * i').",
       suggestedInput: "step 2.1 : result = a * i",
       matchedFirebaseInput: "step 2 : For loop with Start: 1 (i), Stop: 10 (i <= 10), Step: +1 (i++)"
@@ -527,7 +567,7 @@ function validateMultiplicationIngredients(text) {
       isFullyVerified: false,
       completedStepsCount: 3,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Hurray, that calculation is spot on! Finally, what statement displays the multiplication output (e.g. 'print result' or 'print showing n, i, and product') inside the loop?",
+      feedback: "\u{1F31F} Coach Maara here! Hurray, that calculation is spot on! Finally, what statement displays the multiplication output (e.g. 'print result' or 'print showing n, i, and product') inside the loop?",
       correction: "Write Step 4 / 2.2: 'print statement inside the loop showing the result'.",
       suggestedInput: "step 4 : print result inside the loop",
       matchedFirebaseInput: "step 2.1 : product = n * i"
@@ -541,7 +581,7 @@ function validateMultiplicationIngredients(text) {
     isFullyVerified: false,
     completedStepsCount: 0,
     ingredientsStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Identify the variables, loop constructs, calculations, and print statements needed for each step. For Step 1, what variable is needed to store the table number?",
+    feedback: "\u{1F31F} Coach Maara here! Identify the variables, loop constructs, calculations, and print statements needed for each step. For Step 1, what variable is needed to store the table number?",
     correction: "Write Step 1: 'step 1 : n for the table number'.",
     suggestedInput: "step 1 : n for the table number",
     matchedFirebaseInput: "what do I do here"
@@ -591,7 +631,7 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       hasFormattedPrint,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: Table start bug! The loop starts at 0, printing `5 x 0 = 0`. Change loop initialization to **`var i = 1`**.",
+      feedback: "\u{1F31F} Coach Maara note: Table start bug! The loop starts at 0, printing `5 x 0 = 0`. Change loop initialization to **`var i = 1`**.",
       correction: "Change loop start to 1: 'for (var i = 1; i <= 10; i++)'.",
       suggestedInput: 'var n = 5;\nfor (var i = 1; i <= 10; i++) {\n  print(n + " x " + i + " = " + (n * i));\n}',
       matchedFirebaseInput: 'var n = 5;\nfor (var i = 0; i <= 10; i++) {\n print(n + " x " + i + " = " + (n * i));\n}'
@@ -605,7 +645,7 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       hasFormattedPrint,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: Boundary bug! `i < 10` stops at 9, missing the 10th row. Change condition to **`i <= 10`** (or `range(1, 11)` in Python) to include the 10th row.",
+      feedback: "\u{1F31F} Coach Maara note: Boundary bug! `i < 10` stops at 9, missing the 10th row. Change condition to **`i <= 10`** (or `range(1, 11)` in Python) to include the 10th row.",
       correction: "Change loop condition to i <= 10: 'for (var i = 1; i <= 10; i++)'.",
       suggestedInput: 'var n = 5;\nfor (var i = 1; i <= 10; i++) {\n  print(n + " x " + i + " = " + (n * i));\n}',
       matchedFirebaseInput: 'var n = 5;\nfor (var i = 1; i < 10; i++) {\n print(n + " x " + i + " = " + (n * i));\n}'
@@ -619,7 +659,7 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       hasFormattedPrint,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: Calculation bug! `n + i` adds the numbers (giving 6, 7, 8...). Use **`n * i`** for multiplication!",
+      feedback: "\u{1F31F} Coach Maara note: Calculation bug! `n + i` adds the numbers (giving 6, 7, 8...). Use **`n * i`** for multiplication!",
       correction: "Use multiplication: 'var product = n * i;'.",
       suggestedInput: "var product = n * i;",
       matchedFirebaseInput: 'var n = 5;\nfor (var i = 1; i <= 10; i++) {\n var ans = n + i;\n print(n + " x " + i + " = " + ans);\n}'
@@ -633,7 +673,7 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       hasFormattedPrint,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: Variable overwrite bug! Modifying `n` inside the loop (`n = n * i`) changes the base table number exponentially! Keep `n` constant and multiply `n * i` into a separate `product` variable or directly in print.",
+      feedback: "\u{1F31F} Coach Maara note: Variable overwrite bug! Modifying `n` inside the loop (`n = n * i`) changes the base table number exponentially! Keep `n` constant and multiply `n * i` into a separate `product` variable or directly in print.",
       correction: "Do not overwrite n. Use 'var product = n * i;'.",
       suggestedInput: "var product = n * i;",
       matchedFirebaseInput: "var n = 5;\nfor (var i = 1; i <= 10; i++) {\n n = n * i;\n print(n);\n}"
@@ -647,7 +687,7 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       hasFormattedPrint: false,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: Loop termination bug! `break` stops the loop immediately after the 1st row. Remove `break` so the table runs completely up to 10!",
+      feedback: "\u{1F31F} Coach Maara note: Loop termination bug! `break` stops the loop immediately after the 1st row. Remove `break` so the table runs completely up to 10!",
       correction: "Remove the 'break;' statement from inside the loop.",
       suggestedInput: 'var n = 5;\nfor (var i = 1; i <= 10; i++) {\n  print(n + " x " + i + " = " + (n * i));\n}',
       matchedFirebaseInput: 'var n = 5;\nfor (var i = 1; i <= 10; i++) {\n print(n + " x " + i + " = " + (n * i));\n break;\n}'
@@ -661,7 +701,7 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       hasFormattedPrint: false,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya note: Placement bug! Placing print outside the loop only displays the final product (50). Move print inside the loop block `{ ... }` to print all 10 lines!",
+      feedback: "\u{1F31F} Coach Maara note: Placement bug! Placing print outside the loop only displays the final product (50). Move print inside the loop block `{ ... }` to print all 10 lines!",
       correction: "Move the print statement inside the loop block.",
       suggestedInput: 'var n = 5;\nfor (var i = 1; i <= 10; i++) {\n  var product = n * i;\n  print(n + " x " + i + " = " + product);\n}',
       matchedFirebaseInput: "var n = 5;\nvar ans = 0;\nfor (var i = 1; i <= 10; i++) {\n ans = n * i;\n}\nprint(ans);"
@@ -675,7 +715,7 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       hasFormattedPrint: true,
       allVerified: true,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! You gotcha! You have successfully written the complete multiplication table prototype with proper iteration, calculation, and output formatting. Let's code!",
+      feedback: "\u{1F31F} Coach Maara here! You gotcha! You have successfully written the complete multiplication table prototype with proper iteration, calculation, and output formatting. Let's code!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: 'var n = 5;\nfor (var i = 1; i <= 10; i++) {\n var product = n * i;\n print(n + " x " + i + " = " + product);\n}'
@@ -689,17 +729,17 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       hasFormattedPrint: false,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Let's write the executable prototype. Start by declaring your table number variable:\n```javascript\nvar n = 5;\n```",
+      feedback: "\u{1F31F} Coach Maara here! Let's write the executable prototype. Start by declaring your table number variable:\n```javascript\nvar n = 5;\n```",
       correction: "Declare the input variable n.",
       suggestedInput: "var n = 5;"
     };
   }
   if (!hasLoop) {
-    let loopFb = "\u{1F31F} Coach Maya here! No worries at all if you are unsure how to write the loop! Here is an example of how to write the loop from 1 to 10:\n\n\u{1F4BB} **JavaScript / C / Java:**\n```javascript\nfor (let i = 1; i <= 10; i++) {\n}\n```\n\n\u{1F40D} **Python:**\n```python\nfor i in range(1, 11):\n```\n\nTry adding this for loop right after your variable declaration!";
+    let loopFb = "\u{1F31F} Coach Maara here! No worries at all if you are unsure how to write the loop! Here is an example of how to write the loop from 1 to 10:\n\n\u{1F4BB} **JavaScript / C / Java:**\n```javascript\nfor (let i = 1; i <= 10; i++) {\n}\n```\n\n\u{1F40D} **Python:**\n```python\nfor i in range(1, 11):\n```\n\nTry adding this for loop right after your variable declaration!";
     if (attemptCount >= 3) {
-      loopFb = "\u{1F31F} Coach Maya here! Let's get your table iterating! Here is the full structure for declaring the input and running the loop from 1 to 10:\n\n```javascript\nvar n = 5;\nfor (var i = 1; i <= 10; i++) {\n  var product = n * i;\n}\n```\n\n\u{1F449} Add the loop and calculate the product inside!";
+      loopFb = "\u{1F31F} Coach Maara here! Let's get your table iterating! Here is the full structure for declaring the input and running the loop from 1 to 10:\n\n```javascript\nvar n = 5;\nfor (var i = 1; i <= 10; i++) {\n  var product = n * i;\n}\n```\n\n\u{1F449} Add the loop and calculate the product inside!";
     } else if (attemptCount === 2) {
-      loopFb = "\u{1F31F} Coach Maya checking in! We have our table number `n = 5`. Now write the `for` loop that counts `i` from 1 up to 10 (`i <= 10`).\n\n\u{1F449} Template: `for (let i = 1; i <= 10; i++)`";
+      loopFb = "\u{1F31F} Coach Maara checking in! We have our table number `n = 5`. Now write the `for` loop that counts `i` from 1 up to 10 (`i <= 10`).\n\n\u{1F449} Template: `for (let i = 1; i <= 10; i++)`";
     }
     return {
       hasInput: true,
@@ -714,9 +754,9 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
     };
   }
   if (!hasProductCalculation) {
-    let prodFb = "\u{1F31F} Coach Maya here! You have defined your input and started your loop nicely! Now, inside the loop, where will you store the result of each multiplication? What variable and formula will hold the value of multiplying your input number with the loop counter `i` (e.g., `result = a * i;` or `var product = n * i;`)?";
+    let prodFb = "\u{1F31F} Coach Maara here! You have defined your input and started your loop nicely! Now, inside the loop, where will you store the result of each multiplication? What variable and formula will hold the value of multiplying your input number with the loop counter `i` (e.g., `result = a * i;` or `var product = n * i;`)?";
     if (attemptCount >= 2) {
-      prodFb = "\u{1F31F} Coach Maya checking back! Inside your loop body, calculate the product for each row using:\n`var product = n * i;` (or `var result = a * i;`)\n\nThis multiplies your table number by the current counter `i` on each turn!";
+      prodFb = "\u{1F31F} Coach Maara checking back! Inside your loop body, calculate the product for each row using:\n`var product = n * i;` (or `var result = a * i;`)\n\nThis multiplies your table number by the current counter `i` on each turn!";
     }
     return {
       hasInput: true,
@@ -730,9 +770,9 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
       suggestedInput: "var result = a * i;"
     };
   }
-  let printFb = '\u{1F31F} Coach Maya here! Finally, print the formatted table line inside the loop:\n```javascript\nprint(n + " x " + i + " = " + product);\n```';
+  let printFb = '\u{1F31F} Coach Maara here! Finally, print the formatted table line inside the loop:\n```javascript\nprint(n + " x " + i + " = " + product);\n```';
   if (attemptCount >= 2) {
-    printFb = '\u{1F31F} Coach Maya here! Almost done! Output your calculated product inside the loop:\n`print(n + " x " + i + " = " + product);` (or `console.log(n + " x " + i + " = " + product);`)';
+    printFb = '\u{1F31F} Coach Maara here! Almost done! Output your calculated product inside the loop:\n`print(n + " x " + i + " = " + product);` (or `console.log(n + " x " + i + " = " + product);`)';
   }
   return {
     hasInput: true,

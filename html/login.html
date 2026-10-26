@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log In - CookDCode</title>
+  <link rel="icon" type="image/png" href="../Images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/login.css" />
+  <style>
+    /* Crucial: Ensure the container has space and visibility */
+    #recaptcha-container {
+      margin: 1rem 0;
+      display: none; /* Hidden during normal login, shown during reset */
+      justify-content: center;
+      min-height: 78px;
+    }
+    /* Instant Load */
+    body { opacity: 0; transition: opacity 0.2s ease-in; }
+    body.loaded { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <a href="newuser.html" class="btn-back" title="Go Back"><i class="fas fa-arrow-left"></i></a>
+      <a href="newuser.html" class="brand">
+        <img src="../Images/logo.png" alt="cookDcode Logo" class="logo" onerror="this.src='https://via.placeholder.com/48?text=C'" />
+        <span>cookDcode</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="signup-page-wrapper">  
+    <div class="signup-left">
+      <div class="left-content">
+        <h1>Welcome Back!</h1>
+        <p>Pick up right where you left off. Continue your journey to mastering data structures and algorithms.</p>
+        <div class="features-list">
+          <div class="feature-item">
+            <div class="icon-box"><i class="fas fa-history"></i></div>
+            <div class="feature-text"><h4>Resume Your Progress</h4><span>Jump back into your ongoing challenges</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="signup-right">
+      <div class="signup-card">
+        <div class="signup-header">
+          <h2 class="signup-title">Log In</h2>
+          <p class="signup-subtitle">Access your CookDCode account</p>
+        </div>
+
+        <form id="loginForm" autocomplete="off">
+          <div class="form-group" id="emailGroup">
+            <label for="email" id="loginEmailLabel" class="form-label">Email Address</label>
+            <div class="input-container">
+              <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email address" required>
+              <i class="fas fa-envelope input-icon"></i>
+            </div>
+          </div>
+
+          <div class="form-group" id="loginPassGroup">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-container">
+              <input type="password" id="password" name="password" autocomplete="new-password" class="form-input" placeholder="Enter your password">
+              <i class="fas fa-lock input-icon"></i>
+              <i class="fas fa-eye-slash toggle-password" onclick="togglePasswordVisibility('password')"></i>
+            </div>
+          </div>
+
+          <div class="form-group" id="otpGroup" style="display: none;">
+            <label for="otp" class="form-label">OTP Verification</label>
+            <div class="input-container">
+             
+              <input type="text" id="otp" name="otp" class="form-input" placeholder="Enter 6-digit OTP" maxlength="6">
+              <i class="fas fa-key input-icon"></i>
+            </div>
+          </div>
+
+          <div class="form-group" id="newPassGroup" style="display: none;">
+            <label for="new_password" class="form-label">New Password</label>
+            <div class="input-container">
+              <input type="password" id="new_password" name="new_password" class="form-input" placeholder="Create a new password">
+              <i class="fas fa-lock input-icon"></i>
+              <i class="fas fa-eye-slash toggle-password" onclick="togglePasswordVisibility('new_password')"></i>
+            </div>
+          </div>
+
+          <div style="text-align: right; margin-bottom: 1.5rem;" id="forgotPassLinkContainer">
+            <a href="#" id="forgotPasswordBtn" style="color: var(--primary); font-size: 0.875rem; text-decoration: none; font-weight: 600;">Forgot Password?</a>
+          </div>
+
+
+          <div style="text-align: right; margin-bottom: 1.5rem; display: none;" id="backToLoginContainer">
+            <a href="#" id="backToLoginBtn" style="color: var(--primary); font-size: 0.875rem; text-decoration: none; font-weight: 600;">Back to Log In</a>
+          </div>
+          <div id="recaptcha-container"></div>
+          <button type="button" id="mainSubmitBtn" class="btn-submit">
+            Log In <i class="fas fa-sign-in-alt"></i>
+          </button>
+
+
+        </form>
+
+        <div class="signup-footer">Don't have an account? <a href="signup.html">Sign Up</a></div>
+      </div>
+    </div>
+  </main>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, query, orderByChild, equalTo, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBoAb7b3DJDMRmNwOSAHTnscM_-JuVnILI",
+    authDomain: "cookdcode-4ce23.firebaseapp.com",
+    databaseURL: "https://cookdcode-4ce23-default-rtdb.firebaseio.com",
+    projectId: "cookdcode-4ce23",
+    storageBucket: "cookdcode-4ce23.firebasestorage.app",
+    messagingSenderId: "419836764054",
+    appId: "1:419836764054:web:ab9968082fb793029f07b7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ----- MODAL UTILITY -----
+window.showModal = function(msg, type = 'success') {
+  const modal = document.getElementById('statusModal');
+  const icon = document.getElementById('modalIcon');
+  const title = document.getElementById('modalTitle');
+  const message = document.getElementById('modalMessage');
+  
+  message.textContent = msg;
+  
+  if(type === 'error' || type === 'warning') {
+    icon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+    icon.style.color = '#ef4444';
+    icon.style.backgroundColor = '#fef2f2';
+    title.textContent = 'Action Required';
+  } else {
+    icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+    icon.style.color = '#10b981';
+    icon.style.backgroundColor = '#ecfdf5';
+    title.textContent = 'Success!';
+  }
+  
+  modal.classList.add('active');
+};
+
+window.closeModal = function() {
+  document.getElementById('statusModal').classList.remove('active');
+};
+
+function showNotify(message,type="info"){
+  const box=document.getElementById("notify");
+  box.innerText=message;
+  box.className="notify show "+type;
+  setTimeout(()=>{
+    box.classList.remove("show");
+  },3000);
+}
+
+window.togglePasswordVisibility = function(id) {
+    const input = document.getElementById(id);
+    const icon = input.parentElement.querySelector('.toggle-password');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    }
+};
+
+// ----- STATE -----
+let mode = "login"; // "login" | "forgot-email" | "forgot-otp" | "forgot-new-pass"
+let activeEmailForOtp = null;
+let targetUserKey = null;
+let targetUserData = null;
+
+// ----- ELEMENTS -----
+const emailInput = document.getElementById("email");
+const emailLabel = document.getElementById("loginEmailLabel");
+const passwordInput = document.getElementById("password");
+const otpInput = document.getElementById("otp");
+const newPassInput = document.getElementById("new_password");
+
+const btnSubmit = document.getElementById("mainSubmitBtn");
+
+const loginPassGroup = document.getElementById("loginPassGroup");
+const otpGroup = document.getElementById("otpGroup");
+const newPassGroup = document.getElementById("newPassGroup");
+
+const forgotLink = document.getElementById("forgotPassLinkContainer");
+const backLogin = document.getElementById("backToLoginContainer");
+
+// Reset to Login View
+function resetToLoginView() {
+    mode = "login";
+    if (emailLabel) emailLabel.textContent = "Email Address";
+    if (emailInput) emailInput.placeholder = "Enter your email address";
+    loginPassGroup.style.display = "block";
+    otpGroup.style.display = "none";
+    newPassGroup.style.display = "none";
+    forgotLink.style.display = "block";
+    backLogin.style.display = "none";
+    btnSubmit.disabled = false;
+    btnSubmit.innerHTML = 'Log In <i class="fas fa-sign-in-alt"></i>';
+}
+
+// ----- FORGOT PASSWORD BUTTON -----
+document.getElementById("forgotPasswordBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    mode = "forgot-email";
+    if (emailLabel) emailLabel.textContent = "Registered Email Address";
+    if (emailInput) {
+        emailInput.placeholder = "Enter your registered email";
+        emailInput.focus();
+    }
+    loginPassGroup.style.display = "none";
+    otpGroup.style.display = "none";
+    newPassGroup.style.display = "none";
+    forgotLink.style.display = "none";
+    backLogin.style.display = "block";
+    btnSubmit.disabled = false;
+    btnSubmit.innerHTML = 'Send OTP <i class="fas fa-paper-plane" style="margin-left: 6px;"></i>';
+});
+
+// ----- BACK TO LOGIN -----
+document.getElementById("backToLoginBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    resetToLoginView();
+});
+
+// Candidate server endpoints to support running from localhost:3001, 3000, or file://
+const API_BASES = ["", "http://localhost:3001", "http://localhost:3000"];
+
+async function postToApi(endpoint, body) {
+    for (const base of API_BASES) {
+        try {
+            const url = `${base}${endpoint}`;
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 4000);
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+                signal: controller.signal
+            });
+            clearTimeout(timer);
+            if (res.ok) {
+                return await res.json();
+            }
+            if (res.status === 401 || res.status === 400) {
+                // Legitimate error from server (e.g. wrong password or user not found)
+                return await res.json();
+            }
+        } catch (_) {
+            // Try next base
+        }
+    }
+    return null; // All servers unreachable
+}
+
+// Helper to find user by email with fast backend endpoint & parallel RTDB fallback
+async function findUserByEmail(email) {
+    const cleanEmail = email.trim();
+    if (!cleanEmail) return null;
+    
+    // 1. Try fast backend endpoint
+    const apiResult = await postToApi("/api/findUser", { email: cleanEmail });
+    if (apiResult && apiResult.exists) {
+        return { key: apiResult.userKey, val: apiResult.val };
+    }
+    if (apiResult && apiResult.exists === false) {
+        return null;
+    }
+
+    // 2. Direct RTDB fallback: shallow keys + parallel email fetch
+    try {
+        const shallowRes = await fetch("https://cookdcode-4ce23-default-rtdb.firebaseio.com/users.json?shallow=true");
+        if (shallowRes.ok) {
+            const keysObj = await shallowRes.json();
+            const keys = Object.keys(keysObj || {});
+            const target = cleanEmail.toLowerCase();
+            
+            const results = await Promise.all(
+                keys.map(async (k) => {
+                    try {
+                        const emailRes = await fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/email.json`);
+                        const em = await emailRes.json();
+                        if (em && String(em).trim().toLowerCase() === target) {
+                            return k;
+                        }
+                    } catch (_) {}
+                    return null;
+                })
+            );
+
+            const matchedKeys = results.filter(Boolean);
+            if (matchedKeys.length > 0) {
+                // Return latest matched key with user metadata
+                const lastKey = matchedKeys[matchedKeys.length - 1];
+                const [fnRes, lnRes, nmRes, phRes, emRes] = await Promise.all([
+                    fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${lastKey}/firstname.json`),
+                    fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${lastKey}/lastname.json`),
+                    fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${lastKey}/name.json`),
+                    fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${lastKey}/phone.json`),
+                    fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${lastKey}/email.json`)
+                ]);
+
+                const firstname = (await fnRes.json()) || "";
+                const lastname = (await lnRes.json()) || "";
+                const directName = (await nmRes.json()) || "";
+                const phone = (await phRes.json()) || "";
+                const emailVal = (await emRes.json()) || cleanEmail;
+                const name = directName || `${firstname} ${lastname}`.trim() || "Coder";
+
+                return {
+                    key: lastKey,
+                    val: { email: emailVal, name, phone }
+                };
+            }
+        }
+    } catch (e) {
+        console.warn("[Login] RTDB fallback error:", e);
+    }
+    return null;
+}
+
+// ----- MAIN BUTTON -----
+btnSubmit.addEventListener("click", async () => {
+    try {
+        const email = emailInput.value.trim();
+        if (!email) {
+            showNotify("Please enter your email address", "error");
+            emailInput.focus();
+            return;
+        }
+        if (!email.includes("@") || !email.includes(".")) {
+            showNotify("Please enter a valid email address", "error");
+            emailInput.focus();
+            return;
+        }
+
+        // ---------------- 1. LOGIN MODE ----------------
+        if (mode === "login") {
+            const password = passwordInput.value.trim();
+            if (!password) {
+                showNotify("Please enter your password", "error");
+                passwordInput.focus();
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Logging In... <i class="fas fa-spinner fa-spin"></i>';
+
+            // 1. First attempt backend API login
+            const apiData = await postToApi("/api/login", { email, password });
+            if (apiData) {
+                if (apiData.success) {
+                    localStorage.setItem("userEmail", apiData.email || email);
+                    localStorage.setItem("userId", apiData.userKey || apiData.userId);
+                    if (apiData.name) localStorage.setItem("userName", apiData.name);
+                    if (apiData.phone) localStorage.setItem("userPhone", apiData.phone);
+
+                    showModal("Login Successful! Redirecting to dashboard...", "success");
+                    setTimeout(() => {
+                        window.location.href = "ctc.html";
+                    }, 1200);
+                    return;
+                } else {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = 'Log In <i class="fas fa-sign-in-alt"></i>';
+                    if (apiData.error && apiData.error.includes("No account found")) {
+                        showModal(apiData.error, "error");
+                    } else {
+                        showNotify(apiData.error || "Incorrect password. Please try again.", "error");
+                    }
+                    return;
+                }
+            }
+
+            // 2. Direct RTDB fallback if backend is offline
+            try {
+                console.warn("[Login] Backend offline, using direct RTDB check...");
+                const shallowRes = await fetch("https://cookdcode-4ce23-default-rtdb.firebaseio.com/users.json?shallow=true");
+                if (!shallowRes.ok) throw new Error("Could not reach Firebase database");
+
+                const keysObj = await shallowRes.json();
+                const keys = Object.keys(keysObj || {});
+                const target = email.toLowerCase();
+
+                // Find all keys matching this email in parallel
+                const matchCandidates = await Promise.all(
+                    keys.map(async (k) => {
+                        try {
+                            const emailRes = await fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/email.json`);
+                            const em = await emailRes.json();
+                            if (em && String(em).trim().toLowerCase() === target) {
+                                return k;
+                            }
+                        } catch (_) {}
+                        return null;
+                    })
+                );
+
+                const matchedKeys = matchCandidates.filter(Boolean);
+                if (matchedKeys.length === 0) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = 'Log In <i class="fas fa-sign-in-alt"></i>';
+                    showModal("No account found with this email address. Please check or sign up.", "error");
+                    return;
+                }
+
+                // Check passwords for all matching accounts in parallel
+                const accountDetails = await Promise.all(
+                    matchedKeys.map(async (k) => {
+                        try {
+                            const [pwdRes, fnRes, lnRes, nmRes, phRes] = await Promise.all([
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/password.json`),
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/firstname.json`),
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/lastname.json`),
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/name.json`),
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/phone.json`)
+                            ]);
+
+                            const passVal = (await pwdRes.json()) ?? "";
+                            const firstname = (await fnRes.json()) ?? "";
+                            const lastname = (await lnRes.json()) ?? "";
+                            const directName = (await nmRes.json()) ?? "";
+                            const phone = (await phRes.json()) ?? "";
+                            const name = directName || `${firstname} ${lastname}`.trim() || "Coder";
+
+                            return { key: k, password: String(passVal), name, phone };
+                        } catch (_) {
+                            return null;
+                        }
+                    })
+                );
+
+                const matchedAccount = accountDetails.find((acc) => acc && acc.password === password);
+
+                if (matchedAccount) {
+                    // Clear any leftover cross-user problem progress cache so homepage is 100% fresh
+                    Object.keys(localStorage).forEach(key => {
+                        if (key.startsWith('ctc_compiler_executed') || key.startsWith('ctc_progress') || key.startsWith('ctc_saved_') || key.startsWith('ctc_completed_')) {
+                            localStorage.removeItem(key);
+                        }
+                    });
+
+                    localStorage.setItem("userEmail", email);
+                    localStorage.setItem("userId", matchedAccount.key);
+                    if (matchedAccount.name) localStorage.setItem("userName", matchedAccount.name);
+                    if (matchedAccount.phone) localStorage.setItem("userPhone", matchedAccount.phone);
+
+                    showModal("Login Successful! Redirecting to dashboard...", "success");
+                    setTimeout(() => {
+                        window.location.href = "ctc.html";
+                    }, 1200);
+                    return;
+                } else {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = 'Log In <i class="fas fa-sign-in-alt"></i>';
+                    showNotify("Incorrect password. Please try again.", "error");
+                    return;
+                }
+            } catch (fallbackErr) {
+                console.error("[Login] Fallback failed:", fallbackErr);
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'Log In <i class="fas fa-sign-in-alt"></i>';
+                showModal("Could not connect to authentication service. Please check your network connection.", "error");
+                return;
+            }
+        }
+
+        // ---------------- 2. FORGOT PASSWORD: SEND OTP ----------------
+        else if (mode === "forgot-email") {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Sending OTP... <i class="fas fa-spinner fa-spin"></i>';
+
+            const userMatch = await findUserByEmail(email);
+            if (!userMatch) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'Send OTP <i class="fas fa-paper-plane" style="margin-left: 6px;"></i>';
+                showModal("This email address is not registered in our system.", "error");
+                return;
+            }
+
+            targetUserKey = userMatch.key;
+            targetUserData = userMatch.val;
+            activeEmailForOtp = userMatch.val.email || email;
+
+            // Call backend API to send OTP via email
+            const res = await fetch("/api/sendOtp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: activeEmailForOtp,
+                    userName: targetUserData.name || "Coder"
+                })
+            });
+
+            const data = await res.json();
+            btnSubmit.disabled = false;
+
+            if (res.ok && data.success) {
+                otpGroup.style.display = "block";
+                btnSubmit.innerHTML = 'Verify OTP <i class="fas fa-check-circle" style="margin-left: 6px;"></i>';
+                mode = "forgot-otp";
+                showNotify("OTP sent to " + activeEmailForOtp, "success");
+                setTimeout(() => otpInput.focus(), 200);
+            } else {
+                btnSubmit.innerHTML = 'Send OTP <i class="fas fa-paper-plane" style="margin-left: 6px;"></i>';
+                showModal(data.error || "Failed to send OTP. Please try again.", "error");
+            }
+        }
+
+        // ---------------- 3. FORGOT PASSWORD: VERIFY OTP ----------------
+        else if (mode === "forgot-otp") {
+            const enteredOtp = otpInput.value.trim();
+            if (!enteredOtp) {
+                showNotify("Please enter the 6-digit OTP", "error");
+                otpInput.focus();
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Verifying OTP... <i class="fas fa-spinner fa-spin"></i>';
+
+            const res = await fetch("/api/verifyOtp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: activeEmailForOtp,
+                    otp: enteredOtp
+                })
+            });
+
+            const data = await res.json();
+            btnSubmit.disabled = false;
+
+            if (res.ok && data.valid) {
+                otpGroup.style.display = "none";
+                newPassGroup.style.display = "block";
+                btnSubmit.innerHTML = 'Update Password <i class="fas fa-save" style="margin-left: 6px;"></i>';
+                mode = "forgot-new-pass";
+                showNotify("OTP verified successfully! Now enter new password.", "success");
+                setTimeout(() => newPassInput.focus(), 200);
+            } else {
+                btnSubmit.innerHTML = 'Verify OTP <i class="fas fa-check-circle" style="margin-left: 6px;"></i>';
+                showNotify(data.error || "Invalid or expired OTP. Please try again.", "error");
+            }
+        }
+
+        // ---------------- 4. FORGOT PASSWORD: NEW PASSWORD ----------------
+        else if (mode === "forgot-new-pass") {
+            const newPass = newPassInput.value.trim();
+            if (newPass.length < 8) {
+                showModal("Password must be at least 8 characters long.", "error");
+                newPassInput.focus();
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Updating Password... <i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                await fetch("/api/updatePassword", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userKey: targetUserKey, newPassword: newPass })
+                });
+            } catch(e) {}
+
+            try {
+                await update(ref(db, "users/" + targetUserKey), {
+                    password: newPass
+                });
+            } catch(e) {}
+
+            // Ensure no auto-login session
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userName");
+            localStorage.removeItem("userPhone");
+
+            const verifiedEmail = activeEmailForOtp;
+            otpInput.value = "";
+            newPassInput.value = "";
+            passwordInput.value = "";
+
+            // Reset back to Login view with email pre-filled
+            resetToLoginView();
+            emailInput.value = verifiedEmail;
+
+            showModal("Password updated successfully! Please enter your new password to log in.", "success");
+            setTimeout(() => {
+                passwordInput.focus();
+            }, 600);
+        }
+    } catch (err) {
+        console.error("Auth action error:", err);
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Log In <i class="fas fa-sign-in-alt"></i>';
+        showModal("An unexpected error occurred: " + err.message, "error");
+    }
+});
+
+// Enable Enter key submission
+const loginFormEl = document.getElementById("loginForm");
+if (loginFormEl) {
+    loginFormEl.addEventListener("submit", (e) => {
+        e.preventDefault();
+        btnSubmit.click();
+    });
+}
+if (passwordInput) {
+    passwordInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            btnSubmit.click();
+        }
+    });
+}
+if (emailInput) {
+    emailInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (mode === "login") {
+                passwordInput.focus();
+            } else {
+                btnSubmit.click();
+            }
+        }
+    });
+}
+
+
+    window.addEventListener('DOMContentLoaded', () => document.body.classList.add('loaded'));
+  </script>
+  
+  <!-- Professional Status Modal -->
+  <div id="statusModal" class="modal-overlay">
+    <div class="modal-content">
+      <div id="modalIcon" class="modal-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3 id="modalTitle" class="modal-title">Success!</h3>
+      <p id="modalMessage" class="modal-message">Your action was successful.</p>
+      <button class="modal-btn" onclick="closeModal()">Continue</button>
+    </div>
+  </div>
+  
+  <div id="notify" class="notify"></div>
+</body>
+</html>

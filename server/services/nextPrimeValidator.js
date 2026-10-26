@@ -1,25 +1,61 @@
-function validateNextPrimeLogic(text) {
+function validateNextPrimeLogic(text, attemptCount = 1) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/]/g, " ").replace(/\s+/g, " ").trim();
   const rawText = (text || "").toLowerCase();
-  if (/^(what\s+i\s+do|what\s+do\s+i\s+do|what\s+next|how\s+to|what|how|where|tell me|explain|help)/i.test(norm) && (norm.includes("next prime") || norm.includes("what should we do") || norm.includes("how to start") || norm.includes("where to start") || norm.includes("what i do") || norm.includes("what do i do"))) {
+  if (/^(what\s+i\s+do|what\s+do\s+i\s+do|what\s+next|how\s+to|what|how|where|tell me|explain|help)/i.test(norm) && (norm.includes("next prime") || norm.includes("what should we do") || norm.includes("how to start") || norm.includes("where to start") || norm.includes("what i do") || norm.includes("what do i do")) || norm === "what should we do") {
+    if (attemptCount >= 3) {
+      return {
+        isFullyVerified: false,
+        hasFatalMisconception: false,
+        isTheoryExplanation: false,
+        isMathematicalExplanation: false,
+        feedback: "🌟 Coach Maara here with a concrete step! To find the next prime of N, start a candidate number at N + 1. Check if candidate % divisor == 0 for all numbers from 2 up to candidate - 1. If no divisor divides candidate evenly, candidate is our next prime!",
+        correction: "Start from N+1 and test each consecutive number for divisors.",
+        suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
+        matchedFirebaseInput: "what should we do to find the next prime number"
+      };
+    }
+    if (attemptCount === 2) {
+      return {
+        isFullyVerified: false,
+        hasFatalMisconception: false,
+        isTheoryExplanation: false,
+        isMathematicalExplanation: false,
+        feedback: "🌟 Coach Maara checking back! The next prime number is the very first prime number that comes strictly AFTER the given number.\nFor example:\n• If the given number is 7, the following numbers are 8 (not prime), 9 (not prime), 10 (not prime), 11 (Prime!)\nSo the next prime of 7 is 11. What number should we test first if input is 7?",
+        correction: "Start checking numbers one by one starting from N + 1 until a prime is found.",
+        suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
+        matchedFirebaseInput: "what should we do to find the next prime number"
+      };
+    }
     return {
       isFullyVerified: false,
       hasFatalMisconception: false,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! What does 'Next Prime Number' mean? For example, if the given number is 7, what is the smallest prime number strictly greater than 7?",
+      feedback: "🌟 Coach Maara here! What does 'Next Prime Number' mean? For example, if the given number is 7, what is the smallest prime number strictly greater than 7?",
       correction: "Think about the first prime number that comes after the given number.",
       suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
       matchedFirebaseInput: "what should we do to find the next prime number"
     };
   }
   if (norm.includes("dont know") || norm.includes("don't know") || norm.includes("puriyala") || norm.includes("theriyala") || norm.includes("no idea") || norm === "i don t know") {
+    if (attemptCount >= 2) {
+      return {
+        isFullyVerified: false,
+        hasFatalMisconception: false,
+        isTheoryExplanation: false,
+        isMathematicalExplanation: false,
+        feedback: "🌟 Coach Maara here with a concrete step! Start with a candidate variable equal to N + 1. Check if candidate has any divisors other than 1 and itself. When no divisor is found, candidate is the next prime!",
+        correction: "Start from N+1 and test each consecutive number for divisors.",
+        suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
+        matchedFirebaseInput: "I don't know"
+      };
+    }
     return {
       isFullyVerified: false,
       hasFatalMisconception: false,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! The next prime number is the very first prime number that comes AFTER the given number.\nFor example:\n\u2022 If given number is 7, the next numbers are 8 (not prime), 9 (not prime), 10 (not prime), 11 (Prime!)\nSo the next prime of 7 is 11.\nHow do we test numbers one by one to find it?",
+      feedback: "🌟 Coach Maara here! The next prime number is the very first prime number that comes AFTER the given number.\nFor example:\n• If given number is 7, the next numbers are 8 (not prime), 9 (not prime), 10 (not prime), 11 (Prime!)\nSo the next prime of 7 is 11.\nHow do we test numbers one by one to find it?",
       correction: "Start checking numbers one by one starting from N + 1 until a prime is found.",
       suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
       matchedFirebaseInput: "I don't know"
@@ -31,7 +67,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: true,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya logic alert: The next prime must be strictly GREATER than the given number! Even if 7 is already a prime number, we must look for the next prime that comes after 7 (which is 11).",
+      feedback: "\u{1F31F} Coach Maara logic alert: The next prime must be strictly GREATER than the given number! Even if 7 is already a prime number, we must look for the next prime that comes after 7 (which is 11).",
       correction: "Next prime must be strictly greater than N: start testing from N + 1.",
       suggestedInput: "start from N+1 and check each consecutive number until we find a prime",
       matchedFirebaseInput: "next prime of 7 is 7"
@@ -43,7 +79,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: true,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya note: Adding 1 or 2 does not always give a prime number! For example, 7 + 2 = 9 (not prime, 3 \xD7 3 = 9), and 13 + 2 = 15 (not prime, 3 \xD7 5 = 15). We must mathematically check each candidate until we find a prime.",
+      feedback: "\u{1F31F} Coach Maara note: Adding 1 or 2 does not always give a prime number! For example, 7 + 2 = 9 (not prime, 3 \xD7 3 = 9), and 13 + 2 = 15 (not prime, 3 \xD7 5 = 15). We must mathematically check each candidate until we find a prime.",
       correction: "Test candidate numbers for primality instead of just adding a fixed number.",
       suggestedInput: "start from N+1 and check each consecutive number until we find a prime",
       matchedFirebaseInput: "just add 1 or 2 to the number"
@@ -55,7 +91,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya note: The smallest prime number is 2. So if the input is 0 or 1 (or negative), the next prime number is 2.",
+      feedback: "\u{1F31F} Coach Maara note: The smallest prime number is 2. So if the input is 0 or 1 (or negative), the next prime number is 2.",
       correction: "If N <= 1, the next prime number is 2.",
       suggestedInput: "start from N+1 and check each consecutive number until we find a prime",
       matchedFirebaseInput: "what if input is 0 or 1"
@@ -89,7 +125,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: false,
       isMathematicalExplanation: true,
-      feedback: `\u{1F31F} Coach Maya here! Spot-on mathematical check for candidate ${testedComp}! You clearly demonstrated that ${testedComp} has more than 2 divisors and is not prime. Now, take the next step and repeat this test for the next number: check candidate ${nextCandidate}. When you test its divisors, does it satisfy the prime condition to be our next prime?`,
+      feedback: `\u{1F31F} Coach Maara here! Spot-on mathematical check for candidate ${testedComp}! You clearly demonstrated that ${testedComp} has more than 2 divisors and is not prime. Now, take the next step and repeat this test for the next number: check candidate ${nextCandidate}. When you test its divisors, does it satisfy the prime condition to be our next prime?`,
       correction: `Continue the mathematical check for candidate ${nextCandidate} until you find the first number that has no other divisors (prime), and state that it is the next prime for ${initialNum}.`,
       suggestedInput: `If input is ${initialNum}, we test candidate ${testedComp} (not prime because it has >2 divisors). We repeat for next candidate ${nextCandidate}: it is only divisible by 1 and itself, so ${nextCandidate.split(" ")[0]} is prime and our next prime!`,
       matchedFirebaseInput: "repeat this process"
@@ -102,7 +138,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: true,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! In this Logic stage, explain the general thinking of finding the Next Prime Number: For any given number N, where do you start checking (e.g. from N + 1), and how do you test each consecutive number until you hit the first prime?",
+      feedback: "\u{1F31F} Coach Maara here! In this Logic stage, explain the general thinking of finding the Next Prime Number: For any given number N, where do you start checking (e.g. from N + 1), and how do you test each consecutive number until you hit the first prime?",
       correction: "Start testing candidate numbers from N + 1 and test each number for primality until the first prime is found.",
       suggestedInput: "To find the next prime number for N, start testing numbers from N + 1 one by one. Check if each number has any divisors from 2 to candidate - 1. As soon as we find a number with no divisors, that is our next prime.",
       matchedFirebaseInput: "what i do here"
@@ -114,7 +150,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: true,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! That is a correct example\u201411 is indeed the next prime after 7! Now explain the general algorithm: For ANY given number N, where do we start searching (e.g. from N + 1), and what test do we perform on each candidate to check if it's prime?",
+      feedback: "\u{1F31F} Coach Maara here! That is a correct example\u201411 is indeed the next prime after 7! Now explain the general algorithm: For ANY given number N, where do we start searching (e.g. from N + 1), and what test do we perform on each candidate to check if it's prime?",
       correction: "Explain the general logic: Start from N + 1 and test each candidate for primality until the first prime is found.",
       suggestedInput: "For a given number N, start testing candidate numbers from N + 1. Check each number one by one to see if it has no divisors other than 1 and itself, and stop at the first prime found.",
       matchedFirebaseInput: "11 is the next prime number for 7"
@@ -126,7 +162,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: true,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! That is a great starting observation\u2014you are checking the candidate right after your number (for 7, checking 8). But notice that 8 is NOT prime (it is divisible by 2 and 4)! What should we do next if that number is not prime? How do we keep incrementing and checking each consecutive number (8, 9, 10, 11...) until we reach the first prime number?",
+      feedback: "\u{1F31F} Coach Maara here! That is a great starting observation\u2014you are checking the candidate right after your number (for 7, checking 8). But notice that 8 is NOT prime (it is divisible by 2 and 4)! What should we do next if that number is not prime? How do we keep incrementing and checking each consecutive number (8, 9, 10, 11...) until we reach the first prime number?",
       correction: "Explain what happens if the next number is not prime: keep incrementing by 1 and checking each number one by one until the first prime is found.",
       suggestedInput: "If the input is 7, we check the next number 8. Since 8 is not prime, we keep increasing by 1 and check 9, 10, 11 until we find the first prime (11).",
       matchedFirebaseInput: "We need to check the next number of the taken number is prime or not"
@@ -147,7 +183,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: isTheoryVerified,
       isMathematicalExplanation: isMathVerified,
-      feedback: `\u{1F31F} Coach Maya here! Outstanding logic! \u{1F389} You have clearly and accurately explained the concept of Next Prime Number: Start testing candidate numbers strictly greater than N (from N + 1), test each candidate for primality (ensuring no divisors between 2 and candidate - 1), and stop as soon as the first prime number is found. Excellent mastery! Proceed to Recipe stage!`,
+      feedback: `\u{1F31F} Coach Maara here! Outstanding logic! \u{1F389} You have clearly and accurately explained the concept of Next Prime Number: Start testing candidate numbers strictly greater than N (from N + 1), test each candidate for primality (ensuring no divisors between 2 and candidate - 1), and stop as soon as the first prime number is found. Excellent mastery! Proceed to Recipe stage!`,
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself"
@@ -159,7 +195,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: true,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! Great start! Starting from (given number + 1), what mathematical test do we perform on each candidate number to check if it is prime?",
+      feedback: "\u{1F31F} Coach Maara here! Great start! Starting from (given number + 1), what mathematical test do we perform on each candidate number to check if it is prime?",
       correction: "Check if the candidate number is prime (has no divisors other than 1 and itself).",
       suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
       matchedFirebaseInput: "start testing from given number + 1"
@@ -171,7 +207,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: true,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! Superb! A prime number has no divisors other than 1 and itself. To find the NEXT prime number for a given N, where do we start our search, and how do we test each number?",
+      feedback: "\u{1F31F} Coach Maara here! Superb! A prime number has no divisors other than 1 and itself. To find the NEXT prime number for a given N, where do we start our search, and how do we test each number?",
       correction: "Start from N + 1 and test each consecutive candidate number until a prime is found.",
       suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
       matchedFirebaseInput: "check if the candidate number is prime"
@@ -183,7 +219,7 @@ function validateNextPrimeLogic(text) {
       hasFatalMisconception: false,
       isTheoryExplanation: false,
       isMathematicalExplanation: false,
-      feedback: "\u{1F31F} Coach Maya here! Exactly! Keep increasing the candidate by 1 and testing each number until the first prime is found.",
+      feedback: "\u{1F31F} Coach Maara here! Exactly! Keep increasing the candidate by 1 and testing each number until the first prime is found.",
       correction: "Combine into a full explanation: start from N+1, test each candidate for primality, and return the first prime.",
       suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
       matchedFirebaseInput: "increase by 1 and check the next number"
@@ -194,7 +230,7 @@ function validateNextPrimeLogic(text) {
     hasFatalMisconception: false,
     isTheoryExplanation: false,
     isMathematicalExplanation: false,
-    feedback: "\u{1F31F} Coach Maya here! You're making progress. Remember, the next prime number is the first prime strictly greater than N. Start from N + 1, test each consecutive candidate number for primality (no divisors other than 1 and itself), and stop when you find the first prime!",
+    feedback: "\u{1F31F} Coach Maara here! You're making progress. Remember, the next prime number is the first prime strictly greater than N. Start from N + 1, test each consecutive candidate number for primality (no divisors other than 1 and itself), and stop when you find the first prime!",
     correction: "Explain: Start from N + 1, test each candidate for divisors, if not prime increase by 1, stop at first prime.",
     suggestedInput: "start from N+1 and check each consecutive number until we find a number with no divisors other than 1 and itself",
     matchedFirebaseInput: "what should we do to find the next prime number"
@@ -284,32 +320,37 @@ function validateNextPrimeRecipe(text) {
   if (hasCode) {
     const itemsList = detectedItems.join(", ");
     const hasNPlusPlus = /\bn\+\+/i.test(text);
+    const nextRecipeStep = !step1 ? "Step 1: Get the input number N" :
+      !step2 ? "Step 2: Start candidate number as N + 1 (if candidate < 2, set candidate to 2)" :
+      !step3 ? "Step 3: Check if the candidate number is prime" :
+      !step4 ? "Step 4: If candidate is prime, display candidate as the next prime and stop" :
+      "Step 5: If candidate is not prime, increase candidate by 1 and repeat Step 3";
     if (step1 && step2 && step3 && step4 && step5) {
       if (hasNPlusPlus) {
         return {
           isFullyVerified: false,
           stepProgress,
-          feedback: "\u{1F31F} Coach Maya checking in! You have mapped out all 5 steps of the recipe flow very well:\n\u2022 Step 1: Read input number N \u2705\n\u2022 Step 2: Start candidate number as N + 1 \u2705\n\u2022 Step 3: Check prime condition \u2705\n\u2022 Step 4: If prime, display candidate as next prime and stop \u2705\n\u2022 Step 5: If not prime, move to next number and repeat \u2705\n\n\u{1F50D} **One small correction for Step 5:**\nYou wrote `n++`. In the Recipe stage:\n1. We describe algorithmic steps in plain everyday English without code symbols like `++`.\n2. Also, remember we increment the **candidate number** (candidate + 1), not the original input `n`!\n\n\u{1F449} Simply update that line to plain English: **'If the number is not prime, increase candidate by 1 and repeat from Step 3'**.",
+          feedback: "\u{1F31F} Coach Maara checking in! You have mapped out all 5 steps of the recipe flow very well:\n\u2022 Step 1: Read input number N \u2705\n\u2022 Step 2: Start candidate number as N + 1 \u2705\n\u2022 Step 3: Check prime condition \u2705\n\u2022 Step 4: If prime, display candidate as next prime and stop \u2705\n\u2022 Step 5: If not prime, move to next number and repeat \u2705\n\n\u{1F50D} **One small correction for Step 5:**\nYou wrote `n++`. In the Recipe stage:\n1. We describe algorithmic steps in plain everyday English without code symbols like `++`.\n2. Also, remember we increment the **candidate number** (candidate + 1), not the original input `n`!\n\n\u{1F449} Simply update that line to plain English: **'If the number is not prime, increase candidate by 1 and repeat from Step 3'**.",
           correction: "Replace 'n++' with plain English: 'Increase candidate by 1 and repeat Step 3'.",
-          suggestedInput: "Step 1: Get the input number N\nStep 2: Start candidate number as N + 1 (if candidate < 2, set candidate to 2)\nStep 3: Check if the candidate number is prime\nStep 4: If candidate is prime, display candidate as the next prime and stop\nStep 5: If candidate is not prime, increase candidate by 1 and repeat Step 3",
+          suggestedInput: "Step 5: If candidate is not prime, increase candidate by 1 and repeat Step 3",
           matchedFirebaseInput: "what should i do here"
         };
       }
       return {
         isFullyVerified: false,
         stepProgress,
-        feedback: `\u{1F31F} Coach Maya checking in! You have sequenced all 5 recipe steps well! In the **Recipe** stage, we describe our solution as a human kitchen-style recipe in plain English, without programming tool keywords or code syntax (spotted: ${itemsList}).
+        feedback: `\u{1F31F} Coach Maara checking in! You have sequenced all 5 recipe steps well! In the **Recipe** stage, we describe our solution as a human kitchen-style recipe in plain English, without programming tool keywords or code syntax (spotted: ${itemsList}).
 
 \u{1F449} Rephrase any code keywords into everyday plain words (e.g. 'increase candidate by 1 and repeat Step 3') so we can complete this stage!`,
         correction: "Write the algorithm in plain English without programming keywords.",
-        suggestedInput: "Step 1: Get the input number N\nStep 2: Start candidate number as N + 1 (if candidate < 2, set candidate to 2)\nStep 3: Check if the candidate number is prime\nStep 4: If candidate is prime, display candidate as the next prime and stop\nStep 5: If candidate is not prime, increase candidate by 1 and repeat Step 3",
+        suggestedInput: nextRecipeStep,
         matchedFirebaseInput: "what should i do here"
       };
     }
     return {
       isFullyVerified: false,
       stepProgress,
-      feedback: `\u{1F31F} Coach Maya gentle reminder: In the **Recipe** stage, we describe our solution as a human kitchen-style recipe in plain English, without programming tool keywords or code syntax (spotted: ${itemsList}).
+      feedback: `\u{1F31F} Coach Maara gentle reminder: In the **Recipe** stage, we describe our solution as a human kitchen-style recipe in plain English, without programming tool keywords or code syntax (spotted: ${itemsList}).
 
 Please describe the steps in everyday plain language:
 - Step 1: Get the input number N
@@ -318,7 +359,7 @@ Please describe the steps in everyday plain language:
 - Step 4: If candidate is prime, display candidate as the next prime and stop
 - Step 5: If candidate is not prime, increase candidate by 1 and repeat Step 3`,
       correction: "Write the algorithm in plain English without programming keywords.",
-      suggestedInput: "Step 1: Get the input number N\nStep 2: Start candidate number as N + 1 (if candidate < 2, set candidate to 2)\nStep 3: Check if the candidate number is prime\nStep 4: If candidate is prime, display candidate as the next prime and stop\nStep 5: If candidate is not prime, increase candidate by 1 and repeat Step 3",
+      suggestedInput: nextRecipeStep,
       matchedFirebaseInput: "what should i do here"
     };
   }
@@ -326,7 +367,7 @@ Please describe the steps in everyday plain language:
     return {
       isFullyVerified: true,
       stepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Outstanding! \u{1F389} You have written down the complete, step-by-step recipe with every essential step in place and zero programming jargon. Proceed to Stage 3: Ingredients!",
+      feedback: "\u{1F31F} Coach Maara here! Outstanding! \u{1F389} You have written down the complete, step-by-step recipe with every essential step in place and zero programming jargon. Proceed to Stage 3: Ingredients!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "step 3.2 : If candidate is not prime, increase candidate by 1 and repeat Step 3"
@@ -336,7 +377,7 @@ Please describe the steps in everyday plain language:
     return {
       isFullyVerified: false,
       stepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Let's turn our Next Prime logic into an easy-to-follow cooking recipe! In plain English (no code tools/keywords), what is our very first step to begin the program?",
+      feedback: "\u{1F31F} Coach Maara here! Let's turn our Next Prime logic into an easy-to-follow cooking recipe! In plain English (no code tools/keywords), what is our very first step to begin the program?",
       correction: "Step 1: Get the input number N",
       suggestedInput: "Step 1: Get the input number N",
       matchedFirebaseInput: "what should i do here"
@@ -346,7 +387,7 @@ Please describe the steps in everyday plain language:
     return {
       isFullyVerified: false,
       stepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Great start with Step 1! In Step 2, what initial candidate number do we start testing to find the next prime strictly greater than N?",
+      feedback: "\u{1F31F} Coach Maara here! Great start with Step 1! In Step 2, what initial candidate number do we start testing to find the next prime strictly greater than N?",
       correction: "Step 2: Start candidate number as N + 1 (if candidate < 2, set candidate to 2)",
       suggestedInput: "Step 2: Start candidate number as N + 1 (if candidate < 2, set candidate to 2)",
       matchedFirebaseInput: "step 1 : Get the input number N"
@@ -356,7 +397,7 @@ Please describe the steps in everyday plain language:
     return {
       isFullyVerified: false,
       stepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Spot on with Steps 1 & 2! Now in Step 3, how do we test this candidate to check whether it is a prime number?",
+      feedback: "\u{1F31F} Coach Maara here! Spot on with Steps 1 & 2! Now in Step 3, how do we test this candidate to check whether it is a prime number?",
       correction: "Step 3: Check if the candidate number is prime (test if any number from 2 to candidate - 1 divides it evenly)",
       suggestedInput: "Step 3: Check if the candidate number is prime",
       matchedFirebaseInput: "step 2 : Start candidate number as N + 1 (if candidate < 2, set candidate to 2)"
@@ -366,7 +407,7 @@ Please describe the steps in everyday plain language:
     return {
       isFullyVerified: false,
       stepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Wonderful progress! In Step 4 (or Step 3.1), what should happen if our candidate number turns out to be prime?",
+      feedback: "\u{1F31F} Coach Maara here! Wonderful progress! In Step 4 (or Step 3.1), what should happen if our candidate number turns out to be prime?",
       correction: "Step 4: If candidate is prime, display candidate as the next prime and stop",
       suggestedInput: "Step 4: If candidate is prime, display candidate as the next prime and stop",
       matchedFirebaseInput: "step 3 : Check if the candidate number is prime"
@@ -375,7 +416,7 @@ Please describe the steps in everyday plain language:
   return {
     isFullyVerified: false,
     stepProgress,
-    feedback: "\u{1F31F} Coach Maya here! You're almost done! In Step 5 (or Step 3.2), what should we do if our candidate is NOT prime?",
+    feedback: "\u{1F31F} Coach Maara here! You're almost done! In Step 5 (or Step 3.2), what should we do if our candidate is NOT prime?",
     correction: "Step 5: If candidate is not prime, increase candidate by 1 and repeat Step 3",
     suggestedInput: "Step 5: If candidate is not prime, increase candidate by 1 and repeat Step 3",
     matchedFirebaseInput: "step 3.1 : If candidate is prime, display candidate as the next prime and stop"
@@ -476,16 +517,16 @@ function validateNextPrimeIngredients(text, attemptCount = 1) {
     return {
       isFullyVerified: true,
       stepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Outstanding! \u{1F389} All 5 essential ingredients for the Next Prime Number algorithm are thoroughly identified:\n\u2022 Variables: input `a` and candidate `b = a + 1` \u2705\n\u2022 Outer search loop (start, end, next step): `for (b = a + 1; ; b++)` \u2705\n\u2022 Inner prime check loop with `count = 0` set right above it: `for (i = 1; i <= b; i++)` \u2705\n\u2022 Divisibility condition: `b % i == 0` with `action: count = count + 1` \u2705\n\u2022 Decision: `if (count == 2) { print(b); break; }` \u2705\n\nProceed to Stage 4: Taste the Sample!",
+      feedback: "\u{1F31F} Coach Maara here! Outstanding! \u{1F389} All 5 essential ingredients for the Next Prime Number algorithm are thoroughly identified:\n\u2022 Variables: input `a` and candidate `b = a + 1` \u2705\n\u2022 Outer search loop (start, end, next step): `for (b = a + 1; ; b++)` \u2705\n\u2022 Inner prime check loop with `count = 0` set right above it: `for (i = 1; i <= b; i++)` \u2705\n\u2022 Divisibility condition: `b % i == 0` with `action: count = count + 1` \u2705\n\u2022 Decision: `if (count == 2) { print(b); break; }` \u2705\n\nProceed to Stage 4: Taste the Sample!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "step 5 : if (count == 2) { print(b); break; }"
     };
   }
   if (step1 && !step2) {
-    let feedbackMsg2 = "\u{1F31F} Coach Maya here! You've identified using a **For Loop** for Step 2! In our ingredients structure, every loop must be decomposed into its 3 core parts:\n\u2022 **Start**: Where do we start testing candidate numbers? (e.g. `start: a + 1` or `start: n + 1`)\n\u2022 **End / Stop**: When do we stop searching? (e.g. `end: infinite / until prime found`)\n\u2022 **Next Step**: How do we advance to the next candidate? (e.g. `next step: +1`)\n\nPlease specify the **start**, **stop/end**, and **next step** for your loop!";
+    let feedbackMsg2 = "\u{1F31F} Coach Maara here! You've identified using a **For Loop** for Step 2! In our ingredients structure, every loop must be decomposed into its 3 core parts:\n\u2022 **Start**: Where do we start testing candidate numbers? (e.g. `start: a + 1` or `start: n + 1`)\n\u2022 **End / Stop**: When do we stop searching? (e.g. `end: infinite / until prime found`)\n\u2022 **Next Step**: How do we advance to the next candidate? (e.g. `next step: +1`)\n\nPlease specify the **start**, **stop/end**, and **next step** for your loop!";
     if (hasFaultyOuterEnd) {
-      feedbackMsg2 = "\u{1F31F} Coach Maya here! Look closely at your outer loop's **End**: You wrote `End: b`. If the outer search loop starts at `b` and ends at `b`, it will only run once for that single number and stop! But if `b` is not prime (for example, if input is 5, then b is 6, which is composite), our program must keep searching through 7, 8, 9... until it lands on the next prime! Therefore, the outer loop's end condition must be **infinite / until prime found**.";
+      feedbackMsg2 = "\u{1F31F} Coach Maara here! Look closely at your outer loop's **End**: You wrote `End: b`. If the outer search loop starts at `b` and ends at `b`, it will only run once for that single number and stop! But if `b` is not prime (for example, if input is 5, then b is 6, which is composite), our program must keep searching through 7, 8, 9... until it lands on the next prime! Therefore, the outer loop's end condition must be **infinite / until prime found**.";
     }
     return {
       isFullyVerified: false,
@@ -497,7 +538,7 @@ function validateNextPrimeIngredients(text, attemptCount = 1) {
     };
   }
   if (!step1) {
-    const feedbackMsg2 = attemptCount >= 3 ? "\u{1F31F} Coach Maya here! For **Step 1 (Variables)**: We need an input variable (e.g. `a = 5` or `n = 5`) to store the given number, and a candidate variable initialized to the next consecutive number (e.g. `b = a + 1` or `candidate = n + 1`)." : "\u{1F31F} Coach Maya here! Let's start with Step 1 (Variables): What variable will store the user's input number, and what variable holds our starting candidate (e.g. `step 1: a=5`, `step 1.1: b=a+1`)?";
+    const feedbackMsg2 = attemptCount >= 3 ? "\u{1F31F} Coach Maara here! For **Step 1 (Variables)**: We need an input variable (e.g. `a = 5` or `n = 5`) to store the given number, and a candidate variable initialized to the next consecutive number (e.g. `b = a + 1` or `candidate = n + 1`)." : "\u{1F31F} Coach Maara here! Let's start with Step 1 (Variables): What variable will store the user's input number, and what variable holds our starting candidate (e.g. `step 1: a=5`, `step 1.1: b=a+1`)?";
     return {
       isFullyVerified: false,
       stepProgress,
@@ -511,18 +552,18 @@ function validateNextPrimeIngredients(text, attemptCount = 1) {
     return {
       isFullyVerified: false,
       stepProgress,
-      feedback: "\u{1F31F} Coach Maya logic alert: Look at where you placed `count = 0`! You placed `count = 0` below or after the `if` condition (in Step 4/Step 5).\n\n\u2022 **Step 3 (Reset before loop)**: `count = 0` must be initialized in Step 3 BEFORE the inner loop begins (so each candidate starts fresh with 0 divisors).\n\u2022 **Step 4 (Inside if condition)**: Inside the inner loop, when a divisor is found (`b % j == 0`), the action must be **count = count + 1** (or `count++`) to count that divisor!\n\u2022 **Step 5 (Decision)**: After the inner loop finishes counting divisors, we check: **if (count == 2) { print(b); break; }**.",
+      feedback: "\u{1F31F} Coach Maara logic alert: Look at where you placed `count = 0`! You placed `count = 0` below or after the `if` condition (in Step 4/Step 5).\n\n\u2022 **Step 3 (Reset before loop)**: `count = 0` must be initialized in Step 3 BEFORE the inner loop begins (so each candidate starts fresh with 0 divisors).\n\u2022 **Step 4 (Inside if condition)**: Inside the inner loop, when a divisor is found (`b % j == 0`), the action must be **count = count + 1** (or `count++`) to count that divisor!\n\u2022 **Step 5 (Decision)**: After the inner loop finishes counting divisors, we check: **if (count == 2) { print(b); break; }**.",
       correction: "Step 3: count = 0, inner for loop (start: 1, end: b, next step: +1)\nStep 4: use if condition (left side: b % j, operator: ==, right side: 0, action: count = count + 1)\nStep 5: if (count == 2) { print(b); break; }",
       suggestedInput: "Step 3: count = 0\n  start (1)\n  end (b)\n  next step (+1)\nStep 4: use if condition\n  left side (b % j)\n  operator (==)\n  right side (0)\n  action: count = count + 1\nStep 5: use if condition\n  left side (count)\n  operator (==)\n  right side (2)\n  action: print(b); break;",
       matchedFirebaseInput: "step 4 : left side: b % j, operator: ==, right side: 0, action: count = count + 1"
     };
   }
   if (!step3) {
-    let feedbackMsg2 = attemptCount >= 3 ? "\u{1F31F} Coach Maya here! Step 1 and Step 2 are completed!\n\nNow for **Step 3 (Inner Prime Check Loop)**: We can use the **Two Divisors Method**:\n1. Initialize `count = 0` (or `divisor = 0`)\n2. Decompose the inner loop for testing candidate `b`:\n\u2022 **Start**: `1`\n\u2022 **End**: `b` (the candidate number)\n\u2022 **Next Step**: `+1`" : "\u{1F31F} Coach Maya here! Step 1 and Step 2 look great!\n\nNow for **Step 3 (Prime Check Loop & Counter)**: We need to count the divisors of candidate `b`! Set `count = 0` and define your inner `for loop` with its 3 parts:\n\u2022 **Start**: `1`\n\u2022 **End**: `b` (testing candidate `b`, not `a`)\n\u2022 **Next Step**: `+1`";
+    let feedbackMsg2 = attemptCount >= 3 ? "\u{1F31F} Coach Maara here! Step 1 and Step 2 are completed!\n\nNow for **Step 3 (Inner Prime Check Loop)**: We can use the **Two Divisors Method**:\n1. Initialize `count = 0` (or `divisor = 0`)\n2. Decompose the inner loop for testing candidate `b`:\n\u2022 **Start**: `1`\n\u2022 **End**: `b` (the candidate number)\n\u2022 **Next Step**: `+1`" : "\u{1F31F} Coach Maara here! Step 1 and Step 2 look great!\n\nNow for **Step 3 (Prime Check Loop & Counter)**: We need to count the divisors of candidate `b`! Set `count = 0` and define your inner `for loop` with its 3 parts:\n\u2022 **Start**: `1`\n\u2022 **End**: `b` (testing candidate `b`, not `a`)\n\u2022 **Next Step**: `+1`";
     if (hasInnerEndTargetingInputA) {
-      feedbackMsg2 = "\u{1F31F} Coach Maya here! Look closely at your inner loop's **End**: You wrote `End: a`. Remember, `a` is only the initial user input (e.g. 5), but we want to check if the candidate `b` (e.g. 6, 7...) is prime! So your inner loop must end at `End: b` (testing from 1 to b) so we can count divisors for `b`!";
+      feedbackMsg2 = "\u{1F31F} Coach Maara here! Look closely at your inner loop's **End**: You wrote `End: a`. Remember, `a` is only the initial user input (e.g. 5), but we want to check if the candidate `b` (e.g. 6, 7...) is prime! So your inner loop must end at `End: b` (testing from 1 to b) so we can count divisors for `b`!";
     } else if (hasDecomposedInnerLoop && !hasPrimeFlagOrCountInStep3) {
-      feedbackMsg2 = "\u{1F31F} Coach Maya here! Great work decomposing your inner loop (`Start: 1`, `End: b`, `Next Step: +1`)! Now, right above or with the inner loop in Step 3, make sure to initialize **`count = 0`** so each candidate number starts fresh with 0 divisors.";
+      feedbackMsg2 = "\u{1F31F} Coach Maara here! Great work decomposing your inner loop (`Start: 1`, `End: b`, `Next Step: +1`)! Now, right above or with the inner loop in Step 3, make sure to initialize **`count = 0`** so each candidate number starts fresh with 0 divisors.";
     }
     return {
       isFullyVerified: false,
@@ -534,13 +575,13 @@ function validateNextPrimeIngredients(text, attemptCount = 1) {
     };
   }
   if (!step4) {
-    let feedbackMsg2 = attemptCount >= 3 ? "\u{1F31F} Coach Maya here! Step 3 is complete! For **Step 4 (Divisibility Condition)**: When checking factors inside the inner loop:\n\u2022 **Left side (L.S)**: `b % j` (or `b % i`)\n\u2022 **Operator**: `==` (use `==` for comparison)\n\u2022 **Right side (R.S)**: `0`\n\u2022 **Action**: `count = count + 1` (or `count++`)" : "\u{1F31F} Coach Maya here! Step 3 is complete! Now for **Step 4 (Divisibility Condition)**: Inside the inner loop, specify the `if condition` to count divisors:\n\u2022 **Left side**: `b % j` (or `b % i`)\n\u2022 **Operator**: `==`\n\u2022 **Right side**: `0`\n\u2022 **Action**: `count = count + 1`";
+    let feedbackMsg2 = attemptCount >= 3 ? "\u{1F31F} Coach Maara here! Step 3 is complete! For **Step 4 (Divisibility Condition)**: When checking factors inside the inner loop:\n\u2022 **Left side (L.S)**: `b % j` (or `b % i`)\n\u2022 **Operator**: `==` (use `==` for comparison)\n\u2022 **Right side (R.S)**: `0`\n\u2022 **Action**: `count = count + 1` (or `count++`)" : "\u{1F31F} Coach Maara here! Step 3 is complete! Now for **Step 4 (Divisibility Condition)**: Inside the inner loop, specify the `if condition` to count divisors:\n\u2022 **Left side**: `b % j` (or `b % i`)\n\u2022 **Operator**: `==`\n\u2022 **Right side**: `0`\n\u2022 **Action**: `count = count + 1`";
     if (hasSingleEqualInOperator) {
-      feedbackMsg2 = "\u{1F31F} Coach Maya here! Look closely at your **Operator**: You wrote single equal (`=`). Remember, `=` is for assignment, whereas `==` (double equals) is required for comparison in an `if condition`! Please update `operator: ==` and add the **Action**: `count = count + 1`!";
+      feedbackMsg2 = "\u{1F31F} Coach Maara here! Look closely at your **Operator**: You wrote single equal (`=`). Remember, `=` is for assignment, whereas `==` (double equals) is required for comparison in an `if condition`! Please update `operator: ==` and add the **Action**: `count = count + 1`!";
     } else if (hasCondLeft && hasCondRight && !hasCondOp && !hasModuloAction) {
-      feedbackMsg2 = "\u{1F31F} Coach Maya here! Step 3 is completed! For **Step 4 (Divisibility Condition)**, you have `Left side: b % j` and `Right side: 0`! Now just add:\n\u2022 **Operator**: `==`\n\u2022 **Action**: `count = count + 1` (or `count++`) to count each factor!";
+      feedbackMsg2 = "\u{1F31F} Coach Maara here! Step 3 is completed! For **Step 4 (Divisibility Condition)**, you have `Left side: b % j` and `Right side: 0`! Now just add:\n\u2022 **Operator**: `==`\n\u2022 **Action**: `count = count + 1` (or `count++`) to count each factor!";
     } else if (hasDecomposedModulo && !hasModuloAction) {
-      feedbackMsg2 = "\u{1F31F} Coach Maya here! You have defined the condition parts (Left side, Operator, Right side)! Now just add the **Action** to complete this step: What should happen to `count` when a divisor is found? Add `action: count = count + 1` (or `count++`)!";
+      feedbackMsg2 = "\u{1F31F} Coach Maara here! You have defined the condition parts (Left side, Operator, Right side)! Now just add the **Action** to complete this step: What should happen to `count` when a divisor is found? Add `action: count = count + 1` (or `count++`)!";
     }
     return {
       isFullyVerified: false,
@@ -551,11 +592,11 @@ function validateNextPrimeIngredients(text, attemptCount = 1) {
       matchedFirebaseInput: "step 3 : count = 0, and for loop from i = 1 to i <= b"
     };
   }
-  let feedbackMsg = attemptCount >= 3 ? "\u{1F31F} Coach Maya here! For **Step 5 (Decision)**: A prime number has **exactly 2 divisors** (1 and itself). After the inner loop finishes:\n\u2022 **Left side**: `count`\n\u2022 **Operator**: `==`\n\u2022 **Right side**: `2`\n\u2022 **Action**: `print(b); break;`" : "\u{1F31F} Coach Maya here! Step 4 is complete! Now for **Step 5 (Decision)**: After counting divisors in the inner loop, use an `if condition` on `count`: If `count == 2`, print candidate `b` and `break`! (Since `count = 0` is already placed right above the inner loop inside our outer loop, no else is needed!)";
+  let feedbackMsg = attemptCount >= 3 ? "\u{1F31F} Coach Maara here! For **Step 5 (Decision)**: A prime number has **exactly 2 divisors** (1 and itself). After the inner loop finishes:\n\u2022 **Left side**: `count`\n\u2022 **Operator**: `==`\n\u2022 **Right side**: `2`\n\u2022 **Action**: `print(b); break;`" : "\u{1F31F} Coach Maara here! Step 4 is complete! Now for **Step 5 (Decision)**: After counting divisors in the inner loop, use an `if condition` on `count`: If `count == 2`, print candidate `b` and `break`! (Since `count = 0` is already placed right above the inner loop inside our outer loop, no else is needed!)";
   if (hasPrintInputAInsteadOfCandidate) {
-    feedbackMsg = "\u{1F31F} Coach Maya here! Look at your print statement in Step 5: You wrote `print(a)`. Remember, `a` is the original user input (e.g., 5). The prime number we found is stored in candidate variable `b` (or `i`)! Please update it to `print(b)` and add `break;`!";
+    feedbackMsg = "\u{1F31F} Coach Maara here! Look at your print statement in Step 5: You wrote `print(a)`. Remember, `a` is the original user input (e.g., 5). The prime number we found is stored in candidate variable `b` (or `i`)! Please update it to `print(b)` and add `break;`!";
   } else if (!hasBreak) {
-    feedbackMsg = "\u{1F31F} Coach Maya here! In **Step 5 (Decision)**, after printing the prime candidate `print(b)`, we must stop our search by adding **`break;`**!";
+    feedbackMsg = "\u{1F31F} Coach Maara here! In **Step 5 (Decision)**, after printing the prime candidate `print(b)`, we must stop our search by adding **`break;`**!";
   }
   return {
     isFullyVerified: false,
@@ -899,7 +940,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: true,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya here! You gotcha! \u{1F389} You have successfully implemented the complete Next Prime Number program in ${langLabel2} with candidate initialization (\`candidate = n + 1\`), outer search \`for\` loop, inner primality check \`for\` loop with flag resetting, clean output display, and break termination! That completes the Next Prime Number journey! Let's code!`,
+      feedback: `\u{1F31F} Coach Maara here! You gotcha! \u{1F389} You have successfully implemented the complete Next Prime Number program in ${langLabel2} with candidate initialization (\`candidate = n + 1\`), outer search \`for\` loop, inner primality check \`for\` loop with flag resetting, clean output display, and break termination! That completes the Next Prime Number journey! Let's code!`,
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: getLanguageSnippet("full"),
@@ -920,7 +961,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya logic alert: Look at your candidate initialization! If you start candidate at \`${inputVar}\`, when \`${inputVar} = 7\`, 7 will immediately be returned as prime instead of the NEXT prime (11)! Start your \`for\` loop candidate at \`${inputVar} + 1\` (\`${fixCode}\`).`,
+      feedback: `\u{1F31F} Coach Maara logic alert: Look at your candidate initialization! If you start candidate at \`${inputVar}\`, when \`${inputVar} = 7\`, 7 will immediately be returned as prime instead of the NEXT prime (11)! Start your \`for\` loop candidate at \`${inputVar} + 1\` (\`${fixCode}\`).`,
       correction: `Step 1: Start candidate from ${inputVar} + 1: ${fixCode}`,
       suggestedInput: getLanguageSnippet("step1"),
       matchedFirebaseInput: "var n = 7;\nvar candidate = n;\nfor (var candidate = n; ; candidate++)",
@@ -941,7 +982,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya bug alert: Your primality flag is initialized outside the outer \`for\` loop! \u{1F50D} Once a non-prime candidate (like 8) sets it to false, it will stay false forever and never find 11! Reset \`${flagResetCode}\` INSIDE the outer \`for\` loop at the start of each candidate iteration.`,
+      feedback: `\u{1F31F} Coach Maara bug alert: Your primality flag is initialized outside the outer \`for\` loop! \u{1F50D} Once a non-prime candidate (like 8) sets it to false, it will stay false forever and never find 11! Reset \`${flagResetCode}\` INSIDE the outer \`for\` loop at the start of each candidate iteration.`,
       correction: `Step 3: Reset isPrime inside outer for loop for each new candidate: ${flagResetCode}`,
       suggestedInput: getLanguageSnippet("step3"),
       matchedFirebaseInput: "var n = 7;\nvar isPrime = true;\nfor (var candidate = n + 1; ; candidate++) { ... }",
@@ -961,7 +1002,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya loop alert: In your search loop, after finding and printing the prime, there is no \`break\` statement! Without \`break\`, the loop will keep searching and printing every subsequent prime number. Add \`break\` right after printing!`,
+      feedback: `\u{1F31F} Coach Maara loop alert: In your search loop, after finding and printing the prime, there is no \`break\` statement! Without \`break\`, the loop will keep searching and printing every subsequent prime number. Add \`break\` right after printing!`,
       correction: `Step 4: Add break statement after printing candidate.`,
       suggestedInput: getLanguageSnippet("step4"),
       matchedFirebaseInput: "if (isPrime) print(candidate);",
@@ -982,7 +1023,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya syntax alert: In your inner \`for\` loop, \`i\` starts at 0. Calculating \`${candidateVar} % 0\` causes a Division by Zero error! Change inner loop start to \`${startCode}\`.`,
+      feedback: `\u{1F31F} Coach Maara syntax alert: In your inner \`for\` loop, \`i\` starts at 0. Calculating \`${candidateVar} % 0\` causes a Division by Zero error! Change inner loop start to \`${startCode}\`.`,
       correction: `Step 3: Start inner for loop from 2: ${startCode}`,
       suggestedInput: getLanguageSnippet("step3"),
       matchedFirebaseInput: "for (var i = 0; i < candidate; i++)",
@@ -1003,7 +1044,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya logic alert: In your inner \`for\` loop, starting at \`i = 1\` means \`${candidateVar} % 1 == 0\` is always true for EVERY number! This marks every number as non-prime. Start your divisor test from \`${startCode}\`.`,
+      feedback: `\u{1F31F} Coach Maara logic alert: In your inner \`for\` loop, starting at \`i = 1\` means \`${candidateVar} % 1 == 0\` is always true for EVERY number! This marks every number as non-prime. Start your divisor test from \`${startCode}\`.`,
       correction: `Step 3: Start inner for loop at 2: ${startCode}`,
       suggestedInput: getLanguageSnippet("step3"),
       matchedFirebaseInput: "for (var i = 1; i < candidate; i++)",
@@ -1024,7 +1065,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya boundary alert: In your inner \`for\` loop condition, testing \`${candidateVar} % ${candidateVar} == 0\` is always true for itself! This incorrectly flags prime numbers as composite. Change inner loop boundary to strictly less than candidate (\`${boundCode}\`).`,
+      feedback: `\u{1F31F} Coach Maara boundary alert: In your inner \`for\` loop condition, testing \`${candidateVar} % ${candidateVar} == 0\` is always true for itself! This incorrectly flags prime numbers as composite. Change inner loop boundary to strictly less than candidate (\`${boundCode}\`).`,
       correction: `Step 3: Change inner loop condition to strictly less than candidate: ${boundCode}`,
       suggestedInput: getLanguageSnippet("step3"),
       matchedFirebaseInput: "for (var i = 2; i <= candidate; i++)",
@@ -1044,7 +1085,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya syntax alert: You used division operator \`/\` in \`${candidateVar} / i == 0\`. Division gives quotient. To check divisibility, use the modulo remainder operator \`%\` (\`${candidateVar} % i == 0\`)!`,
+      feedback: `\u{1F31F} Coach Maara syntax alert: You used division operator \`/\` in \`${candidateVar} / i == 0\`. Division gives quotient. To check divisibility, use the modulo remainder operator \`%\` (\`${candidateVar} % i == 0\`)!`,
       correction: `Step 3: Use % operator: ${candidateVar} % i == 0`,
       suggestedInput: getLanguageSnippet("step3"),
       matchedFirebaseInput: "if (candidate / i == 0)",
@@ -1064,7 +1105,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya syntax alert: In your condition, you wrote a single \`=\`. Single \`=\` is for assignment. Use equality comparison operator \`==\` (\`${candidateVar} % i == 0\`)!`,
+      feedback: `\u{1F31F} Coach Maara syntax alert: In your condition, you wrote a single \`=\`. Single \`=\` is for assignment. Use equality comparison operator \`==\` (\`${candidateVar} % i == 0\`)!`,
       correction: `Step 3: Use == operator: ${candidateVar} % i == 0`,
       suggestedInput: getLanguageSnippet("step3"),
       matchedFirebaseInput: "if (candidate % i = 0)",
@@ -1085,7 +1126,7 @@ for (let b = a + 1; ; b++) {
     return {
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya loop alert: In your search loop, if a candidate is not prime, you must increment it by 1 (\`${incCode}\`) to test the next number! (Or simply use an outer \`for\` loop \`for (let candidate = n + 1; ; candidate++)\` which increments automatically).`,
+      feedback: `\u{1F31F} Coach Maara loop alert: In your search loop, if a candidate is not prime, you must increment it by 1 (\`${incCode}\`) to test the next number! (Or simply use an outer \`for\` loop \`for (let candidate = n + 1; ; candidate++)\` which increments automatically).`,
       correction: `Step 2/4: Use outer for loop with candidate++: ${getLanguageSnippet("step2").replace(/\n/g, " ")}`,
       suggestedInput: getLanguageSnippet("step2"),
       matchedFirebaseInput: "missing candidate++",
@@ -1104,11 +1145,11 @@ for (let b = a + 1; ; b++) {
   const langLabel = lang === "python" ? "Python" : lang === "java" ? "Java" : lang === "cpp" ? "C++" : lang === "c" ? "C" : "JavaScript";
   const langTag = lang === "python" ? "python" : lang === "c" || lang === "cpp" || lang === "java" ? "c" : "javascript";
   if (!hasInput || !hasCandidateInit) {
-    const hintText2 = attemptCount >= 3 ? `\u{1F31F} Coach Maya here! For **Step 1 (Input & Candidate)** in ${langLabel}:
+    const hintText2 = attemptCount >= 3 ? `\u{1F31F} Coach Maara here! For **Step 1 (Input & Candidate)** in ${langLabel}:
 \`\`\`${langTag}
 ${getLanguageSnippet("step1")}
 \`\`\`
-Try adding these variable initializations to start!` : `\u{1F31F} Coach Maya here! Welcome to Taste the Sample for Next Prime Number! Let's build our code step-by-step using \`for\` loops.
+Try adding these variable initializations to start!` : `\u{1F31F} Coach Maara here! Welcome to Taste the Sample for Next Prime Number! Let's build our code step-by-step using \`for\` loops.
 
 Here is the syntax structure pattern to guide you:
 \`\`\`${langTag}
@@ -1135,11 +1176,11 @@ ${getLanguageSyntaxPattern("step1")}
     };
   }
   if (!hasOuterLoop) {
-    const hintText2 = attemptCount >= 3 ? `\u{1F31F} Coach Maya here! For **Step 2 (Outer Search Loop)** in ${langLabel}:
+    const hintText2 = attemptCount >= 3 ? `\u{1F31F} Coach Maara here! For **Step 2 (Outer Search Loop)** in ${langLabel}:
 Create an outer \`for\` loop that starts from \`n + 1\` and increments \`candidate\` continuously:
 \`\`\`${langTag}
 ${getLanguageSnippet("step2")}
-\`\`\`` : `\u{1F31F} Coach Maya here! Great start with \`${inputVar}\`! Now for **Step 2 (Outer Search Loop)**.
+\`\`\`` : `\u{1F31F} Coach Maara here! Great start with \`${inputVar}\`! Now for **Step 2 (Outer Search Loop)**.
 We need an outer \`for\` loop to test candidates one by one starting from \`n + 1\`.
 
 Here is the syntax structure pattern:
@@ -1167,11 +1208,11 @@ ${getLanguageSyntaxPattern("step2")}
     };
   }
   if (!hasInnerLoop || !hasModuloCondition || !hasModuloAction) {
-    let hintText2 = attemptCount >= 3 ? `\u{1F31F} Coach Maya here! For **Step 3 (Inner Primality Check)** in ${langLabel}:
+    let hintText2 = attemptCount >= 3 ? `\u{1F31F} Coach Maara here! For **Step 3 (Inner Primality Check)** in ${langLabel}:
 Inside your outer \`for\` loop, reset \`count = 0\` and count divisors from 1 to \`b\`:
 \`\`\`${langTag}
 ${getLanguageSnippet("step3")}
-\`\`\`` : `\u{1F31F} Coach Maya here! Outer loop is set up! Now for **Step 3 (Inner Primality Check)**.
+\`\`\`` : `\u{1F31F} Coach Maara here! Outer loop is set up! Now for **Step 3 (Inner Primality Check)**.
 Inside your outer \`for\` loop, reset \`count = 0\` and test divisors from 1 up to \`b\`.
 
 Here is the syntax structure pattern:
@@ -1180,7 +1221,7 @@ ${getLanguageSyntaxPattern("step3")}
 \`\`\`
 \u{1F449} **Your Turn**: Inside your outer loop, initialize \`count = 0\` and add the inner divisor \`for\` loop with modulo check (\`b % i === 0\`) and action (\`count++\`)!`;
     if (hasInnerLoop && hasModuloCondition && !hasModuloAction) {
-      hintText2 = `\u{1F31F} Coach Maya here! You wrote the condition \`if (b % i == 0)\`! Now add the action inside: when a divisor is found, increment the divisor counter by writing \`count++\` (or \`count = count + 1\`)!`;
+      hintText2 = `\u{1F31F} Coach Maara here! You wrote the condition \`if (b % i == 0)\`! Now add the action inside: when a divisor is found, increment the divisor counter by writing \`count++\` (or \`count = count + 1\`)!`;
     }
     return {
       allVerified: false,
@@ -1201,11 +1242,11 @@ ${getLanguageSyntaxPattern("step3")}
       detectedLang: lang
     };
   }
-  const hintText = attemptCount >= 3 ? `\u{1F31F} Coach Maya here! For **Step 4 (Decision & Print)** in ${langLabel}:
+  const hintText = attemptCount >= 3 ? `\u{1F31F} Coach Maara here! For **Step 4 (Decision & Print)** in ${langLabel}:
 After the inner \`for\` loop finishes:
 \`\`\`${langTag}
 ${getLanguageSnippet("step4")}
-\`\`\`` : `\u{1F31F} Coach Maya here! Almost finished! Now for **Step 4 (Decision & Print)**.
+\`\`\`` : `\u{1F31F} Coach Maara here! Almost finished! Now for **Step 4 (Decision & Print)**.
 After the inner \`for\` loop finishes counting divisors, if \`count === 2\`, print candidate \`b\` and break out of the search!
 
 Here is the syntax structure pattern:

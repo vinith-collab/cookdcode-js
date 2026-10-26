@@ -15,7 +15,7 @@ function validateVotingEligibilityLogic(text) {
       return {
         isFullyVerified: false,
         hasBoundaryContradiction: true,
-        feedback: `\u{1F31F} Coach Maya gentle check: Look closely at your mathematical comparison \`${left} ${op} ${right}\`! ${left} is ${left > right ? "greater than" : "less than"} ${right}, so \`${left} ${op} ${right}\` is mathematically false! For age ${left}, write \`${left} ${left >= right ? ">=" : "<"} ${right}\`.`,
+        feedback: `\u{1F31F} Coach Maara gentle check: Look closely at your mathematical comparison \`${left} ${op} ${right}\`! ${left} is ${left > right ? "greater than" : "less than"} ${right}, so \`${left} ${op} ${right}\` is mathematically false! For age ${left}, write \`${left} ${left >= right ? ">=" : "<"} ${right}\`.`,
         correction: `For age ${left}: write \`${left} ${left >= right ? ">=" : "<"} ${right}\` (${left >= 18 ? "Eligible" : "Not Eligible"}).`,
         suggestedInput: `If age >= 18 (e.g. 20 >= 18 -> true) -> Eligible. If age < 18 (e.g. 15 < 18 -> true) -> Not Eligible.`,
         matchedFirebaseInput: "if age is 18 or more then eligible"
@@ -65,33 +65,41 @@ function validateVotingEligibilityLogic(text) {
   const hasEligibleExample = /\b(?:18|19|20|21|22|23|24|25|30|35|40|50|60)\b/.test(textWithoutNegations) && (textWithoutNegations.includes("example") || textWithoutNegations.includes("eg") || textWithoutNegations.includes("like") || textWithoutNegations.includes("eligible") || textWithoutNegations.includes("vote"));
   const hasNotEligibleExample = /\b(?:1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17)\b/.test(norm) && (norm.includes("not eligible") || norm.includes("cannot") || norm.includes("below") || norm.includes("under") || norm.includes("less"));
   const hasBothExamples = hasEligibleExample && hasNotEligibleExample;
+
+  // If the student correctly states both comparison and outcomes, clear superseded contradictory claims
+  if (hasComparisonOperator && hasEligibleOutcome && hasNotEligibleOutcome) {
+    claimsOver18Ineligible = false;
+    claimsBoundary18Ineligible = false;
+    claimsUnder18Eligible = false;
+  }
+
   const isFullyVerified = hasAgeConcept && hasComparisonOperator && hasEligibleOutcome && hasNotEligibleOutcome && !claimsOver18Ineligible && !claimsUnder18Eligible;
   let feedback = "";
   let correction = "";
   let suggestedInput = "";
   let matchedFirebaseInput = void 0;
   if (claimsBoundary18Ineligible) {
-    feedback = "\u{1F31F} Coach Maya here! Look closely at the comparison: you wrote that 'smaller than or equal to 18' is not eligible. But if someone is 18 years old, they ARE eligible to vote! Saying 'smaller than or equal to 18' mistakenly includes age 18 in the not-eligible group. A person is only not eligible when their age is strictly younger than 18 (below 18).";
+    feedback = "\u{1F31F} Coach Maara here! Look closely at the comparison: you wrote that 'smaller than or equal to 18' is not eligible. But if someone is 18 years old, they ARE eligible to vote! Saying 'smaller than or equal to 18' mistakenly includes age 18 in the not-eligible group. A person is only not eligible when their age is strictly younger than 18 (below 18).";
     correction = "If a person is 18 or older, they are Eligible to Vote; if they are younger than 18, they are Not Eligible to Vote.";
     suggestedInput = "A person must be 18 years old or older to be eligible to vote. If a person is 18 or older, they are Eligible to Vote; if they are under 18, they are Not Eligible.";
     matchedFirebaseInput = "how to check if a person can vote";
   } else if (claimsOver18Ineligible) {
-    feedback = "\u{1F31F} Coach Maya here! Hold on a moment! Take a close look at your example: you wrote that age 20 (or 18 and older) is 'not eligible'. But 20 is greater than 18, which means someone aged 20 IS eligible to vote! Remember: if a person is 18 or older, they are Eligible to Vote; only when they are younger than 18 are they Not Eligible.";
+    feedback = "\u{1F31F} Coach Maara here! Hold on a moment! Take a close look at your example: you wrote that age 20 (or 18 and older) is 'not eligible'. But 20 is greater than 18, which means someone aged 20 IS eligible to vote! Remember: if a person is 18 or older, they are Eligible to Vote; only when they are younger than 18 are they Not Eligible.";
     correction = "If a person is 18 or older, they are Eligible to Vote. If they are younger than 18, they are Not Eligible to Vote.";
     suggestedInput = "A person must be 18 years old or older to be eligible to vote. If a person is 18 or older, they are Eligible to Vote (e.g., age 20 is eligible); if they are under 18, they are Not Eligible (e.g., age 16 is not eligible).";
     matchedFirebaseInput = "how to check if a person can vote";
   } else if (claimsUnder18Eligible) {
-    feedback = "\u{1F31F} Coach Maya here! Look closely at your conclusion: anyone younger than 18 (like age 16) cannot vote legally. A person is only Eligible to Vote if they are 18 or older; otherwise they are Not Eligible.";
+    feedback = "\u{1F31F} Coach Maara here! Look closely at your conclusion: anyone younger than 18 (like age 16) cannot vote legally. A person is only Eligible to Vote if they are 18 or older; otherwise they are Not Eligible.";
     correction = "If age is 18 or older, they are Eligible to Vote. If age is under 18, they are Not Eligible.";
     suggestedInput = "A person must be 18 years old or older to vote. Age 18 or older is Eligible to Vote, and age under 18 is Not Eligible to Vote.";
     matchedFirebaseInput = "how to check if a person can vote";
   } else if (isFullyVerified) {
-    feedback = "\u{1F31F} Coach Maya here! You gotcha! \u{1F389} Outstanding logic! If someone is 18 or older, they are Eligible to Vote; otherwise (younger than 18), they are Not Eligible (for example, someone aged 20 is eligible, whereas someone aged 16 is not eligible). You have mastered the real-world logic\u2014proceed to the Recipe stage to sequence your steps!";
+    feedback = "\u{1F31F} Coach Maara here! You gotcha! \u{1F389} Outstanding logic! If someone is 18 or older, they are Eligible to Vote; otherwise (younger than 18), they are Not Eligible (for example, someone aged 20 is eligible, whereas someone aged 16 is not eligible). You have mastered the real-world logic\u2014proceed to the Recipe stage to sequence your steps!";
     correction = "If someone is 18 or older, they are Eligible to Vote; otherwise, they are Not Eligible. Proceed to Recipe.";
     suggestedInput = "A person must be 18 years old or older to be eligible to vote. If someone is 18 or older, announce Eligible to Vote; otherwise, announce Not Eligible (e.g., age 20 is eligible, age 16 is not eligible).";
     matchedFirebaseInput = "if age is 18 or more then eligible";
   } else if (!hasAgeConcept) {
-    feedback = "Coach Maya here! Let's start with the fundamental real-world rule of voting: What is the minimum age required for a person to be legally eligible to vote?";
+    feedback = "Coach Maara here! Let's start with the fundamental real-world rule of voting: What is the minimum age required for a person to be legally eligible to vote?";
     correction = "A person must be 18 years old or older to be eligible to vote.";
     suggestedInput = "A person must be 18 years old or older to be eligible to vote.";
     matchedFirebaseInput = "what is voting eligibility age";
@@ -193,22 +201,22 @@ function validateVotingEligibilityRecipe(text) {
   let suggestedInput = "";
   let matchedFirebaseInput = void 0;
   if (hasBoundaryContradiction) {
-    feedback = "\u{1F31F} Coach Maya here! Take a close look at your Step 3: you wrote 'smaller than or equal to 18 it is not eligible to vote'. But if a person is 18 years old, they ARE eligible to vote! Saying 'smaller than or equal to 18' mistakenly includes 18 in the not-eligible group. You should write strictly 'smaller than 18' (less than 18), or simply: 'Otherwise, announce Not Eligible'.";
+    feedback = "\u{1F31F} Coach Maara here! Take a close look at your Step 3: you wrote 'smaller than or equal to 18 it is not eligible to vote'. But if a person is 18 years old, they ARE eligible to vote! Saying 'smaller than or equal to 18' mistakenly includes 18 in the not-eligible group. You should write strictly 'smaller than 18' (less than 18), or simply: 'Otherwise, announce Not Eligible'.";
     correction = "Step 3: If age is smaller than 18 (or otherwise), announce Not Eligible.";
-    suggestedInput = "Step 1: Get the age\nStep 2: If age is greater than or equal to 18, announce Eligible\nStep 3: Otherwise (or if age is smaller than 18), announce Not Eligible";
+    suggestedInput = "Step 3: Otherwise (or if age is smaller than 18), announce Not Eligible";
     matchedFirebaseInput = "step 2 : If age is greater than or equal to 18, display Eligible, else display Not Eligible";
   } else if (hasRecipeContradiction) {
-    feedback = "\u{1F31F} Coach Maya here! Check your step sequencing: if the age is 18 or older, they should be announced as Eligible, not as Not Eligible! Only announce Not Eligible in the otherwise step.";
+    feedback = "\u{1F31F} Coach Maara here! Check your step sequencing: if the age is 18 or older, they should be announced as Eligible, not as Not Eligible! Only announce Not Eligible in the otherwise step.";
     correction = "Step 2: If age is 18 or older, announce Eligible; otherwise, announce Not Eligible.";
-    suggestedInput = "Step 1: Take the person's age\nStep 2: If age is 18 or older, announce Eligible; otherwise, announce Not Eligible";
+    suggestedInput = "Step 2: If age is 18 or older, announce Eligible; otherwise, announce Not Eligible";
     matchedFirebaseInput = "step 2 : If age is greater than or equal to 18, display Eligible, else display Not Eligible";
   } else if (isFullyVerified) {
-    feedback = "\u{1F31F} Coach Maya here! Kudos! \u{1F389} Complete step-by-step recipe in simple everyday words! You have specified taking the input, checking if age is 18 or older, and announcing both outcomes clearly. Proceed to the Ingredients stage!";
+    feedback = "\u{1F31F} Coach Maara here! Kudos! \u{1F389} Complete step-by-step recipe in simple everyday words! You have specified taking the input, checking if age is 18 or older, and announcing both outcomes clearly. Proceed to the Ingredients stage!";
     correction = "Step 1: Take the person's age\nStep 2: If age is 18 or older, announce Eligible; otherwise, announce Not Eligible";
-    suggestedInput = "Step 1: Take the person's age\nStep 2: If age is 18 or older, announce Eligible; otherwise, announce Not Eligible";
+    suggestedInput = void 0;
     matchedFirebaseInput = "step 2 : If age is greater than or equal to 18, display Eligible, else display Not Eligible";
   } else if (!hasInputStep) {
-    feedback = "Coach Maya here! Let's start with Step 1 of our recipe: What is the first thing we must obtain from the user? (Step 1: Take the person's age).";
+    feedback = "Coach Maara here! Let's start with Step 1 of our recipe: What is the first thing we must obtain from the user? (Step 1: Take the person's age).";
     correction = "Step 1: Take the person's age";
     suggestedInput = "Step 1: Take the person's age";
     matchedFirebaseInput = "what steps to write";
@@ -220,7 +228,7 @@ function validateVotingEligibilityRecipe(text) {
   } else if (!hasTrueOutput || !hasFalseOutput) {
     feedback = "You've set up the check! Now complete the recipe by specifying what to announce for both cases: announce 'Eligible' if 18 or older, and announce 'Not Eligible' otherwise.";
     correction = "Step 2: If age is 18 or older, announce Eligible; otherwise, announce Not Eligible";
-    suggestedInput = "Step 1: Take the person's age\nStep 2: If age is 18 or older, announce Eligible; otherwise, announce Not Eligible";
+    suggestedInput = "Step 2: If age is 18 or older, announce Eligible; otherwise, announce Not Eligible";
     matchedFirebaseInput = "step 2 : If age is greater than or equal to 18, display Eligible, else display Not Eligible";
   }
   return {
@@ -296,7 +304,7 @@ function validateVotingEligibilityIngredients(text) {
   let suggestedInput = "";
   let matchedFirebaseInput = void 0;
   if (isFullyVerified) {
-    feedback = `\u{1F31F} Coach Maya here! Hurray! \u{1F389} You have identified all the ingredients: variable \`${detectedVar}\`, condition \`if (${detectedVar} >= 18)\`, printing 'Eligible' inside if, and printing 'Not Eligible' inside else! Proceed to Taste the Sample stage to build the code!`;
+    feedback = `\u{1F31F} Coach Maara here! Hurray! \u{1F389} You have identified all the ingredients: variable \`${detectedVar}\`, condition \`if (${detectedVar} >= 18)\`, printing 'Eligible' inside if, and printing 'Not Eligible' inside else! Proceed to Taste the Sample stage to build the code!`;
     correction = `step 1 : ${detectedVar} variable
 step 2 : If condition with L.S: ${detectedVar}, R.S: 18, Operator: >=
 step 3 : Inside if block: print("Eligible")
@@ -307,20 +315,20 @@ step 3 : Inside if block: print("Eligible")
 step 4 : Inside else block: print("Not Eligible")`;
     matchedFirebaseInput = "step 2 : If condition with L.S: age, R.S: 18, Operator: >=";
   } else if (hasUnquotedPrint) {
-    feedback = `\u{1F31F} Coach Maya syntax alert: Look closely at your \`print(...)\` statement! In programming, any text message (string literal) inside \`print(...)\` must be enclosed in quotation marks: \`print("Eligible")\` and \`print("Not Eligible")\`. Without quotes, the computer treats them as undefined variables and gives a syntax error!`;
+    feedback = `\u{1F31F} Coach Maara syntax alert: Look closely at your \`print(...)\` statement! In programming, any text message (string literal) inside \`print(...)\` must be enclosed in quotation marks: \`print("Eligible")\` and \`print("Not Eligible")\`. Without quotes, the computer treats them as undefined variables and gives a syntax error!`;
     correction = `step 3 : Inside if block: print("Eligible")
 step 4 : Inside else block: print("Not Eligible")`;
     suggestedInput = `step 3 : Inside if block: print("Eligible")
 step 4 : Inside else block: print("Not Eligible")`;
     matchedFirebaseInput = "how to write if condition";
   } else if (!hasVariable) {
-    feedback = "Coach Maya here! Let's start with Step 1 of Ingredients: What variable do we need to store the person's age? (e.g. `Step 1: Variable a=25` or `Step 1: Variable age`).";
+    feedback = "Coach Maara here! Let's start with Step 1 of Ingredients: What variable do we need to store the person's age? (e.g. `Step 1: Variable a=25` or `Step 1: Variable age`).";
     correction = "step 1 : age variable";
     suggestedInput = "step 1 : age variable";
     matchedFirebaseInput = "what ingredients do we need";
   } else if (!hasLeftRightCondition) {
     if (wrongLeftSideDetected) {
-      feedback = `\u{1F31F} Coach Maya checking Step 2 Left Side: Look at your Left Side (L.S)! You wrote \`Left side: ${wrongLeftSideDetected}\`. The Left Side of the comparison must be our input variable \`${detectedVar}\` (e.g. \`Left side: ${detectedVar}\` or \`L.S: ${detectedVar}\`).`;
+      feedback = `\u{1F31F} Coach Maara checking Step 2 Left Side: Look at your Left Side (L.S)! You wrote \`Left side: ${wrongLeftSideDetected}\`. The Left Side of the comparison must be our input variable \`${detectedVar}\` (e.g. \`Left side: ${detectedVar}\` or \`L.S: ${detectedVar}\`).`;
     } else if (wrongOperatorDetected) {
       let operatorTip = `You wrote \`operator: ${wrongOperatorDetected}\`.`;
       if (wrongOperatorDetected === "<" || wrongOperatorDetected === "<=") {
@@ -330,12 +338,12 @@ step 4 : Inside else block: print("Not Eligible")`;
       } else {
         operatorTip += ` To test if someone is 18 or older, use the greater-than-or-equal operator \`>=\` (\`operator: >=\`).`;
       }
-      feedback = `\u{1F31F} Coach Maya operator check: ${operatorTip}`;
+      feedback = `\u{1F31F} Coach Maara operator check: ${operatorTip}`;
     } else if (wrongRightSideDetected) {
-      feedback = `\u{1F31F} Coach Maya checking Step 2 Right Side: Look at your Right Side (R.S)! You wrote \`right side: ${wrongRightSideDetected}\`. In the condition \`age >= 18\`, the Right Side is the voting threshold number **18** (\`right side: 18\` or \`R.S: 18\`).`;
+      feedback = `\u{1F31F} Coach Maara checking Step 2 Right Side: Look at your Right Side (R.S)! You wrote \`right side: ${wrongRightSideDetected}\`. In the condition \`age >= 18\`, the Right Side is the voting threshold number **18** (\`right side: 18\` or \`R.S: 18\`).`;
     } else {
       const isAskingQuestion = /\b(?:what|how|why|where|next|stuck|do here)\b/i.test(text);
-      feedback = isAskingQuestion ? `\u{1F31F} Coach Maya here! You have already identified your input variable \`${detectedVar}\` in Step 1! \u{1F389} For what to do next in Step 2: we need to break down the \`if\` condition to test if the person is 18 or older. Break it down into Left Side (L.S: ${detectedVar}), Operator (>=), and Right Side (R.S: 18).` : `\u{1F31F} Coach Maya here! Spot on! You have identified the input variable \`${detectedVar}\` in Step 1! \u{1F389} Now for Step 2: How do you write the \`if\` condition? Break it down into Left Side (L.S: ${detectedVar}), Operator (>=), and Right Side (R.S: 18).`;
+      feedback = isAskingQuestion ? `\u{1F31F} Coach Maara here! You have already identified your input variable \`${detectedVar}\` in Step 1! \u{1F389} For what to do next in Step 2: we need to break down the \`if\` condition to test if the person is 18 or older. Break it down into Left Side (L.S: ${detectedVar}), Operator (>=), and Right Side (R.S: 18).` : `\u{1F31F} Coach Maara here! Spot on! You have identified the input variable \`${detectedVar}\` in Step 1! \u{1F389} Now for Step 2: How do you write the \`if\` condition? Break it down into Left Side (L.S: ${detectedVar}), Operator (>=), and Right Side (R.S: 18).`;
     }
     correction = `step 2 : If condition with L.S: ${detectedVar}, R.S: 18, Operator: >=`;
     suggestedInput = `step 2 : If condition with L.S: ${detectedVar}, R.S: 18, Operator: >=`;
@@ -366,23 +374,23 @@ function validateVotingEligibilitySampleCode(text) {
   const detectedVar = varMatch ? varMatch[1] : "age";
   const hasInputVar = /(?:var|let|const|int)?\s*(?:age|[a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*\d+/i.test(text) || /(?:age|[a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(?:int\s*\(\s*)?input/i.test(text);
   const hasCondition = /if\s*\(?.*?(?:18|17)/i.test(text) && />=|>/i.test(text);
-  const hasQuotedPositivePrint = /(?:print|console\.log|printf|cout)\s*\(\s*["'`\u201c\u201d][^"'`\u201c\u201d\n]*(?:eligible|can\s*vote|yes)[^"'`\u201c\u201d\n]*["'`\u201c\u201d]\s*\)/i.test(text);
-  const hasAnyPositivePrint = /(?:print|console\.log|printf|cout)\s*\(?.*?(?:eligible|can\s*vote|yes)/i.test(text);
+  const hasQuotedPositivePrint = /(?:print|println|console\.log|printf|cout|System\.out\.print(?:ln)?)\s*(?:\(|\<\<)?\s*["'`\u201c\u201d][^"'`\u201c\u201d\n]*(?:eligible|can\s*vote|yes)[^"'`\u201c\u201d\n]*["'`\u201c\u201d]/i.test(text);
+  const hasAnyPositivePrint = /(?:print|println|console\.log|printf|cout|System\.out\.print(?:ln)?)\s*(?:\(|\<\<)?\s*.*?["'`\u201c\u201d]?(?:eligible|can\s*vote|yes)/i.test(text);
   const hasUnquotedPositivePrint = hasAnyPositivePrint && !hasQuotedPositivePrint;
   const hasElseWithCondition = /\belse\s*\([^)]*\)/i.test(text);
   const hasElseBoundaryError = /\belse\s*(?:if)?\s*\(?\s*(?:age|[a-zA-Z_]\w*)\s*<=\s*18/i.test(text);
   const hasElse = /else\b/i.test(text) && !hasElseWithCondition && !hasElseBoundaryError;
-  const hasQuotedNegativePrint = /(?:print|console\.log|printf|cout)\s*\(\s*["'`\u201c\u201d][^"'`\u201c\u201d\n]*(?:not\s*eligible|cannot\s*vote|no)[^"'`\u201c\u201d\n]*["'`\u201c\u201d]\s*\)/i.test(text);
-  const hasAnyNegativePrint = /(?:print|console\.log|printf|cout)\s*\(?.*?(?:not\s*eligible|cannot\s*vote|no)/i.test(text);
+  const hasQuotedNegativePrint = /(?:print|println|console\.log|printf|cout|System\.out\.print(?:ln)?)\s*(?:\(|\<\<)?\s*["'`\u201c\u201d][^"'`\u201c\u201d\n]*(?:not\s*eligible|cannot\s*vote|no)[^"'`\u201c\u201d\n]*["'`\u201c\u201d]/i.test(text);
+  const hasAnyNegativePrint = /(?:print|println|console\.log|printf|cout|System\.out\.print(?:ln)?)\s*(?:\(|\<\<)?\s*.*?["'`\u201c\u201d]?(?:not\s*eligible|cannot\s*vote|no)/i.test(text);
   const hasUnquotedNegativePrint = hasAnyNegativePrint && !hasQuotedNegativePrint;
   const allVerified = hasInputVar && hasCondition && hasQuotedPositivePrint && hasElse && hasQuotedNegativePrint;
   const steps = [
-    { stepNumber: 1, title: `Step 1: Declare input variable (var ${detectedVar} = 20)`, completed: hasInputVar, current: !hasInputVar },
+    { stepNumber: 1, title: `Step 1: Declare input variable (${detectedVar} = 20)`, completed: hasInputVar, current: !hasInputVar },
     { stepNumber: 2, title: `Step 2: Check condition if (${detectedVar} >= 18)`, completed: hasCondition, current: hasInputVar && !hasCondition },
     { stepNumber: 3, title: 'Step 3: Print "Eligible" (with quotes) if true', completed: hasQuotedPositivePrint, current: hasInputVar && hasCondition && !hasQuotedPositivePrint },
     {
       stepNumber: 4,
-      title: hasElseWithCondition ? "Step 4: Else branch (Syntax error: 'else' cannot take condition)" : hasElseBoundaryError ? "Step 4: Else branch (18 is eligible, use 'else {' without <= 18)" : "Step 4: Else branch",
+      title: hasElseWithCondition ? "Step 4: Else branch (Syntax error: 'else' cannot take condition)" : hasElseBoundaryError ? "Step 4: Else branch (18 is eligible, use 'else' without <= 18)" : "Step 4: Else branch",
       completed: hasElse,
       current: hasInputVar && hasCondition && hasQuotedPositivePrint && !hasElse
     },
@@ -399,8 +407,8 @@ function validateVotingEligibilitySampleCode(text) {
       hasNegativePrint: hasQuotedNegativePrint,
       hasElseWithCondition: false,
       hasElseBoundaryError: false,
-      matchedFirebaseInput: `var ${detectedVar} = 20; if (${detectedVar} >= 18) print("Eligible"); else print("Not Eligible");`,
-      feedback: "\u{1F31F} Coach Maya here! You gotcha! \u{1F389} Perfect condition checking! You have successfully implemented voting eligibility checking with comparison operator >=, proper quotation marks, and clean branching. You are ready to run and test!",
+      matchedFirebaseInput: `${detectedVar} = 20; if (${detectedVar} >= 18) print("Eligible"); else print("Not Eligible");`,
+      feedback: "\u{1F31F} Coach Maara here! You gotcha! \u{1F389} Perfect condition checking! You have successfully implemented voting eligibility checking with comparison operator >=, proper quotation marks, and clean branching in your chosen language syntax. You are ready to run and test!",
       sampleCodeStepProgress: allDone,
       correction: "Sample code prototype completed!",
       suggestedInput: void 0
@@ -410,45 +418,41 @@ function validateVotingEligibilitySampleCode(text) {
   let correction = "";
   let suggestedInput = void 0;
   if (hasElseWithCondition) {
-    feedback = `\u{1F31F} Coach Maya syntax alert: Look closely at your \`else\` statement: \`else(...)\`! \u{1F50D} In programming languages, the \`else\` keyword cannot take a condition or parentheses! It acts as the automatic fallback for all other cases, so write it simply as \`else {\` without any condition in parentheses. (Also note: age 18 is eligible, so \`<= 18\` would incorrectly include 18 as not eligible).`;
-    correction = `else {
-  print("Not eligible");
-}`;
-    suggestedInput = `else {
-  print("Not eligible");
-}`;
+    feedback = `\u{1F31F} Coach Maara syntax alert: Look closely at your \`else\` statement: \`else(...)\`! \u{1F50D} In programming languages, the \`else\` keyword cannot take a condition or parentheses! It acts as the automatic fallback for all other cases, so write it simply as \`else:\` (Python) or \`else {\` without any condition in parentheses. (Also note: age 18 is eligible, so \`<= 18\` would incorrectly include 18 as not eligible).`;
+    correction = `else:
+    print("Not eligible")`;
+    suggestedInput = `else:
+    print("Not eligible")`;
   } else if (hasElseBoundaryError) {
-    feedback = `\u{1F31F} Coach Maya logic alert: Look at the condition in your else branch! Age 18 is legally eligible to vote. If you check \`<= 18\`, then someone who is exactly 18 would also be marked 'Not eligible'! Simply use \`else {\` for all remaining cases (or \`else if (${detectedVar} < 18)\`).`;
-    correction = `else {
-  print("Not eligible");
-}`;
-    suggestedInput = `else {
-  print("Not eligible");
-}`;
+    feedback = `\u{1F31F} Coach Maara logic alert: Look at the condition in your else branch! Age 18 is legally eligible to vote. If you check \`<= 18\`, then someone who is exactly 18 would also be marked 'Not eligible'! Simply use \`else:\` (or \`else {\`) for all remaining cases (or \`else if (${detectedVar} < 18)\`).`;
+    correction = `else:
+    print("Not eligible")`;
+    suggestedInput = `else:
+    print("Not eligible")`;
   } else if (!hasInputVar) {
-    feedback = `Coach Maya here! Let's start with Step 1 of our sample code: Declare an input variable with a test age (e.g. \`var ${detectedVar} = 20;\`).`;
-    correction = `var ${detectedVar} = 20;`;
-    suggestedInput = `var ${detectedVar} = 20;`;
+    feedback = `Coach Maara here! Let's start with Step 1 of our sample code: Declare an input variable with a test age (e.g. \`${detectedVar} = 20\` or \`int ${detectedVar} = 20;\` or \`var ${detectedVar} = 20;\`).`;
+    correction = `${detectedVar} = 20`;
+    suggestedInput = `${detectedVar} = 20`;
   } else if (!hasCondition) {
-    feedback = `Coach Maya here! Great start with variable \`${detectedVar}\`! For Step 2: Check if \`${detectedVar}\` is 18 or above using: \`if (${detectedVar} >= 18) {\`.`;
-    correction = `if (${detectedVar} >= 18) {`;
-    suggestedInput = `if (${detectedVar} >= 18) {`;
+    feedback = `Coach Maara here! Great start with variable \`${detectedVar}\`! For Step 2: Check if \`${detectedVar}\` is 18 or above using: \`if (${detectedVar} >= 18):\` (or \`if (${detectedVar} >= 18) {\`).`;
+    correction = `if ${detectedVar} >= 18:`;
+    suggestedInput = `if ${detectedVar} >= 18:`;
   } else if (!hasQuotedPositivePrint) {
     if (hasUnquotedPositivePrint) {
-      feedback = `Coach Maya here! You wrote the print statement, but notice that text messages in programming must be enclosed in quotation marks: \`print("Eligible")\`. Without quotes, it causes a syntax error!`;
+      feedback = `Coach Maara here! You wrote the print statement, but notice that text messages in programming must be enclosed in quotation marks: \`print("Eligible")\`. Without quotes, it causes a syntax error!`;
       correction = `  print("Eligible");
 }`;
       suggestedInput = `  print("Eligible");
 }`;
     } else {
-      feedback = `Coach Maya here! Great job with the condition! Now for Step 3: Inside the if block, display the eligible message: \`print("Eligible");\`.`;
+      feedback = `Coach Maara here! Great job with the condition! Now for Step 3: Inside the if block, display the eligible message: \`print("Eligible");\`.`;
       correction = `  print("Eligible");
 }`;
       suggestedInput = `  print("Eligible");
 }`;
     }
   } else if (!hasElse) {
-    feedback = `Coach Maya here! You've got the condition and true branch! Now for Step 4: Add the \`else\` branch to handle ages under 18: \`else {\`.`;
+    feedback = `Coach Maara here! You've got the condition and true branch! Now for Step 4: Add the \`else\` branch to handle ages under 18: \`else {\`.`;
     correction = `else {
   print("Not Eligible");
 }`;
@@ -457,13 +461,13 @@ function validateVotingEligibilitySampleCode(text) {
 }`;
   } else if (!hasQuotedNegativePrint) {
     if (hasUnquotedNegativePrint) {
-      feedback = `Coach Maya here! Inside the \`else\` block, make sure to wrap your message in quotation marks: \`print("Not Eligible")\`.`;
+      feedback = `Coach Maara here! Inside the \`else\` block, make sure to wrap your message in quotation marks: \`print("Not Eligible")\`.`;
       correction = `  print("Not Eligible");
 }`;
       suggestedInput = `  print("Not Eligible");
 }`;
     } else {
-      feedback = `Coach Maya here! Almost done! For Step 5: Inside the else block, print the not eligible message: \`print("Not Eligible");\`.`;
+      feedback = `Coach Maara here! Almost done! For Step 5: Inside the else block, print the not eligible message: \`print("Not Eligible");\`.`;
       correction = `  print("Not Eligible");
 }`;
       suggestedInput = `  print("Not Eligible");

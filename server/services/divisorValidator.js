@@ -165,6 +165,19 @@ function formatDivisorBreakdown(analysis) {
 function validateDivisorLogic(text) {
   let norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/]/g, " ").replace(/\s+/g, " ").trim();
   norm = norm.replace(/\breaminder\b/g, "remainder").replace(/\breaminders\b/g, "remainders").replace(/\bremender\b/g, "remainder").replace(/\bremenders\b/g, "remainders").replace(/\bremaindr\b/g, "remainder").replace(/\brem\b/g, "remainder");
+  const isOddEvenForeign = (norm.includes("even") || norm.includes("odd") || /%\s*2\b/.test(norm) || norm.includes("divisible by 2")) && !norm.includes("1 to");
+  if (isOddEvenForeign) {
+    return {
+      isFullyVerified: false,
+      isDivisorIdentified: false,
+      hasTestRange: false,
+      hasRemainderZero: false,
+      isConfusion: true,
+      feedback: "🌟 Coach Maara here! That describes Odd or Even numbers (dividing by 2)! In this challenge, our goal is to find all **Divisors of a Number** by testing each number from 1 up to n to see which ones leave remainder 0.",
+      correction: "Test each number from 1 up to n and check if dividing leaves remainder 0.",
+      suggestedInput: "Test each number from 1 up to that number and if remainder is 0 it is a divisor."
+    };
+  }
   const isDontKnow = norm.includes("don't know") || norm.includes("dont know") || norm.includes("don t know") || norm.includes("puriyala") || norm.includes("theriyala") || norm.includes("no idea") || norm === "i don t know" || norm === "i dont know" || norm === "dont know" || norm === "puriyala" || norm === "theriyala";
   const isStarterQuestion = /^(what|how|where|tell me|explain|help)/i.test(norm) || norm.includes("what should we do") || norm.includes("what should i do") || norm.includes("what do i do") || norm.includes("what i do") || norm.includes("what to do") || norm.includes("how to start") || norm.includes("where to start") || norm.includes("what is divisor") || norm.includes("what are divisors") || norm.includes("what does divisor mean") || norm === "help" || norm === "start";
   if (isDontKnow) {
@@ -175,7 +188,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: true,
       matchedFirebaseInput: "I don't know",
-      feedback: "\u{1F31F} Coach Maya here! A divisor is a number that divides a given number completely, leaving a remainder of 0.\nFor example, for number 6, let's test numbers from 1 to 6:\n\u2022 6 divided by 1 leaves remainder 0 (Divisor)\n\u2022 6 divided by 2 leaves remainder 0 (Divisor)\n\u2022 6 divided by 3 leaves remainder 0 (Divisor)\n\u2022 6 divided by 4 leaves remainder 2 (Not a divisor)\n\u2022 6 divided by 5 leaves remainder 1 (Not a divisor)\n\u2022 6 divided by 6 leaves remainder 0 (Divisor)\nSo the divisors of 6 are: 1, 2, 3, and 6.",
+      feedback: "\u{1F31F} Coach Maara here! A divisor is a number that divides a given number completely, leaving a remainder of 0.\nFor example, for number 6, let's test numbers from 1 to 6:\n\u2022 6 divided by 1 leaves remainder 0 (Divisor)\n\u2022 6 divided by 2 leaves remainder 0 (Divisor)\n\u2022 6 divided by 3 leaves remainder 0 (Divisor)\n\u2022 6 divided by 4 leaves remainder 2 (Not a divisor)\n\u2022 6 divided by 5 leaves remainder 1 (Not a divisor)\n\u2022 6 divided by 6 leaves remainder 0 (Divisor)\nSo the divisors of 6 are: 1, 2, 3, and 6.",
       correction: "Test each number from 1 up to the given number, and check if dividing leaves a remainder of 0.",
       suggestedInput: "Test each number from 1 up to that number and if remainder is 0 it is a divisor."
     };
@@ -188,7 +201,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: true,
       matchedFirebaseInput: "what should we do to find the divisors of a number",
-      feedback: "\u{1F31F} Coach Maya here! What does 'Divisors of a number' mean? For example, if the number is 6, what are all the numbers that can divide 6 completely without leaving any remainder?",
+      feedback: "\u{1F31F} Coach Maara here! What does 'Divisors of a number' mean? For example, if the number is 6, what are all the numbers that can divide 6 completely without leaving any remainder?",
       correction: "Think about what divides a number completely without leaving a remainder. For example, what numbers divide 6 evenly?",
       suggestedInput: "Test each number from 1 up to that number and if remainder is 0 it is a divisor."
     };
@@ -201,7 +214,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: false,
       matchedFirebaseInput: "divisors of 6 are 12, 18, 24",
-      feedback: "\u{1F31F} Coach Maya note: Those are Multiples! Divisors can never be larger than the number itself. They always lie between 1 and the given number.",
+      feedback: "\u{1F31F} Coach Maara note: Those are Multiples! Divisors can never be larger than the number itself. They always lie between 1 and the given number.",
       correction: "Test numbers from 1 up to 6, not numbers larger than 6.",
       suggestedInput: "Divisors of 6 are between 1 and 6: 1, 2, 3, and 6."
     };
@@ -214,7 +227,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: false,
       matchedFirebaseInput: "6 divided by 2 is 3 so only 3 is the divisor",
-      feedback: "\u{1F31F} Coach Maya note: 3 is the quotient, but both 2 (the dividing number) and 3 are divisors because both divide 6 with remainder 0!",
+      feedback: "\u{1F31F} Coach Maara note: 3 is the quotient, but both 2 (the dividing number) and 3 are divisors because both divide 6 with remainder 0!",
       correction: "Remember that both 2 and 3 divide 6 completely.",
       suggestedInput: "Both 2 and 3 are divisors of 6."
     };
@@ -227,7 +240,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: false,
       matchedFirebaseInput: "we should multiply or add numbers",
-      feedback: "\u{1F31F} Coach Maya note: Multiplication makes numbers larger. To find what divides a number, we must test using division and check the remainder, not multiplication or addition.",
+      feedback: "\u{1F31F} Coach Maara note: Multiplication makes numbers larger. To find what divides a number, we must test using division and check the remainder, not multiplication or addition.",
       correction: "Use division or modulo (%) to test if numbers split cleanly.",
       suggestedInput: "We test using division to check if the remainder is 0."
     };
@@ -240,7 +253,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: false,
       matchedFirebaseInput: "start checking from 0",
-      feedback: "\u{1F31F} Coach Maya note: In mathematics, dividing any number by 0 is undefined and impossible. Always start testing from 1!",
+      feedback: "\u{1F31F} Coach Maara note: In mathematics, dividing any number by 0 is undefined and impossible. Always start testing from 1!",
       correction: "Start testing from 1 up to the given number.",
       suggestedInput: "Test numbers starting from 1 up to n."
     };
@@ -253,7 +266,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: false,
       matchedFirebaseInput: "we can test numbers greater than the given number",
-      feedback: "\u{1F31F} Coach Maya note: A number larger than the given number cannot divide it completely (e.g., 7 cannot divide 6). Only test numbers from 1 up to that number.",
+      feedback: "\u{1F31F} Coach Maara note: A number larger than the given number cannot divide it completely (e.g., 7 cannot divide 6). Only test numbers from 1 up to that number.",
       correction: "Only test numbers from 1 up to the given number n.",
       suggestedInput: "Test numbers from 1 up to n."
     };
@@ -266,7 +279,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: false,
       matchedFirebaseInput: "divide the testing number by the given number",
-      feedback: "\u{1F31F} Coach Maya note: Order matters! You must divide the main given number by each testing number (n % i), not the other way around.",
+      feedback: "\u{1F31F} Coach Maara note: Order matters! You must divide the main given number by each testing number (n % i), not the other way around.",
       correction: "Divide the given number n by the testing number i.",
       suggestedInput: "Divide given number n by each testing number i."
     };
@@ -279,7 +292,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: false,
       matchedFirebaseInput: "when remainder is 1 or more it is a divisor",
-      feedback: "\u{1F31F} Coach Maya note: If the remainder is 1 or more, it means the number was not divisible completely. A divisor must leave a remainder of exactly 0!",
+      feedback: "\u{1F31F} Coach Maara note: If the remainder is 1 or more, it means the number was not divisible completely. A divisor must leave a remainder of exactly 0!",
       correction: "A divisor is a number where remainder is exactly 0.",
       suggestedInput: "When remainder is 0, the number is a divisor."
     };
@@ -292,7 +305,7 @@ function validateDivisorLogic(text) {
       hasRemainderZero: false,
       isConfusion: false,
       matchedFirebaseInput: "just divide the number by 2",
-      feedback: "\u{1F31F} Coach Maya note: Dividing by 2 only tells us if 2 is a divisor. We need to test all numbers from 1 up to the given number!",
+      feedback: "\u{1F31F} Coach Maara note: Dividing by 2 only tells us if 2 is a divisor. We need to test all numbers from 1 up to the given number!",
       correction: "Test every number from 1 up to n.",
       suggestedInput: "Test each number from 1 up to that number, and if remainder is 0 it is a divisor."
     };
@@ -320,7 +333,7 @@ function validateDivisorLogic(text) {
         hasRemainderZero,
         isConfusion: false,
         matchedFirebaseInput: "which numbers are divisible / what are the divisors",
-        feedback: `\u{1F31F} Coach Maya here! You did a great job testing the numbers from 1 to ${analysis.n} using modulo (%) to check remainders!${arithMsg}
+        feedback: `\u{1F31F} Coach Maara here! You did a great job testing the numbers from 1 to ${analysis.n} using modulo (%) to check remainders!${arithMsg}
 
 \u{1F449} **Important next step: Which numbers are divisible?**
 You haven't mentioned which numbers are actually the divisors of ${analysis.n}!
@@ -351,7 +364,7 @@ Divisors of ${analysis.n} are ${formattedDivisors}`
           hasRemainderZero: true,
           isConfusion: false,
           matchedFirebaseInput: "incorrect divisors listed",
-          feedback: `\u{1F31F} Coach Maya note: Look closely at your calculations! You mentioned ${wrongNums} as a divisor, but dividing ${analysis.n} by ${wrongNums} does not leave a remainder of 0.${arithMsg}
+          feedback: `\u{1F31F} Coach Maara note: Look closely at your calculations! You mentioned ${wrongNums} as a divisor, but dividing ${analysis.n} by ${wrongNums} does not leave a remainder of 0.${arithMsg}
 
 Remember: only numbers where the remainder is exactly 0 are divisors.
 \u{1F449} The actual divisors of ${analysis.n} are: **${formattedDivisors}**. Please update your divisors statement!`,
@@ -369,7 +382,7 @@ Divisors of ${analysis.n} are ${formattedDivisors}`
           hasRemainderZero: true,
           isConfusion: false,
           matchedFirebaseInput: "missing divisors",
-          feedback: `\u{1F31F} Coach Maya note: You are almost there! But you missed ${missingNums}.${arithMsg}
+          feedback: `\u{1F31F} Coach Maara note: You are almost there! But you missed ${missingNums}.${arithMsg}
 Remember that ${missingNums} also divides ${analysis.n} with a remainder of 0!
 \u{1F449} Divisors of ${analysis.n} are: **${formattedDivisors}**. Please include all of them!`,
           correction: `Include all numbers that leave remainder 0: Divisors of ${analysis.n} are ${formattedDivisors}.`,
@@ -386,7 +399,7 @@ Divisors of ${analysis.n} are ${formattedDivisors}`
         hasRemainderZero: true,
         isConfusion: false,
         matchedFirebaseInput: "arithmetic error in modulo",
-        feedback: `\u{1F31F} Coach Maya here! You correctly identified that the divisors of ${analysis.n} are ${formattedDivisors}! \u{1F389}
+        feedback: `\u{1F31F} Coach Maara here! You correctly identified that the divisors of ${analysis.n} are ${formattedDivisors}! \u{1F389}
 
 However, check your modulo calculation:
 ` + arithCheck.notes.map((n) => `\u2022 ${n}`).join("\n") + `
@@ -403,14 +416,14 @@ Please fix that remainder calculation in your worksheet so your math is 100% acc
       hasRemainderZero: true,
       isConfusion: false,
       matchedFirebaseInput: "test each number from 1 up to that number and if remainder is 0 it is a divisor",
-      feedback: `\u{1F31F} Coach Maya here! Fantastic! You tested every number from 1 up to ${analysis.n}, checked the remainders, and correctly identified that the numbers dividing ${analysis.n} completely are **${formattedDivisors}**!${breakdown}
+      feedback: `\u{1F31F} Coach Maara here! Fantastic! You tested every number from 1 up to ${analysis.n}, checked the remainders, and correctly identified that the numbers dividing ${analysis.n} completely are **${formattedDivisors}**!${breakdown}
 
 You have mastered the core logic! Proceed to the Recipe stage!`,
       correction: void 0,
       suggestedInput: void 0
     };
   }
-  if (hasTestRange && hasRemainderZero || hasRemainderZero && hasDivisorConcept && (hasTestRange || norm.includes("1 to") || norm.includes("1")) || (norm.includes("remainder is 0") || norm.includes("remainder is zero") || norm.includes("remainder as zero") || norm.includes("remainder as 0") || norm.includes("zero as the remainder") || norm.includes("zero as remainder")) && (norm.includes("divisor") || norm.includes("divides") || norm.includes("dividing")) || norm.includes("1") && norm.includes("2") && norm.includes("3") && norm.includes("6") && norm.includes("divisor") || norm.includes("1") && norm.includes("5") && norm.includes("divisor")) {
+  if (hasTestRange && hasRemainderZero || hasRemainderZero && hasDivisorConcept && (hasTestRange || norm.includes("1 to") || /\b1\s*(?:to|-|up to)\s*(?:\d+|n)\b/.test(norm)) || (norm.includes("remainder is 0") || norm.includes("remainder is zero") || norm.includes("remainder as zero") || norm.includes("remainder as 0") || norm.includes("zero as the remainder") || norm.includes("zero as remainder")) && (norm.includes("divisor") || norm.includes("divides") || norm.includes("dividing")) || norm.includes("1") && norm.includes("2") && norm.includes("3") && norm.includes("6") && norm.includes("divisor") || norm.includes("1") && norm.includes("5") && norm.includes("divisor")) {
     const breakdown = formatDivisorBreakdown(analysis);
     return {
       isFullyVerified: true,
@@ -419,7 +432,7 @@ You have mastered the core logic! Proceed to the Recipe stage!`,
       hasRemainderZero: true,
       isConfusion: false,
       matchedFirebaseInput: "test each number from 1 up to that number and if remainder is 0 it is a divisor",
-      feedback: `\u{1F31F} Coach Maya here! Fantastic! That is the exact mathematical logic: Test every number from 1 up to the given number. If dividing leaves a remainder of 0, that number is a divisor.${breakdown}
+      feedback: `\u{1F31F} Coach Maara here! Fantastic! That is the exact mathematical logic: Test every number from 1 up to the given number. If dividing leaves a remainder of 0, that number is a divisor.${breakdown}
 
 Proceed to Recipe!`,
       correction: void 0,
@@ -434,7 +447,7 @@ Proceed to Recipe!`,
       hasRemainderZero,
       isConfusion: false,
       matchedFirebaseInput: "divide and check answer",
-      feedback: "\u{1F31F} Coach Maya note: You are on the right track! Normal division only gives the quotient. To verify if a number divides completely, we must look at the remainder. What must the remainder be, and which numbers should we test?",
+      feedback: "\u{1F31F} Coach Maara note: You are on the right track! Normal division only gives the quotient. To verify if a number divides completely, we must look at the remainder. What must the remainder be, and which numbers should we test?",
       correction: "State the testing range (from 1 to n) and the required remainder (0).",
       suggestedInput: "Test each number from 1 up to that number and if remainder is 0 it is a divisor."
     };
@@ -446,13 +459,33 @@ Proceed to Recipe!`,
     hasRemainderZero: false,
     isConfusion: true,
     matchedFirebaseInput: "what should we do to find the divisors of a number",
-    feedback: "\u{1F31F} Coach Maya here! What does 'Divisors of a number' mean? For example, if the number is 6, what are all the numbers that can divide 6 completely without leaving any remainder?",
+    feedback: "\u{1F31F} Coach Maara here! What does 'Divisors of a number' mean? For example, if the number is 6, what are all the numbers that can divide 6 completely without leaving any remainder?",
     correction: "Think about what divides a number completely without leaving a remainder. For example, what numbers divide 6 evenly?",
     suggestedInput: "Test each number from 1 up to that number and if remainder is 0 it is a divisor."
   };
 }
 function validateDivisorRecipe(text) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/]/g, " ").replace(/\s+/g, " ").trim();
+  const isOddEvenForeign = (norm.includes("even") || norm.includes("odd") || /%\s*2\b/.test(norm) || norm.includes("divisible by 2")) && !norm.includes("1 to");
+  if (isOddEvenForeign) {
+    return {
+      hasStep1: false,
+      hasStep2: false,
+      hasStep21: false,
+      hasStep22: false,
+      isFullyVerified: false,
+      completedStepsCount: 0,
+      recipeStepProgress: [
+        { stepNumber: 1, title: "Get the input number", completed: false, current: true },
+        { stepNumber: 2, title: "For every number from 1 up to the given number", completed: false, current: false },
+        { stepNumber: 3, title: "Check if dividing leaves remainder 0 (Step 2.1)", completed: false, current: false },
+        { stepNumber: 4, title: "If remainder is 0, record/display divisor (Step 2.2)", completed: false, current: false }
+      ],
+      feedback: "🌟 Coach Maara here! It looks like you've written recipe steps for Odd/Even! For Divisors of a Number, we need a recipe that loops through every number from 1 up to n.",
+      correction: "Write Step 1: 'step 1 : Get the input number'.",
+      suggestedInput: "step 1 : Get the input number"
+    };
+  }
   const hasStep1 = norm.includes("input") || norm.includes("get the number") || norm.includes("get input") || norm.includes("read") || norm.includes("take number") || norm.includes("taken number") || norm.includes("given number") || norm.includes("variable") || /\bn\s*\(?\s*\d+\s*\)?/.test(norm);
   const hasStep2 = (norm.includes("1 up to") || norm.includes("from 1 to") || norm.includes("1 to") || norm.includes("every number") || norm.includes("each number")) && (norm.includes("given number") || norm.includes("input number") || norm.includes("input") || norm.includes("n") || norm.includes("5") || norm.includes("6"));
   const hasRemainderZero = norm.includes("remainder is 0") || norm.includes("remainder is zero") || norm.includes("remainder 0") || norm.includes("remainder of 0") || norm.includes("remainder as 0") || norm.includes("leave remainder 0") || norm.includes("leaves remainder 0") || norm.includes("leaves a remainder of 0") || norm.includes("no remainder") || norm.includes("divides evenly") || norm.includes("divides completely") || norm.includes("divided completely") || norm.includes("evenly divisible") || norm.includes("perfectly divides");
@@ -475,7 +508,7 @@ function validateDivisorRecipe(text) {
         { stepNumber: 3, title: "Check if dividing leaves remainder 0 (Step 2.1)", completed: false, current: false },
         { stepNumber: 4, title: "If remainder is 0, record/display divisor (Step 2.2)", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! Based on our mathematical logic, write down the steps one by one.\nExample:\nStep 1: Get the input number\nStep 2: ...",
+      feedback: "\u{1F31F} Coach Maara here! Based on our mathematical logic, write down the steps one by one.\nExample:\nStep 1: Get the input number\nStep 2: ...",
       correction: "Write Step 1: 'step 1 : Get the input number'.",
       suggestedInput: "step 1 : Get the input number",
       matchedFirebaseInput: "what should i do here"
@@ -495,7 +528,7 @@ function validateDivisorRecipe(text) {
         { stepNumber: 3, title: "Check if dividing leaves remainder 0", completed: false, current: false },
         { stepNumber: 4, title: "If remainder is 0, display divisor", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Careful! In mathematics, dividing by 0 is impossible. Change your starting number from 0 to 1.",
+      feedback: "\u{1F31F} Coach Maara note: Careful! In mathematics, dividing by 0 is impossible. Change your starting number from 0 to 1.",
       correction: "Change Step 2 to start from 1: 'Step 2 : For every number from 1 up to the given number'.",
       suggestedInput: "step 2 : For every number from 1 up to the given number",
       matchedFirebaseInput: "starting from 0"
@@ -515,7 +548,7 @@ function validateDivisorRecipe(text) {
         { stepNumber: 3, title: "Check if dividing leaves remainder 0", completed: false, current: false },
         { stepNumber: 4, title: "If remainder is 0, display divisor", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Remember: Every number is divisible by itself (e.g., 6 divided by 6 leaves remainder 0). So make sure to include the number itself (from 1 up to the given number).",
+      feedback: "\u{1F31F} Coach Maara note: Remember: Every number is divisible by itself (e.g., 6 divided by 6 leaves remainder 0). So make sure to include the number itself (from 1 up to the given number).",
       correction: "Include the number itself in Step 2: 'For every number from 1 up to the given number'.",
       suggestedInput: "step 2 : For every number from 1 up to the given number",
       matchedFirebaseInput: "before the given number"
@@ -535,7 +568,7 @@ function validateDivisorRecipe(text) {
         { stepNumber: 3, title: "Check if dividing leaves remainder 0", completed: false, current: true },
         { stepNumber: 4, title: "If remainder is 0, display divisor", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: If you write down all numbers, you will list every number from 1 to N! You must first check if dividing leaves a remainder of 0.",
+      feedback: "\u{1F31F} Coach Maara note: If you write down all numbers, you will list every number from 1 to N! You must first check if dividing leaves a remainder of 0.",
       correction: "Add Step 2.1: 'Check if dividing the given number by the current number leaves a remainder of 0'.",
       suggestedInput: "step 2.1 : Check if dividing the given number by the current number leaves a remainder of 0",
       matchedFirebaseInput: "write down all numbers"
@@ -555,7 +588,7 @@ function validateDivisorRecipe(text) {
         { stepNumber: 3, title: "Check if dividing leaves remainder 0", completed: true, current: false },
         { stepNumber: 4, title: "If remainder is 0, display divisor", completed: false, current: true }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Do not stop! A number can have multiple divisors. Continue testing the remaining numbers until you reach the given number.",
+      feedback: "\u{1F31F} Coach Maara note: Do not stop! A number can have multiple divisors. Continue testing the remaining numbers until you reach the given number.",
       correction: "Step 2.2: 'If the remainder is 0, record / display the current number as a divisor'.",
       suggestedInput: "step 2.2 : If the remainder is 0, record / display the current number as a divisor",
       matchedFirebaseInput: "stop the process after first divisor"
@@ -575,7 +608,7 @@ function validateDivisorRecipe(text) {
         { stepNumber: 3, title: "Check if dividing leaves remainder 0 (Step 2.1)", completed: false, current: true },
         { stepNumber: 4, title: "If remainder is 0, record/display divisor (Step 2.2)", completed: hasStep22, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: In your condition step, you checked if remainder is 1. Remember, a number is a divisor only when it divides completely with a **remainder of 0**! If the remainder is 1, it is not a divisor.\n\nUpdate your step to: 'Check if dividing the input by the generated number leaves a remainder of 0'.",
+      feedback: "\u{1F31F} Coach Maara note: In your condition step, you checked if remainder is 1. Remember, a number is a divisor only when it divides completely with a **remainder of 0**! If the remainder is 1, it is not a divisor.\n\nUpdate your step to: 'Check if dividing the input by the generated number leaves a remainder of 0'.",
       correction: "Step 3: Check if dividing leaves a remainder of 0.",
       suggestedInput: "Step 3: Check if dividing leaves a remainder of 0",
       matchedFirebaseInput: "remainder is 1 in recipe"
@@ -597,7 +630,7 @@ function validateDivisorRecipe(text) {
       isFullyVerified: true,
       completedStepsCount: 4,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Kudos! You have written down a clear, step-by-step algorithm without any code jargon. Proceed to Ingredients!",
+      feedback: "\u{1F31F} Coach Maara here! Kudos! You have written down a clear, step-by-step algorithm without any code jargon. Proceed to Ingredients!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "step 2.2 : if remainder 0, record current number as divisor"
@@ -617,7 +650,7 @@ function validateDivisorRecipe(text) {
         { stepNumber: 3, title: "Check if dividing leaves remainder 0 (Step 2.1)", completed: true, current: false },
         { stepNumber: 4, title: "If remainder is 0, record/display divisor (Step 2.2)", completed: hasStep22, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! You correctly identified that we must check if dividing leaves a remainder of 0! But what numbers are we dividing by? We need to repeat this test for every number from 1 up to the given number in Step 2!",
+      feedback: "\u{1F31F} Coach Maara here! You correctly identified that we must check if dividing leaves a remainder of 0! But what numbers are we dividing by? We need to repeat this test for every number from 1 up to the given number in Step 2!",
       correction: "Write Step 2: 'For every number from 1 up to the given number'.",
       suggestedInput: "step 2 : For every number from 1 up to the given number",
       matchedFirebaseInput: "step 2 : for every number from 1 up to the given number"
@@ -632,7 +665,7 @@ function validateDivisorRecipe(text) {
       isFullyVerified: false,
       completedStepsCount,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Superb! If the remainder is 0, what action should you take with that number in Step 2.2?",
+      feedback: "\u{1F31F} Coach Maara here! Superb! If the remainder is 0, what action should you take with that number in Step 2.2?",
       correction: "Write Step 2.2: 'If the remainder is 0, record / display the current number as a divisor'.",
       suggestedInput: "step 2.2 : If the remainder is 0, record / display the current number as a divisor",
       matchedFirebaseInput: "step 2.1 : check if dividing leaves remainder 0"
@@ -647,7 +680,7 @@ function validateDivisorRecipe(text) {
       isFullyVerified: false,
       completedStepsCount,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Nice! In this repeating process, what condition must we check for each number in Step 2.1?",
+      feedback: "\u{1F31F} Coach Maara here! Nice! In this repeating process, what condition must we check for each number in Step 2.1?",
       correction: "Write Step 2.1: 'Check if dividing the given number by the current number leaves a remainder of 0'.",
       suggestedInput: "step 2.1 : Check if dividing the given number by the current number leaves a remainder of 0",
       matchedFirebaseInput: "step 2 : for every number from 1 up to the given number"
@@ -662,7 +695,7 @@ function validateDivisorRecipe(text) {
       isFullyVerified: false,
       completedStepsCount,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Great! What is the next step to go through each number starting from 1 up to that given number?",
+      feedback: "\u{1F31F} Coach Maara here! Great! What is the next step to go through each number starting from 1 up to that given number?",
       correction: "Write Step 2: 'For every number from 1 up to the given number'.",
       suggestedInput: "step 2 : For every number from 1 up to the given number",
       matchedFirebaseInput: "step 1 : get the input number"
@@ -676,7 +709,7 @@ function validateDivisorRecipe(text) {
     isFullyVerified: false,
     completedStepsCount: 0,
     recipeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Based on our mathematical logic, write down the steps one by one.\nExample:\nStep 1: Get the input number\nStep 2: ...",
+    feedback: "\u{1F31F} Coach Maara here! Based on our mathematical logic, write down the steps one by one.\nExample:\nStep 1: Get the input number\nStep 2: ...",
     correction: "Write Step 1: 'Get the input number'.",
     suggestedInput: "step 1 : Get the input number",
     matchedFirebaseInput: "what should i do here"
@@ -684,22 +717,42 @@ function validateDivisorRecipe(text) {
 }
 function validateDivisorIngredients(text) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/<>()_]/g, " ").replace(/\s+/g, " ").trim();
-  const hasInput = norm.includes("n for input") || norm.includes("input number") || norm.includes("variable n") || norm.includes("var n") || /\b(variable|var)?\s*n(\s*\(?\s*\d*\s*\)?)?\b/.test(norm) || norm.includes("get input") || norm.includes("take number") || /\bstep\s*1\s*:\s*.*n\b/.test(norm) || norm.includes("n = input") || norm.includes("input") && (norm.includes("number") || norm.includes("n"));
+  const isOddEvenForeign = (norm.includes("even") || norm.includes("odd") || /%\s*2\b/.test(norm) || norm.includes("divisible by 2")) && !norm.includes("1 to");
+  if (isOddEvenForeign) {
+    return {
+      hasInput: false,
+      hasLoop: false,
+      hasCondition: false,
+      hasPrint: false,
+      isFullyVerified: false,
+      completedStepsCount: 0,
+      ingredientsStepProgress: [
+        { stepNumber: 1, title: "Variable n for input number", completed: false, current: true },
+        { stepNumber: 2, title: "For loop with Start: 1 (i), Stop: n (i <= n), Step: +1", completed: false, current: false },
+        { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: false },
+        { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
+      ],
+      feedback: "🌟 Coach Maara here! Those ingredients are for checking Odd or Even! Divisors of a Number requires a loop to test divisors from 1 up to n.",
+      correction: "Step 1: Variable n for input number.",
+      suggestedInput: "step 1 : n for input number"
+    };
+  }
+  const hasInput = norm.includes("n for input") || norm.includes("a for input") || norm.includes("input number") || norm.includes("variable n") || norm.includes("variable a") || norm.includes("var n") || norm.includes("var a") || /\b(variable|var)?\s*[an](\s*\(?\s*\d*\s*\)?)?\b/.test(norm) || norm.includes("get input") || norm.includes("take number") || /\bstep\s*1\s*:\s*.*[an]\b/.test(norm) || norm.includes("n = input") || norm.includes("a = input") || norm.includes("input") && (norm.includes("number") || norm.includes("n") || norm.includes("a"));
   const hasLoopConfusionWithIf = (norm.includes("if") || norm.includes("condition")) && (norm.includes("start") || norm.includes("stop") || norm.includes("next step") || norm.includes("step=+1") || norm.includes("step = +1") || norm.includes("step = 1") || norm.includes("step:+1") || norm.includes("step +1")) && !norm.includes("for loop") && !norm.includes("while loop");
   const hasLoopStart0 = !norm.includes("%") && !norm.includes("if") && (norm.includes("from i = 0") || norm.includes("start: 0") || norm.includes("start=0") || norm.includes("start = 0") || norm.includes("starts with 0") || norm.includes("i = 0") || norm.includes("i=0"));
-  const hasLoopStopBeforeN = norm.includes("i < n") || norm.includes("stop: i < n") || norm.includes("stop: n - 1") || norm.includes("stop = i < n");
+  const hasLoopStopBeforeN = (norm.includes("i < n") || norm.includes("i < a") || norm.includes("stop: i < n") || norm.includes("stop: i < a") || norm.includes("stop: n - 1") || norm.includes("stop = i < n")) && !norm.includes("<=") && !norm.includes("up to");
   const hasLoopStepDecrement = (norm.includes("next step:-1") || norm.includes("next step: -1") || norm.includes("next step -1") || norm.includes("next step: - 1") || norm.includes("next step = -1") || norm.includes("step:-1") || norm.includes("step: -1") || norm.includes("step = -1") || norm.includes("step=-1") || norm.includes("step -1") || norm.includes("step: -") || norm.includes("i--") || norm.includes("i = i - 1") || norm.includes("i -= 1") || norm.includes("decrement")) && !norm.includes("+1") && !norm.includes("i++");
-  const hasCompleteLoop = !hasLoopConfusionWithIf && !hasLoopStart0 && !hasLoopStopBeforeN && !hasLoopStepDecrement && (norm.includes("for loop with start: 1") || norm.includes("start: 1") || norm.includes("start = 1") || norm.includes("from 1 to n") || norm.includes("1 up to n") || norm.includes("range(1, n + 1)") || norm.includes("range(1, n+1)") || norm.includes("range(1,n+1)") || norm.includes("let i = 1; i <= n") || norm.includes("var i = 1; i <= n") || norm.includes("int i = 1; i <= n") || norm.includes("i = 1; i <= n") || (norm.includes("start") || norm.includes("from 1") || norm.includes("i = 1")) && (norm.includes("stop") || norm.includes("to n") || norm.includes("<= n") || norm.includes("up to n")) && (norm.includes("step") || norm.includes("+1") || norm.includes("i++")));
+  const hasCompleteLoop = !hasLoopConfusionWithIf && !hasLoopStart0 && !hasLoopStopBeforeN && !hasLoopStepDecrement && (norm.includes("for loop") || norm.includes("while loop") || norm.includes("start: 1") || norm.includes("start = 1") || norm.includes("from 1 to") || norm.includes("1 up to") || /range\s*\(\s*1\s*,/i.test(norm) || /let\s+i\s*=\s*1/i.test(norm) || /var\s+i\s*=\s*1/i.test(norm) || /int\s+i\s*=\s*1/i.test(norm) || /i\s*=\s*1/i.test(norm) || norm.includes("loop"));
   const hasPartialLoop = !hasCompleteLoop && !hasLoopConfusionWithIf && !hasLoopStart0 && !hasLoopStopBeforeN && (norm.includes("use for loop") || norm.includes("for loop") || norm.includes("while loop") || norm.includes("use loop") || /\bstep\s*2\s*:\s*.*loop\b/.test(norm) || norm.includes("loop") && !norm.includes("if"));
-  const hasConditionLeftSide = /\bleft\s*side\s*[:=]?\s*(n\s*%\s*i|%|n\s*mod\s*i)\b/.test(norm) || /\bl\s*\.?\s*s\s*[:=]?\s*(n\s*%\s*i|%|n\s*mod\s*i)\b/.test(norm) || /\bleft\s*[:=]?\s*(n\s*%\s*i|%|n\s*mod\s*i)\b/.test(norm) || norm.includes("left side n%i") || norm.includes("left side n % i") || norm.includes("left side : n % i") || norm.includes("left side: n % i") || norm.includes("left side : n%i") || norm.includes("left side: n%i") || norm.includes("left side:n%i") || norm.includes("left side 0") === false && norm.includes("left side") && (norm.includes("n % i") || norm.includes("n%i") || norm.includes("%")) || norm.includes("l s n % i") || norm.includes("l s n%i") || norm.includes("l.s : n % i") || norm.includes("l.s: n % i") || norm.includes("l.s : n%i") || norm.includes("l.s: n%i") || norm.includes("l.s:n%i") || norm.includes("left : n % i") || norm.includes("left: n % i") || norm.includes("left:n%i") || norm.includes("n % i") || norm.includes("n%i");
+  const hasConditionLeftSide = /\bleft\s*side\s*[:=]?\s*([an]\s*%\s*i|%|[an]\s*mod\s*i)\b/.test(norm) || /\bl\s*\.?\s*s\s*[:=]?\s*([an]\s*%\s*i|%|[an]\s*mod\s*i)\b/.test(norm) || /\bleft\s*[:=]?\s*([an]\s*%\s*i|%|[an]\s*mod\s*i)\b/.test(norm) || norm.includes("left side") && (norm.includes("%") || norm.includes("mod") || norm.includes("a%i") || norm.includes("n%i")) || norm.includes("a % i") || norm.includes("a%i") || norm.includes("n % i") || norm.includes("n%i") || norm.includes("%");
   const hasConditionRightSide = /\bright\s*side\s*[:=]?\s*0\b/.test(norm) || /\br\s*\.?\s*s\s*[:=]?\s*0\b/.test(norm) || /\bright\s*[:=]?\s*0\b/.test(norm) || norm.includes("right side 0") || norm.includes("right side : 0") || norm.includes("right side: 0") || norm.includes("right side:0") || norm.includes("right side = 0") || norm.includes("right side == 0") || norm.includes("r s 0") || norm.includes("r.s 0") || norm.includes("r.s : 0") || norm.includes("r.s: 0") || norm.includes("r.s:0") || norm.includes("rs 0") || norm.includes("right 0") || norm.includes("right : 0") || norm.includes("right: 0") || norm.includes("right:0") || norm.includes("right side zero") || norm.includes("right side : zero") || norm.includes("right side: zero") || norm.includes("== 0") || norm.includes("=== 0") || norm.includes("= 0") || norm.includes("remainder is 0") || norm.includes("remainder : 0") || norm.includes("remainder: 0") || norm.includes("remainder 0") || norm.includes("remainder=0") || norm.includes("remainder = 0") || norm.includes("remainder == 0");
   const hasConditionOperator = /\boperator\s*[:=]?\s*={2,3}\b/.test(norm) || norm.includes("operator ==") || norm.includes("operator : ==") || norm.includes("operator: ==") || norm.includes("operator:==") || norm.includes("operator ===") || norm.includes("operator : ===") || norm.includes("operator: ===") || norm.includes("operator:===") || norm.includes("==") || norm.includes("===") || norm.includes("equality operator") || norm.includes("equal operator") || norm.includes("double equal");
-  const hasConditionReversed = norm.includes("i % n == 0") || norm.includes("i % n = 0") || norm.includes("i%n==0") || norm.includes("left side") && (norm.includes("i % n") || norm.includes("i%n"));
-  const hasConditionSingleEqual = (norm.includes("n % i = 0") || norm.includes("n%i=0") || norm.includes("operator : =") || norm.includes("operator: =") || norm.includes("operator =")) && !norm.includes("==") && !norm.includes("===");
-  const hasConditionQuotient = norm.includes("n / i == 0") || norm.includes("n / i = 0") || norm.includes("n/i==0") || norm.includes("left side") && (norm.includes("n / i") || norm.includes("n/i"));
-  const hasCompleteCondition = !hasLoopConfusionWithIf && !hasConditionReversed && !hasConditionSingleEqual && !hasConditionQuotient && (norm.includes("n % i == 0") || norm.includes("n % i === 0") || norm.includes("n%i==0") || norm.includes("n%i===0") || hasConditionLeftSide && hasConditionOperator && hasConditionRightSide || norm.includes("if") && (norm.includes("%") || norm.includes("modulo")) && (norm.includes("== 0") || norm.includes("remainder is 0") || norm.includes("remainder 0") || norm.includes("leaves 0") || norm.includes("divisible")));
+  const hasConditionReversed = norm.includes("i % n == 0") || norm.includes("i % a == 0") || norm.includes("i % n = 0") || norm.includes("i%n==0") || norm.includes("i%a==0") || norm.includes("left side") && (norm.includes("i % n") || norm.includes("i % a") || norm.includes("i%n") || norm.includes("i%a"));
+  const hasConditionSingleEqual = (norm.includes("n % i = 0") || norm.includes("a % i = 0") || norm.includes("n%i=0") || norm.includes("a%i=0") || norm.includes("operator : =") || norm.includes("operator: =") || norm.includes("operator =")) && !norm.includes("==") && !norm.includes("===");
+  const hasConditionQuotient = norm.includes("n / i == 0") || norm.includes("a / i == 0") || norm.includes("n / i = 0") || norm.includes("n/i==0") || norm.includes("left side") && (norm.includes("n / i") || norm.includes("a / i") || norm.includes("n/i"));
+  const hasCompleteCondition = !hasLoopConfusionWithIf && !hasConditionReversed && !hasConditionSingleEqual && !hasConditionQuotient && (norm.includes("n % i == 0") || norm.includes("a % i == 0") || norm.includes("n%i==0") || norm.includes("a%i==0") || norm.includes("n % i === 0") || norm.includes("a % i === 0") || norm.includes("n%i===0") || norm.includes("a%i===0") || hasConditionLeftSide && hasConditionOperator && hasConditionRightSide || norm.includes("if") && (norm.includes("%") || norm.includes("modulo")) && (norm.includes("== 0") || norm.includes("==0") || norm.includes("remainder is 0") || norm.includes("remainder 0") || norm.includes("leaves 0") || norm.includes("divisible")));
   const hasPartialCondition = !hasCompleteCondition && !hasLoopConfusionWithIf && !hasConditionReversed && !hasConditionSingleEqual && !hasConditionQuotient && (hasConditionLeftSide || hasConditionRightSide || hasConditionOperator || norm.includes("if condition") || norm.includes("use if") || norm.includes("if statement") || /\bstep\s*(?:2\.1|3)\s*:\s*.*if\b/.test(norm) || norm.includes("how to write if") || norm.includes("write if"));
-  const hasPrintN = norm.includes("print(n)") || norm.includes("print n") || norm.includes("display") && norm.includes(" n") && !norm.includes(" i");
+  const hasPrintN = norm.includes("print(n)") || norm.includes("print(a)") || norm.includes("print n") || norm.includes("print a") || (norm.includes("display") && (norm.includes(" n") || norm.includes(" a")) && !norm.includes(" i"));
   const hasCompletePrint = !hasPrintN && (norm.includes("print(i)") || norm.includes("print i") || norm.includes("print statement to display divisor i") || norm.includes("print statement to display the divisor i") || norm.includes("display divisor i") || norm.includes("display the divisor i") || norm.includes("print divisor") || norm.includes("display divisor") || norm.includes("display current number i") || /\bstep\s*(?:2\.2|4)\s*:\s*.*print\b/.test(norm) && (norm.includes("i") || norm.includes("divisor")));
   const hasLoop = hasCompleteLoop;
   const hasCondition = hasCompleteCondition;
@@ -727,7 +780,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: false },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! Look carefully at Step 2: you wrote 'if condition start=1, stop=n, step=+1'. That is a very important mistake to fix! In programming, an **if condition** does NOT have a start, stop, or step. An **if condition** only checks a condition (such as checking if the remainder is zero).\n\nWhat has **Start: 1, Stop: n, and Step: +1** is actually a **For Loop**! A loop is the tool that generates numbers from 1 to n. In Step 2, change 'if condition' to 'For loop'!\n\nAfter setting up the For loop in Step 2, you can use the 'if condition' in Step 2.1 to test: if (n % i == 0).",
+      feedback: "\u{1F31F} Coach Maara here! Look carefully at Step 2: you wrote 'if condition start=1, stop=n, step=+1'. That is a very important mistake to fix! In programming, an **if condition** does NOT have a start, stop, or step. An **if condition** only checks a condition (such as checking if the remainder is zero).\n\nWhat has **Start: 1, Stop: n, and Step: +1** is actually a **For Loop**! A loop is the tool that generates numbers from 1 to n. In Step 2, change 'if condition' to 'For loop'!\n\nAfter setting up the For loop in Step 2, you can use the 'if condition' in Step 2.1 to test: if (n % i == 0).",
       correction: "Notice that 'start=1, stop=n, step=+1' is a For Loop, NOT an if condition! In Step 2, change 'if condition' to 'For loop': 'step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1",
       matchedFirebaseInput: "step 2 : for loop with start: 1, stop: n, step: +1"
@@ -747,7 +800,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: false },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Remember: i starts from 1 because n % 0 will cause a division by zero error! Start from i = 1.",
+      feedback: "\u{1F31F} Coach Maara note: Remember: i starts from 1 because n % 0 will cause a division by zero error! Start from i = 1.",
       correction: "Change loop start to 1: 'step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1",
       matchedFirebaseInput: "from i = 0"
@@ -767,7 +820,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: false },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: If you write i < n, the loop stops before N, missing N itself as a divisor! Use i <= n (or Stop at n inclusive).",
+      feedback: "\u{1F31F} Coach Maara note: If you write i < n, the loop stops before N, missing N itself as a divisor! Use i <= n (or Stop at n inclusive).",
       correction: "Use i <= n so that n itself is tested: 'step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1",
       matchedFirebaseInput: "i < n"
@@ -788,7 +841,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: false },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Look at your loop step where you wrote `next step: -1`! Since your loop starts at 1 and needs to count up to 5 (or n), decrementing with `-1` will decrease into negative numbers (1, 0, -1, -2...) and will never reach your stop target 5!\n\nTo count upwards from 1 to n, your loop step must increment by +1. Change your step to **`+1`** (e.g. `next step: +1` or `step: +1`).",
+      feedback: "\u{1F31F} Coach Maara note: Look at your loop step where you wrote `next step: -1`! Since your loop starts at 1 and needs to count up to 5 (or n), decrementing with `-1` will decrease into negative numbers (1, 0, -1, -2...) and will never reach your stop target 5!\n\nTo count upwards from 1 to n, your loop step must increment by +1. Change your step to **`+1`** (e.g. `next step: +1` or `step: +1`).",
       correction: "Change loop step to +1: 'step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1",
       matchedFirebaseInput: "loop step -1"
@@ -809,7 +862,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: true },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! In an If condition, we have two sides: Left Side (L.S) and Right Side (R.S) of the operator.\n\u2022 Left Side (L.S) : n % i (calculates remainder when n is divided by i)\n\u2022 Operator : == (use double equal == for comparison, not a single = which assigns!)\n\u2022 Right Side (R.S) : 0 (checks if remainder is 0)\nSo your 'if condition' looks like: if (n % i == 0).",
+      feedback: "\u{1F31F} Coach Maara here! In an If condition, we have two sides: Left Side (L.S) and Right Side (R.S) of the operator.\n\u2022 Left Side (L.S) : n % i (calculates remainder when n is divided by i)\n\u2022 Operator : == (use double equal == for comparison, not a single = which assigns!)\n\u2022 Right Side (R.S) : 0 (checks if remainder is 0)\nSo your 'if condition' looks like: if (n % i == 0).",
       correction: "In an If condition: Left Side is n % i, Operator is ==, Right Side is 0. Use double equal ==: 'step 2.1 : If condition with modulo operator: if (n % i == 0)'.",
       suggestedInput: "step 2.1 : If condition with modulo operator: if (n % i == 0)",
       matchedFirebaseInput: "n % i = 0"
@@ -830,7 +883,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: true },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! In an If condition, we have two sides: Left Side (L.S) and Right Side (R.S) of the operator.\nVariable order check: You want to divide given number n by testing divisor i:\n\u2022 Left Side (L.S) : n % i (divide n by i, not i % n)\n\u2022 Operator : ==\n\u2022 Right Side (R.S) : 0\nSo your 'if condition' looks like: if (n % i == 0).",
+      feedback: "\u{1F31F} Coach Maara here! In an If condition, we have two sides: Left Side (L.S) and Right Side (R.S) of the operator.\nVariable order check: You want to divide given number n by testing divisor i:\n\u2022 Left Side (L.S) : n % i (divide n by i, not i % n)\n\u2022 Operator : ==\n\u2022 Right Side (R.S) : 0\nSo your 'if condition' looks like: if (n % i == 0).",
       correction: "Write 'if (n % i == 0)' to divide n by counter i: 'step 2.1 : If condition with modulo operator: if (n % i == 0)'.",
       suggestedInput: "step 2.1 : If condition with modulo operator: if (n % i == 0)",
       matchedFirebaseInput: "i % n == 0"
@@ -851,7 +904,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: true },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! In an If condition, we have two sides: Left Side (L.S) and Right Side (R.S) of the operator.\nn / i gives the quotient, but we need to check the remainder! Use modulo %:\n\u2022 Left Side (L.S) : n % i (remainder of n divided by i)\n\u2022 Operator : ==\n\u2022 Right Side (R.S) : 0\nSo your 'if condition' looks like: if (n % i == 0).",
+      feedback: "\u{1F31F} Coach Maara here! In an If condition, we have two sides: Left Side (L.S) and Right Side (R.S) of the operator.\nn / i gives the quotient, but we need to check the remainder! Use modulo %:\n\u2022 Left Side (L.S) : n % i (remainder of n divided by i)\n\u2022 Operator : ==\n\u2022 Right Side (R.S) : 0\nSo your 'if condition' looks like: if (n % i == 0).",
       correction: "Use modulo operator % for remainder: 'step 2.1 : If condition with modulo operator: if (n % i == 0)'.",
       suggestedInput: "step 2.1 : If condition with modulo operator: if (n % i == 0)",
       matchedFirebaseInput: "n / i == 0"
@@ -871,7 +924,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: true, current: false },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: true }
       ],
-      feedback: "\u{1F31F} Coach Maya note: If you print n, it will print the input number repeatedly! You need to print the current divisor i.",
+      feedback: "\u{1F31F} Coach Maara note: If you print n, it will print the input number repeatedly! You need to print the current divisor i.",
       correction: "Print the divisor i: 'step 2.2 : Print statement to display divisor i'.",
       suggestedInput: "step 2.2 : Print statement to display divisor i",
       matchedFirebaseInput: "print(n)"
@@ -886,7 +939,7 @@ function validateDivisorIngredients(text) {
       isFullyVerified: true,
       completedStepsCount: 4,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Awesome! You have identified all 4 ingredients ready for the Divisors of a Number program. Now let's proceed to Taste the Sample!",
+      feedback: "\u{1F31F} Coach Maara here! Awesome! You have identified all 4 ingredients ready for the Divisors of a Number program. Now let's proceed to Taste the Sample!",
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "step 2.2 : print statement to display divisor i"
@@ -901,34 +954,34 @@ function validateDivisorIngredients(text) {
       isFullyVerified: false,
       completedStepsCount: 3,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Hurray, that's right! You have identified the input variable, loop, and modulo condition. Finally, for Step 2.2, what statement is needed inside the if condition to display the divisor i?",
+      feedback: "\u{1F31F} Coach Maara here! Hurray, that's right! You have identified the input variable, loop, and modulo condition. Finally, for Step 2.2, what statement is needed inside the if condition to display the divisor i?",
       correction: "Write Step 2.2 to display the divisor: 'step 2.2 : Print statement to display divisor i'.",
       suggestedInput: "step 2.2 : Print statement to display divisor i",
       matchedFirebaseInput: "step 2.1 : if condition with modulo operator: if (n % i == 0)"
     };
   }
   if (hasInput && hasLoop && !hasCondition) {
-    let feedbackMsg = "\u{1F31F} Coach Maya here! You have set up your variable and for loop! Now inside the loop (Step 2.1), we need an If condition to check if the current number `i` divides `n` completely.\n\nIn an If condition, we have two sides of the operator:\n\u2022 Left Side (L.S) : n % i (calculates remainder when input n is divided by loop counter i)\n\u2022 Operator : == (equality comparison)\n\u2022 Right Side (R.S) : 0 (checks if remainder is 0)\n\nSo write Step 2.1: 'step 2.1 : If condition with modulo operator: if (n % i == 0)'.";
+    let feedbackMsg = "\u{1F31F} Coach Maara here! You have set up your variable and for loop! Now inside the loop (Step 2.1), we need an If condition to check if the current number `i` divides `n` completely.\n\nIn an If condition, we have two sides of the operator:\n\u2022 Left Side (L.S) : n % i (calculates remainder when input n is divided by loop counter i)\n\u2022 Operator : == (equality comparison)\n\u2022 Right Side (R.S) : 0 (checks if remainder is 0)\n\nSo write Step 2.1: 'step 2.1 : If condition with modulo operator: if (n % i == 0)'.";
     let correctionMsg = "In an If condition: Left Side is n % i, Operator is ==, Right Side is 0. Write Step 2.1: 'step 2.1 : If condition with modulo operator: if (n % i == 0)'.";
     let suggestedMsg = "step 2.1 : If condition with modulo operator: if (n % i == 0)";
     if (hasConditionLeftSide && hasConditionRightSide && !hasConditionOperator) {
-      feedbackMsg = "\u{1F31F} Coach Maya here! You correctly identified the Left Side (`n % i`) and Right Side (`0`)! You only missed mentioning the comparison operator. In programming, use the equality operator `==` (double equal) to compare them. Add `operator : ==` to complete your if condition.";
+      feedbackMsg = "\u{1F31F} Coach Maara here! You correctly identified the Left Side (`n % i`) and Right Side (`0`)! You only missed mentioning the comparison operator. In programming, use the equality operator `==` (double equal) to compare them. Add `operator : ==` to complete your if condition.";
       correctionMsg = "You have Left Side (n % i) and Right Side (0). Just specify the operator: 'operator : ==' (or 'if (n % i == 0)').";
       suggestedMsg = "step 3 : use if condition: left side : n % i, operator : ==, right side : 0";
     } else if (hasConditionLeftSide && hasConditionOperator && !hasConditionRightSide) {
-      feedbackMsg = "\u{1F31F} Coach Maya here! You specified the Left Side (`n % i`) and Operator (`==`)! You just missed specifying the Right Side. For a divisor, what should the remainder be? It must be `0` (e.g. `right side : 0`).";
+      feedbackMsg = "\u{1F31F} Coach Maara here! You specified the Left Side (`n % i`) and Operator (`==`)! You just missed specifying the Right Side. For a divisor, what should the remainder be? It must be `0` (e.g. `right side : 0`).";
       correctionMsg = "Specify the Right Side (remainder 0): 'right side : 0' (or 'if (n % i == 0)').";
       suggestedMsg = "step 3 : use if condition: left side : n % i, operator : ==, right side : 0";
     } else if (!hasConditionLeftSide && hasConditionOperator && hasConditionRightSide) {
-      feedbackMsg = "\u{1F31F} Coach Maya here! You specified the Operator (`==`) and Right Side (`0`)! You just missed specifying the Left Side. Use `n % i` to calculate the remainder when dividing the input `n` by loop counter `i`.";
+      feedbackMsg = "\u{1F31F} Coach Maara here! You specified the Operator (`==`) and Right Side (`0`)! You just missed specifying the Left Side. Use `n % i` to calculate the remainder when dividing the input `n` by loop counter `i`.";
       correctionMsg = "Specify the Left Side (n % i): 'left side : n % i' (or 'if (n % i == 0)').";
       suggestedMsg = "step 3 : use if condition: left side : n % i, operator : ==, right side : 0";
     } else if (hasConditionLeftSide && !hasConditionOperator && !hasConditionRightSide) {
-      feedbackMsg = "\u{1F31F} Coach Maya here! You've got the Left Side (`n % i`)! To complete the condition, specify the Operator (`==`) and Right Side (`0` remainder).";
+      feedbackMsg = "\u{1F31F} Coach Maara here! You've got the Left Side (`n % i`)! To complete the condition, specify the Operator (`==`) and Right Side (`0` remainder).";
       correctionMsg = "Specify Operator (==) and Right Side (0): 'operator : ==, right side : 0'.";
       suggestedMsg = "step 3 : use if condition: left side : n % i, operator : ==, right side : 0";
     } else if (hasPartialCondition) {
-      feedbackMsg = "\u{1F31F} Coach Maya here! You correctly identified that an 'if condition' is needed inside the loop! To write the condition, define its 3 components:\n\u2022 Left Side (L.S) : `n % i` (calculates remainder when `n` is divided by `i`)\n\u2022 Operator : `==` (equality comparison)\n\u2022 Right Side (R.S) : `0` (checks if remainder is 0)\n\nOr write: 'step 2.1 : If condition: if (n % i == 0)'.";
+      feedbackMsg = "\u{1F31F} Coach Maara here! You correctly identified that an 'if condition' is needed inside the loop! To write the condition, define its 3 components:\n\u2022 Left Side (L.S) : `n % i` (calculates remainder when `n` is divided by `i`)\n\u2022 Operator : `==` (equality comparison)\n\u2022 Right Side (R.S) : `0` (checks if remainder is 0)\n\nOr write: 'step 2.1 : If condition: if (n % i == 0)'.";
       correctionMsg = "Specify the condition components: Left Side (n % i), Operator (==), Right Side (0) or 'if (n % i == 0)'.";
       suggestedMsg = "step 2.1 : If condition with modulo operator: if (n % i == 0)";
     }
@@ -961,7 +1014,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: false },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! You've got the right idea with the for loop for Step 2! To make it work in code, we need to define how that loop behaves:\n\u2022 Start : 1 (i) \u2014 we start testing from 1 because dividing by 0 is undefined\n\u2022 Stop : n (i <= n) \u2014 we test up to and including n so n itself is checked\n\u2022 Step : +1 \u2014 increment by 1 each time\n\nPlease specify the loop with its parameters: 'step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1'.",
+      feedback: "\u{1F31F} Coach Maara here! You've got the right idea with the for loop for Step 2! To make it work in code, we need to define how that loop behaves:\n\u2022 Start : 1 (i) \u2014 we start testing from 1 because dividing by 0 is undefined\n\u2022 Stop : n (i <= n) \u2014 we test up to and including n so n itself is checked\n\u2022 Step : +1 \u2014 increment by 1 each time\n\nPlease specify the loop with its parameters: 'step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1'.",
       correction: "Define the loop parameters (Start: 1, Stop: n, Step: +1): 'step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1",
       matchedFirebaseInput: "step 2 : for loop with start: 1, stop: n, step: +1"
@@ -976,7 +1029,7 @@ function validateDivisorIngredients(text) {
       isFullyVerified: false,
       completedStepsCount: 1,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Spot on! You have identified 'n for input number' for Step 1. Now, what programming structure do we use to generate numbers from 1 to n repeatedly? Define its Start, Stop, and Step.",
+      feedback: "\u{1F31F} Coach Maara here! Spot on! You have identified 'n for input number' for Step 1. Now, what programming structure do we use to generate numbers from 1 to n repeatedly? Define its Start, Stop, and Step.",
       correction: "Write Step 2: 'step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1'.",
       suggestedInput: "step 2 : For loop with Start: 1 (i), Stop: n (i <= n), Step: +1",
       matchedFirebaseInput: "step 1 : n for input number"
@@ -996,7 +1049,7 @@ function validateDivisorIngredients(text) {
         { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: false },
         { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! Great thinking on the loop! But before we run the loop up to n, what variable do we need to get and store the input number in Step 1?",
+      feedback: "\u{1F31F} Coach Maara here! Great thinking on the loop! But before we run the loop up to n, what variable do we need to get and store the input number in Step 1?",
       correction: "Write Step 1: 'step 1 : n for input number'.",
       suggestedInput: "step 1 : n for input number",
       matchedFirebaseInput: "step 1 : n for input number"
@@ -1015,7 +1068,7 @@ function validateDivisorIngredients(text) {
       { stepNumber: 3, title: "If condition with modulo operator: if (n % i == 0)", completed: false, current: false },
       { stepNumber: 4, title: "Print statement to display divisor i", completed: false, current: false }
     ],
-    feedback: "\u{1F31F} Coach Maya here! Identify the variables, loops, conditions, and operators needed for each step.\nFor Step 1, what variable is needed to store the input number?",
+    feedback: "\u{1F31F} Coach Maara here! Identify the variables, loops, conditions, and operators needed for each step.\nFor Step 1, what variable is needed to store the input number?",
     correction: "Write Step 1: 'step 1 : n for input number'.",
     suggestedInput: "step 1 : n for input number",
     matchedFirebaseInput: "what do i do here"
@@ -1023,6 +1076,27 @@ function validateDivisorIngredients(text) {
 }
 function validateDivisorSampleCode(code, attemptCount = 1) {
   const trimmed = (code || "").trim();
+  const isOddEvenForeignCode = /\b(even|odd)\b/i.test(trimmed) || /%\s*2\b/.test(trimmed);
+  if (isOddEvenForeignCode) {
+    return {
+      hasInput: true,
+      hasLoop: false,
+      hasCondition: false,
+      hasPrint: false,
+      completedCount: 0,
+      allVerified: false,
+      detectedInputName: "n",
+      sampleCodeStepProgress: [
+        { stepNumber: 1, title: `Ingredient 1: Input variable n`, completed: true, current: false },
+        { stepNumber: 2, title: `Ingredient 2: For loop (from 1 to n)`, completed: false, current: true },
+        { stepNumber: 3, title: `Ingredient 2.1: If condition (n % i == 0)`, completed: false, current: false },
+        { stepNumber: 4, title: `Ingredient 2.2: Print divisor i`, completed: false, current: false }
+      ],
+      feedback: "🌟 Coach Maara here! That code checks if a number is Odd or Even (% 2). In this Divisors challenge, we need to test all divisors from 1 to n using a loop (for i = 1 to n) and check if n % i == 0!",
+      correction: "Use a for loop to test each number from 1 to n: for (var i = 1; i <= n; i++)",
+      suggestedInput: "for (var i = 1; i <= n; i++)"
+    };
+  }
   const hasInput = /(?:var|let|const|int|float)?\s*([a-zA-Z_]\w*)\s*=\s*(?:\d+|int\s*\(\s*input|Scanner|prompt)/i.test(trimmed) || /input\s*\(/i.test(trimmed);
   const inputMatch = trimmed.match(/(?:var|let|const|int|float)?\s*([a-zA-Z_]\w*)\s*=\s*\d+/i);
   const rawInputVar = inputMatch ? inputMatch[1] : "n";
@@ -1072,7 +1146,7 @@ function validateDivisorSampleCode(code, attemptCount = 1) {
         { stepNumber: 3, title: "Ingredient 2.1: If condition (a % i == 0)", completed: false, current: false },
         { stepNumber: 4, title: "Ingredient 2.2: Print divisor (print(i))", completed: false, current: false }
       ],
-      feedback: "\u{1F31F} Coach Maya here! To assemble our sample prototype, follow the ingredients we planned in Stage 3 step-by-step:\n\u2022 Step 1: Declare your input variable (e.g., `var a = 4;`)\n\u2022 Step 2: For loop with Start: 1 (i), Stop: a (i <= a), Step: +1\n\u2022 Step 2.1: If condition with modulo: `if (a % i == 0)`\n\u2022 Step 2.2: Print statement to display the divisor: `print(i);`\n\nLet's start with Step 1: declare your input variable!",
+      feedback: "\u{1F31F} Coach Maara here! To assemble our sample prototype, follow the ingredients we planned in Stage 3 step-by-step:\n\u2022 Step 1: Declare your input variable (e.g., `var a = 4;`)\n\u2022 Step 2: For loop with Start: 1 (i), Stop: a (i <= a), Step: +1\n\u2022 Step 2.1: If condition with modulo: `if (a % i == 0)`\n\u2022 Step 2.2: Print statement to display the divisor: `print(i);`\n\nLet's start with Step 1: declare your input variable!",
       correction: "Based on Ingredient Step 1, declare your input variable: var a = 4;",
       suggestedInput: "var a = 4;",
       matchedFirebaseInput: "do i need to write the code here"
@@ -1093,7 +1167,7 @@ function validateDivisorSampleCode(code, attemptCount = 1) {
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Loop start & boundary check! You wrote \`for(${loopVar}=${inputVar}; ${loopVar}<=1; ${loopVar}++)\`. Because \`${loopVar}\` starts at \`${inputVar}\` (e.g. 5), the condition \`${loopVar} <= 1\` is immediately false, so the loop will never execute!
+      feedback: `\u{1F31F} Coach Maara note: Loop start & boundary check! You wrote \`for(${loopVar}=${inputVar}; ${loopVar}<=1; ${loopVar}++)\`. Because \`${loopVar}\` starts at \`${inputVar}\` (e.g. 5), the condition \`${loopVar} <= 1\` is immediately false, so the loop will never execute!
 
 Remember Ingredient Step 2: we must test each divisor starting from 1 up to \`${inputVar}\`:
 \u2022 Start: 1 (\`${loopVar} = 1\`)
@@ -1121,7 +1195,7 @@ Change your loop to: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loo
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Your loop starts at \`${inputVar}\` (\`${loopVar} = ${inputVar}\`) and increments upward. To test all divisors, the loop must start from 1 up to \`${inputVar}\`!
+      feedback: `\u{1F31F} Coach Maara note: Your loop starts at \`${inputVar}\` (\`${loopVar} = ${inputVar}\`) and increments upward. To test all divisors, the loop must start from 1 up to \`${inputVar}\`!
 
 Update your loop to: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)\`.`,
       correction: `Based on Ingredient Step 2, write loop from 1 to ${inputVar}: for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)`,
@@ -1144,7 +1218,7 @@ Update your loop to: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loo
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Step direction check! Starting at 1 with \`${loopVar}--\` will count backwards into negative numbers and cause an infinite loop. Use \`${loopVar}++\` to step forward from 1 to \`${inputVar}\`!`,
+      feedback: `\u{1F31F} Coach Maara note: Step direction check! Starting at 1 with \`${loopVar}--\` will count backwards into negative numbers and cause an infinite loop. Use \`${loopVar}++\` to step forward from 1 to \`${inputVar}\`!`,
       correction: `Change loop step to increment: for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)`,
       suggestedInput: `for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)`,
       matchedFirebaseInput: "loop decrement bug"
@@ -1165,7 +1239,7 @@ Update your loop to: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loo
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Bug alert: loop variable starts at 0, leading to ${inputVar} % 0 (Division by zero error!). Remember our Ingredient Step 2: loop must start at 1! Change loop initialization to start at 1: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)\`.`,
+      feedback: `\u{1F31F} Coach Maara note: Bug alert: loop variable starts at 0, leading to ${inputVar} % 0 (Division by zero error!). Remember our Ingredient Step 2: loop must start at 1! Change loop initialization to start at 1: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)\`.`,
       correction: `Based on Ingredient Step 2, change loop initialization to start at 1: for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)`,
       suggestedInput: `for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)`,
       matchedFirebaseInput: "bug alert: i starts at 0"
@@ -1186,7 +1260,7 @@ Update your loop to: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loo
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Boundary bug: \`${loopVar} < ${inputVar}\` stops before ${inputVar}, missing ${inputVar} itself as a divisor! Remember Ingredient Step 2: Stop: ${inputVar} (inclusive <=). Change condition to \`${loopVar} <= ${inputVar}\` (or in Python: \`range(1, ${inputVar} + 1)\`).`,
+      feedback: `\u{1F31F} Coach Maara note: Boundary bug: \`${loopVar} < ${inputVar}\` stops before ${inputVar}, missing ${inputVar} itself as a divisor! Remember Ingredient Step 2: Stop: ${inputVar} (inclusive <=). Change condition to \`${loopVar} <= ${inputVar}\` (or in Python: \`range(1, ${inputVar} + 1)\`).`,
       correction: `Based on Ingredient Step 2, change loop condition to include ${inputVar}: ${loopVar} <= ${inputVar}.`,
       suggestedInput: `for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)`,
       matchedFirebaseInput: "boundary bug: i < n"
@@ -1207,7 +1281,7 @@ Update your loop to: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loo
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Loop syntax check! For Ingredient Step 2, write a complete for loop with Start: 1, Stop: \`${inputVar}\` (\`${loopVar} <= ${inputVar}\`), and Step: +1 (\`${loopVar}++\`):
+      feedback: `\u{1F31F} Coach Maara note: Loop syntax check! For Ingredient Step 2, write a complete for loop with Start: 1, Stop: \`${inputVar}\` (\`${loopVar} <= ${inputVar}\`), and Step: +1 (\`${loopVar}++\`):
 \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)\`.`,
       correction: `Based on Ingredient Step 2, write loop from 1 to ${inputVar}: for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)`,
       suggestedInput: `for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++)`,
@@ -1238,7 +1312,7 @@ Update your loop to: \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loo
             { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
             { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
           ],
-          feedback: `\u{1F31F} Coach Maya note: Look at your condition \`if(${lhs}/${rhs}${relOp ? relOp + "0" : ""})\`. Two adjustments are needed:
+          feedback: `\u{1F31F} Coach Maara note: Look at your condition \`if(${lhs}/${rhs}${relOp ? relOp + "0" : ""})\`. Two adjustments are needed:
 1. Use the **modulo operator \`%\`** instead of \`/\` to calculate remainder.
 2. Divide the input number \`${inputVar}\` by the loop counter \`${loopVar}\` (\`${inputVar} % ${loopVar}\`), not the other way around!
 
@@ -1263,7 +1337,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
           { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
           { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
         ],
-        feedback: `\u{1F31F} Coach Maya note: Operator check! You wrote \`if(${lhs}/${rhs}${relOp ? relOp + "0" : ""})\`. In programming, the \`/\` (division) operator calculates the **quotient** (for example, 5 / 1 = 5, not 0), whereas to check if a number divides evenly, we need to check if the **remainder is 0** using the **modulo operator \`%\`**!
+        feedback: `\u{1F31F} Coach Maara note: Operator check! You wrote \`if(${lhs}/${rhs}${relOp ? relOp + "0" : ""})\`. In programming, the \`/\` (division) operator calculates the **quotient** (for example, 5 / 1 = 5, not 0), whereas to check if a number divides evenly, we need to check if the **remainder is 0** using the **modulo operator \`%\`**!
 
 Remember Ingredient Step 2.1:
 \u2022 Left Side (L.S): \`${inputVar} % ${loopVar}\`
@@ -1294,7 +1368,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
             { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
             { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
           ],
-          feedback: `\u{1F31F} Coach Maya note: Look at your condition \`if(${lhs}%${rhs}=0)\`. Two adjustments are needed:
+          feedback: `\u{1F31F} Coach Maara note: Look at your condition \`if(${lhs}%${rhs}=0)\`. Two adjustments are needed:
 1. **Order check**: You wrote \`${lhs} % ${rhs}\`. To test divisors of \`${inputVar}\`, divide the input number by the counter: \`${inputVar} % ${loopVar}\`.
 2. **Operator check**: Single \`=\` is assignment; use \`==\` (equality comparison) to compare with 0.
 
@@ -1319,7 +1393,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
           { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
           { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
         ],
-        feedback: `\u{1F31F} Coach Maya note: Variable order check! In \`if(${lhs}%${rhs}==0)\`, you are dividing the loop counter \`${lhs}\` by \`${rhs}\`. To test divisors of \`${inputVar}\`, we must divide the input number \`${inputVar}\` by each testing counter \`${loopVar}\`!
+        feedback: `\u{1F31F} Coach Maara note: Variable order check! In \`if(${lhs}%${rhs}==0)\`, you are dividing the loop counter \`${lhs}\` by \`${rhs}\`. To test divisors of \`${inputVar}\`, we must divide the input number \`${inputVar}\` by each testing counter \`${loopVar}\`!
 
 Update your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         correction: `Based on Ingredient Step 2.1, Left Side is ${inputVar} % ${loopVar}: write if (${inputVar} % ${loopVar} == 0)`,
@@ -1343,7 +1417,7 @@ Update your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
           { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
           { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
         ],
-        feedback: `\u{1F31F} Coach Maya note: Syntax error: \`${lhs} % ${rhs} = 0\` is an assignment. Remember Ingredient Step 2.1: Operator is \`==\` (equality comparison)! Change to \`if (${inputVar} % ${loopVar} == 0)\`.`,
+        feedback: `\u{1F31F} Coach Maara note: Syntax error: \`${lhs} % ${rhs} = 0\` is an assignment. Remember Ingredient Step 2.1: Operator is \`==\` (equality comparison)! Change to \`if (${inputVar} % ${loopVar} == 0)\`.`,
         correction: `Based on Ingredient Step 2.1, use == operator: if (${inputVar} % ${loopVar} == 0)`,
         suggestedInput: `if (${inputVar} % ${loopVar} == 0)`,
         matchedFirebaseInput: "syntax error: n % i = 0"
@@ -1366,7 +1440,7 @@ Update your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Operator check! In programming, the \`/\` (division) operator calculates the **quotient**, whereas to check if a number divides evenly, we need to check if the **remainder is 0** using the **modulo operator \`%\`**!
+      feedback: `\u{1F31F} Coach Maara note: Operator check! In programming, the \`/\` (division) operator calculates the **quotient**, whereas to check if a number divides evenly, we need to check if the **remainder is 0** using the **modulo operator \`%\`**!
 
 Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
       correction: `Based on Ingredient Step 2.1, use modulo operator % instead of /: write if (${inputVar} % ${loopVar} == 0)`,
@@ -1390,7 +1464,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Operator check! In \`if(${inputVar} * ${loopVar} == 0)\`, you used \`*\` (multiplication). To check if \`${loopVar}\` is a divisor of \`${inputVar}\`, we must test if the division remainder is 0 using the **modulo operator \`%\`**!
+      feedback: `\u{1F31F} Coach Maara note: Operator check! In \`if(${inputVar} * ${loopVar} == 0)\`, you used \`*\` (multiplication). To check if \`${loopVar}\` is a divisor of \`${inputVar}\`, we must test if the division remainder is 0 using the **modulo operator \`%\`**!
 
 Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
       correction: `Based on Ingredient Step 2.1, use modulo operator %: write if (${inputVar} % ${loopVar} == 0)`,
@@ -1414,7 +1488,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Syntax error: \`${inputVar} % ${loopVar} = 0\` is an assignment. Remember Ingredient Step 2.1: Operator is \`==\` (equality comparison)! Change to \`if (${inputVar} % ${loopVar} == 0)\`.`,
+      feedback: `\u{1F31F} Coach Maara note: Syntax error: \`${inputVar} % ${loopVar} = 0\` is an assignment. Remember Ingredient Step 2.1: Operator is \`==\` (equality comparison)! Change to \`if (${inputVar} % ${loopVar} == 0)\`.`,
       correction: `Based on Ingredient Step 2.1, use == operator: if (${inputVar} % ${loopVar} == 0)`,
       suggestedInput: `if (${inputVar} % ${loopVar} == 0)`,
       matchedFirebaseInput: "syntax error: n % i = 0"
@@ -1436,7 +1510,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Variable order check: In Ingredient Step 2.1, Left Side is \`${inputVar} % ${loopVar}\` (divide input number by loop counter). Update to \`if (${inputVar} % ${loopVar} == 0)\`.`,
+      feedback: `\u{1F31F} Coach Maara note: Variable order check: In Ingredient Step 2.1, Left Side is \`${inputVar} % ${loopVar}\` (divide input number by loop counter). Update to \`if (${inputVar} % ${loopVar} == 0)\`.`,
       correction: `Based on Ingredient Step 2.1, Left Side is ${inputVar} % ${loopVar}: write if (${inputVar} % ${loopVar} == 0)`,
       suggestedInput: `if (${inputVar} % ${loopVar} == 0)`,
       matchedFirebaseInput: "syntax error: i % n == 0"
@@ -1458,7 +1532,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Remainder comparison check! A number is a divisor only when it divides completely with **remainder equal to 0** (\`== 0\`).
+      feedback: `\u{1F31F} Coach Maara note: Remainder comparison check! A number is a divisor only when it divides completely with **remainder equal to 0** (\`== 0\`).
 
 Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
       correction: `Based on Ingredient Step 2.1, compare remainder with 0: write if (${inputVar} % ${loopVar} == 0)`,
@@ -1482,7 +1556,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: false, current: true },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya note: If condition syntax check! For Ingredient Step 2.1, complete your if condition: \`if (${inputVar} % ${loopVar} == 0) {\``,
+      feedback: `\u{1F31F} Coach Maara note: If condition syntax check! For Ingredient Step 2.1, complete your if condition: \`if (${inputVar} % ${loopVar} == 0) {\``,
       correction: `Based on Ingredient Step 2.1, write: if (${inputVar} % ${loopVar} == 0)`,
       suggestedInput: `if (${inputVar} % ${loopVar} == 0)`,
       matchedFirebaseInput: "malformed if condition"
@@ -1504,7 +1578,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: true, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: true }
       ],
-      feedback: "\u{1F31F} Coach Maya note: Logic bug: `break` terminates the loop after finding only the first divisor (1). Remove `break` so the loop continues and prints all divisors!",
+      feedback: "\u{1F31F} Coach Maara note: Logic bug: `break` terminates the loop after finding only the first divisor (1). Remove `break` so the loop continues and prints all divisors!",
       correction: "Remove the `break;` statement from inside your loop.",
       suggestedInput: `if (${inputVar} % ${loopVar} == 0) {
   print(${loopVar});
@@ -1528,7 +1602,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: true, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: true }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Output bug: You wrote \`print(${inputVar})\`, which will repeatedly print the input number (${inputVar}). Remember Ingredient Step 2.2: display the divisor \`${loopVar}\`! Write \`print(${loopVar});\`.`,
+      feedback: `\u{1F31F} Coach Maara note: Output bug: You wrote \`print(${inputVar})\`, which will repeatedly print the input number (${inputVar}). Remember Ingredient Step 2.2: display the divisor \`${loopVar}\`! Write \`print(${loopVar});\`.`,
       correction: `Based on Ingredient Step 2.2, change print(${inputVar}) to print(${loopVar}).`,
       suggestedInput: `print(${loopVar});`,
       matchedFirebaseInput: "output bug: print(n)"
@@ -1550,7 +1624,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
         { stepNumber: 3, title: `Ingredient 2.1: If condition (${inputVar} % ${loopVar} == 0)`, completed: true, current: false },
         { stepNumber: 4, title: `Ingredient 2.2: Print divisor ${loopVar}`, completed: false, current: true }
       ],
-      feedback: `\u{1F31F} Coach Maya note: Indentation/placement bug: \`print(${loopVar})\` must be placed INSIDE the \`{ ... }\` of the if statement so only valid divisors get printed!`,
+      feedback: `\u{1F31F} Coach Maara note: Indentation/placement bug: \`print(${loopVar})\` must be placed INSIDE the \`{ ... }\` of the if statement so only valid divisors get printed!`,
       correction: `Based on Ingredient Step 2.2, place print(${loopVar}) inside the if block.`,
       suggestedInput: `if (${inputVar} % ${loopVar} == 0) {
   print(${loopVar});
@@ -1577,7 +1651,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
       detectedInputName: inputVar,
       detectedLoopVar: loopVar,
       sampleCodeStepProgress,
-      feedback: `\u{1F31F} Coach Maya here! You gotcha! All 4 ingredients are perfectly assembled: input variable \`${inputVar}\`, loop from 1 to \`${inputVar}\`, condition \`if (${inputVar} % ${loopVar} == 0)\`, and \`print(${loopVar})\`! That completes the Divisors of a Number Cook The Code journey. Let's code! \u{1F680}`,
+      feedback: `\u{1F31F} Coach Maara here! You gotcha! All 4 ingredients are perfectly assembled: input variable \`${inputVar}\`, loop from 1 to \`${inputVar}\`, condition \`if (${inputVar} % ${loopVar} == 0)\`, and \`print(${loopVar})\`! That completes the Divisors of a Number Cook The Code journey. Let's code! \u{1F680}`,
       correction: void 0,
       suggestedInput: void 0,
       matchedFirebaseInput: "complete sample code verified"
@@ -1589,7 +1663,7 @@ Change your condition to: \`if (${inputVar} % ${loopVar} == 0)\`.`,
     let loopSuggested = "";
     if (hasInput) {
       if (attemptCount <= 1) {
-        loopFeedback = `\u{1F31F} Coach Maya here! Superb start! You declared your input variable \`${inputVar}\` (Ingredient Step 1).
+        loopFeedback = `\u{1F31F} Coach Maara here! Superb start! You declared your input variable \`${inputVar}\` (Ingredient Step 1).
 
 Now, bring in **Ingredient Step 2**! Before checking conditions, write a **For loop** with Start: 1, Stop: \`${inputVar}\` (\`${loopVar} <= ${inputVar}\`), and Step: +1 to test every number from 1 to \`${inputVar}\`:
 \`for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++) {\``;
@@ -1598,7 +1672,7 @@ Now, bring in **Ingredient Step 2**! Before checking conditions, write a **For l
 
 }`;
       } else if (attemptCount === 2) {
-        loopFeedback = `\u{1F31F} Coach Maya loop breakdown (Step 2):
+        loopFeedback = `\u{1F31F} Coach Maara loop breakdown (Step 2):
 We need a loop to test every possible divisor from 1 up to \`${inputVar}\`:
 \u2022 **Start:** \`${loopVar} = 1\`
 \u2022 **Stop boundary:** \`${loopVar} <= ${inputVar}\`
@@ -1610,7 +1684,7 @@ Add this loop structure to your code!`;
 
 }`;
       } else if (attemptCount === 3) {
-        loopFeedback = `\u{1F31F} Coach Maya loop syntax template (Step 2):
+        loopFeedback = `\u{1F31F} Coach Maara loop syntax template (Step 2):
 \`\`\`javascript
 for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++) {
   // if condition inside
@@ -1626,7 +1700,7 @@ for ${loopVar} in range(1, ${inputVar} + 1):
 
 }`;
       } else {
-        loopFeedback = `\u{1F31F} Coach Maya worked code (Step 2):
+        loopFeedback = `\u{1F31F} Coach Maara worked code (Step 2):
 Add this loop below your input variable declaration:
 \`\`\`javascript
 for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++) {
@@ -1639,16 +1713,16 @@ for (var ${loopVar} = 1; ${loopVar} <= ${inputVar}; ${loopVar}++) {
       }
     } else {
       if (attemptCount <= 1) {
-        loopFeedback = `\u{1F31F} Coach Maya here! Start your prototype code with Ingredient Step 1: declare the input variable (e.g. \`var a = 4;\` or \`var n = 6;\`). Give it a shot!`;
+        loopFeedback = `\u{1F31F} Coach Maara here! Start your prototype code with Ingredient Step 1: declare the input variable (e.g. \`var a = 4;\` or \`var n = 6;\`). Give it a shot!`;
         loopCorrection = `Based on Ingredient Step 1, declare the input variable: var a = 4;`;
         loopSuggested = `var a = 4;`;
       } else if (attemptCount === 2) {
-        loopFeedback = `\u{1F31F} Coach Maya variable guidance (Step 1): Before looping, declare the number you want to find divisors for:
+        loopFeedback = `\u{1F31F} Coach Maara variable guidance (Step 1): Before looping, declare the number you want to find divisors for:
 \`var a = 4;\` (or \`var n = 6;\`).`;
         loopCorrection = `Step 1: Declare input variable e.g. var a = 4;`;
         loopSuggested = `var a = 4;`;
       } else {
-        loopFeedback = `\u{1F31F} Coach Maya syntax (Step 1):
+        loopFeedback = `\u{1F31F} Coach Maara syntax (Step 1):
 \`\`\`javascript
 var a = 4;
 \`\`\`
@@ -1683,7 +1757,7 @@ var a = 4;
     let condCorrection = "";
     let condSuggested = "";
     if (attemptCount <= 1) {
-      condFeedback = `\u{1F31F} Coach Maya here! Great loop! You have your input variable \`${inputVar}\` (Ingredient Step 1) and your For loop from 1 to \`${inputVar}\` (Ingredient Step 2).
+      condFeedback = `\u{1F31F} Coach Maara here! Great loop! You have your input variable \`${inputVar}\` (Ingredient Step 1) and your For loop from 1 to \`${inputVar}\` (Ingredient Step 2).
 
 Now, bring in **Ingredient Step 2.1**! Inside the loop body, add the **If condition with modulo operator** to test if \`${inputVar}\` is divisible by \`${loopVar}\` with remainder 0:
 \u2022 Left Side (L.S) : ${inputVar} % ${loopVar}
@@ -1694,7 +1768,7 @@ Write: \`if (${inputVar} % ${loopVar} == 0) {\``;
       condCorrection = `Based on Ingredient Step 2.1 (L.S: ${inputVar} % ${loopVar}, Op: ==, R.S: 0), write: if (${inputVar} % ${loopVar} == 0)`;
       condSuggested = `if (${inputVar} % ${loopVar} == 0)`;
     } else if (attemptCount === 2) {
-      condFeedback = `\u{1F31F} Coach Maya condition breakdown (Step 2.1):
+      condFeedback = `\u{1F31F} Coach Maara condition breakdown (Step 2.1):
 Inside the loop, test if \`${loopVar}\` divides \`${inputVar}\` evenly:
 \u2022 Left Side: \`${inputVar} % ${loopVar}\` (remainder)
 \u2022 Operator: \`==\`
@@ -1704,7 +1778,7 @@ Combine this into: \`if (${inputVar} % ${loopVar} == 0) { ... }\``;
       condCorrection = `Step 2.1: if (${inputVar} % ${loopVar} == 0)`;
       condSuggested = `if (${inputVar} % ${loopVar} == 0)`;
     } else if (attemptCount === 3) {
-      condFeedback = `\u{1F31F} Coach Maya syntax template (Step 2.1):
+      condFeedback = `\u{1F31F} Coach Maara syntax template (Step 2.1):
 \`\`\`javascript
   if (${inputVar} % ${loopVar} == 0) {
     // print inside
@@ -1718,7 +1792,7 @@ Combine this into: \`if (${inputVar} % ${loopVar} == 0) { ... }\``;
       condCorrection = `Step 2.1: if (${inputVar} % ${loopVar} == 0)`;
       condSuggested = `if (${inputVar} % ${loopVar} == 0)`;
     } else {
-      condFeedback = `\u{1F31F} Coach Maya worked code (Step 2.1):
+      condFeedback = `\u{1F31F} Coach Maara worked code (Step 2.1):
 Add this condition inside your loop body:
 \`\`\`javascript
   if (${inputVar} % ${loopVar} == 0) {
@@ -1753,7 +1827,7 @@ Add this condition inside your loop body:
     let printCorrection = "";
     let printSuggested = "";
     if (attemptCount <= 1) {
-      printFeedback = `\u{1F31F} Coach Maya here! You've set up the condition (Ingredient Step 2.1)!
+      printFeedback = `\u{1F31F} Coach Maara here! You've set up the condition (Ingredient Step 2.1)!
 
 Now, bring in **Ingredient Step 2.2**! Inside the if block, add the print statement to output the divisor \`${loopVar}\`: \`print(${loopVar});\` (or \`console.log(${loopVar});\`).`;
       printCorrection = `Based on Ingredient Step 2.2, add print(${loopVar}) inside the if block.`;
@@ -1761,7 +1835,7 @@ Now, bring in **Ingredient Step 2.2**! Inside the if block, add the print statem
   print(${loopVar});
 }`;
     } else if (attemptCount === 2) {
-      printFeedback = `\u{1F31F} Coach Maya output step (Step 2.2):
+      printFeedback = `\u{1F31F} Coach Maara output step (Step 2.2):
 When the condition \`${inputVar} % ${loopVar} == 0\` is met, \`${loopVar}\` is a confirmed divisor! Print \`${loopVar}\` directly inside the if block:
 \`print(${loopVar});\``;
       printCorrection = `Step 2.2: print(${loopVar});`;
@@ -1769,7 +1843,7 @@ When the condition \`${inputVar} % ${loopVar} == 0\` is met, \`${loopVar}\` is a
   print(${loopVar});
 }`;
     } else if (attemptCount === 3) {
-      printFeedback = `\u{1F31F} Coach Maya syntax template (Step 2.2):
+      printFeedback = `\u{1F31F} Coach Maara syntax template (Step 2.2):
 \`\`\`javascript
   if (${inputVar} % ${loopVar} == 0) {
     print(${loopVar});
@@ -1785,7 +1859,7 @@ When the condition \`${inputVar} % ${loopVar} == 0\` is met, \`${loopVar}\` is a
   print(${loopVar});
 }`;
     } else {
-      printFeedback = `\u{1F31F} Coach Maya final touch (Step 2.2):
+      printFeedback = `\u{1F31F} Coach Maara final touch (Step 2.2):
 Complete your prototype with the print statement inside the if block:
 \`\`\`javascript
   if (${inputVar} % ${loopVar} == 0) {
@@ -1826,7 +1900,7 @@ Complete your prototype with the print statement inside the if block:
     completedCount: 0,
     allVerified: false,
     sampleCodeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Start your prototype code with Ingredient Step 1: declare the input variable (e.g. `var a = 4;` or `var n = 6;`). Give it a shot!",
+    feedback: "\u{1F31F} Coach Maara here! Start your prototype code with Ingredient Step 1: declare the input variable (e.g. `var a = 4;` or `var n = 6;`). Give it a shot!",
     correction: "Based on Ingredient Step 1, declare the input variable: var a = 4;",
     suggestedInput: "var a = 4;",
     matchedFirebaseInput: "step 1: declare input variable"

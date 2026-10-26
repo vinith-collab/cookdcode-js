@@ -10,7 +10,7 @@ function validateSexyPrimeLogic(input) {
       hasNonPrimeExample: false,
       isDontKnow: true,
       matchedFirebaseInput: "what is sexy prime number",
-      feedback: "\u{1F31F} Coach Maya here! Sexy primes are pairs of prime numbers (p, p + 6) that differ by six (the name comes from 'sex', Latin for six).\nFor example:\n\u2022 (5, 11): 5 has 2 divisors (1, 5) -> Prime! 11 has 2 divisors (1, 11) -> Prime! Difference is 11 - 5 = 6.\n\u2022 (7, 13): Both 7 and 13 are prime, difference is 6.\nBoth numbers in the pair MUST have exactly 2 divisors!",
+      feedback: "\u{1F31F} Coach Maara here! Sexy primes are pairs of prime numbers (p, p + 6) that differ by six (the name comes from 'sex', Latin for six).\nFor example:\n\u2022 (5, 11): 5 has 2 divisors (1, 5) -> Prime! 11 has 2 divisors (1, 11) -> Prime! Difference is 11 - 5 = 6.\n\u2022 (7, 13): Both 7 and 13 are prime, difference is 6.\nBoth numbers in the pair MUST have exactly 2 divisors!",
       correction: "State that sexy primes are pairs (p, p + 6) where both p and p + 6 are prime numbers (each having 2 divisors).",
       suggestedInput: "for each number p up to n - 6, check if both p and p + 6 have exactly 2 divisors (are prime numbers)"
     };
@@ -39,7 +39,7 @@ function validateSexyPrimeLogic(input) {
       hasNonPrimeExample,
       isDontKnow: false,
       matchedFirebaseInput: "for each number p up to n-6 check if both p and p+6 are prime",
-      feedback: "\u{1F31F} Coach Maya here! Fantastic! \u{1F389} Sexy primes are pairs of prime numbers (p, p + 6) where both numbers have exactly 2 divisors (are prime) and differ by 6. You have proven the mathematical logic! Proceed to Recipe.",
+      feedback: "\u{1F31F} Coach Maara here! Fantastic! \u{1F389} Sexy primes are pairs of prime numbers (p, p + 6) where both numbers have exactly 2 divisors (are prime) and differ by 6. You have proven the mathematical logic! Proceed to Recipe.",
       correction: "Proceed to the Recipe stage to sequence the algorithmic steps.",
       suggestedInput: void 0,
       proofType: "mathematical"
@@ -53,7 +53,7 @@ function validateSexyPrimeLogic(input) {
     hasNonPrimeExample,
     isDontKnow: false,
     matchedFirebaseInput,
-    feedback: hasPairDifference && !hasBothMustBePrime ? "\u{1F31F} Coach Maya here! Good observation about the difference of 6! But remember: what condition must be true for BOTH numbers 'p' and 'p + 6' in the pair?" : "\u{1F31F} Coach Maya here! How do we define a sexy prime pair? For example, with numbers 5 and 11, why are they considered a sexy prime pair (check their difference and divisor counts)?",
+    feedback: hasPairDifference && !hasBothMustBePrime ? "\u{1F31F} Coach Maara here! Good observation about the difference of 6! But remember: what condition must be true for BOTH numbers 'p' and 'p + 6' in the pair?" : "\u{1F31F} Coach Maara here! How do we define a sexy prime pair? For example, with numbers 5 and 11, why are they considered a sexy prime pair (check their difference and divisor counts)?",
     correction: "State that both p and p + 6 must be prime numbers differing by 6.",
     suggestedInput: "for each candidate p up to n - 6, check if both p and p + 6 have exactly 2 divisors (are prime numbers)"
   };
@@ -156,7 +156,7 @@ function validateSexyPrimeRecipe(input, attemptCount = 1) {
       hasStep4CheckPPlus6Prime,
       hasStep5PrintPair,
       hasCodeKeywords: true,
-      feedback: "\u{1F31F} Coach Maya gentle reminder: In the Recipe stage, we write algorithm steps in plain human English without code keywords (avoid `var`, `for (`, `count++`, `print()`, or `;`). Use natural words like 'Get the upper limit number', 'For each number starting from 2 up to 6 less than the limit', 'Check if the first number is a prime number', 'Check if adding 6 to the number also gives a prime number', and 'If both numbers are prime, display them as a pair'.",
+      feedback: "\u{1F31F} Coach Maara gentle reminder: In the Recipe stage, we write algorithm steps in plain human English without code keywords (avoid `var`, `for (`, `count++`, `print()`, or `;`). Use natural words like 'Get the upper limit number', 'For each number starting from 2 up to 6 less than the limit', 'Check if the first number is a prime number', 'Check if adding 6 to the number also gives a prime number', and 'If both numbers are prime, display them as a pair'.",
       correction: "Remove code syntax and describe the steps in natural English words.",
       suggestedInput: !hasStep1Input ? "Step 1: Get the upper limit number from the user" : !hasStep2OuterLoop ? "Step 2: For each number starting from 2 up to 6 less than the limit" : !hasStep3CheckPPrime ? "Step 3: Check if the first number is a prime number" : !hasStep4CheckPPlus6Prime ? "Step 4: Check if adding 6 to the number also gives a prime number" : "Step 5: If both numbers are prime, display them as a pair",
       steps,
@@ -176,7 +176,7 @@ function validateSexyPrimeRecipe(input, attemptCount = 1) {
       hasStep5PrintPair,
       hasCodeKeywords: false,
       matchedFirebaseInput: "step 5 : if both numbers are prime display them as a pair",
-      feedback: "\u{1F31F} Coach Maya here! Kudos! \u{1F389} You have sequenced all 5 steps of the Sexy Prime algorithm in crystal-clear plain English without code jargon or raw variables. Proceed to Stage 3: Ingredients!",
+      feedback: "\u{1F31F} Coach Maara here! Kudos! \u{1F389} You have sequenced all 5 steps of the Sexy Prime algorithm in crystal-clear plain English without code jargon or raw variables. Proceed to Stage 3: Ingredients!",
       correction: "Proceed to Ingredients stage!",
       suggestedInput: void 0,
       steps: allDoneSteps,
@@ -186,53 +186,53 @@ function validateSexyPrimeRecipe(input, attemptCount = 1) {
   }
   let nextStepSuggestion = "Step 1: Get the upper limit number from the user";
   let nextStepCorrection = "Add Step 1: Get the upper limit number from the user.";
-  let nextStepFeedback = "\u{1F31F} Coach Maya here! Let's write down the steps sequentially. What is the very first step to get the limit boundary for our search?";
+  let nextStepFeedback = "\u{1F31F} Coach Maara here! Let's write down the steps sequentially. What is the very first step to get the limit boundary for our search?";
   const hasNotPrimeInStep4 = rawText.includes("is not prime") || rawText.includes("not prime number") || rawText.includes("if this number is not prime");
   if (!hasStep1Input && !hasStep4CheckPPlus6Prime && hasNotPrimeInStep4) {
     nextStepSuggestion = "Step 1: Get the upper limit number from the user";
     nextStepCorrection = "Add Step 1 (getting the upper limit) and fix Step 4 (checking if adding 6 gives a prime number).";
-    nextStepFeedback = "\u{1F31F} Coach Maya here! You've made good progress with your steps, but there are two key adjustments needed:\n1) **Step 1 is missing**: We first need to get the upper limit number from the user ('Step 1: Get the upper limit number from the user').\n2) **Step 4 correction**: Sexy primes require BOTH numbers to be prime (with 2 divisors). Please remove 'if this number is not prime' and adjust Step 4 to check if adding 6 also gives a prime number: 'Step 4: Check if adding 6 to the number also gives a prime number'.";
+    nextStepFeedback = "\u{1F31F} Coach Maara here! You've made good progress with your steps, but there are two key adjustments needed:\n1) **Step 1 is missing**: We first need to get the upper limit number from the user ('Step 1: Get the upper limit number from the user').\n2) **Step 4 correction**: Sexy primes require BOTH numbers to be prime (with 2 divisors). Please remove 'if this number is not prime' and adjust Step 4 to check if adding 6 also gives a prime number: 'Step 4: Check if adding 6 to the number also gives a prime number'.";
   } else if (!hasStep1Input) {
     nextStepSuggestion = "Step 1: Get the upper limit number from the user";
     nextStepCorrection = "Add Step 1: Get the upper limit number from the user.";
     if (isConfused || attemptCount >= 2) {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! No worries at all, let's take it one step at a time! Before we can search for sexy prime pairs, we need to know where to stop searching. So our very first step is to receive the upper limit number from the user. Write this in your worksheet: 'Step 1: Get the upper limit number from the user'.";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! No worries at all, let's take it one step at a time! Before we can search for sexy prime pairs, we need to know where to stop searching. So our very first step is to receive the upper limit number from the user. Write this in your worksheet: 'Step 1: Get the upper limit number from the user'.";
     } else {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! Great effort! Don't forget Step 1: What is the very first step to define the upper search boundary for sexy primes from the user?";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! Great effort! Don't forget Step 1: What is the very first step to define the upper search boundary for sexy primes from the user?";
     }
   } else if (!hasStep2OuterLoop) {
     nextStepSuggestion = "Step 2: For each number starting from 2 up to 6 less than the limit";
     nextStepCorrection = "Add Step 2: For each number starting from 2 up to 6 less than the limit.";
     if (isConfused || attemptCount >= 2) {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! Let me explain why we say 'up to 6 less than the limit' with a simple example:\nSuppose our limit is 30. If we take 24, adding 6 gives 24 + 6 = 30 (which is inside the limit!). But if we took 25, adding 6 gives 31 (which exceeds 30!). That's why our candidates only need to go up to 6 less than the limit.\nTry writing Step 2: 'Step 2: For each number starting from 2 up to 6 less than the limit'.";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! Let me explain why we say 'up to 6 less than the limit' with a simple example:\nSuppose our limit is 30. If we take 24, adding 6 gives 24 + 6 = 30 (which is inside the limit!). But if we took 25, adding 6 gives 31 (which exceeds 30!). That's why our candidates only need to go up to 6 less than the limit.\nTry writing Step 2: 'Step 2: For each number starting from 2 up to 6 less than the limit'.";
     } else {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! Wonderful start with Step 1! Getting the limit defines our search boundary. Since sexy primes are pairs differing by six, what sequence of numbers will you check starting from 2 up to 6 less than the limit?";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! Wonderful start with Step 1! Getting the limit defines our search boundary. Since sexy primes are pairs differing by six, what sequence of numbers will you check starting from 2 up to 6 less than the limit?";
     }
   } else if (!hasStep3CheckPPrime) {
     nextStepSuggestion = "Step 3: Check if the first number is a prime number";
     nextStepCorrection = "Add Step 3: Check if the first number is a prime number (has exactly 2 divisors).";
     if (isConfused || attemptCount >= 2) {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! Let's break down Step 3: For each candidate number in our sequence, we need to know if it's a prime number (meaning it has exactly 2 divisors: 1 and itself). So Step 3 is: 'Step 3: Check if the first number is a prime number'.";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! Let's break down Step 3: For each candidate number in our sequence, we need to know if it's a prime number (meaning it has exactly 2 divisors: 1 and itself). So Step 3 is: 'Step 3: Check if the first number is a prime number'.";
     } else {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! Great progress! You've set the search boundary and the sequence of numbers. For Step 3: What must you first test for the current number to verify if it has exactly two divisors?";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! Great progress! You've set the search boundary and the sequence of numbers. For Step 3: What must you first test for the current number to verify if it has exactly two divisors?";
     }
   } else if (!hasStep4CheckPPlus6Prime) {
     nextStepSuggestion = "Step 4: Check if adding 6 to the number also gives a prime number";
     nextStepCorrection = "Add Step 4: Check if the number six greater is also a prime number.";
     if (hasNotPrimeInStep4) {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! In Step 4, remember that sexy primes require BOTH numbers in the pair to be prime numbers (having exactly 2 divisors). You mentioned 'if this number is not prime' \u2014 if either number is not prime, no pair can be formed! Please adjust Step 4 to check if adding 6 gives a prime number: 'Step 4: Check if adding 6 to the number also gives a prime number'.";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! In Step 4, remember that sexy primes require BOTH numbers in the pair to be prime numbers (having exactly 2 divisors). You mentioned 'if this number is not prime' \u2014 if either number is not prime, no pair can be formed! Please adjust Step 4 to check if adding 6 gives a prime number: 'Step 4: Check if adding 6 to the number also gives a prime number'.";
     } else if (isConfused || attemptCount >= 2) {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! Since sexy primes are pairs that differ by 6, we must check if adding 6 to our first number also gives a prime number! So Step 4 is: 'Step 4: Check if adding 6 to the number also gives a prime number'.";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! Since sexy primes are pairs that differ by 6, we must check if adding 6 to our first number also gives a prime number! So Step 4 is: 'Step 4: Check if adding 6 to the number also gives a prime number'.";
     } else {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! Spot on! The first number is tested. Now for Step 4: What companion number (adding six to the current number) must also be checked to see if it is a prime number?";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! Spot on! The first number is tested. Now for Step 4: What companion number (adding six to the current number) must also be checked to see if it is a prime number?";
     }
   } else {
     nextStepSuggestion = "Step 5: If both numbers are prime, display them as a pair";
     nextStepCorrection = "Add Step 5: If both numbers are prime, display them as a pair.";
     if (isConfused || attemptCount >= 2) {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! We are at the finish line! If both the first number and the number plus 6 are verified as prime numbers, we show them as a sexy prime pair. Try writing: 'Step 5: If both numbers are prime, display them as a pair'.";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! We are at the finish line! If both the first number and the number plus 6 are verified as prime numbers, we show them as a sexy prime pair. Try writing: 'Step 5: If both numbers are prime, display them as a pair'.";
     } else {
-      nextStepFeedback = "\u{1F31F} Coach Maya here! Almost there! You're checking both numbers. Finally, for Step 5: If both numbers have exactly 2 divisors (are prime), what action do you take to output the sexy prime pair?";
+      nextStepFeedback = "\u{1F31F} Coach Maara here! Almost there! You're checking both numbers. Finally, for Step 5: If both numbers have exactly 2 divisors (are prime), what action do you take to output the sexy prime pair?";
     }
   }
   return {
@@ -335,7 +335,7 @@ function validateSexyPrimeIngredients(input) {
       hasLoops,
       hasCombinedCondition,
       matchedFirebaseInput: "step 5 : if (count1 == 2 && count2 == 2) print pair (p, p + 6)",
-      feedback: "\u{1F31F} Coach Maya here! Awesome work! \u{1F389} All essential ingredients for Sexy Prime pairs are identified: variables (n, p, q = p + 6), outer loop up to n - 6, distinct divisor counters (count1, count2), modulo condition checks, and combined verification. Proceed to Taste the Sample!",
+      feedback: "\u{1F31F} Coach Maara here! Awesome work! \u{1F389} All essential ingredients for Sexy Prime pairs are identified: variables (n, p, q = p + 6), outer loop up to n - 6, distinct divisor counters (count1, count2), modulo condition checks, and combined verification. Proceed to Taste the Sample!",
       correction: "Proceed to Taste the Sample stage to assemble your code!",
       suggestedInput: void 0,
       stepProgress: allDoneSteps,
@@ -344,59 +344,59 @@ function validateSexyPrimeIngredients(input) {
   }
   let nextSuggestion = "Step 1: limit = 50, p = 2, q = p + 6";
   let nextCorrection = "Identify the variables: limit n, candidate p, and q = p + 6.";
-  let nextFeedback = "\u{1F31F} Coach Maya here! What variables will store the upper limit and the pair of numbers being tested?";
+  let nextFeedback = "\u{1F31F} Coach Maara here! What variables will store the upper limit and the pair of numbers being tested?";
   if (!hasLimitVar || !hasCandidateVars) {
     nextSuggestion = "Step 1: limit = 50, p = 2, q = p + 6";
     nextCorrection = "Add variables: limit n, candidate p, and q = p + 6 (or a and b = a + 6).";
-    nextFeedback = "\u{1F31F} Coach Maya here! For Step 1: What variables do we need to store the upper limit n and the candidates p and p + 6 (e.g. limit = 50, a = 2, b = a + 6)?";
+    nextFeedback = "\u{1F31F} Coach Maara here! For Step 1: What variables do we need to store the upper limit n and the candidates p and p + 6 (e.g. limit = 50, a = 2, b = a + 6)?";
   } else if (!hasLoops) {
     nextSuggestion = "step 2: for loop with start: 2, stop: limit - 6, next step: +1";
     nextCorrection = "Fix Step 2: Set outer loop start: 2, stop: limit - 6 (or limit), and next step: +1.";
     if (hasLoopFlaw) {
       if (hasNegativeStep && hasInvertedStartStop) {
-        nextFeedback = "\u{1F31F} Coach Maya here! In Step 2, your loop is set backwards (starting from b, stopping at a, and stepping with -1)! To find all sexy prime pairs, our outer loop needs to iterate upwards starting from 2 up to the limit minus 6 (or limit) with step +1. Please correct Step 2 to: 'step 2: for loop with start: 2, stop: limit - 6, next step: +1'.";
+        nextFeedback = "\u{1F31F} Coach Maara here! In Step 2, your loop is set backwards (starting from b, stopping at a, and stepping with -1)! To find all sexy prime pairs, our outer loop needs to iterate upwards starting from 2 up to the limit minus 6 (or limit) with step +1. Please correct Step 2 to: 'step 2: for loop with start: 2, stop: limit - 6, next step: +1'.";
       } else if (hasNegativeStep) {
-        nextFeedback = "\u{1F31F} Coach Maya here! In Step 2, your loop step is -1 (decrementing)! We need to check numbers in increasing order starting from 2 up to the limit minus 6 with step +1. Please update Step 2: 'step 2: for loop with start: 2, stop: limit - 6, next step: +1'.";
+        nextFeedback = "\u{1F31F} Coach Maara here! In Step 2, your loop step is -1 (decrementing)! We need to check numbers in increasing order starting from 2 up to the limit minus 6 with step +1. Please update Step 2: 'step 2: for loop with start: 2, stop: limit - 6, next step: +1'.";
       } else {
-        nextFeedback = "\u{1F31F} Coach Maya here! In Step 2, check your loop bounds: start should be 2 (the first prime) and stop should be limit - 6 (or limit), not start: b and stop: a. Please update Step 2: 'step 2: for loop with start: 2, stop: limit - 6, next step: +1'.";
+        nextFeedback = "\u{1F31F} Coach Maara here! In Step 2, check your loop bounds: start should be 2 (the first prime) and stop should be limit - 6 (or limit), not start: b and stop: a. Please update Step 2: 'step 2: for loop with start: 2, stop: limit - 6, next step: +1'.";
       }
     } else {
-      nextFeedback = "\u{1F31F} Coach Maya here! Great start with the variables! For Step 2: What loop construct will iterate candidate p upwards starting from 2 up to the limit minus 6 with step +1?";
+      nextFeedback = "\u{1F31F} Coach Maara here! Great start with the variables! For Step 2: What loop construct will iterate candidate p upwards starting from 2 up to the limit minus 6 with step +1?";
     }
   } else if (!hasSeparateCounters) {
     nextSuggestion = "step 3: count1 = 0 for p, count2 = 0 for p + 6";
     nextCorrection = "Add distinct counters: count1 = 0 for p, count2 = 0 for p + 6.";
-    nextFeedback = "\u{1F31F} Coach Maya here! Great loop! Now for Step 3: If you use a single `count` variable, the divisor tallies will collide! What distinct counters will you initialize for p and p + 6 (e.g. count1 = 0 for p, count2 = 0 for p + 6)?";
+    nextFeedback = "\u{1F31F} Coach Maara here! Great loop! Now for Step 3: If you use a single `count` variable, the divisor tallies will collide! What distinct counters will you initialize for p and p + 6 (e.g. count1 = 0 for p, count2 = 0 for p + 6)?";
   } else if (!hasCombinedCondition) {
     const mentionsIf = norm.includes("if") || norm.includes("condition") || norm.includes("if condition");
     if (hasInvertedCandidate1Modulo) {
       nextSuggestion = "step 5: if condition: left side (i % k), operator (==), right side (0), action: count1 = count1 + 1";
       nextCorrection = "Fix modulo operands: candidate i must be on the left and divisor k on the right (i % k == 0), with action count1 = count1 + 1.";
-      nextFeedback = "\u{1F31F} Coach Maya here! In Step 5, look closely at your modulo check: `Left side: k % i`. Since `i` is your candidate number and `k` is the divisor running from 1 to `i`, we must divide candidate `i` by divisor `k` (`i % k == 0`), not divisor by candidate (`k % i`)! Also, remember to specify the operator (`==`), right side (`0`), and action (`count1 = count1 + 1`). Can you update your Step 5?";
+      nextFeedback = "\u{1F31F} Coach Maara here! In Step 5, look closely at your modulo check: `Left side: k % i`. Since `i` is your candidate number and `k` is the divisor running from 1 to `i`, we must divide candidate `i` by divisor `k` (`i % k == 0`), not divisor by candidate (`k % i`)! Also, remember to specify the operator (`==`), right side (`0`), and action (`count1 = count1 + 1`). Can you update your Step 5?";
     } else if (hasInvertedCandidate2Modulo) {
       nextSuggestion = "step 5.2: if ((p + 6) % j == 0) count2 = count2 + 1";
       nextCorrection = "Fix companion modulo: candidate (p + 6) must be on the left and divisor on the right ((p + 6) % j == 0).";
-      nextFeedback = "\u{1F31F} Coach Maya here! In your companion check, remember to put candidate `p + 6` (or `b`) on the left and divisor on the right: `(p + 6) % j == 0`, action: `count2 = count2 + 1`!";
+      nextFeedback = "\u{1F31F} Coach Maara here! In your companion check, remember to put candidate `p + 6` (or `b`) on the left and divisor on the right: `(p + 6) % j == 0`, action: `count2 = count2 + 1`!";
     } else if (mentionsIf && !hasCandidate1InnerLoop && !hasCandidate1Modulo) {
       nextSuggestion = "step 4.1: for loop for candidate p (Start: 1, Stop: p, Next step: +1)";
       nextCorrection = "Define an inner for loop to iterate divisors from 1 to p before checking with if.";
-      nextFeedback = "\u{1F31F} Coach Maya here! You mentioned using an `if` condition\u2014great intuition! An `if` statement with modulo (`%`) is indeed needed to check if a divisor leaves remainder 0. But before testing `p % i == 0`, where does divisor `i` come from? We first need an **inner for loop** to generate divisors from 1 up to `p`! What loop will you define for candidate `p`?";
+      nextFeedback = "\u{1F31F} Coach Maara here! You mentioned using an `if` condition\u2014great intuition! An `if` statement with modulo (`%`) is indeed needed to check if a divisor leaves remainder 0. But before testing `p % i == 0`, where does divisor `i` come from? We first need an **inner for loop** to generate divisors from 1 up to `p`! What loop will you define for candidate `p`?";
     } else if (!hasCandidate1InnerLoop && !hasCandidate1Modulo) {
       nextSuggestion = "step 4.1: for loop for candidate p (Start: 1, Stop: p, Next step: +1)";
       nextCorrection = "Define an inner for loop to iterate divisors from 1 to p.";
-      nextFeedback = "\u{1F31F} Coach Maya here! Distinct counters `count1 = 0` and `count2 = 0` are ready! Next, to test if candidate `p` is prime, we need to generate and test all divisors from 1 to `p`. What inner for loop (Start, Stop, Next step) will iterate divisors for candidate `p`?";
+      nextFeedback = "\u{1F31F} Coach Maara here! Distinct counters `count1 = 0` and `count2 = 0` are ready! Next, to test if candidate `p` is prime, we need to generate and test all divisors from 1 to `p`. What inner for loop (Start, Stop, Next step) will iterate divisors for candidate `p`?";
     } else if (hasCandidate1InnerLoop && !hasCandidate1Modulo) {
       nextSuggestion = "step 5: if condition: left side (i % k), operator (==), right side (0), action: count1 = count1 + 1";
       nextCorrection = "Inside the divisor loop, check if divisor divides candidate evenly and increment count1.";
-      nextFeedback = "\u{1F31F} Coach Maya here! Great inner loop for candidate `i`! Now inside this loop, what `if` condition checks if candidate `i` is divisible by `k` with remainder 0 (`i % k == 0`), and what action increases `count1`?";
+      nextFeedback = "\u{1F31F} Coach Maara here! Great inner loop for candidate `i`! Now inside this loop, what `if` condition checks if candidate `i` is divisible by `k` with remainder 0 (`i % k == 0`), and what action increases `count1`?";
     } else if (hasCandidate1Modulo && !hasCandidate2Modulo) {
       nextSuggestion = "step 4.2: for j from 1 to p + 6: if ((p + 6) % j == 0) count2 = count2 + 1";
       nextCorrection = "Now check divisors for companion number p + 6 using its divisor loop and count2.";
-      nextFeedback = "\u{1F31F} Coach Maya here! Superb! Divisor check for candidate `p` is done! Now, how will you check the companion number `p + 6` (or `b`) using its divisor loop and `count2`?";
+      nextFeedback = "\u{1F31F} Coach Maara here! Superb! Divisor check for candidate `p` is done! Now, how will you check the companion number `p + 6` (or `b`) using its divisor loop and `count2`?";
     } else {
       nextSuggestion = "step 4: if (p % i == 0) count1 = count1 + 1 and if ((p + 6) % j == 0) count2 = count2 + 1";
       nextCorrection = "Check divisibility for both numbers and increment their counters.";
-      nextFeedback = "\u{1F31F} Coach Maya here! Divisors are set up! What modulo conditions will test if `p` and `p + 6` divide evenly to increment `count1` and `count2`?";
+      nextFeedback = "\u{1F31F} Coach Maara here! Divisors are set up! What modulo conditions will test if `p` and `p + 6` divide evenly to increment `count1` and `count2`?";
     }
   } else {
     const hasMalformedCombinedDecision = /count1\s*(&&|and)\s*count2\s*==\s*2/i.test(rawText) || /left\s*side\s*:\s*count1\s*(&&|and)\s*count2/i.test(rawText) || /left\s*side\s*:\s*c1\s*(&&|and)\s*c2/i.test(rawText) || /left\s*side\s*:\s*count_a\s*(&&|and)\s*count_b/i.test(rawText);
@@ -404,15 +404,15 @@ function validateSexyPrimeIngredients(input) {
     if (hasMalformedCombinedDecision) {
       nextSuggestion = `step 8: if (count1 == 2 && count2 == 2) print(${outerVarName}, ${companionVar})`;
       nextCorrection = `Check each count individually: if (count1 == 2 && count2 == 2) print(${outerVarName}, ${companionVar}).`;
-      nextFeedback = `\u{1F31F} Coach Maya here! You are so close! In programming, writing \`Left side: count1 && count2, right side: 2\` does not check both variables against 2. You must compare each counter individually: \`if (count1 == 2 && count2 == 2)\` and specify the variables to print: \`print(${outerVarName}, ${companionVar})\`! Can you update your Step 8?`;
+      nextFeedback = `\u{1F31F} Coach Maara here! You are so close! In programming, writing \`Left side: count1 && count2, right side: 2\` does not check both variables against 2. You must compare each counter individually: \`if (count1 == 2 && count2 == 2)\` and specify the variables to print: \`print(${outerVarName}, ${companionVar})\`! Can you update your Step 8?`;
     } else if (hasDecisionCheck && hasGenericPrintWithoutVars) {
       nextSuggestion = `step 8: if (count1 == 2 && count2 == 2) print(${outerVarName}, ${companionVar})`;
       nextCorrection = `Specify the exact pair variables to print: print(${outerVarName}, ${companionVar}).`;
-      nextFeedback = `\u{1F31F} Coach Maya here! You correctly set up \`if (count1 == 2 && count2 == 2)\`! Now, which specific variables should be printed? Instead of writing generic "print the sexy prime pair", specify the actual variables to print: \`print(${outerVarName}, ${companionVar})\`!`;
+      nextFeedback = `\u{1F31F} Coach Maara here! You correctly set up \`if (count1 == 2 && count2 == 2)\`! Now, which specific variables should be printed? Instead of writing generic "print the sexy prime pair", specify the actual variables to print: \`print(${outerVarName}, ${companionVar})\`!`;
     } else {
       nextSuggestion = `step 8: if (count1 == 2 && count2 == 2) print(${outerVarName}, ${companionVar})`;
       nextCorrection = `Add decision check with exact variables: if (count1 == 2 && count2 == 2) print(${outerVarName}, ${companionVar}).`;
-      nextFeedback = `\u{1F31F} Coach Maya here! Both candidate numbers are tested! What final \`if\` condition checks that BOTH \`count1 == 2\` and \`count2 == 2\`, and prints the sexy prime pair \`(${outerVarName}, ${companionVar})\`?`;
+      nextFeedback = `\u{1F31F} Coach Maara here! Both candidate numbers are tested! What final \`if\` condition checks that BOTH \`count1 == 2\` and \`count2 == 2\`, and prints the sexy prime pair \`(${outerVarName}, ${companionVar})\`?`;
     }
   }
   return {
@@ -581,7 +581,7 @@ function validateSexyPrimeSampleCode(input, attemptCount = 1) {
       hasCounterOverlapBug: false,
       hasUpperLimitOverflowBug: false,
       matchedFirebaseInput: "let limit = 50;\nfor (let i = 2; i <= limit - 6; i++) {\n  let count1 = 0;\n  for (let k = 1; k <= i; k++) {\n    if (i % k === 0) count1++;\n  }\n  if (count1 === 2) {\n    let count2 = 0;\n    for (let j = 1; j <= i + 6; j++) {\n      if ((i + 6) % j === 0) count2++;\n    }\n    if (count2 === 2) {\n      console.log(i, i + 6);\n    }\n  }\n}",
-      feedback: "\u{1F31F} Coach Maya here! You gotcha! \u{1F389} Outstanding prototype! You have successfully coded Sexy Prime number pairs: looping up to limit - 6, verifying primality for both numbers with separate counters, and printing the valid pairs. You are ready to run and test!",
+      feedback: "\u{1F31F} Coach Maara here! You gotcha! \u{1F389} Outstanding prototype! You have successfully coded Sexy Prime number pairs: looping up to limit - 6, verifying primality for both numbers with separate counters, and printing the valid pairs. You are ready to run and test!",
       sampleCodeStepProgress: allDoneSteps
     };
   }
@@ -597,7 +597,7 @@ function validateSexyPrimeSampleCode(input, attemptCount = 1) {
     hasSinglePrimeOnlyBug,
     hasCounterOverlapBug,
     hasUpperLimitOverflowBug,
-    feedback: !hasOuterLoopRange ? `\u{1F31F} Coach Maya here! Let's start with your outer loop: \`for (let ${outerVarName} = 2; ${outerVarName} <= ${limitVarName} - 6; ${outerVarName}++)\` to iterate candidate numbers up to ${limitVarName} - 6.` : hasUpperLimitOverflowBug && !hasCand1InnerLoopCorrect && !hasFirstPrimeCheck ? `\u{1F31F} Coach Maya here! Take a look at your outer loop: \`for(${outerVarName}=2; ${outerVarName}<=${limitVarName}; ${outerVarName}++)\`. Because the companion number in each pair is \`${outerVarName} + 6\`, running all the way to \`${limitVarName}\` means \`${outerVarName} + 6\` will exceed \`${limitVarName}\`! Change your outer loop boundary to \`${outerVarName} <= ${limitVarName} - 6\`.` : !hasFirstPrimeCheck ? hasCand1InnerLoopCorrect ? `\u{1F31F} Coach Maya here! Great inner divisor loop! Now inside this loop, add the condition to test if candidate \`${outerVarName}\` is divisible by the divisor with remainder 0: \`if (${outerVarName} % j == 0) count1++;\`` : `\u{1F31F} Coach Maya here! Great start! Now inside the outer loop, reset \`count1 = 0\` and write the inner loop for candidate \`${outerVarName}\`: \`for (let j = 1; j <= ${outerVarName}; j++)\` with \`if (${outerVarName} % j == 0) count1++;\`` : !hasSecondPrimeCheck ? `\u{1F31F} Coach Maya here! Candidate \`${outerVarName}\` primality check is complete! Now test the companion number \`${outerVarName} + 6\`: reset \`count2 = 0\` and loop \`for (let k = 1; k <= ${outerVarName} + 6; k++)\` with \`if ((${outerVarName} + 6) % k == 0) count2++;\`` : `\u{1F31F} Coach Maya here! Both primality tests are ready! Now check \`if (count1 == 2 && count2 == 2)\` and print the sexy prime pair: \`print(${outerVarName}, ${outerVarName} + 6)\`.`,
+    feedback: !hasOuterLoopRange ? `\u{1F31F} Coach Maara here! Let's start with your outer loop: \`for (let ${outerVarName} = 2; ${outerVarName} <= ${limitVarName} - 6; ${outerVarName}++)\` to iterate candidate numbers up to ${limitVarName} - 6.` : hasUpperLimitOverflowBug && !hasCand1InnerLoopCorrect && !hasFirstPrimeCheck ? `\u{1F31F} Coach Maara here! Take a look at your outer loop: \`for(${outerVarName}=2; ${outerVarName}<=${limitVarName}; ${outerVarName}++)\`. Because the companion number in each pair is \`${outerVarName} + 6\`, running all the way to \`${limitVarName}\` means \`${outerVarName} + 6\` will exceed \`${limitVarName}\`! Change your outer loop boundary to \`${outerVarName} <= ${limitVarName} - 6\`.` : !hasFirstPrimeCheck ? hasCand1InnerLoopCorrect ? `\u{1F31F} Coach Maara here! Great inner divisor loop! Now inside this loop, add the condition to test if candidate \`${outerVarName}\` is divisible by the divisor with remainder 0: \`if (${outerVarName} % j == 0) count1++;\`` : `\u{1F31F} Coach Maara here! Great start! Now inside the outer loop, reset \`count1 = 0\` and write the inner loop for candidate \`${outerVarName}\`: \`for (let j = 1; j <= ${outerVarName}; j++)\` with \`if (${outerVarName} % j == 0) count1++;\`` : !hasSecondPrimeCheck ? `\u{1F31F} Coach Maara here! Candidate \`${outerVarName}\` primality check is complete! Now test the companion number \`${outerVarName} + 6\`: reset \`count2 = 0\` and loop \`for (let k = 1; k <= ${outerVarName} + 6; k++)\` with \`if ((${outerVarName} + 6) % k == 0) count2++;\`` : `\u{1F31F} Coach Maara here! Both primality tests are ready! Now check \`if (count1 == 2 && count2 == 2)\` and print the sexy prime pair: \`print(${outerVarName}, ${outerVarName} + 6)\`.`,
     correction: !hasOuterLoopRange ? `Write outer loop: for (let ${outerVarName} = 2; ${outerVarName} <= ${limitVarName} - 6; ${outerVarName}++)` : `Check divisibility for candidate ${outerVarName} with count1++.`,
     suggestedInput: `let ${limitVarName} = 50;
 for (let ${outerVarName} = 2; ${outerVarName} <= ${limitVarName} - 6; ${outerVarName}++) {

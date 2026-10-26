@@ -3,7 +3,7 @@ function validateMaximumOfTwoLogic(input, attemptCount = 1) {
   if (norm.length < 4) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! How do we compare two numbers `a` and `b` to find which one is larger (maximum)? What comparison operator do we use?",
+      feedback: "\u{1F31F} Coach Maara here! How do we compare two numbers `a` and `b` to find which one is larger (maximum)? What comparison operator do we use?",
       correction: "If a > b, then a is maximum, else b is maximum.",
       suggestedInput: "If number a is greater than number b (a > b), then a is maximum, else b is maximum. For example: 25 > 10 is true, so 25 is maximum.",
       matchedFirebaseInput: "how to find maximum of two numbers"
@@ -13,7 +13,7 @@ function validateMaximumOfTwoLogic(input, attemptCount = 1) {
   if (isQuestion && !norm.includes(">") && !norm.includes("greater")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! Compare number `a` and number `b` using the greater-than operator (`>`).\n\nIf `a > b`, then `a` is the maximum; otherwise `b` is the maximum.\n\nTo complete this logic stage, write this comparison rule with an example in your worksheet:\n\u2022 For a = 25, b = 10: `25 > 10` is true \u2794 **25 is Maximum**\n\u2022 For a = 7, b = 15: `7 > 15` is false \u2794 **15 is Maximum**",
+      feedback: "\u{1F31F} Coach Maara here! Compare number `a` and number `b` using the greater-than operator (`>`).\n\nIf `a > b`, then `a` is the maximum; otherwise `b` is the maximum.\n\nTo complete this logic stage, write this comparison rule with an example in your worksheet:\n\u2022 For a = 25, b = 10: `25 > 10` is true \u2794 **25 is Maximum**\n\u2022 For a = 7, b = 15: `7 > 15` is false \u2794 **15 is Maximum**",
       correction: "If a > b then a is maximum else b is maximum.",
       suggestedInput: "If a > b then a is maximum else b is maximum (e.g. 25 > 10 is true -> 25 is maximum; 7 > 15 is false -> 15 is maximum).",
       matchedFirebaseInput: "how to find maximum of two numbers"
@@ -27,7 +27,7 @@ function validateMaximumOfTwoLogic(input, attemptCount = 1) {
       return {
         isFullyVerified: false,
         hasContradiction: true,
-        feedback: `\u{1F31F} Coach Maya gentle check: Look closely at your arithmetic: you wrote \`${l} is greater than ${r}\`, but ${l} is actually smaller than ${r}!`,
+        feedback: `\u{1F31F} Coach Maara gentle check: Look closely at your arithmetic: you wrote \`${l} is greater than ${r}\`, but ${l} is actually smaller than ${r}!`,
         correction: `Write a true statement like \`${r} is greater than ${l}\` or \`a > b\`.`,
         suggestedInput: `If a > b then a is maximum else b is maximum.`,
         matchedFirebaseInput: "how to find maximum of two numbers"
@@ -40,7 +40,7 @@ function validateMaximumOfTwoLogic(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       hasContradiction: true,
-      feedback: "\u{1F31F} Coach Maya gentle check: Look closely at your comparison! When `a > b` (number `a` is strictly greater than `b`), `a` is the **Maximum**! Only when that condition is false (or `b > a`) does `b` become the Maximum.",
+      feedback: "\u{1F31F} Coach Maara gentle check: Look closely at your comparison! When `a > b` (number `a` is strictly greater than `b`), `a` is the **Maximum**! Only when that condition is false (or `b > a`) does `b` become the Maximum.",
       correction: "If a > b then a is maximum else b is maximum.",
       suggestedInput: "If a > b then a is maximum else b is maximum (e.g. 25 > 10 -> 25 is maximum).",
       matchedFirebaseInput: "how to find maximum of two numbers"
@@ -60,7 +60,7 @@ function validateMaximumOfTwoLogic(input, attemptCount = 1) {
       hasComparisonOperator: mentionsComparison,
       hasGreaterOutcome: false,
       hasLesserOutcome: true,
-      feedback: "\u{1F31F} Coach Maya here! You correctly defined that `b` is the Maximum! \u{1F44F} But under what condition is `a` the Maximum? (Hint: when `a > b`!). Define both cases (when `a` is maximum and when `b` is maximum) in your worksheet to complete your logic!",
+      feedback: "\u{1F31F} Coach Maara here! You correctly defined that `b` is the Maximum! \u{1F44F} But under what condition is `a` the Maximum? (Hint: when `a > b`!). Define both cases (when `a` is maximum and when `b` is maximum) in your worksheet to complete your logic!",
       correction: "If a > b then a is maximum, else b is maximum.",
       suggestedInput: "If a > b then a is maximum, else b is maximum.",
       matchedFirebaseInput: "if a > b then a is maximum else b is maximum"
@@ -73,7 +73,7 @@ function validateMaximumOfTwoLogic(input, attemptCount = 1) {
       hasComparisonOperator: mentionsComparison,
       hasGreaterOutcome: true,
       hasLesserOutcome: false,
-      feedback: "\u{1F31F} Coach Maya here! You correctly defined that when `a > b`, `a` is the Maximum! \u{1F44F} But what if that condition is false (or if `b > a`)? Which number is the maximum then? Define both cases (when `a` is maximum and when `b` is maximum) to complete your logic!",
+      feedback: "\u{1F31F} Coach Maara here! You correctly defined that when `a > b`, `a` is the Maximum! \u{1F44F} But what if that condition is false (or if `b > a`)? Which number is the maximum then? Define both cases (when `a` is maximum and when `b` is maximum) to complete your logic!",
       correction: "If a > b then a is maximum, else b is maximum.",
       suggestedInput: "If a > b then a is maximum, else b is maximum.",
       matchedFirebaseInput: "if a > b then a is maximum else b is maximum"
@@ -86,14 +86,14 @@ function validateMaximumOfTwoLogic(input, attemptCount = 1) {
       hasComparisonOperator: true,
       hasGreaterOutcome: false,
       hasLesserOutcome: false,
-      feedback: "\u{1F31F} Coach Maya here! You compared the numbers using `>`. Now what are the two outcomes? If `a > b` is true, which number is maximum? And otherwise, which number is maximum? Write: 'If a > b then a is maximum, else b is maximum.'",
+      feedback: "\u{1F31F} Coach Maara here! You compared the numbers using `>`. Now what are the two outcomes? If `a > b` is true, which number is maximum? And otherwise, which number is maximum? Write: 'If a > b then a is maximum, else b is maximum.'",
       correction: "If a > b then a is maximum, else b is maximum.",
       suggestedInput: "If a > b then a is maximum, else b is maximum.",
       matchedFirebaseInput: "how to find maximum of two numbers"
     };
   }
   if (!isQuestion && hasFullIfElseRule && (mentionsTwoVariables || norm.includes("compare") || hasMathematicalCheck)) {
-    const feedback2 = `\u{1F389} **Logic Approved by Coach Maya!** \u{1F3C6}
+    const feedback2 = `\u{1F389} **Logic Approved by Coach Maara!** \u{1F3C6}
 Spot on! You have clearly defined the logic to find the maximum of two numbers:
 If \`a > b\`, then \`a\` is the Maximum; otherwise \`b\` is the Maximum!
 
@@ -110,9 +110,9 @@ Fantastic work! Proceed to Stage 2: Recipe!`;
       matchedFirebaseInput: "if a > b then a is maximum else b is maximum"
     };
   }
-  let feedback = "\u{1F31F} Coach Maya here! How do we compare number `a` and number `b` to find which one is larger? What comparison operator (`>`) do we use?";
+  let feedback = "\u{1F31F} Coach Maara here! How do we compare number `a` and number `b` to find which one is larger? What comparison operator (`>`) do we use?";
   if (attemptCount >= 2) {
-    feedback = "\u{1F31F} Coach Maya checking back! Compare number `a` and number `b` using the greater-than operator (`>`). Write: 'If a > b, then a is maximum, else b is maximum.'";
+    feedback = "\u{1F31F} Coach Maara checking back! Compare number `a` and number `b` using the greater-than operator (`>`). Write: 'If a > b, then a is maximum, else b is maximum.'";
   }
   return {
     isFullyVerified: false,
@@ -154,14 +154,14 @@ function validateMaximumOfTwoRecipe(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Let's think step by step like a chef writing a recipe:\n\u2022 Step 1: Obtain two numbers `a` and `b`.\n\u2022 Step 2: Determine which is larger (a or b) \u2014 if `a > b`, display `a is Maximum`, else display `b is Maximum`.\n\nStart by writing Step 1 in your worksheet!",
+      feedback: "\u{1F31F} Coach Maara here! Let's think step by step like a chef writing a recipe:\n\u2022 Step 1: Obtain two numbers `a` and `b`.\n\u2022 Step 2: Determine which is larger (a or b) \u2014 if `a > b`, display `a is Maximum`, else display `b is Maximum`.\n\nStart by writing Step 1 in your worksheet!",
       correction: "Step 1: Obtain two numbers (a, b).",
       suggestedInput: "Step 1: Obtain two numbers (a, b).",
       matchedFirebaseInput: "what steps to write"
     };
   }
   if (hasStep1 && hasStep2Condition && hasStep2Outcomes) {
-    const feedback = `\u{1F389} **Kudos! Recipe Approved by Coach Maya!** \u{1F3C6}
+    const feedback = `\u{1F389} **Kudos! Recipe Approved by Coach Maara!** \u{1F3C6}
 You have sequenced the step-by-step algorithm perfectly:
 \u2022 Step 1: Obtain two numbers (a, b)
 \u2022 Step 2: Determine which is larger (a or b)
@@ -180,7 +180,7 @@ Outstanding work! Proceed to Stage 3: Ingredients to gather the programming tool
     return {
       isFullyVerified: false,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! What is the very first step in our algorithm? We need to get the two numbers to compare. Write: `Step 1: Obtain two numbers (a, b)`.",
+      feedback: "\u{1F31F} Coach Maara here! What is the very first step in our algorithm? We need to get the two numbers to compare. Write: `Step 1: Obtain two numbers (a, b)`.",
       correction: "Step 1: Obtain two numbers (a, b).",
       suggestedInput: "Step 1: Obtain two numbers (a, b).",
       matchedFirebaseInput: "what steps to write"
@@ -190,7 +190,7 @@ Outstanding work! Proceed to Stage 3: Ingredients to gather the programming tool
     return {
       isFullyVerified: false,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Great start with Step 1! \u{1F44F} Now for Step 2: How do you determine which number is larger? (e.g. Determine which is larger (a or b) / If a is greater than b, display a is Maximum, else display b is Maximum).",
+      feedback: "\u{1F31F} Coach Maara here! Great start with Step 1! \u{1F44F} Now for Step 2: How do you determine which number is larger? (e.g. Determine which is larger (a or b) / If a is greater than b, display a is Maximum, else display b is Maximum).",
       correction: "Step 2: Determine which is larger (a or b).",
       suggestedInput: "Step 2: Determine which is larger (a or b).",
       matchedFirebaseInput: "step 1 : Get two numbers a and b"
@@ -199,7 +199,7 @@ Outstanding work! Proceed to Stage 3: Ingredients to gather the programming tool
   return {
     isFullyVerified: false,
     recipeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Almost done with recipe! For Step 2: What message do you display if `a > b` is true, and what message if it is false?",
+    feedback: "\u{1F31F} Coach Maara here! Almost done with recipe! For Step 2: What message do you display if `a > b` is true, and what message if it is false?",
     correction: "Step 2: If a is greater than b, display a is Maximum, else display b is Maximum.",
     suggestedInput: "Step 2: If a is greater than b, display a is Maximum, else display b is Maximum.",
     matchedFirebaseInput: "step 1 : Get two numbers a and b"
@@ -210,9 +210,9 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
   const isQuestion = norm.endsWith("?") || /\b(?:how|what|why|help|puriyala|doubt|know|rule|do here|approach|explain|what ingredients)\b/i.test(norm);
   const extractStepText = (stepNum) => {
     const nextStepNum = stepNum + 1;
-    const regex = new RegExp(`(?:step\\s*${stepNum}|(?:^|\\n|;)\\s*${stepNum}[\\.\\)])\\s*[:\\-\\s]*([\\s\\S]*?)(?=(?:step\\s*${nextStepNum}|(?:^|\\n|;)\\s*${nextStepNum}[\\.\\)]|$))`, "i");
-    const match = norm.match(regex);
-    return match ? match[1].trim() : "";
+    const regex = new RegExp(`(?:step\\s*${stepNum}|(?:^|\\n|;)\\s*${stepNum}[\\.\\)])\\s*[:\\-\\s]*([\\s\\S]*?)(?=(?:step\\s*${nextStepNum}|(?:^|\\n|;)\\s*${nextStepNum}[\\.\\)]|$))`, "gi");
+    const matches = Array.from(norm.matchAll(regex));
+    return matches.length > 0 ? matches[matches.length - 1][1].trim() : "";
   };
   const step1Text = extractStepText(1);
   const step2Text = extractStepText(2);
@@ -226,15 +226,15 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
   const hasElseWithCondition = hasElseInStep2 && /left\s*side|\bl\.?s\.?\b|operator|\bop\b|right\s*side|\br\.?s\.?\b|>|<|>=|<=/i.test(step2Target);
   const lsMatch = step2Target.match(/(?:left\s*side|\bl\.?s\.?\b)\s*[:=]?\s*\(?\s*([^;\n\r,)]+)\)?/i);
   let wrongLeftSideDetected = null;
-  if (lsMatch) {
+  if (lsMatch && lsMatch[1]) {
     const rawLS = lsMatch[1].trim().replace(/^\(/, "").replace(/\)$/, "").trim();
     if (!/\ba\b/i.test(rawLS) && !/\bnum1\b/i.test(rawLS) && !/\bfirst\b/i.test(rawLS) && !/\bx\b/i.test(rawLS)) {
       wrongLeftSideDetected = rawLS || "(empty)";
     }
   }
-  const explicitOperatorMatch = step2Target.match(/(?:operator|\bop\b)\s*[:=]?\s*\(?\s*([^;\n\r,)]+)\)?/i) || step2Target.match(/(?:step\s*2|condition|if\s*\(?[ab]\s*([><!=]=?)\s*[ab])/i);
+  const explicitOperatorMatch = step2Target.match(/(?:operator|\bop\b)\s*[:=]?\s*\(?\s*([^;\n\r,)]+)\)?/i) || step2Target.match(/(?:step\s*2|condition|if)\s*\(?[ab]\s*([><!=]=?)\s*[ab]/i) || step2Target.match(/[ab]\s*([><!=]=?)\s*[ab]/i);
   let wrongOperatorDetected = null;
-  if (explicitOperatorMatch) {
+  if (explicitOperatorMatch && explicitOperatorMatch[1]) {
     const rawOp = explicitOperatorMatch[1].trim().replace(/^\(/, "").replace(/\)$/, "").trim();
     if (rawOp !== ">" && rawOp !== ">=" && !rawOp.includes(">")) {
       wrongOperatorDetected = rawOp || "(empty)";
@@ -242,7 +242,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
   }
   const rsExplicitMatch = step2Target.match(/(?:right\s*side|\br\.?s\.?\b)\s*[:=]?\s*\(?\s*([^;\n\r,)]+)\)?/i);
   let wrongRightSideDetected = null;
-  if (rsExplicitMatch) {
+  if (rsExplicitMatch && rsExplicitMatch[1]) {
     const rawRS = rsExplicitMatch[1].trim().replace(/^\(/, "").replace(/\)$/, "").trim();
     if (!/\bb\b/i.test(rawRS) && !/\bnum2\b/i.test(rawRS) && !/\bsecond\b/i.test(rawRS) && !/\by\b/i.test(rawRS)) {
       wrongRightSideDetected = rawRS || "(empty)";
@@ -384,7 +384,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya checking Step 2 Left Side: Look at your Left Side (L.S)! You wrote \`${wrongLeftSideDetected}\`. In the condition \`a > b\`, the Left Side is the first variable \`a\` (\`L.S: a\` or \`Left side: a\`).`,
+      feedback: `\u{1F31F} Coach Maara checking Step 2 Left Side: Look at your Left Side (L.S)! You wrote \`${wrongLeftSideDetected}\`. In the condition \`a > b\`, the Left Side is the first variable \`a\` (\`L.S: a\` or \`Left side: a\`).`,
       correction: "step 2 : If condition with L.S: a, R.S: b, Operator: >",
       suggestedInput: "step 2 : If condition with L.S: a, R.S: b, Operator: >",
       matchedFirebaseInput: "how to write if condition"
@@ -395,7 +395,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya operator check: You wrote \`operator: ${wrongOperatorDetected}\`. To test if \`a\` is strictly greater than \`b\`, use the greater-than operator \`>\` (\`operator: >\`).`,
+      feedback: `\u{1F31F} Coach Maara operator check: You wrote \`operator: ${wrongOperatorDetected}\`. To test if \`a\` is strictly greater than \`b\`, use the greater-than operator \`>\` (\`operator: >\`).`,
       correction: "step 2 : If condition with L.S: a, R.S: b, Operator: >",
       suggestedInput: "step 2 : If condition with L.S: a, R.S: b, Operator: >",
       matchedFirebaseInput: "how to write if condition"
@@ -406,7 +406,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya checking Step 2 Right Side: Look at your Right Side (R.S)! You wrote \`${wrongRightSideDetected}\`. In the condition \`a > b\`, the Right Side is the second variable \`b\` (\`R.S: b\` or \`Right side: b\`).`,
+      feedback: `\u{1F31F} Coach Maara checking Step 2 Right Side: Look at your Right Side (R.S)! You wrote \`${wrongRightSideDetected}\`. In the condition \`a > b\`, the Right Side is the second variable \`b\` (\`R.S: b\` or \`Right side: b\`).`,
       correction: "step 2 : If condition with L.S: a, R.S: b, Operator: >",
       suggestedInput: "step 2 : If condition with L.S: a, R.S: b, Operator: >",
       matchedFirebaseInput: "how to write if condition"
@@ -435,7 +435,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! What ingredients do we need? Start with Step 1: Input variables `a` and `b`.",
+      feedback: "\u{1F31F} Coach Maara here! What ingredients do we need? Start with Step 1: Input variables `a` and `b`.",
       correction: "step 1 : a and b for input variables",
       suggestedInput: "step 1 : a and b for input variables",
       matchedFirebaseInput: "what ingredients do we need"
@@ -445,7 +445,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Spot on! You have variables `a` and `b`. \u{1F44F} Now for Step 2: How do you write the if condition using Left Side (`a`), Right Side (`b`), and Operator (`>`)?",
+      feedback: "\u{1F31F} Coach Maara here! Spot on! You have variables `a` and `b`. \u{1F44F} Now for Step 2: How do you write the if condition using Left Side (`a`), Right Side (`b`), and Operator (`>`)?",
       correction: "step 2 : If condition with L.S: a, R.S: b, Operator: >",
       suggestedInput: "step 2 : If condition with L.S: a, R.S: b, Operator: >",
       matchedFirebaseInput: "step 1 : a and b for input variables"
@@ -455,7 +455,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Great condition `a > b`! Now for Step 3: Inside the if block, write the winning print statement: `step 3 : Inside if block: print("a is max")`.',
+      feedback: '\u{1F31F} Coach Maara here! Great condition `a > b`! Now for Step 3: Inside the if block, write the winning print statement: `step 3 : Inside if block: print("a is max")`.',
       correction: 'step 3 : Inside if block: print("a is max")',
       suggestedInput: 'step 3 : Inside if block: print("a is max")',
       matchedFirebaseInput: "how to write if condition"
@@ -465,7 +465,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Steps 1, 2, and 3 are ready! \u{1F44F} Now add the fallback `else` construct: `step 4 : else block`.",
+      feedback: "\u{1F31F} Coach Maara here! Steps 1, 2, and 3 are ready! \u{1F44F} Now add the fallback `else` construct: `step 4 : else block`.",
       correction: "step 4 : else block",
       suggestedInput: 'step 4 : else block\nstep 5 : Inside else block: print("b is max")',
       matchedFirebaseInput: "what ingredients do we need"
@@ -474,7 +474,7 @@ function validateMaximumOfTwoIngredients(input, attemptCount = 1) {
   return {
     isFullyVerified: false,
     ingredientsStepProgress,
-    feedback: '\u{1F31F} Coach Maya here! Almost done with ingredients! Add Step 5 inside the else block: `step 5 : Inside else block: print("b is max")`.',
+    feedback: '\u{1F31F} Coach Maara here! Almost done with ingredients! Add Step 5 inside the else block: `step 5 : Inside else block: print("b is max")`.',
     correction: 'step 5 : Inside else block: print("b is max")',
     suggestedInput: 'step 5 : Inside else block: print("b is max")',
     matchedFirebaseInput: "what ingredients do we need"
@@ -524,7 +524,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
           { stepNumber: 5, title: 'Step 5: Print b is max inside else block (e.g. print("b is max"); })', completed: false, current: false }
         ],
         operationTestCases: testCases,
-        feedback: '\u{1F31F} Coach Maya here! To assemble the working prototype code for Maximum of Two Numbers, follow these 5 clear steps:\n\n1\uFE0F\u20E3 **Variables:** Declare test values: `var a = 20, b = 40;`\n2\uFE0F\u20E3 **Condition:** Check which is larger: `if (a > b) {`\n3\uFE0F\u20E3 **True Branch:** Inside if, display result: `print("a is max");`\n4\uFE0F\u20E3 **Fallback:** Catch the other outcome: `} else {`\n5\uFE0F\u20E3 **False Branch:** Inside else, display result: `print("b is max"); }`\n\nLet\'s start by declaring your test variables in the editor!',
+        feedback: '\u{1F31F} Coach Maara here! To assemble the working prototype code for Maximum of Two Numbers, follow these 5 clear steps:\n\n1\uFE0F\u20E3 **Variables:** Declare test values: `var a = 20, b = 40;`\n2\uFE0F\u20E3 **Condition:** Check which is larger: `if (a > b) {`\n3\uFE0F\u20E3 **True Branch:** Inside if, display result: `print("a is max");`\n4\uFE0F\u20E3 **Fallback:** Catch the other outcome: `} else {`\n5\uFE0F\u20E3 **False Branch:** Inside else, display result: `print("b is max"); }`\n\nLet\'s start by declaring your test variables in the editor!',
         correction: "var a = 20, b = 40;",
         suggestedInput: 'var a = 20, b = 40;\nif (a > b) {\n  print("a is max");\n} else {\n  print("b is max");\n}'
       };
@@ -541,7 +541,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
           { stepNumber: 5, title: 'Step 5: Print b is max inside else block (e.g. print("b is max"); })', completed: false, current: false }
         ],
         operationTestCases: testCases,
-        feedback: "\u{1F31F} Coach Maya here! To test our algorithm, we initialize two sample numbers into variables:\n```javascript\nvar a = 10, b = 25;\n```\nOr in Python style:\n```python\na = 20\nb = 40\n```\nThis gives concrete numbers for our conditional logic to test against!",
+        feedback: "\u{1F31F} Coach Maara here! To test our algorithm, we initialize two sample numbers into variables:\n```javascript\nvar a = 10, b = 25;\n```\nOr in Python style:\n```python\na = 20\nb = 40\n```\nThis gives concrete numbers for our conditional logic to test against!",
         correction: "var a = 10, b = 25;",
         suggestedInput: "var a = 10, b = 25;"
       };
@@ -558,7 +558,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
           { stepNumber: 5, title: 'Step 5: Print b is max inside else block (e.g. print("b is max"); })', completed: true, current: false }
         ],
         operationTestCases: testCases,
-        feedback: '\u{1F31F} Coach Maya here! We test both branches with two sample runs:\n\u2022 **Test Case 1 (a = 25, b = 10):** `25 > 10` is true \u2794 Runs `if` branch \u2794 Output: **"a is max"** \u2705\n\u2022 **Test Case 2 (a = 15, b = 40):** `15 > 40` is false \u2794 Runs `else` branch \u2794 Output: **"b is max"** \u2705\nWhen you assemble both branches in your code, both tests pass automatically!',
+        feedback: '\u{1F31F} Coach Maara here! We test both branches with two sample runs:\n\u2022 **Test Case 1 (a = 25, b = 10):** `25 > 10` is true \u2794 Runs `if` branch \u2794 Output: **"a is max"** \u2705\n\u2022 **Test Case 2 (a = 15, b = 40):** `15 > 40` is false \u2794 Runs `else` branch \u2794 Output: **"b is max"** \u2705\nWhen you assemble both branches in your code, both tests pass automatically!',
         correction: 'var a = 25, b = 10;\nif (a > b) {\n  print("a is max");\n} else {\n  print("b is max");\n}',
         suggestedInput: 'var a = 25, b = 10;\nif (a > b) {\n  print("a is max");\n} else {\n  print("b is max");\n}'
       };
@@ -575,7 +575,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
           { stepNumber: 5, title: 'Step 5: Print b is max inside else block (e.g. print("b is max"); })', completed: false, current: false }
         ],
         operationTestCases: testCases,
-        feedback: '\u{1F31F} Coach Maya here! The conditional structure works in two branches:\n\u2022 `if (a > b)` tests if `a` is strictly greater. When true, it prints `"a is max"`.\n\u2022 `else` is the automatic fallback when `a > b` is false (meaning `b` is larger), printing `"b is max"`!\nNotice `else` does not need any condition.',
+        feedback: '\u{1F31F} Coach Maara here! The conditional structure works in two branches:\n\u2022 `if (a > b)` tests if `a` is strictly greater. When true, it prints `"a is max"`.\n\u2022 `else` is the automatic fallback when `a > b` is false (meaning `b` is larger), printing `"b is max"`!\nNotice `else` does not need any condition.',
         correction: '} else {\n  print("b is max");\n}',
         suggestedInput: 'if (a > b) {\n  print("a is max");\n} else {\n  print("b is max");\n}'
       };
@@ -591,7 +591,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
         { stepNumber: 5, title: 'Step 5: Print b is max inside else block (e.g. print("b is max"); })', completed: false, current: false }
       ],
       operationTestCases: testCases,
-      feedback: '\u{1F31F} Coach Maya here! In Taste the Sample, we turn our recipe into runnable code:\n1. Declare sample variables: `var a = 10, b = 25;`\n2. Write comparison: `if (a > b) { print("a is max"); }`\n3. Add fallback: `else { print("b is max"); }`\nTry writing out the first line in the editor!',
+      feedback: '\u{1F31F} Coach Maara here! In Taste the Sample, we turn our recipe into runnable code:\n1. Declare sample variables: `var a = 10, b = 25;`\n2. Write comparison: `if (a > b) { print("a is max"); }`\n3. Add fallback: `else { print("b is max"); }`\nTry writing out the first line in the editor!',
       correction: "var a = 10, b = 25;",
       suggestedInput: 'var a = 10, b = 25;\nif (a > b) {\n  print("a is max");\n} else {\n  print("b is max");\n}'
     };
@@ -654,7 +654,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
   }
   if (hasVarDeclaration && hasCondition && (hasUnquotedPrintA || hasUnquotedPrintB)) {
     const isBothUnquoted = hasUnquotedPrintA && hasUnquotedPrintB;
-    const feedback = isBothUnquoted ? '\u{1F31F} Coach Maya syntax alert: You wrote `print(a is big)` and `print(b is big)` without quotes! In programming (Python, JavaScript, etc.), text messages MUST be enclosed in quotation marks, like `print("a is big");` and `print("b is big");`. Without quotes, the computer causes a syntax error. Add quotes around your print text to verify your code!' : hasUnquotedPrintA ? '\u{1F31F} Coach Maya syntax alert: Quotes are missing in your if print statement! In programming, text must be wrapped in quotation marks: `print("a is big");` or `print("a is max");`.' : '\u{1F31F} Coach Maya syntax alert: Quotes are missing in your else print statement! In programming, text must be wrapped in quotation marks: `print("b is big");` or `print("b is max");`.';
+    const feedback = isBothUnquoted ? '\u{1F31F} Coach Maara syntax alert: You wrote `print(a is big)` and `print(b is big)` without quotes! In programming (Python, JavaScript, etc.), text messages MUST be enclosed in quotation marks, like `print("a is big");` and `print("b is big");`. Without quotes, the computer causes a syntax error. Add quotes around your print text to verify your code!' : hasUnquotedPrintA ? '\u{1F31F} Coach Maara syntax alert: Quotes are missing in your if print statement! In programming, text must be wrapped in quotation marks: `print("a is big");` or `print("a is max");`.' : '\u{1F31F} Coach Maara syntax alert: Quotes are missing in your else print statement! In programming, text must be wrapped in quotation marks: `print("b is big");` or `print("b is max");`.';
     return {
       isFullyVerified: false,
       allVerified: false,
@@ -703,7 +703,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: "\u{1F31F} Coach Maya syntax alert: You attached a condition to `else`! In JavaScript/Python, `else` is an automatic fallback that takes no condition. Just write `} else {`.",
+      feedback: "\u{1F31F} Coach Maara syntax alert: You attached a condition to `else`! In JavaScript/Python, `else` is an automatic fallback that takes no condition. Just write `} else {`.",
       correction: "} else {",
       suggestedInput: 'var a = 10, b = 25;\nif (a > b) {\n  print("a is max");\n} else {\n  print("b is max");\n}',
       matchedFirebaseInput: "how to write sample code"
@@ -715,7 +715,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: "\u{1F31F} Coach Maya here! Let's build our code line by line. Start with Step 1 by declaring your test variables: `var a = 20, b = 40;`.",
+      feedback: "\u{1F31F} Coach Maara here! Let's build our code line by line. Start with Step 1 by declaring your test variables: `var a = 20, b = 40;`.",
       correction: "var a = 20, b = 40;",
       suggestedInput: 'var a = 20, b = 40;\nif (a > b) {\n  print("a is max");\n} else {\n  print("b is max");\n}',
       matchedFirebaseInput: "how to write sample code"
@@ -727,7 +727,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: "\u{1F31F} Coach Maya here! Variables declared! \u{1F44F} Now add Step 2: Write the if condition comparing `a > b`: `if (a > b) {`.",
+      feedback: "\u{1F31F} Coach Maara here! Variables declared! \u{1F44F} Now add Step 2: Write the if condition comparing `a > b`: `if (a > b) {`.",
       correction: "if (a > b) {",
       suggestedInput: 'if (a > b) {\n  print("a is max");\n}',
       matchedFirebaseInput: "how to write sample code"
@@ -739,7 +739,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases: testCases,
-      feedback: '\u{1F31F} Coach Maya here! Step 1 and 2 look great! \u{1F44F} Add Step 3 inside the if block: `print("a is max");`.',
+      feedback: '\u{1F31F} Coach Maara here! Step 1 and 2 look great! \u{1F44F} Add Step 3 inside the if block: `print("a is max");`.',
       correction: 'print("a is max");',
       suggestedInput: 'print("a is max");',
       matchedFirebaseInput: "how to write sample code"
@@ -750,7 +750,7 @@ function validateMaximumOfTwoSampleCode(input, attemptCount = 1) {
     allVerified: false,
     sampleCodeStepProgress,
     operationTestCases: testCases,
-    feedback: `\u{1F31F} Coach Maya here! You've declared your variables and written the if comparison\u2014fantastic progress! \u{1F44F}
+    feedback: `\u{1F31F} Coach Maara here! You've declared your variables and written the if comparison\u2014fantastic progress! \u{1F44F}
 
 Now complete the prototype with the fallback **else block** (Steps 4 & 5) so the program knows what to show when **b** is larger:
 \`\`\`javascript

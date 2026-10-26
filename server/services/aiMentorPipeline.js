@@ -37,8 +37,8 @@ class AiMentorPipeline {
       validatedOutput = validation.sanitizedOutput;
       if (validatedOutput && validatedOutput.hint) {
         const h = validatedOutput.hint.trim();
-        if (!/^(🌟|coach maya|hey there|awesome|great work|spot on)/i.test(h)) {
-          validatedOutput.hint = `\u{1F31F} Coach Maya here! ${h.charAt(0).toUpperCase() + h.slice(1)}`;
+        if (!/^(🌟|coach maara|hey there|awesome|great work|spot on)/i.test(h)) {
+          validatedOutput.hint = `\u{1F31F} Coach Maara here! ${h.charAt(0).toUpperCase() + h.slice(1)}`;
         }
       }
       const prevs = context.previousHints || [];

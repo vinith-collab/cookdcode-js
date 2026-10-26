@@ -6,3 +6,34 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Temporary & Scratch Developer Files
+scratch/
+temp/
+tmp/
+
+# Editor & IDE configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# OS Generated Files
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Logs & Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+

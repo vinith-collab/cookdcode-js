@@ -45,7 +45,7 @@ else:
     id: "odd-even",
     category: "fundamentals",
     programName: "Odd or Even Checker",
-    description: `Write a program to determine if an integer is odd or even using remainder division.`,
+    description: `Write a program to determine if an integer is odd or even.`,
     concept: "Modulo Operator & Parity",
     logicReveal: "Even numbers are perfectly divisible by 2 leaving a remainder of 0. Odd numbers leave a remainder of 1 when divided by 2.",
     recipeReveal: "1. Take input number n.\n2. Calculate remainder r = n % 2.\n3. If r == 0, print Even; else print Odd.",

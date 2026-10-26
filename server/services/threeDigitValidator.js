@@ -25,14 +25,14 @@ function validateThreeDigitLogic(text) {
   if (isFullyVerified) {
     const verified3Digit = hasSpecific3DigitSample ? norm.match(/\b(1[0-9]{2}|[2-9][0-9]{2})\b/)?.[0] || "150" : "250";
     const verifiedNon3Digit = norm.match(/\b(?:\d{1,2}|\d{4,})\b/)?.[0] || "1200 or 50";
-    feedback = `Spot on! \u{1F31F} Coach Maya here! Outstanding logical proof! You've verified both boundaries (100 <= n <= 999), provided a valid 3-digit example (${verified3Digit}), and verified non-3-digit examples (${verifiedNon3Digit}). You've mastered the logic\u2014proceed to Recipe!`;
+    feedback = `Spot on! \u{1F31F} Coach Maara here! Outstanding logical proof! You've verified both boundaries (100 <= n <= 999), provided a valid 3-digit example (${verified3Digit}), and verified non-3-digit examples (${verifiedNon3Digit}). You've mastered the logic\u2014proceed to Recipe!`;
     correction = "Proceed to the Recipe stage to sequence the steps.";
   } else if (hasUpperBoundaryError) {
-    feedback = "Coach Maya here! Let's take a closer look at that upper boundary. You mentioned that being greater than 1000 means it is a 3-digit number or part of the range. Think about the upper limit\u2014if a number is 1000 or larger, it actually has 4 or more digits! To be a 3-digit number, it must stay strictly below 1000 (up to 999). Could you adjust that boundary for me?";
+    feedback = "Coach Maara here! Let's take a closer look at that upper boundary. You mentioned that being greater than 1000 means it is a 3-digit number or part of the range. Think about the upper limit\u2014if a number is 1000 or larger, it actually has 4 or more digits! To be a 3-digit number, it must stay strictly below 1000 (up to 999). Could you adjust that boundary for me?";
     correction = "A 3-digit number must be strictly less than 1000 (<= 999), not greater than 1000.";
     suggestedInput = "A 3-digit number is between 100 and 999 inclusive (less than 1000).";
   } else if (!hasLowerBound && !hasUpperBound) {
-    feedback = "Coach Maya here! Let's understand 3-digit numbers. What is the range of a 3-digit number (from 100 to 999)? And what are example numbers for a 3-digit number AND a NOT 3-digit number?";
+    feedback = "Coach Maara here! Let's understand 3-digit numbers. What is the range of a 3-digit number (from 100 to 999)? And what are example numbers for a 3-digit number AND a NOT 3-digit number?";
     correction = "Specify the range: greater than or equal to 100 and less than or equal to 999.";
     suggestedInput = "A 3-digit number ranges from 100 up to 999 inclusive.";
   } else if (!hasLowerBound) {
@@ -44,15 +44,15 @@ function validateThreeDigitLogic(text) {
     correction = "Specify the upper boundary (less than or equal to 999 or less than 1000).";
     suggestedInput = "and less than or equal to 999 (strictly below 1000).";
   } else if (!hasThreeDigitExample && !hasNonThreeDigitExample) {
-    feedback = "Coach Maya here! You defined the range (100 to 999)! Now, to complete the Logic stage, please give both examples:\n1. An example of a 3-digit number (e.g., 250 or 456)\n2. An example of a number that is NOT a 3-digit number (e.g., 45 or 1000)\nWhat are your two example numbers?";
+    feedback = "Coach Maara here! You defined the range (100 to 999)! Now, to complete the Logic stage, please give both examples:\n1. An example of a 3-digit number (e.g., 250 or 456)\n2. An example of a number that is NOT a 3-digit number (e.g., 45 or 1000)\nWhat are your two example numbers?";
     correction = "Give an example of a 3-digit number (e.g. 250) and a non-3-digit number (e.g. 45).";
     suggestedInput = "For example, 250 is a 3-digit number, while 45 is not a 3-digit number.";
   } else if (!hasThreeDigitExample) {
-    feedback = "Coach Maya here! You gave an example for a non-3-digit number! Now, what is an example number that IS a 3-digit number (e.g., 250 or 456)?";
+    feedback = "Coach Maara here! You gave an example for a non-3-digit number! Now, what is an example number that IS a 3-digit number (e.g., 250 or 456)?";
     correction = "Add an example of a 3-digit number (e.g., 250).";
     suggestedInput = "For example, 250 is a 3-digit number.";
   } else if (!hasNonThreeDigitExample) {
-    feedback = "Coach Maya here! You gave an example for a 3-digit number! Now, what is an example number that is NOT a 3-digit number (e.g., 45 or 1000)?";
+    feedback = "Coach Maara here! You gave an example for a 3-digit number! Now, what is an example number that is NOT a 3-digit number (e.g., 45 or 1000)?";
     correction = "Add an example of a number that is not 3 digits (e.g., 45 or 1000).";
     suggestedInput = "For example, 45 is not a 3-digit number.";
   }
@@ -121,26 +121,26 @@ function validateThreeDigitRecipe(text) {
   let correction = void 0;
   let suggestedInput = void 0;
   if (isFullyVerified) {
-    feedback = "Kudos! \u{1F31F} Coach Maya here! You have written a complete, crystal-clear step-by-step algorithm for checking a 3-digit number. Proceed to Ingredients!";
+    feedback = "Kudos! \u{1F31F} Coach Maara here! You have written a complete, crystal-clear step-by-step algorithm for checking a 3-digit number. Proceed to Ingredients!";
     correction = "Proceed to Ingredients stage!";
   } else if (hasStep3NegationError) {
-    feedback = "Coach Maya here! Let's take a closer look at Step 3: You wrote that if the number is in the range between 100 to 999, it is *not* a three-digit number. But remember, any number between 100 and 999 (like 150 or 500) *is* a 3-digit number! In Step 3, describe that it *is* a 3-digit number.";
+    feedback = "Coach Maara here! Let's take a closer look at Step 3: You wrote that if the number is in the range between 100 to 999, it is *not* a three-digit number. But remember, any number between 100 and 999 (like 150 or 500) *is* a 3-digit number! In Step 3, describe that it *is* a 3-digit number.";
     correction = "Step 3: When in range (100 to 999), that number is a 3-digit number";
     suggestedInput = "Step 3: If that number in the range between 100 to 999 that number is a three digit number";
   } else if (!hasInputStep) {
-    feedback = "Coach Maya here! Let's start with Step 1 of the recipe: How do we get the number from the user? (e.g. `Step 1: Get input number n`).";
+    feedback = "Coach Maara here! Let's start with Step 1 of the recipe: How do we get the number from the user? (e.g. `Step 1: Get input number n`).";
     correction = "Step 1: Get input number n";
     suggestedInput = "Step 1: Get input number n";
   } else if (!hasConditionStep) {
-    feedback = "Coach Maya here! Great start with Step 1 (Get input number n)! For Step 2, what step checks whether n is a 3-digit number (between 100 and 999)?";
+    feedback = "Coach Maara here! Great start with Step 1 (Get input number n)! For Step 2, what step checks whether n is a 3-digit number (between 100 and 999)?";
     correction = "Step 2: Check whether n is greater than or equal to 100 and less than or equal to 999";
     suggestedInput = "Step 2: Check whether n is greater than or equal to 100 and less than or equal to 999";
   } else if (!hasTrueOutput) {
-    feedback = "Coach Maya here! You've got Step 1 and the comparison in Step 2! Now for Step 3: When the number is in that range, what message should we show to the user?";
+    feedback = "Coach Maara here! You've got Step 1 and the comparison in Step 2! Now for Step 3: When the number is in that range, what message should we show to the user?";
     correction = "Step 3: When in range, show '3-digit number'";
     suggestedInput = "Step 3: When in range, that number is a 3-digit number";
   } else if (!hasFalseOutput) {
-    feedback = "Coach Maya here! You're almost done! Now for Step 4: Otherwise, when the number is not in that range, what message should we show to the user?";
+    feedback = "Coach Maara here! You're almost done! Now for Step 4: Otherwise, when the number is not in that range, what message should we show to the user?";
     correction = "Step 4: Otherwise, show 'Not a 3-digit number'";
     suggestedInput = "Step 4: Otherwise, that number is not a 3-digit number";
   }
@@ -183,19 +183,19 @@ function validateThreeDigitIngredients(text) {
   let correction = void 0;
   let suggestedInput = void 0;
   if (isFullyVerified) {
-    feedback = `Hurray! \u{1F31F} Coach Maya here! You defined every required ingredient: Input variable ${detectedVar}, complete condition breakdown (Left Side: ${detectedVar}, Operators: >= & <=, Right Side: 100 & 999, Logical Operator: &&), and the exact operations inside both the 'if' block (print '3-digit number') and 'else' block (print 'Not a 3-digit number'). Proceed to Taste the Sample!`;
+    feedback = `Hurray! \u{1F31F} Coach Maara here! You defined every required ingredient: Input variable ${detectedVar}, complete condition breakdown (Left Side: ${detectedVar}, Operators: >= & <=, Right Side: 100 & 999, Logical Operator: &&), and the exact operations inside both the 'if' block (print '3-digit number') and 'else' block (print 'Not a 3-digit number'). Proceed to Taste the Sample!`;
     correction = "Proceed to Taste the Sample!";
   } else if (!hasVar) {
-    feedback = "Coach Maya here! Let's start with the first ingredient: We need an input variable (e.g., `Step 1: var a = 456` or `Step 1: Variable n for input`) to store our number.";
+    feedback = "Coach Maara here! Let's start with the first ingredient: We need an input variable (e.g., `Step 1: var a = 456` or `Step 1: Variable n for input`) to store our number.";
     correction = `Step 1: Define an input variable (e.g., var ${detectedVar} = 456)`;
     suggestedInput = `Step 1: var ${detectedVar} = 456`;
   } else if (!hasConditionBreakdown) {
     if (hasLeftSide && hasRightSide && !hasOperators) {
-      feedback = `Coach Maya here! Great work setting Left Side to \`${detectedVar}\` and boundaries to ${norm.includes("1000") ? "100 and 1000" : "100 and 999"}! However, checking a 3-digit number requires TWO boundary comparisons connected by logical AND: you provided \`>=\`, but don't forget the upper boundary operator (\`<=\` or \`<\`) and the logical operator (\`&&\`)!`;
+      feedback = `Coach Maara here! Great work setting Left Side to \`${detectedVar}\` and boundaries to ${norm.includes("1000") ? "100 and 1000" : "100 and 999"}! However, checking a 3-digit number requires TWO boundary comparisons connected by logical AND: you provided \`>=\`, but don't forget the upper boundary operator (\`<=\` or \`<\`) and the logical operator (\`&&\`)!`;
       correction = `Step 2: Add operators <= and && (e.g., Operators: >= & <=, Logical Operator: &&)`;
       suggestedInput = `Step 2: If condition with Left Side: ${detectedVar}, Operators: >= & <=, Right Side: 100 & 999, Logical Operator: &&`;
     } else {
-      feedback = `Coach Maya here! Great start with variable \`${detectedVar}\`! In the Ingredients stage for 'if' conditions, we break down the condition into its building blocks:
+      feedback = `Coach Maara here! Great start with variable \`${detectedVar}\`! In the Ingredients stage for 'if' conditions, we break down the condition into its building blocks:
 \u2022 Left Side: ${detectedVar}
 \u2022 Comparison Operators: >= and <=
 \u2022 Right Side bounds: 100 and 999
@@ -206,16 +206,16 @@ Can you define the Left Side, Operators, and Right Side in your worksheet?`;
       suggestedInput = `Step 2: If condition with Left Side: ${detectedVar}, Operators: >= & <=, Right Side: 100 & 999, Logical Operator: &&`;
     }
   } else if (!hasInsideIf) {
-    feedback = "Coach Maya here! You've got the condition breakdown! Now for Step 3: What operation should execute inside the `if` block when the condition is true? (e.g., `Step 3: Inside 'if' block: print(\"3-digit number\")`)";
+    feedback = "Coach Maara here! You've got the condition breakdown! Now for Step 3: What operation should execute inside the `if` block when the condition is true? (e.g., `Step 3: Inside 'if' block: print(\"3-digit number\")`)";
     correction = `Step 3: Inside 'if' block: print("3-digit number")`;
     suggestedInput = `Step 3: Inside 'if' block: print("3-digit number")`;
   } else if (!hasValidInsideElse) {
     if (hasElseConditionAttempt) {
-      feedback = "Coach Maya here! Notice a key rule in programming: The 'if' block requires a condition (Left Side, Right Side, Operators), but 'else' is a catch-all branch that does NOT take any condition (no Left Side, Right Side, or Operators)! When 'if' is false, 'else' runs automatically. Please remove the condition parts from Step 4 and only specify: `Step 4: Inside 'else' block: print(\"Not a 3-digit number\")`.";
+      feedback = "Coach Maara here! Notice a key rule in programming: The 'if' block requires a condition (Left Side, Right Side, Operators), but 'else' is a catch-all branch that does NOT take any condition (no Left Side, Right Side, or Operators)! When 'if' is false, 'else' runs automatically. Please remove the condition parts from Step 4 and only specify: `Step 4: Inside 'else' block: print(\"Not a 3-digit number\")`.";
       correction = `Step 4: Inside 'else' block: print("Not a 3-digit number")`;
       suggestedInput = `Step 4: Inside 'else' block: print("Not a 3-digit number")`;
     } else {
-      feedback = "Coach Maya here! Almost there! Remember that while 'if' requires a condition (Left Side, Right Side, Operators), 'else' does NOT have any condition\u2014it automatically runs when 'if' is false! So for Step 4, you only need to define what executes inside the 'else' block: `Step 4: Inside 'else' block: print(\"Not a 3-digit number\")`.";
+      feedback = "Coach Maara here! Almost there! Remember that while 'if' requires a condition (Left Side, Right Side, Operators), 'else' does NOT have any condition\u2014it automatically runs when 'if' is false! So for Step 4, you only need to define what executes inside the 'else' block: `Step 4: Inside 'else' block: print(\"Not a 3-digit number\")`.";
       correction = `Step 4: Inside 'else' block: print("Not a 3-digit number")`;
       suggestedInput = `Step 4: Inside 'else' block: print("Not a 3-digit number")`;
     }
@@ -264,7 +264,7 @@ function validateThreeDigitSampleCode(text) {
       hasElse,
       hasNegativePrint: hasQuotedNegativePrint,
       matchedFirebaseInput: `var ${detectedVar} = 150; if (${detectedVar} >= 100 && ${detectedVar} <= 999) print("3-digit number"); else print("Not a 3-digit number");`,
-      feedback: "\u{1F31F} Coach Maya here! You gotcha! \u{1F389} Outstanding prototype! You have successfully implemented the 3-digit number checker with compound logical conditions, proper quotation marks, and clean branching. You are ready to run and test!",
+      feedback: "\u{1F31F} Coach Maara here! You gotcha! \u{1F389} Outstanding prototype! You have successfully implemented the 3-digit number checker with compound logical conditions, proper quotation marks, and clean branching. You are ready to run and test!",
       sampleCodeStepProgress: allDone,
       correction: "Sample code prototype completed!",
       suggestedInput: void 0
@@ -274,29 +274,29 @@ function validateThreeDigitSampleCode(text) {
   let correction = void 0;
   let suggestedInput = void 0;
   if (!hasInputVar) {
-    feedback = `Coach Maya here! Let's start with Step 1 of our sample code: Declare an input variable with a test number (e.g. \`var ${detectedVar} = 150;\` or \`${detectedVar} = 456\`).`;
+    feedback = `Coach Maara here! Let's start with Step 1 of our sample code: Declare an input variable with a test number (e.g. \`var ${detectedVar} = 150;\` or \`${detectedVar} = 456\`).`;
     correction = `var ${detectedVar} = 150;`;
     suggestedInput = `var ${detectedVar} = 150;`;
   } else if (!hasCondition) {
-    feedback = `Coach Maya here! Great start with variable \`${detectedVar}\`! For Step 2: Check if \`${detectedVar}\` is a 3-digit number using: \`if (${detectedVar} >= 100 && ${detectedVar} <= 999) {\`.`;
+    feedback = `Coach Maara here! Great start with variable \`${detectedVar}\`! For Step 2: Check if \`${detectedVar}\` is a 3-digit number using: \`if (${detectedVar} >= 100 && ${detectedVar} <= 999) {\`.`;
     correction = `if (${detectedVar} >= 100 && ${detectedVar} <= 999) {`;
     suggestedInput = `if (${detectedVar} >= 100 && ${detectedVar} <= 999) {`;
   } else if (!hasQuotedPositivePrint) {
     if (hasUnquotedPositivePrint) {
-      feedback = `Coach Maya here! You wrote the print statement, but notice that in programming text messages must be wrapped in quotation marks: \`print("3-digit number")\`. Without quotes, the compiler treats words like variable names and throws a syntax error!`;
+      feedback = `Coach Maara here! You wrote the print statement, but notice that in programming text messages must be wrapped in quotation marks: \`print("3-digit number")\`. Without quotes, the compiler treats words like variable names and throws a syntax error!`;
       correction = `  print("3-digit number");
 }`;
       suggestedInput = `  print("3-digit number");
 }`;
     } else {
-      feedback = `Coach Maya here! Great job with the condition! Now for Step 3: Add the action inside the if block to display: \`print("3-digit number");\`.`;
+      feedback = `Coach Maara here! Great job with the condition! Now for Step 3: Add the action inside the if block to display: \`print("3-digit number");\`.`;
       correction = `  print("3-digit number");
 }`;
       suggestedInput = `  print("3-digit number");
 }`;
     }
   } else if (!hasElse) {
-    feedback = `Coach Maya here! You've got the condition and the true branch! Now for Step 4: Add the \`else\` branch to handle numbers that are outside the 3-digit range: \`else {\`.`;
+    feedback = `Coach Maara here! You've got the condition and the true branch! Now for Step 4: Add the \`else\` branch to handle numbers that are outside the 3-digit range: \`else {\`.`;
     correction = `else {
   print("Not a 3-digit number");
 }`;
@@ -305,13 +305,13 @@ function validateThreeDigitSampleCode(text) {
 }`;
   } else if (!hasQuotedNegativePrint) {
     if (hasUnquotedNegativePrint) {
-      feedback = `Coach Maya here! You're almost there! Inside the \`else\` block, make sure to wrap your message in quotation marks: \`print("Not a 3-digit number")\`.`;
+      feedback = `Coach Maara here! You're almost there! Inside the \`else\` block, make sure to wrap your message in quotation marks: \`print("Not a 3-digit number")\`.`;
       correction = `  print("Not a 3-digit number");
 }`;
       suggestedInput = `  print("Not a 3-digit number");
 }`;
     } else {
-      feedback = `Coach Maya here! You added the \`else\` branch! Now for Step 5: Inside the else block, print the message: \`print("Not a 3-digit number");\`.`;
+      feedback = `Coach Maara here! You added the \`else\` branch! Now for Step 5: Inside the else block, print the message: \`print("Not a 3-digit number");\`.`;
       correction = `  print("Not a 3-digit number");
 }`;
       suggestedInput = `  print("Not a 3-digit number");

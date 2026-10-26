@@ -10,17 +10,17 @@ function validatePositiveNegativeLogic(text) {
   const isFullyVerified = hasPositiveConcept && hasPositiveExample && hasNegativeConcept && hasNegativeExample;
   let feedback = void 0;
   if (isFullyVerified) {
-    feedback = "Spot on! \u{1F31F} Coach Maya here! You've explained the logic with clear rules and concrete examples: Numbers greater than 0 are Positive (e.g., 1, 2, 5) and numbers less than 0 are Negative (e.g., -1, -2, -5). Zero is neither positive nor negative. You've mastered the logic\u2014proceed to Recipe!";
+    feedback = "Spot on! \u{1F31F} Coach Maara here! You've explained the logic with clear rules and concrete examples: Numbers greater than 0 are Positive (e.g., 1, 2, 5) and numbers less than 0 are Negative (e.g., -1, -2, -5). Zero is neither positive nor negative. You've mastered the logic\u2014proceed to Recipe!";
   } else if (hasPositiveExample && hasNegativeExample && !hasPositiveConcept && !hasNegativeConcept) {
-    feedback = "Coach Maya here! You provided great example numbers for positive and negative! Now, what is the logical rule? How do we test whether any number is positive or negative by comparing it with 0 (e.g., numbers greater than 0 are positive, numbers less than 0 are negative)?";
+    feedback = "Coach Maara here! You provided great example numbers for positive and negative! Now, what is the logical rule? How do we test whether any number is positive or negative by comparing it with 0 (e.g., numbers greater than 0 are positive, numbers less than 0 are negative)?";
   } else if (!hasPositiveConcept && !hasNegativeConcept) {
-    feedback = "Coach Maya here! Let's understand positive and negative numbers. A number is tested by comparing it with 0. Can you explain what numbers are Positive (> 0) and what numbers are Negative (< 0), along with example numbers?";
+    feedback = "Coach Maara here! Let's understand positive and negative numbers. A number is tested by comparing it with 0. Can you explain what numbers are Positive (> 0) and what numbers are Negative (< 0), along with example numbers?";
   } else if (!hasPositiveConcept) {
     feedback = "Great start on negative numbers! Now, what is the rule for positive numbers (e.g., numbers greater than 0), and can you give an example?";
   } else if (!hasNegativeConcept) {
     feedback = "Great start on positive numbers! Now, what is the rule for negative numbers (e.g., numbers less than 0), and can you give an example?";
   } else if (!hasPositiveExample && !hasNegativeExample) {
-    feedback = "Coach Maya here! You've got the concept right (greater than 0 is positive, less than 0 is negative)! Now to verify the logic, please provide concrete example numbers for both: What is an example of a positive number (e.g., 1, 2, 5), and what is an example of a negative number (e.g., -1, -2, -5)?";
+    feedback = "Coach Maara here! You've got the concept right (greater than 0 is positive, less than 0 is negative)! Now to verify the logic, please provide concrete example numbers for both: What is an example of a positive number (e.g., 1, 2, 5), and what is an example of a negative number (e.g., -1, -2, -5)?";
   } else if (!hasPositiveExample) {
     feedback = "You've explained the rules and given a negative example! Now, can you give an example of a positive number (e.g., 1, 2, 5)?";
   } else if (!hasNegativeExample) {
@@ -71,26 +71,26 @@ function validatePositiveNegativeRecipe(text) {
   let correction = void 0;
   let suggestedInput = void 0;
   if (isFullyVerified) {
-    feedback = "Kudos! \u{1F31F} Coach Maya here! You have written a complete, crystal-clear step-by-step algorithm for checking positive or negative numbers. Proceed to Ingredients!";
+    feedback = "Kudos! \u{1F31F} Coach Maara here! You have written a complete, crystal-clear step-by-step algorithm for checking positive or negative numbers. Proceed to Ingredients!";
     correction = "Proceed to Ingredients stage!";
   } else if (!hasInputStep) {
-    feedback = "Coach Maya here! Let's build the recipe step-by-step! First, how do we get the number from the user? What is Step 1?";
+    feedback = "Coach Maara here! Let's build the recipe step-by-step! First, how do we get the number from the user? What is Step 1?";
     correction = "Step 1: Get input number n";
     suggestedInput = "Step 1: Get input number n";
   } else if (!hasPositiveCondition) {
     if (hasAskedHowToFind) {
-      feedback = "Coach Maya here! Great start with Step 1 (Get the input)! To test whether the number is positive or negative, we compare it with 0: numbers greater than 0 are positive! How would you write Step 2 to check whether the number is greater than 0?";
+      feedback = "Coach Maara here! Great start with Step 1 (Get the input)! To test whether the number is positive or negative, we compare it with 0: numbers greater than 0 are positive! How would you write Step 2 to check whether the number is greater than 0?";
     } else {
-      feedback = "Coach Maya here! Great start with Step 1 (Get the input)! For Step 2, what step checks whether the number n is greater than 0?";
+      feedback = "Coach Maara here! Great start with Step 1 (Get the input)! For Step 2, what step checks whether the number n is greater than 0?";
     }
     correction = "Step 2: Check whether n is greater than 0";
     suggestedInput = "Step 2: Check whether n is greater than 0";
   } else if (!hasTrueOutput) {
-    feedback = "Coach Maya here! You have Step 1 and the comparison in Step 2. Now for Step 3: When that check is true, what message should we show to the user?";
+    feedback = "Coach Maara here! You have Step 1 and the comparison in Step 2. Now for Step 3: When that check is true, what message should we show to the user?";
     correction = "Step 3: When greater than 0, show 'Positive'";
     suggestedInput = "Step 3: When greater than 0, show 'Positive'";
   } else if (!hasFalseOutput) {
-    feedback = "Coach Maya here! Excellent work! You have obtained the input and stated that numbers greater than 0 are Positive. Now for the final step: Otherwise, when the number is not greater than 0 (i.e. negative), what message should we show to the user?";
+    feedback = "Coach Maara here! Excellent work! You have obtained the input and stated that numbers greater than 0 are Positive. Now for the final step: Otherwise, when the number is not greater than 0 (i.e. negative), what message should we show to the user?";
     correction = "Step 4: Otherwise, show 'Negative'";
     suggestedInput = "Step 4: Otherwise, show 'Negative'";
   }
@@ -136,14 +136,14 @@ function validatePositiveNegativeIngredients(text) {
   let correction = void 0;
   let suggestedInput = void 0;
   if (isFullyVerified) {
-    feedback = `Hurray! \u{1F31F} Coach Maya here! You defined every required ingredient: Input variable ${detectedVar}, the complete if-condition breakdown (L.S: ${detectedVar}, Operator: ${activeOpSymbol}, R.S: 0), and the exact output operations inside the 'if' block (print '${expectedIfOutput}') and 'else' block (print '${expectedElseOutput}'). You are ready to proceed to Taste the Sample!`;
+    feedback = `Hurray! \u{1F31F} Coach Maara here! You defined every required ingredient: Input variable ${detectedVar}, the complete if-condition breakdown (L.S: ${detectedVar}, Operator: ${activeOpSymbol}, R.S: 0), and the exact output operations inside the 'if' block (print '${expectedIfOutput}') and 'else' block (print '${expectedElseOutput}'). You are ready to proceed to Taste the Sample!`;
     correction = "Proceed to Taste the Sample!";
   } else if (!hasVar) {
-    feedback = "Coach Maya here! Let's start with the first ingredient: We need an input variable (e.g., `Step 1: var a = 5` or `Step 1: Variable n to store input`) to hold our number.";
+    feedback = "Coach Maara here! Let's start with the first ingredient: We need an input variable (e.g., `Step 1: var a = 5` or `Step 1: Variable n to store input`) to hold our number.";
     correction = `Step 1: var ${detectedVar} = 5`;
     suggestedInput = `Step 1: var ${detectedVar} = 5`;
   } else if (!hasConditionBreakdown) {
-    feedback = `Coach Maya here! Great start with variable \`${detectedVar}\`! For Step 2, we must break down the exact parts of the 'if' condition:
+    feedback = `Coach Maara here! Great start with variable \`${detectedVar}\`! For Step 2, we must break down the exact parts of the 'if' condition:
 \u2022 Left Side (L.S): ${detectedVar}
 \u2022 Right Side (R.S): 0
 \u2022 Operator: > (or <)
@@ -153,25 +153,25 @@ Can you define the Left Side (L.S), Right Side (R.S), and Operator for checking 
     suggestedInput = `Step 2: If condition with L.S: ${detectedVar}, Operator: >, R.S: 0`;
   } else if (!hasInsideIf) {
     if (isLessThan) {
-      feedback = `Coach Maya here! Great job! You chose the \`<\` (less than) operator (\`${detectedVar} < 0\`). Since numbers less than 0 are Negative, when this condition is true, Step 3 inside the \`if\` block should print 'Negative'! What operation should execute inside the \`if\` block?`;
+      feedback = `Coach Maara here! Great job! You chose the \`<\` (less than) operator (\`${detectedVar} < 0\`). Since numbers less than 0 are Negative, when this condition is true, Step 3 inside the \`if\` block should print 'Negative'! What operation should execute inside the \`if\` block?`;
       correction = `Step 3: Inside 'if' block: print("Negative")`;
       suggestedInput = `Step 3: Inside 'if' block: print("Negative")`;
     } else {
-      feedback = `Coach Maya here! You've got the condition breakdown for positive numbers (\`${detectedVar} > 0\`)! Now for Step 3: When that condition is true (number is greater than 0), what operation should execute inside the \`if\` block?`;
+      feedback = `Coach Maara here! You've got the condition breakdown for positive numbers (\`${detectedVar} > 0\`)! Now for Step 3: When that condition is true (number is greater than 0), what operation should execute inside the \`if\` block?`;
       correction = `Step 3: Inside 'if' block: print("Positive")`;
       suggestedInput = `Step 3: Inside 'if' block: print("Positive")`;
     }
   } else if (!hasValidInsideElse) {
     if (hasElseConditionAttempt) {
-      feedback = `Coach Maya here! Notice a key rule in programming: The 'if' block requires a condition (Left Side, Right Side, Operator), but 'else' is a catch-all branch that does NOT take any condition (no Left Side, Right Side, or Operator)! When 'if' is false, 'else' runs automatically. Please remove the condition parts from Step 4 and only specify what to do inside 'else' (e.g. \`Step 4: Inside 'else' block: print("${expectedElseOutput}")\`).`;
+      feedback = `Coach Maara here! Notice a key rule in programming: The 'if' block requires a condition (Left Side, Right Side, Operator), but 'else' is a catch-all branch that does NOT take any condition (no Left Side, Right Side, or Operator)! When 'if' is false, 'else' runs automatically. Please remove the condition parts from Step 4 and only specify what to do inside 'else' (e.g. \`Step 4: Inside 'else' block: print("${expectedElseOutput}")\`).`;
       correction = `Step 4: Inside 'else' block: print("${expectedElseOutput}")`;
       suggestedInput = `Step 4: Inside 'else' block: print("${expectedElseOutput}")`;
     } else if (isLessThan) {
-      feedback = `Coach Maya here! Almost there! You have defined \`${detectedVar} < 0\` and inside \`if: print("Negative")\`. Remember that 'else' does NOT have any condition\u2014it runs automatically when 'if' is false! For Step 4, what operation should execute inside the 'else' block?`;
+      feedback = `Coach Maara here! Almost there! You have defined \`${detectedVar} < 0\` and inside \`if: print("Negative")\`. Remember that 'else' does NOT have any condition\u2014it runs automatically when 'if' is false! For Step 4, what operation should execute inside the 'else' block?`;
       correction = `Step 4: Inside 'else' block: print("Positive")`;
       suggestedInput = `Step 4: Inside 'else' block: print("Positive")`;
     } else {
-      feedback = `Coach Maya here! Almost there! You've defined the variable, condition parts (\`${detectedVar} > 0\`), and inside \`if: print("Positive")\`. Remember that 'else' does NOT have any condition\u2014it runs automatically when 'if' is false! For Step 4, what operation should execute inside the 'else' block?`;
+      feedback = `Coach Maara here! Almost there! You've defined the variable, condition parts (\`${detectedVar} > 0\`), and inside \`if: print("Positive")\`. Remember that 'else' does NOT have any condition\u2014it runs automatically when 'if' is false! For Step 4, what operation should execute inside the 'else' block?`;
       correction = `Step 4: Inside 'else' block: print("Negative")`;
       suggestedInput = `Step 4: Inside 'else' block: print("Negative")`;
     }
@@ -229,7 +229,7 @@ function validatePositiveNegativeSampleCode(text) {
       hasNegativeCheck: hasElseBranch,
       hasNegativePrint: isNegFirst ? ifPrintsNeg : elsePrintsNeg,
       matchedFirebaseInput: `var ${detectedVar} = 5; if (${detectedVar} ${isNegFirst ? "< 0" : "> 0"}) print("${isNegFirst ? "Negative" : "Positive"}"); else print("${isNegFirst ? "Positive" : "Negative"}");`,
-      feedback: "\u{1F31F} Coach Maya here! You gotcha! \u{1F389} Outstanding prototype! You have successfully implemented the positive/negative checker with clean comparison logic and distinct conditional branches. You are ready to run and test!",
+      feedback: "\u{1F31F} Coach Maara here! You gotcha! \u{1F389} Outstanding prototype! You have successfully implemented the positive/negative checker with clean comparison logic and distinct conditional branches. You are ready to run and test!",
       sampleCodeStepProgress: allDone,
       correction: "Sample code prototype completed!",
       suggestedInput: void 0
@@ -239,34 +239,34 @@ function validatePositiveNegativeSampleCode(text) {
   let correction = void 0;
   let suggestedInput = void 0;
   if (!hasInputVar) {
-    feedback = `Coach Maya here! Let's start with Step 1 of our sample code: Declare an input variable with a test number (e.g. \`var ${detectedVar} = 5;\`).`;
+    feedback = `Coach Maara here! Let's start with Step 1 of our sample code: Declare an input variable with a test number (e.g. \`var ${detectedVar} = 5;\`).`;
     correction = `var ${detectedVar} = 5;`;
     suggestedInput = `var ${detectedVar} = 5;`;
   } else if (!hasCondition) {
-    feedback = `Coach Maya here! Great start with variable \`${detectedVar}\`! For Step 2: Check your condition (e.g. \`if (${detectedVar} > 0)\` for positive or \`if (${detectedVar} < 0)\` for negative).`;
+    feedback = `Coach Maara here! Great start with variable \`${detectedVar}\`! For Step 2: Check your condition (e.g. \`if (${detectedVar} > 0)\` for positive or \`if (${detectedVar} < 0)\` for negative).`;
     correction = `if (${detectedVar} > 0) {`;
     suggestedInput = `if (${detectedVar} > 0) {`;
   } else if (!hasCorrectIfPrint) {
     if (isNegFirst) {
-      feedback = `Coach Maya here! Great job with \`if (${detectedVar} < 0)\`! Since numbers less than 0 are Negative, inside the if block you must display 'Negative': \`print("negative");\`.`;
+      feedback = `Coach Maara here! Great job with \`if (${detectedVar} < 0)\`! Since numbers less than 0 are Negative, inside the if block you must display 'Negative': \`print("negative");\`.`;
       correction = `  print("negative");
 }`;
       suggestedInput = `  print("negative");
 }`;
     } else {
-      feedback = `Coach Maya here! Great job with the \`if (${detectedVar} > 0)\` condition! Now for Step 3: Add the action inside the if block to display 'Positive': \`print("positive");\`.`;
+      feedback = `Coach Maara here! Great job with the \`if (${detectedVar} > 0)\` condition! Now for Step 3: Add the action inside the if block to display 'Positive': \`print("positive");\`.`;
       correction = `  print("positive");
 }`;
       suggestedInput = `  print("positive");
 }`;
     }
   } else if (!hasElseBranch) {
-    feedback = "Coach Maya here! You've set up the 'if' condition and print! Now for Step 4: Add the `else` branch for when the condition is false.";
+    feedback = "Coach Maara here! You've set up the 'if' condition and print! Now for Step 4: Add the `else` branch for when the condition is false.";
     correction = "else {";
     suggestedInput = "else {";
   } else if (bothPrintSame || !hasCorrectElsePrint) {
     if (isNegFirst && bothPrintNegative) {
-      feedback = `Coach Maya here! Look closely at your branches: Both your \`if\` and \`else\` blocks are currently set to \`print("negative")\`! Since \`if (${detectedVar} < 0)\` already handles negative numbers, when that condition is false (the \`else\` branch), the number is positive. Please change the print statement inside \`else\` to: \`print("positive");\`.`;
+      feedback = `Coach Maara here! Look closely at your branches: Both your \`if\` and \`else\` blocks are currently set to \`print("negative")\`! Since \`if (${detectedVar} < 0)\` already handles negative numbers, when that condition is false (the \`else\` branch), the number is positive. Please change the print statement inside \`else\` to: \`print("positive");\`.`;
       correction = `else {
   print("positive");
 }`;
@@ -274,7 +274,7 @@ function validatePositiveNegativeSampleCode(text) {
   print("positive");
 }`;
     } else if (isPosFirst && bothPrintPositive) {
-      feedback = `Coach Maya here! Look closely at your branches: Both your \`if\` and \`else\` blocks are currently set to \`print("positive")\`! Since \`if (${detectedVar} > 0)\` already handles positive numbers, when that condition is false (the \`else\` branch), the number is negative. Please change the print statement inside \`else\` to: \`print("negative");\`.`;
+      feedback = `Coach Maara here! Look closely at your branches: Both your \`if\` and \`else\` blocks are currently set to \`print("positive")\`! Since \`if (${detectedVar} > 0)\` already handles positive numbers, when that condition is false (the \`else\` branch), the number is negative. Please change the print statement inside \`else\` to: \`print("negative");\`.`;
       correction = `else {
   print("negative");
 }`;
@@ -283,7 +283,7 @@ function validatePositiveNegativeSampleCode(text) {
 }`;
     } else {
       const expectedElseMsg = isNegFirst ? "positive" : "negative";
-      feedback = `Coach Maya here! Inside your \`else\` block, remember to print the opposite case ('${expectedElseMsg}'): \`print("${expectedElseMsg}");\`.`;
+      feedback = `Coach Maara here! Inside your \`else\` block, remember to print the opposite case ('${expectedElseMsg}'): \`print("${expectedElseMsg}");\`.`;
       correction = `else {
   print("${expectedElseMsg}");
 }`;

@@ -4,7 +4,7 @@ function validateLeapYearLogic(input, attemptCount = 1) {
   if (isQuestion && !norm.includes("if") && !norm.includes("%") && !norm.includes("divis")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! A leap year occurs every 4 years and has 366 days instead of 365. To check if a year is a leap year, we test if the year is evenly divisible by 4 (giving a remainder of 0). What mathematical operation or test checks if a number is divisible by 4?",
+      feedback: "\u{1F31F} Coach Maara here! A leap year occurs every 4 years and has 366 days instead of 365. To check if a year is a leap year, we test if the year is evenly divisible by 4 (giving a remainder of 0). What mathematical operation or test checks if a number is divisible by 4?",
       correction: "Check if the year is divisible by 4 with a remainder of 0.",
       suggestedInput: "A leap year has 366 days and occurs every 4 years. We test if the year is divisible by 4 with remainder 0 (year % 4 == 0).",
       matchedFirebaseInput: "what is a leap year"
@@ -30,7 +30,7 @@ function validateLeapYearLogic(input, attemptCount = 1) {
       return {
         isFullyVerified: false,
         hasContradiction: true,
-        feedback: `\u{1F31F} Coach Maya gentle check: Look at your example calculation with **year ${yr}**!
+        feedback: `\u{1F31F} Coach Maara gentle check: Look at your example calculation with **year ${yr}**!
 
 \u2022 **Mathematical Operation:** \`${yr} \xF7 4 = ${yrQuotient}\` with **remainder ${yrRemainder}** (\`${yr} % 4 = ${yrRemainder}\`).
 Your mathematical division is correct (${yr} % 4 is indeed ${yrRemainder}), but your definition is incorrect:
@@ -46,7 +46,7 @@ A year is ONLY a Leap Year when it is evenly divisible by 4 with remainder 0 (\`
       return {
         isFullyVerified: false,
         hasContradiction: true,
-        feedback: `\u{1F31F} Coach Maya check: Look at **year ${yr}**!
+        feedback: `\u{1F31F} Coach Maara check: Look at **year ${yr}**!
 
 \u2022 **Mathematical Operation:** \`${yr} \xF7 4 = ${yrQuotient}\` with **remainder 0** (\`${yr} % 4 = 0\`).
 Because dividing by 4 leaves a remainder of **0**, **${yr} IS a Leap Year!** (It has 366 days).`,
@@ -61,7 +61,7 @@ Because dividing by 4 leaves a remainder of **0**, **${yr} IS a Leap Year!** (It
     return {
       isFullyVerified: false,
       hasContradiction: true,
-      feedback: "\u{1F31F} Coach Maya gentle check: If dividing by 4 leaves a remainder greater than 0, it is NOT a leap year! A leap year must be evenly divisible by 4 with remainder 0 (like 2024 / 4 = 506 remainder 0).",
+      feedback: "\u{1F31F} Coach Maara gentle check: If dividing by 4 leaves a remainder greater than 0, it is NOT a leap year! A leap year must be evenly divisible by 4 with remainder 0 (like 2024 / 4 = 506 remainder 0).",
       correction: "A leap year must leave a remainder of 0 when divided by 4 (year % 4 == 0).",
       suggestedInput: "If year % 4 == 0 then it is a Leap Year, otherwise it is Not a Leap Year.",
       matchedFirebaseInput: "if year % 4 == 0 it is leap year"
@@ -80,7 +80,7 @@ Because dividing by 4 leaves a remainder of **0**, **${yr} IS a Leap Year!** (It
       hasModuloOperator: mentionsModulo,
       has366DaysOr4Years: mentions366DaysOr4Years,
       hasLeapYearOutcome: mentionsLeap,
-      feedback: "\u{1F31F} Coach Maya hint: You correctly identified that we need to divide the year! \u{1F44F}\n\n**1. Which number do we divide the year by?**\n\u2022 We divide the year by **4** (because a leap year occurs every 4 years to account for Earth's orbit).\n\n**2. What mathematical check do we perform?**\n\u2022 We check if `year % 4 == 0` (leaves a **remainder of 0**).\n\n**3. What should be displayed?**\n\u2022 If `year % 4 == 0` (remainder is 0, e.g. `2024 % 4 == 0`): Display **\"Leap Year\"**!\n\u2022 If `year % 4 != 0` (remainder is not 0, e.g. `2023 % 4 == 3`): Display **\"Not a Leap Year\"**!\n\nWrite this complete rule in your worksheet: `If year % 4 == 0 display 'Leap Year', else display 'Not a Leap Year'`.",
+      feedback: "\u{1F31F} Coach Maara hint: You correctly identified that we need to divide the year! \u{1F44F}\n\n**1. Which number do we divide the year by?**\n\u2022 We divide the year by **4** (because a leap year occurs every 4 years to account for Earth's orbit).\n\n**2. What mathematical check do we perform?**\n\u2022 We check if `year % 4 == 0` (leaves a **remainder of 0**).\n\n**3. What should be displayed?**\n\u2022 If `year % 4 == 0` (remainder is 0, e.g. `2024 % 4 == 0`): Display **\"Leap Year\"**!\n\u2022 If `year % 4 != 0` (remainder is not 0, e.g. `2023 % 4 == 3`): Display **\"Not a Leap Year\"**!\n\nWrite this complete rule in your worksheet: `If year % 4 == 0 display 'Leap Year', else display 'Not a Leap Year'`.",
       correction: "Divide the year by 4: if year % 4 == 0 display 'Leap Year', else display 'Not a Leap Year'.",
       suggestedInput: "If year % 4 == 0 display 'Leap Year', else display 'Not a Leap Year'.",
       matchedFirebaseInput: "how to check if a year is leap year"
@@ -94,7 +94,7 @@ Because dividing by 4 leaves a remainder of **0**, **${yr} IS a Leap Year!** (It
       hasModuloOperator: false,
       has366DaysOr4Years: mentions366DaysOr4Years,
       hasLeapYearOutcome: mentionsLeap,
-      feedback: "\u{1F31F} Coach Maya here! Good conceptual start in words! You correctly identified that a leap year is divisible by 4.\n\nNow, **explain it mathematically with an example year!**\nShow the mathematical operation:\n\u2022 Take an example leap year (like 2024): `2024 \xF7 4 = 506 with remainder 0` (`2024 % 4 == 0`) \u2794 **Leap Year**.\n\u2022 Take a non-leap year (like 2023): `2023 \xF7 4 = 505 with remainder 3` (`2023 % 4 != 0`) \u2794 **Not a Leap Year**.\n\nWrite your mathematical modulo remainder check (`year % 4 == 0`) or example year calculation in your worksheet to complete this logic stage!",
+      feedback: "\u{1F31F} Coach Maara here! Good conceptual start in words! You correctly identified that a leap year is divisible by 4.\n\nNow, **explain it mathematically with an example year!**\nShow the mathematical operation:\n\u2022 Take an example leap year (like 2024): `2024 \xF7 4 = 506 with remainder 0` (`2024 % 4 == 0`) \u2794 **Leap Year**.\n\u2022 Take a non-leap year (like 2023): `2023 \xF7 4 = 505 with remainder 3` (`2023 % 4 != 0`) \u2794 **Not a Leap Year**.\n\nWrite your mathematical modulo remainder check (`year % 4 == 0`) or example year calculation in your worksheet to complete this logic stage!",
       correction: "Explain mathematically: If year % 4 == 0 (or year divided by 4 leaves remainder 0, like 2024 % 4 == 0), it is a Leap Year; otherwise Not a Leap Year.",
       suggestedInput: "A leap year occurs every 4 years. Mathematically: For year = 2024, 2024 % 4 == 0 (remainder is 0) -> Leap Year. For year = 2023, 2023 % 4 == 3 (remainder != 0) -> Not a Leap Year.",
       matchedFirebaseInput: "how to check if a year is leap year"
@@ -108,7 +108,7 @@ Because dividing by 4 leaves a remainder of **0**, **${yr} IS a Leap Year!** (It
       hasModuloOperator: mentionsModulo,
       has366DaysOr4Years: mentions366DaysOr4Years,
       hasLeapYearOutcome: mentionsLeap,
-      feedback: "\u{1F31F} Coach Maya here! Great job showing the non-leap year calculation (e.g. `2023 % 4 = 3`, where remainder is not 0)! \u{1F44F}\n\nNow, **mathematically define a Leap Year as well!**\nWhat mathematical operation and remainder confirms a Leap Year?\n\u2022 Show the remainder 0 rule: `year % 4 == 0` (or `2024 % 4 = 0` with remainder 0).\n\u2022 If `year % 4 == 0` (remainder is 0), then it is a **Leap Year**!\n\nAdd the mathematical definition or example for a Leap Year (`year % 4 == 0`) to complete your logic!",
+      feedback: "\u{1F31F} Coach Maara here! Great job showing the non-leap year calculation (e.g. `2023 % 4 = 3`, where remainder is not 0)! \u{1F44F}\n\nNow, **mathematically define a Leap Year as well!**\nWhat mathematical operation and remainder confirms a Leap Year?\n\u2022 Show the remainder 0 rule: `year % 4 == 0` (or `2024 % 4 = 0` with remainder 0).\n\u2022 If `year % 4 == 0` (remainder is 0), then it is a **Leap Year**!\n\nAdd the mathematical definition or example for a Leap Year (`year % 4 == 0`) to complete your logic!",
       correction: "Mathematically define Leap Year: If year % 4 == 0 (or 2024 % 4 == 0 with remainder 0), it is a Leap Year.",
       suggestedInput: "If year % 4 == 0 (like 2024 % 4 == 0, remainder 0), it is a Leap Year. If year % 4 != 0 (like 2023 % 4 == 3, remainder 3), it is Not a Leap Year.",
       matchedFirebaseInput: "how to check if a year is leap year"
@@ -172,9 +172,9 @@ Because dividing by 4 leaves a remainder of **0**, **${yr} IS a Leap Year!** (It
       matchedFirebaseInput: "if year % 4 == 0 it is leap year"
     };
   }
-  let feedback = "\u{1F31F} Coach Maya here! To check if a year is a leap year, what number do we divide by, and what remainder must it leave?";
+  let feedback = "\u{1F31F} Coach Maara here! To check if a year is a leap year, what number do we divide by, and what remainder must it leave?";
   if (attemptCount >= 2) {
-    feedback = "\u{1F31F} Coach Maya checking back! Leap years occur every 4 years (like 2020, 2024, 2028). So we divide the year by 4 and check if the remainder is 0! Can you write this rule in everyday words?";
+    feedback = "\u{1F31F} Coach Maara checking back! Leap years occur every 4 years (like 2020, 2024, 2028). So we divide the year by 4 and check if the remainder is 0! Can you write this rule in everyday words?";
   }
   return {
     isFullyVerified: false,
@@ -229,7 +229,7 @@ function validateLeapYearRecipe(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya gentle check: Look closely at your Step 3 outcome! When a year is divided by 4 and the remainder is 0 (like `2024 % 4 = 0`), that actually means it **IS a Leap Year** (it has 366 days)! When the remainder is NOT 0 (like `2023 % 4 = 3`), it is **Not a Leap Year**.\n\nPlease update Step 3: 'Step 3: If remainder is 0 display Leap Year, else display Not a Leap Year'.",
+      feedback: "\u{1F31F} Coach Maara gentle check: Look closely at your Step 3 outcome! When a year is divided by 4 and the remainder is 0 (like `2024 % 4 = 0`), that actually means it **IS a Leap Year** (it has 366 days)! When the remainder is NOT 0 (like `2023 % 4 = 3`), it is **Not a Leap Year**.\n\nPlease update Step 3: 'Step 3: If remainder is 0 display Leap Year, else display Not a Leap Year'.",
       correction: "Step 3: If remainder is 0 display Leap Year, else display Not a Leap Year.",
       suggestedInput: "Step 3: If remainder is 0 display Leap Year, else display Not a Leap Year.",
       matchedFirebaseInput: "step 2 : If year divided by 4 leaves remainder 0, display Leap Year, else display Not a Leap Year"
@@ -253,7 +253,7 @@ function validateLeapYearRecipe(input, attemptCount = 1) {
     };
   }
   if (hasStep1 && mentionsDivision && !mentions4) {
-    const variedFeedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya checking in! You've got the right intuition that division is the key operation. \u{1F4A1} Think about how the calendar works: since a leap day is added every **4 years**, we divide by **4**! How would you describe checking for a remainder of 0 in your recipe?" : "\u{1F31F} Coach Maya here! You're making great progress\u2014getting the year and knowing we need to divide it! \u{1F44F} Which specific number should we divide by, and what remainder confirms a leap year? (Think about how often leap years happen every 4 years!).";
+    const variedFeedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara checking in! You've got the right intuition that division is the key operation. \u{1F4A1} Think about how the calendar works: since a leap day is added every **4 years**, we divide by **4**! How would you describe checking for a remainder of 0 in your recipe?" : "\u{1F31F} Coach Maara here! You're making great progress\u2014getting the year and knowing we need to divide it! \u{1F44F} Which specific number should we divide by, and what remainder confirms a leap year? (Think about how often leap years happen every 4 years!).";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -264,7 +264,7 @@ function validateLeapYearRecipe(input, attemptCount = 1) {
     };
   }
   if (hasStep1 && !hasStep2Condition) {
-    const variedFeedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya here! Step 1 looks solid. Now for the condition: how do we mathematically test if the year is a leap year? (We divide by 4 and look for a remainder of 0!)." : "\u{1F31F} Coach Maya here! Great start with Step 1! \u{1F44F} For Step 2, what mathematical test will check if this year is evenly divisible by 4 with zero remainder?";
+    const variedFeedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara here! Step 1 looks solid. Now for the condition: how do we mathematically test if the year is a leap year? (We divide by 4 and look for a remainder of 0!)." : "\u{1F31F} Coach Maara here! Great start with Step 1! \u{1F44F} For Step 2, what mathematical test will check if this year is evenly divisible by 4 with zero remainder?";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -275,7 +275,7 @@ function validateLeapYearRecipe(input, attemptCount = 1) {
     };
   }
   if (hasStep1 && hasStep2Condition && !hasStep3Outcome) {
-    const variedFeedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya here! You've set up the divisibility check by 4 perfectly! \u{1F44F} Now, what two messages should we display\u2014one when the remainder is 0, and one when it isn't?" : "\u{1F31F} Coach Maya here! Superb work on the condition! \u{1F31F} To wrap up our recipe in Step 3, what should we display when the year divides evenly, and what should we show otherwise?";
+    const variedFeedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara here! You've set up the divisibility check by 4 perfectly! \u{1F44F} Now, what two messages should we display\u2014one when the remainder is 0, and one when it isn't?" : "\u{1F31F} Coach Maara here! Superb work on the condition! \u{1F31F} To wrap up our recipe in Step 3, what should we display when the year divides evenly, and what should we show otherwise?";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -288,7 +288,7 @@ function validateLeapYearRecipe(input, attemptCount = 1) {
   return {
     isFullyVerified: false,
     recipeStepProgress,
-    feedback: attemptCount >= 2 ? "\u{1F31F} Coach Maya checking back! Let's build our recipe step by step in plain everyday language:\n\u2022 Step 1: Get the year\n\u2022 Step 2: Check if dividing by 4 leaves remainder 0\n\u2022 Step 3: Display 'Leap Year' if true, otherwise 'Not a Leap Year'." : "\u{1F31F} Coach Maya here! Let's think like a chef writing a recipe. What is the very first step we must take? (Step 1: Get the input year).",
+    feedback: attemptCount >= 2 ? "\u{1F31F} Coach Maara checking back! Let's build our recipe step by step in plain everyday language:\n\u2022 Step 1: Get the year\n\u2022 Step 2: Check if dividing by 4 leaves remainder 0\n\u2022 Step 3: Display 'Leap Year' if true, otherwise 'Not a Leap Year'." : "\u{1F31F} Coach Maara here! Let's think like a chef writing a recipe. What is the very first step we must take? (Step 1: Get the input year).",
     correction: "Step 1: Get input year.",
     suggestedInput: "Step 1: Get input year.",
     matchedFirebaseInput: "what steps to write"
@@ -347,7 +347,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya checking Step 4: You wrote another `if` condition (`step 4: if the remainder is not zero...`). In programming with if-else constructs, we don't need a second `if` condition\u2014we simply use the blanket fallback **`else` block** (e.g. `step 4 : else block`)! It automatically catches all other years where remainder is not zero. Please update Step 4 to use `step 4 : else block`.",
+      feedback: "\u{1F31F} Coach Maara checking Step 4: You wrote another `if` condition (`step 4: if the remainder is not zero...`). In programming with if-else constructs, we don't need a second `if` condition\u2014we simply use the blanket fallback **`else` block** (e.g. `step 4 : else block`)! It automatically catches all other years where remainder is not zero. Please update Step 4 to use `step 4 : else block`.",
       correction: "step 4 : else block",
       suggestedInput: 'step 4 : else block\nstep 5 : Inside else block: print("Not a Leap Year")',
       matchedFirebaseInput: "how to write if condition"
@@ -358,7 +358,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya checking your Step 2 condition ingredients! Let's polish two crucial tools:\n\n1. **Left Side (`year/4`):** The slash `/` gives the division quotient (e.g., `2026 / 4 = 506.5`). But leap years require checking the **remainder**! In code, use the **modulo operator `%`** \u2794 `Left side: year % 4`.\n\n2. **Operator (`=`):** A single `=` is for assigning values (e.g. `year = 2026`). For **comparing** two values in an `if` condition, use double equals `==` \u2794 `operator: ==`.\n\nPlease update Step 2 with `Left side: year % 4` and `operator: ==`.",
+      feedback: "\u{1F31F} Coach Maara checking your Step 2 condition ingredients! Let's polish two crucial tools:\n\n1. **Left Side (`year/4`):** The slash `/` gives the division quotient (e.g., `2026 / 4 = 506.5`). But leap years require checking the **remainder**! In code, use the **modulo operator `%`** \u2794 `Left side: year % 4`.\n\n2. **Operator (`=`):** A single `=` is for assigning values (e.g. `year = 2026`). For **comparing** two values in an `if` condition, use double equals `==` \u2794 `operator: ==`.\n\nPlease update Step 2 with `Left side: year % 4` and `operator: ==`.",
       correction: "step 2 : If condition with L.S: year % 4, R.S: 0, Operator: ==",
       suggestedInput: "Step 2: If\nLeft side: year % 4\noperator: ==\nRight side: 0",
       matchedFirebaseInput: "step 2 : If condition with L.S: year % 4, R.S: 0, Operator: =="
@@ -369,7 +369,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya checking Step 2 Left Side: You wrote `Left side: year/4`. In programming, the slash `/` performs regular division (quotient). But to test if a year is a leap year, we must check the **remainder** using the **modulo operator `%`**! Please change it to `Left side: year % 4`.",
+      feedback: "\u{1F31F} Coach Maara checking Step 2 Left Side: You wrote `Left side: year/4`. In programming, the slash `/` performs regular division (quotient). But to test if a year is a leap year, we must check the **remainder** using the **modulo operator `%`**! Please change it to `Left side: year % 4`.",
       correction: "Left side: year % 4",
       suggestedInput: "Left side: year % 4\noperator: ==\nRight side: 0",
       matchedFirebaseInput: "step 2 : If condition with L.S: year % 4, R.S: 0, Operator: =="
@@ -380,7 +380,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya checking Step 2 Operator: You wrote `operator: =`. In programming, a single `=` is for assignment (storing a value). For **comparing** two values in an `if` condition, you must use double equals `==`! Please update it to `operator: ==`.",
+      feedback: "\u{1F31F} Coach Maara checking Step 2 Operator: You wrote `operator: =`. In programming, a single `=` is for assignment (storing a value). For **comparing** two values in an `if` condition, you must use double equals `==`! Please update it to `operator: ==`.",
       correction: "operator: ==",
       suggestedInput: "operator: ==",
       matchedFirebaseInput: "step 2 : If condition with L.S: year % 4, R.S: 0, Operator: =="
@@ -390,7 +390,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya syntax alert: Wrap text strings in quotation marks: `print("Leap Year")`. Without quotes, the compiler looks for undeclared variables!',
+      feedback: '\u{1F31F} Coach Maara syntax alert: Wrap text strings in quotation marks: `print("Leap Year")`. Without quotes, the compiler looks for undeclared variables!',
       correction: 'print("Leap Year"); and print("Not a Leap Year");',
       suggestedInput: 'step 3 : Inside if block: print("Leap Year")\nstep 4 : else block\nstep 5 : Inside else block: print("Not a Leap Year")',
       matchedFirebaseInput: "how to write if condition"
@@ -419,7 +419,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! What programming ingredients do we need? Start with Step 1: Input variable `year`.",
+      feedback: "\u{1F31F} Coach Maara here! What programming ingredients do we need? Start with Step 1: Input variable `year`.",
       correction: "step 1 : year variable",
       suggestedInput: "step 1 : year variable",
       matchedFirebaseInput: "what ingredients do we need"
@@ -429,7 +429,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Spot on! You have the `year` variable. \u{1F44F} Now for Step 2: How do you write the if condition using Left Side (L.S: `year % 4`), Right Side (R.S: `0`), and Operator (`==`)?",
+      feedback: "\u{1F31F} Coach Maara here! Spot on! You have the `year` variable. \u{1F44F} Now for Step 2: How do you write the if condition using Left Side (L.S: `year % 4`), Right Side (R.S: `0`), and Operator (`==`)?",
       correction: "step 2 : If condition with L.S: year % 4, R.S: 0, Operator: ==",
       suggestedInput: "step 2 : If condition with L.S: year % 4, R.S: 0, Operator: ==",
       matchedFirebaseInput: "step 1 : year variable"
@@ -439,7 +439,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Great condition! Now for Step 3: Inside the if block, write the winning print statement: `step 3 : Inside if block: print("Leap Year")`.',
+      feedback: '\u{1F31F} Coach Maara here! Great condition! Now for Step 3: Inside the if block, write the winning print statement: `step 3 : Inside if block: print("Leap Year")`.',
       correction: 'step 3 : Inside if block: print("Leap Year")',
       suggestedInput: 'step 3 : Inside if block: print("Leap Year")',
       matchedFirebaseInput: "how to write if condition"
@@ -449,7 +449,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Step 1, Step 2, and Step 3 are ready! \u{1F44F} Now we need the fallback `else` construct: `step 4 : else block`. This handles all years where the remainder is not 0.",
+      feedback: "\u{1F31F} Coach Maara here! Step 1, Step 2, and Step 3 are ready! \u{1F44F} Now we need the fallback `else` construct: `step 4 : else block`. This handles all years where the remainder is not 0.",
       correction: "step 4 : else block",
       suggestedInput: 'step 4 : else block\nstep 5 : Inside else block: print("Not a Leap Year")',
       matchedFirebaseInput: "what ingredients do we need"
@@ -459,7 +459,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Almost finished with ingredients! Add Step 5 inside the else block to print the negative message: `step 5 : Inside else block: print("Not a Leap Year")`.',
+      feedback: '\u{1F31F} Coach Maara here! Almost finished with ingredients! Add Step 5 inside the else block to print the negative message: `step 5 : Inside else block: print("Not a Leap Year")`.',
       correction: 'step 5 : Inside else block: print("Not a Leap Year")',
       suggestedInput: 'step 5 : Inside else block: print("Not a Leap Year")',
       matchedFirebaseInput: "what ingredients do we need"
@@ -468,7 +468,7 @@ function validateLeapYearIngredients(input, attemptCount = 1) {
   return {
     isFullyVerified: false,
     ingredientsStepProgress,
-    feedback: '\u{1F31F} Coach Maya here! Almost done with ingredients! Add the fallback else branch and negative message: `step 4 : else block` and `step 5 : Inside else block: print("Not a Leap Year")`.',
+    feedback: '\u{1F31F} Coach Maara here! Almost done with ingredients! Add the fallback else branch and negative message: `step 4 : else block` and `step 5 : Inside else block: print("Not a Leap Year")`.',
     correction: 'step 4 : else block\nstep 5 : Inside else block: print("Not a Leap Year")',
     suggestedInput: 'step 4 : else block\nstep 5 : Inside else block: print("Not a Leap Year")',
     matchedFirebaseInput: "what ingredients do we need"
@@ -573,7 +573,7 @@ function validateLeapYearSampleCode(input, attemptCount = 1) {
       hasElseWithCondition: true,
       operationTestCases,
       sampleCodeStepProgress,
-      feedback: '\u{1F31F} Coach Maya syntax alert: `else` is a blanket fallback and never takes parentheses or a condition! Simply write `else { print("Not a Leap Year"); }`.',
+      feedback: '\u{1F31F} Coach Maara syntax alert: `else` is a blanket fallback and never takes parentheses or a condition! Simply write `else { print("Not a Leap Year"); }`.',
       correction: 'else {\n  print("Not a Leap Year");\n}',
       suggestedInput: 'else {\n  print("Not a Leap Year");\n}',
       matchedFirebaseInput: "how to write sample code"
@@ -591,7 +591,7 @@ function validateLeapYearSampleCode(input, attemptCount = 1) {
 \u2022 **Condition:** \`year % 4 == 0\` evaluates to **TRUE**!
 \u2022 **Your Code Output:** \`"${out1}"\` \u274C (Expected: \`"Leap Year"\`)
 
-\u{1F31F} **Coach Maya check:** When \`year % 4 == 0\` evaluates to true (like 2024 % 4 == 0), that means it IS a Leap Year! Put \`print("Leap Year");\` inside the \`if\` block, and \`print("Not a Leap Year");\` in the \`else\` block.`,
+\u{1F31F} **Coach Maara check:** When \`year % 4 == 0\` evaluates to true (like 2024 % 4 == 0), that means it IS a Leap Year! Put \`print("Leap Year");\` inside the \`if\` block, and \`print("Not a Leap Year");\` in the \`else\` block.`,
       correction: 'if (year % 4 == 0) {\n  print("Leap Year");\n} else {\n  print("Not a Leap Year");\n}',
       suggestedInput: 'var year = 2024;\nif (year % 4 == 0) {\n  print("Leap Year");\n} else {\n  print("Not a Leap Year");\n}',
       matchedFirebaseInput: "how to write sample code"
@@ -636,7 +636,7 @@ function validateLeapYearSampleCode(input, attemptCount = 1) {
       allVerified: false,
       operationTestCases,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Ready to build our leap year prototype? Let's start with Step 1: Declare a test year variable\u2014for example `var year = 2024;`. How would you write that first line?",
+      feedback: "\u{1F31F} Coach Maara here! Ready to build our leap year prototype? Let's start with Step 1: Declare a test year variable\u2014for example `var year = 2024;`. How would you write that first line?",
       correction: "var year = 2024;",
       suggestedInput: "var year = 2024;",
       matchedFirebaseInput: "how to write sample code"
@@ -647,10 +647,10 @@ function validateLeapYearSampleCode(input, attemptCount = 1) {
 \u2022 **Arithmetic Operation:** \`${testYear1} \xF7 4 = ${q1}\` with remainder \`${r1}\` (\`${testYear1} % 4 = ${r1}\`).
 \u2022 Next, our code must test if this remainder equals 0!
 
-\u{1F31F} Coach Maya here! Fantastic! You've declared your \`year\` variable! \u{1F44F} Now for Step 2: Write the \`if\` statement to perform this divisibility operation: \`if (year % 4 == 0) {\`.`;
+\u{1F31F} Coach Maara here! Fantastic! You've declared your \`year\` variable! \u{1F44F} Now for Step 2: Write the \`if\` statement to perform this divisibility operation: \`if (year % 4 == 0) {\`.`;
     if (attemptCount >= 3) {
       fb = `\u{1F52C} **Operation Check:** \`${testYear1} \xF7 4 = ${q1}\` remainder \`${r1}\` (\`${testYear1} % 4 = ${r1}\`).
-\u{1F31F} Coach Maya with a syntax clue! Here is the condition to check if year is divisible by 4:
+\u{1F31F} Coach Maara with a syntax clue! Here is the condition to check if year is divisible by 4:
 \`\`\`javascript
 if (year % 4 == 0) {
 \`\`\``;
@@ -677,7 +677,7 @@ if (year % 4 == 0) {
         hasCondition: true,
         operationTestCases,
         sampleCodeStepProgress,
-        feedback: '\u{1F31F} Coach Maya syntax alert: Wrap the words in quotation marks: `print("Leap Year");`.',
+        feedback: '\u{1F31F} Coach Maara syntax alert: Wrap the words in quotation marks: `print("Leap Year");`.',
         correction: 'print("Leap Year");',
         suggestedInput: 'print("Leap Year");',
         matchedFirebaseInput: "how to write sample code"
@@ -693,7 +693,7 @@ if (year % 4 == 0) {
 \u2022 **Operation:** \`${testYear1} \xF7 4 = ${q1}\` remainder \`${r1}\` (\`${testYear1} % 4 = ${r1}\`).
 \u2022 Condition \`(${testYear1} % 4 == 0)\` evaluates to **${isLeap1 ? "TRUE" : "FALSE"}**!
 
-\u{1F31F} Coach Maya here! Great condition! Now inside the \`{\` curly braces \`}\` of your \`if\` block, print the winning message: \`print("Leap Year");\`.`,
+\u{1F31F} Coach Maara here! Great condition! Now inside the \`{\` curly braces \`}\` of your \`if\` block, print the winning message: \`print("Leap Year");\`.`,
       correction: 'print("Leap Year");',
       suggestedInput: 'print("Leap Year");',
       matchedFirebaseInput: "how to write sample code"
@@ -711,7 +711,7 @@ if (year % 4 == 0) {
 \u2022 **Test 1 (Leap Year - 2024):** \`2024 % 4 = 0\` \u2794 Condition True \u2794 Output: "Leap Year" \u2705
 \u2022 **Test 2 (Non-Leap Year - 2023):** \`2023 % 4 = 3\` \u2794 Condition False \u2794 \u26A0\uFE0F No else block found to handle non-leap years!
 
-\u{1F31F} Coach Maya here! You have the leap year branch ready! Now for Step 4: What happens if the year is not divisible by 4? Add the fallback \`else\` branch: \`else { print("Not a Leap Year"); }\`.`,
+\u{1F31F} Coach Maara here! You have the leap year branch ready! Now for Step 4: What happens if the year is not divisible by 4? Add the fallback \`else\` branch: \`else { print("Not a Leap Year"); }\`.`,
       correction: 'else {\n  print("Not a Leap Year");\n}',
       suggestedInput: 'else {\n  print("Not a Leap Year");\n}',
       matchedFirebaseInput: "how to write sample code"
@@ -727,7 +727,7 @@ if (year % 4 == 0) {
         hasElse: true,
         operationTestCases,
         sampleCodeStepProgress,
-        feedback: '\u{1F31F} Coach Maya syntax alert: Inside the `else` block, wrap your message in quotation marks: `print("Not a Leap Year");`.',
+        feedback: '\u{1F31F} Coach Maara syntax alert: Inside the `else` block, wrap your message in quotation marks: `print("Not a Leap Year");`.',
         correction: 'print("Not a Leap Year");',
         suggestedInput: 'print("Not a Leap Year");',
         matchedFirebaseInput: "how to write sample code"
@@ -746,7 +746,7 @@ if (year % 4 == 0) {
 \u2022 Condition \`3 == 0\` evaluates to **FALSE**, entering the \`else\` block.
 \u2022 Output needed inside else!
 
-\u{1F31F} Coach Maya here! Almost done! Inside the \`else\` block, print the fallback message: \`print("Not a Leap Year");\`.`,
+\u{1F31F} Coach Maara here! Almost done! Inside the \`else\` block, print the fallback message: \`print("Not a Leap Year");\`.`,
       correction: 'print("Not a Leap Year");',
       suggestedInput: 'print("Not a Leap Year");',
       matchedFirebaseInput: "how to write sample code"
@@ -755,7 +755,7 @@ if (year % 4 == 0) {
   return {
     allVerified: false,
     sampleCodeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Keep going with your prototype code.",
+    feedback: "\u{1F31F} Coach Maara here! Keep going with your prototype code.",
     correction: 'var year = 2024;\nif (year % 4 == 0) {\n  print("Leap Year");\n} else {\n  print("Not a Leap Year");\n}',
     suggestedInput: 'var year = 2024;\nif (year % 4 == 0) {\n  print("Leap Year");\n} else {\n  print("Not a Leap Year");\n}',
     matchedFirebaseInput: "how to write sample code"

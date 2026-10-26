@@ -1,7 +1,7 @@
 import { SEED_FIREBASE_HINTS } from "../data/seedData.js";
-import { validateOddEvenClassification } from "./oddEvenValidator.js";
+import { validateOddEvenClassification, validateOddEvenRecipe } from "./oddEvenValidator.js";
 import { detectProblemType } from "./problemTypes.js";
-import { checkSumArithmetic, validateSumOfNLogic, validateSumOfNRecipe, validateSumOfNIngredients } from "./sumOfNValidator.js";
+import { checkSumArithmetic, validateSumOfNLogic, validateSumOfNRecipe, validateSumOfNIngredients, validateSumOfNSampleCode } from "./sumOfNValidator.js";
 import { validateFactorialLogic, validateFactorialRecipe, validateFactorialIngredients } from "./factorialValidator.js";
 import { validateDivisorLogic, validateDivisorRecipe, validateDivisorIngredients, validateDivisorSampleCode } from "./divisorValidator.js";
 import { validateMultiplicationLogic, validateMultiplicationRecipe, validateMultiplicationIngredients, validateMultiplicationSampleCode } from "./multiplicationTableValidator.js";
@@ -1103,7 +1103,7 @@ const SEED_PROBLEM06_NEXT_PRIME = {
         },
         {
           input: "while (true) / for loop / candidate++",
-          hint: "\u{1F31F} Coach Maya gentle reminder: In the Recipe stage, we use plain human kitchen-like steps without code words (no `while`, `for`, `candidate++`, `%`, or `;`). Use everyday words like 'start candidate as N + 1', 'check if prime', and 'repeat until prime is found'."
+          hint: "\u{1F31F} Coach Maara gentle reminder: In the Recipe stage, we use plain human kitchen-like steps without code words (no `while`, `for`, `candidate++`, `%`, or `;`). Use everyday words like 'start candidate as N + 1', 'check if prime', and 'repeat until prime is found'."
         },
         {
           input: "step 1 : Get the input number n",
@@ -1950,19 +1950,19 @@ const SEED_PROBLEM13_GREATER_100 = {
         },
         {
           input: "step 1 : num variable",
-          hint: "\u{1F31F} Coach Maya here! You've got your input variable! Now, how do you write the if-condition to check if your variable is greater than 100 using Left Side (L.S), Operator (>), and Right Side (R.S)?"
+          hint: "\u{1F31F} Coach Maara here! You've got your input variable! Now, how do you write the if-condition to check if your variable is greater than 100 using Left Side (L.S), Operator (>), and Right Side (R.S)?"
         },
         {
           input: "step 1: use n variable",
-          hint: "\u{1F31F} Coach Maya here! You've got your input variable n! Now, how do you write the if-condition to check if n is greater than 100 using Left Side (L.S: n), Operator (>), and Right Side (R.S: 100)?"
+          hint: "\u{1F31F} Coach Maara here! You've got your input variable n! Now, how do you write the if-condition to check if n is greater than 100 using Left Side (L.S: n), Operator (>), and Right Side (R.S: 100)?"
         },
         {
           input: "how to write if condition",
-          hint: "\u{1F31F} Coach Maya here! In an If condition, we break it down into 3 simple parts:\n\u2022 Left Side (L.S) : your variable (like n)\n\u2022 Operator : >\n\u2022 Right Side (R.S) : 100\nSo in your ingredients, write: Step 2: If condition with L.S: n, Operator: >, R.S: 100."
+          hint: "\u{1F31F} Coach Maara here! In an If condition, we break it down into 3 simple parts:\n\u2022 Left Side (L.S) : your variable (like n)\n\u2022 Operator : >\n\u2022 Right Side (R.S) : 100\nSo in your ingredients, write: Step 2: If condition with L.S: n, Operator: >, R.S: 100."
         },
         {
           input: "i did not know how to write if condition",
-          hint: "\u{1F31F} Coach Maya here! No worries at all\u2014writing an If condition is easy when we break it down into 3 simple parts:\n\u2022 Left Side (L.S): your variable (like n)\n\u2022 Operator: > (greater than)\n\u2022 Right Side (R.S): 100 (comparison number)\nIn your ingredients worksheet, write: Step 2: If condition with L.S: n, Operator: >, R.S: 100."
+          hint: "\u{1F31F} Coach Maara here! No worries at all\u2014writing an If condition is easy when we break it down into 3 simple parts:\n\u2022 Left Side (L.S): your variable (like n)\n\u2022 Operator: > (greater than)\n\u2022 Right Side (R.S): 100 (comparison number)\nIn your ingredients worksheet, write: Step 2: If condition with L.S: n, Operator: >, R.S: 100."
         },
         {
           input: "step 2 : If condition with L.S: num, R.S: 100, Operator: >",
@@ -2010,15 +2010,15 @@ const SEED_PROBLEM14_PROFIT_OR_LOSS = {
       pairs: [
         {
           input: "how to calculate profit or loss with an example of numbers",
-          hint: "\u{1F31F} Coach Maya here! Take a real-world example with numbers:\n\u2022 Suppose Cost Price is 50 and Selling Price is 100. Since Selling Price (100) > Cost Price (50), you made a Profit of 50!\n\u2022 But if Cost Price is 100 and Selling Price is 70, Cost Price is greater than Selling Price, so it is a Loss of 30!\n\u2022 Rule: If selling price is greater than cost price, it is profit; otherwise if cost price is greater than selling price, it is loss."
+          hint: "\u{1F31F} Coach Maara here! Take a real-world example with numbers:\n\u2022 Suppose Cost Price is 50 and Selling Price is 100. Since Selling Price (100) > Cost Price (50), you made a Profit of 50!\n\u2022 But if Cost Price is 100 and Selling Price is 70, Cost Price is greater than Selling Price, so it is a Loss of 30!\n\u2022 Rule: If selling price is greater than cost price, it is profit; otherwise if cost price is greater than selling price, it is loss."
         },
         {
           input: "cost price and selling price example with numbers",
-          hint: "\u{1F31F} Coach Maya here! Let's use numbers:\n\u2022 Cost Price = 50, Selling Price = 100 -> Selling Price is greater, so it is Profit!\n\u2022 Cost Price = 100, Selling Price = 50 -> Cost Price is greater, so it is Loss!\nWrite your rule with these numbers in your worksheet!"
+          hint: "\u{1F31F} Coach Maara here! Let's use numbers:\n\u2022 Cost Price = 50, Selling Price = 100 -> Selling Price is greater, so it is Profit!\n\u2022 Cost Price = 100, Selling Price = 50 -> Cost Price is greater, so it is Loss!\nWrite your rule with these numbers in your worksheet!"
         },
         {
           input: "how to calculate profit or loss",
-          hint: "\u{1F31F} Coach Maya here! Let's take a clear example with numbers:\n\u2022 Cost Price is 50 and Selling Price is 100: Selling Price > Cost Price, so it is a Profit of 50!\n\u2022 Cost Price is 100 and Selling Price is 70: Cost Price > Selling Price, so it is a Loss of 30!\n\u2022 In everyday words: If selling price is greater than cost price, it is profit; otherwise if cost price is greater than selling price, it is loss."
+          hint: "\u{1F31F} Coach Maara here! Let's take a clear example with numbers:\n\u2022 Cost Price is 50 and Selling Price is 100: Selling Price > Cost Price, so it is a Profit of 50!\n\u2022 Cost Price is 100 and Selling Price is 70: Cost Price > Selling Price, so it is a Loss of 30!\n\u2022 In everyday words: If selling price is greater than cost price, it is profit; otherwise if cost price is greater than selling price, it is loss."
         },
         {
           input: "the cost price is 50 and selling price is 100. if selling price is greater than cost price it is profit else loss",
@@ -2044,19 +2044,19 @@ const SEED_PROBLEM14_PROFIT_OR_LOSS = {
       pairs: [
         {
           input: "what steps to write",
-          hint: "\u{1F31F} Coach Maya here! In the Recipe stage, we think like a chef writing step-by-step cooking instructions in plain English (strictly zero coding words!):\n\u2022 Step 1: Get the two starting values from the user\u2014cost price and selling price.\n\u2022 Step 2: Compare them\u2014if selling price is greater than cost price, display Profit, else display Loss.\nTry typing Step 1 in your worksheet to get started!"
+          hint: "\u{1F31F} Coach Maara here! In the Recipe stage, we think like a chef writing step-by-step cooking instructions in plain English (strictly zero coding words!):\n\u2022 Step 1: Get the two starting values from the user\u2014cost price and selling price.\n\u2022 Step 2: Compare them\u2014if selling price is greater than cost price, display Profit, else display Loss.\nTry typing Step 1 in your worksheet to get started!"
         },
         {
           input: "how to start recipe",
-          hint: "\u{1F31F} Coach Maya here! Let's start with Step 1: Before our algorithm can decide anything, we need to receive the two transaction prices from the user! Write: 'Step 1: Get cost price and selling price'."
+          hint: "\u{1F31F} Coach Maara here! Let's start with Step 1: Before our algorithm can decide anything, we need to receive the two transaction prices from the user! Write: 'Step 1: Get cost price and selling price'."
         },
         {
           input: "recipe puriyala",
-          hint: "\u{1F31F} Coach Maya here! Recipe is just everyday instructions, step-by-step! First, we need to know what the item cost and what it was sold for (Step 1). Then, we compare them: if selling price is higher, announce Profit, else announce Loss (Step 2)!"
+          hint: "\u{1F31F} Coach Maara here! Recipe is just everyday instructions, step-by-step! First, we need to know what the item cost and what it was sold for (Step 1). Then, we compare them: if selling price is higher, announce Profit, else announce Loss (Step 2)!"
         },
         {
           input: "step 1 : Get cost price and selling price",
-          hint: "\u{1F31F} Coach Maya here! High five! \u270B You nailed Step 1 by getting the cost price and selling price! Now, let's write Step 2: How do we compare selling price with cost price to announce whether it's a Profit or a Loss? Write: 'Step 2: If selling price is greater than cost price, display Profit, else display Loss'."
+          hint: "\u{1F31F} Coach Maara here! High five! \u270B You nailed Step 1 by getting the cost price and selling price! Now, let's write Step 2: How do we compare selling price with cost price to announce whether it's a Profit or a Loss? Write: 'Step 2: If selling price is greater than cost price, display Profit, else display Loss'."
         },
         {
           input: "step 2 : If selling price is greater than cost price, display Profit, else display Loss",
@@ -2072,7 +2072,7 @@ const SEED_PROBLEM14_PROFIT_OR_LOSS = {
         },
         {
           input: "if selling price is greater than cost price display profit else loss",
-          hint: "\u{1F31F} Coach Maya here! You've got the comparison decision rule! \u{1F44F} But remember, before the computer can compare values, it needs to get them from the user first! Add Step 1 first: 'Step 1: Get cost price and selling price'."
+          hint: "\u{1F31F} Coach Maara here! You've got the comparison decision rule! \u{1F44F} But remember, before the computer can compare values, it needs to get them from the user first! Add Step 1 first: 'Step 1: Get cost price and selling price'."
         }
       ]
     },
@@ -2082,7 +2082,7 @@ const SEED_PROBLEM14_PROFIT_OR_LOSS = {
       pairs: [
         {
           input: "what ingredients do we need",
-          hint: `\u{1F31F} Coach Maya here! Just like gathering ingredients before cooking, let's gather our 4 coding ingredients for Profit or Loss:
+          hint: `\u{1F31F} Coach Maara here! Just like gathering ingredients before cooking, let's gather our 4 coding ingredients for Profit or Loss:
 1. Input variables: cp and sp
 2. Condition: Left Side: sp, Operator: >, Right Side: cp
 3. True message: print("Profit")
@@ -2091,35 +2091,35 @@ Let's start with Step 1: Write 'step 1 : cp and sp variables'!`
         },
         {
           input: "how to start ingredients",
-          hint: "\u{1F31F} Coach Maya here! Let's start with Step 1: To determine Profit or Loss, we need two input variables\u2014one for Cost Price (cp) and one for Selling Price (sp). Write: 'step 1 : cp and sp variables'!"
+          hint: "\u{1F31F} Coach Maara here! Let's start with Step 1: To determine Profit or Loss, we need two input variables\u2014one for Cost Price (cp) and one for Selling Price (sp). Write: 'step 1 : cp and sp variables'!"
         },
         {
           input: "ingredients puriyala",
-          hint: "\u{1F31F} Coach Maya here! In the Ingredients stage, we map our recipe steps to programming tools: variables to store the prices (cp, sp), an if condition comparing them (sp > cp), and print statements wrapped in quotation marks!"
+          hint: "\u{1F31F} Coach Maara here! In the Ingredients stage, we map our recipe steps to programming tools: variables to store the prices (cp, sp), an if condition comparing them (sp > cp), and print statements wrapped in quotation marks!"
         },
         {
           input: "step 1 : cp and sp variables",
-          hint: "\u{1F31F} Coach Maya here! Great start! \u{1F3AF} You've got your two input variables: cp and sp! Now for Step 2: Let's break down the if condition into 3 simple parts:\n\u2022 Left Side (L.S): sp\n\u2022 Operator: >\n\u2022 Right Side (R.S): cp\nWrite: 'step 2 : If condition with L.S: sp, Operator: >, R.S: cp'!"
+          hint: "\u{1F31F} Coach Maara here! Great start! \u{1F3AF} You've got your two input variables: cp and sp! Now for Step 2: Let's break down the if condition into 3 simple parts:\n\u2022 Left Side (L.S): sp\n\u2022 Operator: >\n\u2022 Right Side (R.S): cp\nWrite: 'step 2 : If condition with L.S: sp, Operator: >, R.S: cp'!"
         },
         {
           input: "how to write if condition",
-          hint: "\u{1F31F} Coach Maya here! In an If condition, we break it down into 3 simple parts:\n\u2022 Left Side (L.S): sp\n\u2022 Operator: >\n\u2022 Right Side (R.S): cp\nSo in your ingredients worksheet, write: 'step 2 : If condition with L.S: sp, Operator: >, R.S: cp'!"
+          hint: "\u{1F31F} Coach Maara here! In an If condition, we break it down into 3 simple parts:\n\u2022 Left Side (L.S): sp\n\u2022 Operator: >\n\u2022 Right Side (R.S): cp\nSo in your ingredients worksheet, write: 'step 2 : If condition with L.S: sp, Operator: >, R.S: cp'!"
         },
         {
           input: "step 2 : If condition with L.S: sp, R.S: cp, Operator: >",
-          hint: `\u{1F31F} Coach Maya here! Excellent work! \u{1F680} Variables and condition are ready! Now for Step 3: Inside the 'if' block (when sp > cp is true), what message should print? Remember to wrap your text in quotes: 'step 3 : Inside if block: print("Profit")'!`
+          hint: `\u{1F31F} Coach Maara here! Excellent work! \u{1F680} Variables and condition are ready! Now for Step 3: Inside the 'if' block (when sp > cp is true), what message should print? Remember to wrap your text in quotes: 'step 3 : Inside if block: print("Profit")'!`
         },
         {
           input: "step 2 : If condition with L.S: cp, R.S: sp, Operator: <",
-          hint: `\u{1F31F} Coach Maya here! Great comparison! Testing cp < sp is mathematically equivalent to sp > cp! Now for Step 3: Inside the 'if' block, what message should print? Write: 'step 3 : Inside if block: print("Profit")'!`
+          hint: `\u{1F31F} Coach Maara here! Great comparison! Testing cp < sp is mathematically equivalent to sp > cp! Now for Step 3: Inside the 'if' block, what message should print? Write: 'step 3 : Inside if block: print("Profit")'!`
         },
         {
           input: 'step 3 : Inside if block: print("Profit")',
-          hint: `\u{1F31F} Coach Maya here! You're almost at the finish line! \u{1F44F} Steps 1, 2, and 3 are locked in! Now for the final ingredient: Step 4! Inside the 'else' block (when the condition is false), what should print? Wrap it in quotes: 'step 4 : Inside else block: print("Loss")'!`
+          hint: `\u{1F31F} Coach Maara here! You're almost at the finish line! \u{1F44F} Steps 1, 2, and 3 are locked in! Now for the final ingredient: Step 4! Inside the 'else' block (when the condition is false), what should print? Wrap it in quotes: 'step 4 : Inside else block: print("Loss")'!`
         },
         {
           input: "what is next step",
-          hint: `\u{1F31F} Coach Maya here! For your next step: Write what should print inside the if block: 'print("Profit")' (Step 3), and inside the else block: 'print("Loss")' (Step 4)!`
+          hint: `\u{1F31F} Coach Maara here! For your next step: Write what should print inside the if block: 'print("Profit")' (Step 3), and inside the else block: 'print("Loss")' (Step 4)!`
         },
         {
           input: 'step 4 : Inside else block: print("Loss")',
@@ -2133,23 +2133,23 @@ Let's start with Step 1: Write 'step 1 : cp and sp variables'!`
       pairs: [
         {
           input: "how to write sample code",
-          hint: "\u{1F31F} Coach Maya here! Ready to build our code prototype? Don't worry about syntax\u2014we'll build it line by line together!\nLet's start with Step 1: Declare two test variables with numbers:\nvar cp = 100;\nvar sp = 150;\nType that first line in your code window!"
+          hint: "\u{1F31F} Coach Maara here! Ready to build our code prototype? Don't worry about syntax\u2014we'll build it line by line together!\nLet's start with Step 1: Declare two test variables with numbers:\nvar cp = 100;\nvar sp = 150;\nType that first line in your code window!"
         },
         {
           input: "where to start",
-          hint: "\u{1F31F} Coach Maya here! Start by declaring two numbers to test our program: Cost Price (cp = 100) and Selling Price (sp = 150). Try typing: 'var cp = 100; var sp = 150;'!"
+          hint: "\u{1F31F} Coach Maara here! Start by declaring two numbers to test our program: Cost Price (cp = 100) and Selling Price (sp = 150). Try typing: 'var cp = 100; var sp = 150;'!"
         },
         {
           input: "syntax theriyala",
-          hint: '\u{1F31F} Coach Maya here! No worries at all! Here is the step-by-step structure:\n1. Declare variables: var cp = 100; var sp = 150;\n2. Check condition: if (sp > cp) {\n3. Print profit: print("Profit");\n4. Fallback else: } else {\n5. Print loss: print("Loss"); }'
+          hint: '\u{1F31F} Coach Maara here! No worries at all! Here is the step-by-step structure:\n1. Declare variables: var cp = 100; var sp = 150;\n2. Check condition: if (sp > cp) {\n3. Print profit: print("Profit");\n4. Fallback else: } else {\n5. Print loss: print("Loss"); }'
         },
         {
           input: "var cp = 100; var sp = 150;",
-          hint: "\u{1F31F} Coach Maya here! Fantastic! You've declared your variables cp = 100 and sp = 150! \u{1F44F} Now for Step 2: Write the if statement to test if selling price is greater than cost price: 'if (sp > cp) {'."
+          hint: "\u{1F31F} Coach Maara here! Fantastic! You've declared your variables cp = 100 and sp = 150! \u{1F44F} Now for Step 2: Write the if statement to test if selling price is greater than cost price: 'if (sp > cp) {'."
         },
         {
           input: 'if (sp > cp) { print("Profit"); } else { print("Loss"); }',
-          hint: "\u{1F31F} Coach Maya here! Great comparison logic! Now declare test variables at the beginning so the program can run: 'var cp = 100; var sp = 150;' at the top!"
+          hint: "\u{1F31F} Coach Maara here! Great comparison logic! Now declare test variables at the beginning so the program can run: 'var cp = 100; var sp = 150;' at the top!"
         },
         {
           input: 'var cp = 100; var sp = 150; if (sp > cp) print("Profit"); else print("Loss");',
@@ -2666,68 +2666,68 @@ class FirebaseHintService {
    */
   resolveProblemId(problemId) {
     const norm = (problemId || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-    if (norm.includes("senior") || norm.includes("citizen") || norm.startsWith("problem19") || norm === "problem19" || norm === "problem019") {
+    if (norm.includes("senior") || norm.includes("citizen")) {
       return "problem19";
     }
-    if (norm.includes("vowel") || norm.includes("consonant") || norm.startsWith("problem20") || norm === "problem20" || norm === "problem020") {
+    if (norm.includes("vowel") || norm.includes("consonant") || norm === "problem20" || norm === "problem020") {
       return "problem20";
     }
-    if (norm.includes("maximumoftwo") || norm.includes("maxoftwo") || norm.includes("maximumtwo") || norm.includes("maxtwo") || norm.startsWith("problem18") || norm === "problem18" || norm === "problem018" || norm.includes("maximum") && norm.includes("two")) {
+    if (norm.includes("maximumoftwo") || norm.includes("maxoftwo") || norm.includes("maximumtwo") || norm.includes("maxtwo") || norm === "problem19" || norm === "problem019" || norm.includes("maximum") && norm.includes("two")) {
       return "problem18";
     }
-    if (norm.includes("divisibleby5") || norm.includes("divisible5") || norm.includes("divisible") && (norm.includes("5") || norm.includes("five")) || norm.startsWith("problem17") || norm === "problem17" || norm === "problem017") {
+    if (norm.includes("divisibleby5") || norm.includes("divisible5") || norm.includes("divisible") && (norm.includes("5") || norm.includes("five")) || norm === "problem18" || norm === "problem018") {
       return "problem17";
     }
-    if (norm.includes("adult") || norm.includes("minor") || norm.startsWith("problem16") || norm === "problem16" || norm === "problem016") {
+    if (norm.includes("adult") || norm.includes("minor") || norm === "problem17" || norm === "problem017") {
       return "problem16";
     }
-    if (norm.includes("leap") || norm.startsWith("problem15") || norm === "problem15" || norm === "problem015") {
+    if (norm.includes("leap") || norm === "problem16" || norm === "problem016") {
       return "problem15";
     }
-    if (norm.includes("profit") || norm.includes("loss") || norm.startsWith("problem14") || norm === "problem14" || norm === "problem014") {
+    if (norm.includes("profit") || norm.includes("loss") || norm === "problem15" || norm === "problem015") {
       return "problem14";
     }
-    if (norm.includes("greaterthan100") || norm.includes("greater100") || norm.includes("100") && (norm.includes("greater") || norm.includes("number")) || norm.startsWith("problem13") || norm === "problem13" || norm === "problem013") {
+    if (norm.includes("greaterthan100") || norm.includes("greater100") || norm.includes("100") && (norm.includes("greater") || norm.includes("number")) || norm === "problem14" || norm === "problem014") {
       return "problem13";
     }
-    if (norm.includes("pass") || norm.includes("fail") || norm.includes("mark") && !norm.includes("table") || norm.startsWith("problem12") || norm === "problem12" || norm === "problem012") {
+    if (norm.includes("pass") || norm.includes("fail") || norm.includes("mark") && !norm.includes("table") || norm === "problem13" || norm === "problem013") {
       return "problem12";
     }
-    if (norm.includes("voting") || norm.includes("vote") || norm.includes("eligible") || norm.startsWith("problem11") || norm === "problem11" || norm === "problem011") {
+    if (norm.includes("voting") || norm.includes("vote") || norm.includes("eligible") || norm === "problem12" || norm === "problem012") {
       return "problem11";
     }
-    if (norm.includes("threedigit") || norm.includes("3digit") || norm.startsWith("problem10") || norm === "problem10" || norm === "problem010") {
+    if (norm.includes("threedigit") || norm.includes("3digit") || norm === "problem11" || norm === "problem011") {
       return "problem10";
     }
-    if (norm.includes("positive") || norm.includes("negative") || norm.startsWith("problem09") || norm === "problem9") {
+    if (norm.includes("positive") || norm.includes("negative") || norm === "problem10" || norm === "problem010") {
       return "problem09";
     }
-    if (norm.includes("sexy") || norm.startsWith("problem08") || norm === "problem8") {
+    if (norm.includes("sexy") || norm === "problem09" || norm === "problem9") {
       return "problem08";
     }
-    if (norm.includes("prime") && (norm.includes("range") || norm.includes("between")) || norm.startsWith("problem07") || norm === "problem7") {
+    if (norm.includes("prime") && (norm.includes("range") || norm.includes("between")) || norm === "problem08" || norm === "problem8") {
       return "problem07";
     }
-    if (norm.includes("nextprime") || norm.includes("next") && norm.includes("prime") || norm.startsWith("problem06") || norm === "problem6") {
+    if (norm.includes("nextprime") || norm.includes("next") && norm.includes("prime") || norm === "problem07" || norm === "problem7") {
       return "problem06";
     }
-    if (norm.includes("odd") || norm.includes("even") || norm.startsWith("problem01") || norm === "problem1") {
-      return "problem01";
+    if (norm.includes("prime") || norm === "problem06" || norm === "problem6") {
+      return "problem05";
     }
-    if (norm.includes("sum") || norm.includes("natural") || norm.startsWith("problem02") || norm === "problem2") {
-      return "problem02";
+    if (norm.includes("multiplication") || norm.includes("table") || norm === "problem05" || norm === "problem5" || norm === "problem21" || norm === "problem021") {
+      return "problem05";
     }
-    if (norm.includes("factorial") || norm.startsWith("problem03") || norm === "problem3") {
-      return "problem03";
-    }
-    if (norm.includes("divisor") || norm.startsWith("problem04") || norm === "problem4") {
+    if (norm.includes("divisor") || norm === "problem04" || norm === "problem4") {
       return "problem04";
     }
-    if (norm.includes("multiplication") || norm.includes("table")) {
-      return "problem05";
+    if (norm.includes("factorial") || norm === "problem03" || norm === "problem3") {
+      return "problem03";
     }
-    if (norm.includes("prime") || norm.startsWith("problem05") || norm === "problem5") {
-      return "problem05";
+    if (norm.includes("sum") || norm.includes("natural") || norm === "problem02" || norm === "problem2") {
+      return "problem02";
+    }
+    if (norm.includes("odd") || norm.includes("even") || norm === "problem01" || norm === "problem1") {
+      return "problem01";
     }
     return problemId;
   }
@@ -2741,6 +2741,24 @@ class FirebaseHintService {
    * Fetches section data from Firebase RTDB (with local cache and seed fallback)
    */
   async getSectionData(problemId, section) {
+    const rawNorm = (problemId || "").toString().toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (rawNorm.includes("multiplication") || rawNorm.includes("table") || rawNorm === "problem05" || rawNorm === "problem5" || rawNorm === "problem21" || rawNorm === "problem021") {
+      const cacheKey = `multiplication-table::${section}`;
+      if (this.cache.has(cacheKey)) return this.cache.get(cacheKey);
+      if (SEED_PROBLEM05.sections?.[section]) {
+        this.cache.set(cacheKey, SEED_PROBLEM05.sections[section]);
+        return SEED_PROBLEM05.sections[section];
+      }
+    }
+    if (rawNorm.includes("vowel") || rawNorm.includes("consonant") || rawNorm === "problem20" || rawNorm === "problem020") {
+      const cacheKey = `vowel-or-consonant::${section}`;
+      if (this.cache.has(cacheKey)) return this.cache.get(cacheKey);
+      if (SEED_PROBLEM20_VOWEL_OR_CONSONANT.sections?.[section]) {
+        this.cache.set(cacheKey, SEED_PROBLEM20_VOWEL_OR_CONSONANT.sections[section]);
+        return SEED_PROBLEM20_VOWEL_OR_CONSONANT.sections[section];
+      }
+    }
+
     const firebaseId = this.resolveProblemId(problemId);
     const cacheKey = `${firebaseId}::${section}`;
     if (this.cache.has(cacheKey)) {
@@ -2799,8 +2817,73 @@ class FirebaseHintService {
       this.cache.set(cacheKey, fallback);
       return fallback;
     }
-    if (firebaseId === "problem05" && SEED_PROBLEM05.sections?.[section]) {
-      const fallback = SEED_PROBLEM05.sections[section];
+    if ((firebaseId === "problem05" || problemId === "prime-number" || problemId === "problem06") && SEED_PROBLEM06.sections?.[section]) {
+      const fallback = SEED_PROBLEM06.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem06" || problemId === "next-prime-number" || problemId === "problem07") && SEED_PROBLEM06_NEXT_PRIME.sections?.[section]) {
+      const fallback = SEED_PROBLEM06_NEXT_PRIME.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem07" || problemId === "prime-between-range" || problemId === "problem08") && SEED_PROBLEM07.sections?.[section]) {
+      const fallback = SEED_PROBLEM07.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem08" || problemId === "sexy-prime" || problemId === "sexy-prime-number" || problemId === "problem09") && SEED_PROBLEM08_SEXY_PRIME.sections?.[section]) {
+      const fallback = SEED_PROBLEM08_SEXY_PRIME.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem09" || problemId === "positive-negative" || problemId === "positive-or-negative" || problemId === "problem10") && SEED_PROBLEM09_POSITIVE_NEGATIVE.sections?.[section]) {
+      const fallback = SEED_PROBLEM09_POSITIVE_NEGATIVE.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem10" || problemId === "three-digit-number" || problemId === "3-digit-number" || problemId === "problem11") && SEED_PROBLEM10_THREE_DIGIT.sections?.[section]) {
+      const fallback = SEED_PROBLEM10_THREE_DIGIT.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem11" || problemId === "voting-eligibility" || problemId === "eligible-vote" || problemId === "problem12") && SEED_PROBLEM11_VOTING.sections?.[section]) {
+      const fallback = SEED_PROBLEM11_VOTING.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem12" || problemId === "pass-or-fail" || problemId === "pass-fail" || problemId === "problem13") && SEED_PROBLEM12_PASS_FAIL.sections?.[section]) {
+      const fallback = SEED_PROBLEM12_PASS_FAIL.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem13" || problemId === "greater-than-100" || problemId === "greater-100" || problemId === "problem14") && SEED_PROBLEM13_GREATER_100.sections?.[section]) {
+      const fallback = SEED_PROBLEM13_GREATER_100.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem14" || problemId === "profit-or-loss" || problemId === "profit-loss" || problemId === "problem15") && SEED_PROBLEM14_PROFIT_OR_LOSS.sections?.[section]) {
+      const fallback = SEED_PROBLEM14_PROFIT_OR_LOSS.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem15" || problemId === "leap-year" || problemId === "leap" || problemId === "problem16") && SEED_PROBLEM15_LEAP_YEAR.sections?.[section]) {
+      const fallback = SEED_PROBLEM15_LEAP_YEAR.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem16" || problemId === "adult-or-minor" || problemId === "adult" || problemId === "minor" || problemId === "problem17") && SEED_PROBLEM16_ADULT_MINOR.sections?.[section]) {
+      const fallback = SEED_PROBLEM16_ADULT_MINOR.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem17" || problemId === "divisible-by-5" || problemId === "divisible-by-5-or-not" || problemId === "divisible5" || problemId === "problem18") && SEED_PROBLEM17_DIVISIBLE_BY_5.sections?.[section]) {
+      const fallback = SEED_PROBLEM17_DIVISIBLE_BY_5.sections[section];
+      this.cache.set(cacheKey, fallback);
+      return fallback;
+    }
+    if ((firebaseId === "problem18" || problemId === "maximum-of-two" || problemId === "maximum-of-two-numbers" || problemId === "max-of-two" || problemId === "maxoftwo" || problemId === "problem19") && SEED_PROBLEM18_MAXIMUM_OF_TWO.sections?.[section]) {
+      const fallback = SEED_PROBLEM18_MAXIMUM_OF_TWO.sections[section];
       this.cache.set(cacheKey, fallback);
       return fallback;
     }
@@ -2811,76 +2894,6 @@ class FirebaseHintService {
     }
     if ((firebaseId === "problem20" || problemId === "vowel-or-consonant" || problemId === "vowels-and-consonants") && SEED_PROBLEM20_VOWEL_OR_CONSONANT.sections?.[section]) {
       const fallback = SEED_PROBLEM20_VOWEL_OR_CONSONANT.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem18" || problemId === "maximum-of-two" || problemId === "maximum-of-two-numbers" || problemId === "max-of-two" || problemId === "maxoftwo") && SEED_PROBLEM18_MAXIMUM_OF_TWO.sections?.[section]) {
-      const fallback = SEED_PROBLEM18_MAXIMUM_OF_TWO.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem17" || problemId === "divisible-by-5" || problemId === "divisible-by-5-or-not" || problemId === "divisible5") && SEED_PROBLEM17_DIVISIBLE_BY_5.sections?.[section]) {
-      const fallback = SEED_PROBLEM17_DIVISIBLE_BY_5.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem16" || problemId === "adult-or-minor" || problemId === "adult" || problemId === "minor") && SEED_PROBLEM16_ADULT_MINOR.sections?.[section]) {
-      const fallback = SEED_PROBLEM16_ADULT_MINOR.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem15" || problemId === "leap-year" || problemId === "leap") && SEED_PROBLEM15_LEAP_YEAR.sections?.[section]) {
-      const fallback = SEED_PROBLEM15_LEAP_YEAR.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem14" || problemId === "profit-or-loss" || problemId === "profit-loss") && SEED_PROBLEM14_PROFIT_OR_LOSS.sections?.[section]) {
-      const fallback = SEED_PROBLEM14_PROFIT_OR_LOSS.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem13" || problemId === "greater-than-100" || problemId === "greater-100") && SEED_PROBLEM13_GREATER_100.sections?.[section]) {
-      const fallback = SEED_PROBLEM13_GREATER_100.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem12" || problemId === "pass-or-fail" || problemId === "pass-fail") && SEED_PROBLEM12_PASS_FAIL.sections?.[section]) {
-      const fallback = SEED_PROBLEM12_PASS_FAIL.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem11" || problemId === "voting-eligibility" || problemId === "eligible-vote") && SEED_PROBLEM11_VOTING.sections?.[section]) {
-      const fallback = SEED_PROBLEM11_VOTING.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem10" || problemId === "three-digit-number" || problemId === "3-digit-number") && SEED_PROBLEM10_THREE_DIGIT.sections?.[section]) {
-      const fallback = SEED_PROBLEM10_THREE_DIGIT.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem09" || problemId === "positive-negative" || problemId === "positive-or-negative") && SEED_PROBLEM09_POSITIVE_NEGATIVE.sections?.[section]) {
-      const fallback = SEED_PROBLEM09_POSITIVE_NEGATIVE.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem08" || problemId === "sexy-prime" || problemId === "sexy-prime-number") && SEED_PROBLEM08_SEXY_PRIME.sections?.[section]) {
-      const fallback = SEED_PROBLEM08_SEXY_PRIME.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem07" || problemId === "prime-between-range") && SEED_PROBLEM07.sections?.[section]) {
-      const fallback = SEED_PROBLEM07.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if ((firebaseId === "problem06" || problemId === "next-prime-number") && SEED_PROBLEM06_NEXT_PRIME.sections?.[section]) {
-      const fallback = SEED_PROBLEM06_NEXT_PRIME.sections[section];
-      this.cache.set(cacheKey, fallback);
-      return fallback;
-    }
-    if (firebaseId === "problem06" && SEED_PROBLEM06.sections?.[section]) {
-      const fallback = SEED_PROBLEM06.sections[section];
       this.cache.set(cacheKey, fallback);
       return fallback;
     }
@@ -3086,6 +3099,31 @@ class FirebaseHintService {
         }
       }
       if (section === "recipe") {
+        const rec = validateOddEvenRecipe(userInput);
+        if (rec.isParityInverted) {
+          return {
+            matched: true,
+            bestPair: {
+              input: userInput,
+              hint: rec.feedback
+            },
+            allPairs: pairs,
+            sectionDescription: sectionData?.description,
+            sectionTitle: sectionData?.title,
+            score: 99
+          };
+        }
+        if (rec.isFullyVerified) {
+          const donePair = pairs.find((p) => p.input.toLowerCase().includes("step 4") || p.hint.toLowerCase().includes("proceed to ingredients")) || pairs[pairs.length - 1];
+          return {
+            matched: true,
+            bestPair: donePair,
+            allPairs: pairs,
+            sectionDescription: sectionData?.description,
+            sectionTitle: sectionData?.title,
+            score: 99
+          };
+        }
         if (isPureConfusion) {
           const recipeStartPair = pairs[0];
           if (recipeStartPair) {
@@ -3276,7 +3314,20 @@ class FirebaseHintService {
       }
       if (section === "recipe") {
         const rec = validateSumOfNRecipe(userInput);
-        if (rec.allStepsDone || normUser.includes("step 5") || normUser.includes("display") && (normUser.includes("sum") || normUser.includes("total")) || rec.hasStep5) {
+        if (rec.hasWrongAddInRecipe) {
+          return {
+            matched: true,
+            bestPair: {
+              input: "add input to sum",
+              hint: rec.feedback
+            },
+            allPairs: pairs,
+            sectionDescription: sectionData?.description,
+            sectionTitle: sectionData?.title,
+            score: 99
+          };
+        }
+        if (rec.allStepsDone) {
           const step5Pair = pairs.find((p) => p.input.toLowerCase().includes("step 5")) || pairs[pairs.length - 1];
           return {
             matched: true,
@@ -3285,6 +3336,17 @@ class FirebaseHintService {
             sectionDescription: sectionData?.description,
             sectionTitle: sectionData?.title,
             score: 100
+          };
+        }
+        if (rec.hasStep4 && !rec.hasStep5) {
+          const step5Prompt = pairs.find((p) => p.input.toLowerCase().includes("step 5") || p.hint.toLowerCase().includes("display")) || pairs[pairs.length - 1];
+          return {
+            matched: true,
+            bestPair: step5Prompt,
+            allPairs: pairs,
+            sectionDescription: sectionData?.description,
+            sectionTitle: sectionData?.title,
+            score: 97
           };
         }
         if (normUser.includes("step 4") || normUser.includes("add") && (normUser.includes("current number") || normUser.includes("sum")) || rec.hasStep4) {
@@ -3344,9 +3406,9 @@ class FirebaseHintService {
       }
       if (section === "ingredients") {
         const ing = validateSumOfNIngredients(userInput);
-        if (ing.hasWrongSumAccumulation || normUser.includes("sum = sum + start") || normUser.includes("sum=sum+start")) {
-          const wrongPair = pairs.find((p) => p.input.includes("startnum")) || {
-            input: "step 5: sum = sum + startnum",
+        if (ing.hasWrongSumAccumulation || normUser.includes("sum = sum + start") || normUser.includes("sum=sum+start") || normUser.includes("sum = a + i") || normUser.includes("sum=a+i") || normUser.includes("sum = n + i") || normUser.includes("sum=n+i")) {
+          const wrongPair = {
+            input: "sum accumulation correction",
             hint: ing.feedback
           };
           return {
@@ -3369,7 +3431,7 @@ class FirebaseHintService {
             score: 98
           };
         }
-        if (ing.hasOperators || normUser.includes("sum = sum + i") || normUser.includes("sum=sum+i") || normUser.includes("sum += i") || normUser.includes("sum+=i")) {
+        if (!ing.hasWrongSumAccumulation && (ing.hasOperators || normUser.includes("sum = sum + i") || normUser.includes("sum=sum+i") || normUser.includes("sum += i") || normUser.includes("sum+=i"))) {
           const ing5 = pairs.find((p) => p.input.toLowerCase().includes("step 5: sum = sum + i")) || pairs[5];
           return {
             matched: true,
@@ -3380,7 +3442,7 @@ class FirebaseHintService {
             score: 98
           };
         }
-        if (normUser.includes("step 4") || ing.hasOperators || normUser.includes("addition operator") || normUser.includes("sum = sum + i") || normUser.includes("+=") || normUser.includes("operator")) {
+        if (!ing.hasWrongSumAccumulation && ing.hasOperators && (normUser.includes("step 4") || normUser.includes("addition operator") || normUser.includes("operator"))) {
           const ing4 = pairs.find((p) => p.input.toLowerCase().includes("step 4")) || pairs[4];
           return {
             matched: true,
@@ -3436,6 +3498,31 @@ class FirebaseHintService {
         }
       }
       if (section === "samplecode") {
+        const sampleVal = validateSumOfNSampleCode(userInput);
+        if (sampleVal.sumErrorFeedback || sampleVal.loopErrorFeedback) {
+          return {
+            matched: true,
+            bestPair: {
+              input: "sum sample code error",
+              hint: sampleVal.feedback
+            },
+            allPairs: pairs,
+            sectionDescription: sectionData?.description,
+            sectionTitle: sectionData?.title,
+            score: 99
+          };
+        }
+        if (sampleVal.allVerified) {
+          const codePair = pairs.find((p) => p.input.includes("sum_val") || p.hint.toLowerCase().includes("verified")) || pairs[2];
+          return {
+            matched: true,
+            bestPair: codePair,
+            allPairs: pairs,
+            sectionDescription: sectionData?.description,
+            sectionTitle: sectionData?.title,
+            score: 98
+          };
+        }
         if (normUser.includes("syntax") || normUser.includes("loop syntax") || normUser.includes("for loop syntax") || normUser.includes("how to write for loop")) {
           const syntaxPair = pairs.find((p) => p.input.toLowerCase().includes("syntax")) || pairs[1];
           return {
@@ -3452,17 +3539,6 @@ class FirebaseHintService {
           return {
             matched: true,
             bestPair: tracePair,
-            allPairs: pairs,
-            sectionDescription: sectionData?.description,
-            sectionTitle: sectionData?.title,
-            score: 98
-          };
-        }
-        if (normUser.includes("for i in range") || normUser.includes("sum_val") || normUser.includes("print(") || normUser.includes("int(input())") || normUser.includes("sum +=") || normUser.includes("sum = 0") || normUser.includes("while")) {
-          const codePair = pairs.find((p) => p.input.includes("sum_val") || p.hint.toLowerCase().includes("verified")) || pairs[2];
-          return {
-            matched: true,
-            bestPair: codePair,
             allPairs: pairs,
             sectionDescription: sectionData?.description,
             sectionTitle: sectionData?.title,
@@ -4241,7 +4317,7 @@ class FirebaseHintService {
           matched: true,
           bestPair: {
             input: userInput,
-            hint: "Coach Maya: You already know how to check for prime numbers from Problem 5! A number is prime if it has exactly 2 divisors (1 and itself). In Sexy Primes, apply that exact same prime test to both 'p' and 'p + 6'!"
+            hint: "Coach Maara: You already know how to check for prime numbers from Problem 5! A number is prime if it has exactly 2 divisors (1 and itself). In Sexy Primes, apply that exact same prime test to both 'p' and 'p + 6'!"
           },
           allPairs: pairs,
           sectionDescription: sectionData?.description,

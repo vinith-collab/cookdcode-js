@@ -69,10 +69,13 @@ STRICT CTC STAGE RULES:
        - Step 3: Write the for loop iterating from 1 to n
        - Step 4: Inside the loop, accumulate into sum (sum += i)
        - Step 5: After the loop, output the final sum (print(sum))
-   - SYNTAX REQUEST RULE:
-     * ONLY if the student explicitly asks that they do not know the syntax (e.g. "syntax theriyala", "don't know syntax", "syntax help", "how to write loop"):
-       Provide ONLY the general for loop syntax template (e.g. 'for i in range(start, end + 1):' or 'for (let i = start; i <= end; i++)'), explaining what start (1) and end (n) represent.
-       DO NOT give the whole solution with accumulator and print statements!
+   - SYNTAX REQUEST RULE (UNIVERSAL ACROSS ALL PROBLEMS):
+     * If the student explicitly asks that they do not know the syntax or how to write code (e.g. "varable,if condition,for loop lam synatx epdi eluthanum nu therila", "variable syntax therila", "if condition syntax therila", "for loop syntax therila", "syntax epdi eluthanum", "syntax therila", "how to write variable", "how to write if condition", "how to write loop", "don't know syntax"):
+       Explain how that construct works clearly in simple words, and provide small, clean syntax examples in JavaScript and Python!
+       - For variables: explain storing values, show \`var n = 10;\` (JS) and \`n = 10\` (Python)
+       - For if conditions: explain testing conditions, show \`if (condition) { ... } else { ... }\`
+       - For loops: explain repeating steps with start/stop/step, show \`for (let i = 1; i <= n; i++) { ... }\` (JS) and \`for i in range(1, n + 1):\` (Python)
+       DO NOT dump the entire completed solution! Keep 'shouldRevealSolution': false.
    - If the student asks "Do I need to write code here?" or "Where to start?":
      Explain: "No, I will guide you step by step! Let's draft your prototype line by line. First, start with Step 1 & 2: declare your input variable n and initialize your accumulator sum = 0."
    - Focus on program flow, input, accumulator, loop, and display step-by-step.
@@ -155,7 +158,7 @@ ${context.studentCode}
       parts.push(`FIREBASE CURRICULUM REFERENCE FOR THIS SECTION:`);
       parts.push(`- Matched Reference Input: "${context.curriculumInput || ""}"`);
       parts.push(`- Curriculum Base Hint: "${context.curriculumHint}"`);
-      parts.push(`- Transform this curriculum hint into warm, conversational, 1-on-1 human touch guidance from Coach Maya. Focus on the student's latest input.`);
+      parts.push(`- Transform this curriculum hint into warm, conversational, 1-on-1 human touch guidance from Coach Maara. Focus on the student's latest input.`);
     }
     parts.push(``);
     parts.push(`CRITICAL PEDAGOGICAL INSTRUCTION:`);

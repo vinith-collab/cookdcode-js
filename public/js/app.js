@@ -590,58 +590,14 @@ function renderLogicFeedback() {
     <div class="flex-1 space-y-2.5">
       <div class="flex items-center gap-2 flex-wrap">
         <h4 class="font-bold text-sm tracking-wide uppercase flex items-center gap-1.5 ${fb.correct ? 'text-emerald-300' : 'text-indigo-300'}">
-          <span>${fb.correct ? '🎉 Logic Approved by Coach!' : '🧑‍🏫 Coach Maya (1-on-1 Trainer)'}</span>
+          <span>${fb.correct ? '🎉 Logic Approved by Coach!' : '🧑‍🏫 Coach Maara (1-on-1 Trainer)'}</span>
         </h4>
-        ${fb.proofType ? `
-          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/25 border border-indigo-400/40 text-indigo-200 uppercase tracking-wider font-semibold">
-            ${fb.proofType}
-          </span>
-        ` : ''}
       </div>
-
       <div class="text-xs leading-relaxed text-slate-200 font-sans whitespace-pre-line bg-slate-900/70 p-3.5 rounded-xl border border-white/5 shadow-inner">
         ${fb.feedback}
       </div>
-
-      ${fb.correction && !fb.correct ? `
-        <div class="text-xs text-amber-200/90 font-sans flex items-start gap-2 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
-          <i class="fas fa-lightbulb text-amber-400 shrink-0 mt-0.5"></i>
-          <span><strong>Coach's Tip:</strong> ${fb.correction}</span>
-        </div>
-      ` : ''}
-
-      ${!fb.correct && fb.suggestedInput ? `
-        <div class="mt-2.5 p-3 rounded-xl bg-slate-900/80 border border-indigo-500/30 text-slate-200">
-          <div class="flex items-center justify-between gap-2 mb-1.5">
-            <span class="text-[11px] font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-              <i class="fas fa-lightbulb text-amber-300"></i> ${
-                fb.proofType === 'theoretical'
-                  ? 'Worked-Out Theoretical Example:'
-                  : 'Worked-Out Mathematical Example:'
-              }
-            </span>
-            <button
-              id="btn-insert-logic-example"
-              class="text-[11px] px-2.5 py-1 bg-indigo-500/25 hover:bg-indigo-500/40 text-indigo-200 rounded-md font-bold transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
-            >
-              <i class="fas fa-arrow-down text-[10px]"></i> Insert Set Example
-            </button>
-          </div>
-          <pre class="text-xs font-mono text-emerald-300 whitespace-pre-wrap leading-relaxed">${fb.suggestedInput}</pre>
-        </div>
-      ` : ''}
     </div>
   `;
-
-  const insertBtn = document.getElementById('btn-insert-logic-example');
-  if (insertBtn) {
-    insertBtn.onclick = () => {
-      state.inputs.logic = appendBelowExisting(state.inputs.logic, fb.suggestedInput);
-      renderStageCards();
-      scheduleAutoSave();
-      triggerToast('Example added below your input!', 'success');
-    };
-  }
 }
 
 function renderRecipeFeedback() {
@@ -708,7 +664,7 @@ function renderRecipeFeedback() {
     <div class="flex-1 space-y-2.5">
       <div class="flex items-center gap-2 flex-wrap">
         <h4 class="font-bold text-sm tracking-wide uppercase flex items-center gap-1.5 ${fb.correct ? 'text-emerald-300' : 'text-indigo-300'}">
-          <span>${fb.correct ? '🎉 Recipe Approved by Coach!' : '🧑‍🏫 Coach Maya (1-on-1 Trainer)'}</span>
+          <span>${fb.correct ? '🎉 Recipe Approved by Coach!' : '🧑‍🏫 Coach Maara (1-on-1 Trainer)'}</span>
         </h4>
         ${!fb.correct ? `
           <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/25 border border-indigo-400/40 text-indigo-200 uppercase tracking-wider font-semibold">
@@ -719,37 +675,8 @@ function renderRecipeFeedback() {
       <div class="text-xs leading-relaxed text-slate-200 font-sans whitespace-pre-line bg-slate-900/70 p-3.5 rounded-xl border border-white/5 shadow-inner">
         ${fb.feedback}
       </div>
-
-      ${fb.correction && !fb.correct ? `
-        <div class="text-xs text-amber-200/90 font-sans flex items-start gap-2 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
-          <i class="fas fa-lightbulb text-amber-400 shrink-0 mt-0.5"></i>
-          <span><strong>Coach's Thinking Clue:</strong> ${fb.correction}</span>
-        </div>
-      ` : ''}
-
-      ${fb.suggestedInput && !fb.correct ? `
-        <div class="pt-1">
-          <button
-            id="btn-insert-recipe-example"
-            class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-xl flex items-center gap-2 transition-all font-semibold cursor-pointer"
-          >
-            <i class="fas fa-magic text-amber-400"></i>
-            <span>Insert Step Example</span>
-          </button>
-        </div>
-      ` : ''}
     </div>
   `;
-
-  const insertBtn = document.getElementById('btn-insert-recipe-example');
-  if (insertBtn) {
-    insertBtn.onclick = () => {
-      state.inputs.recipe = appendBelowExisting(state.inputs.recipe, fb.suggestedInput);
-      renderStageCards();
-      scheduleAutoSave();
-      triggerToast('Step example inserted below your input!', 'info');
-    };
-  }
 }
 
 function renderIngredientsFeedback() {
@@ -856,7 +783,7 @@ function renderIngredientsFeedback() {
     <div class="flex-1 space-y-2.5">
       <div class="flex items-center gap-2 flex-wrap">
         <h4 class="font-bold text-sm tracking-wide uppercase flex items-center gap-1.5 ${fb.correct ? 'text-emerald-300' : 'text-indigo-300'}">
-          <span>${fb.correct ? '🎉 Ingredients Approved by Coach!' : '🧑‍🏫 Coach Maya (1-on-1 Trainer)'}</span>
+          <span>${fb.correct ? '🎉 Ingredients Approved by Coach!' : '🧑‍🏫 Coach Maara (1-on-1 Trainer)'}</span>
         </h4>
         ${!fb.correct ? `
           <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/25 border border-indigo-400/40 text-indigo-200 uppercase tracking-wider font-semibold">
@@ -867,37 +794,8 @@ function renderIngredientsFeedback() {
       <div class="text-xs leading-relaxed text-slate-200 font-sans whitespace-pre-line bg-slate-900/70 p-3.5 rounded-xl border border-white/5 shadow-inner">
         ${fb.feedback}
       </div>
-
-      ${fb.correction && !fb.correct ? `
-        <div class="text-xs text-amber-200/90 font-sans flex items-start gap-2 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
-          <i class="fas fa-lightbulb text-amber-400 shrink-0 mt-0.5"></i>
-          <span><strong>Coach's Thinking Clue:</strong> ${fb.correction}</span>
-        </div>
-      ` : ''}
-
-      ${fb.suggestedInput && !fb.correct ? `
-        <div class="pt-1">
-          <button
-            id="btn-insert-ingredients-example"
-            class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-xl flex items-center gap-2 transition-all font-semibold cursor-pointer"
-          >
-            <i class="fas fa-magic text-amber-400"></i>
-            <span>Insert Ingredient Example</span>
-          </button>
-        </div>
-      ` : ''}
     </div>
   `;
-
-  const insertBtn = document.getElementById('btn-insert-ingredients-example');
-  if (insertBtn) {
-    insertBtn.onclick = () => {
-      state.inputs.ingredients = appendBelowExisting(state.inputs.ingredients, fb.suggestedInput);
-      renderStageCards();
-      scheduleAutoSave();
-      triggerToast('Ingredient example inserted below your input!', 'info');
-    };
-  }
 }
 
 function renderSampleCodeFeedback() {
@@ -974,7 +872,7 @@ function renderSampleCodeFeedback() {
     <div class="flex-1 space-y-2.5">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h4 class="font-bold text-sm tracking-wide uppercase flex items-center gap-2 ${fb.correct ? 'text-emerald-300' : 'text-amber-300'}">
-          <span>${fb.correct ? '✅ Taste the Sample Verified!' : '🧑‍🏫 Coach Maya • AI Human Touch Guidance'}</span>
+          <span>${fb.correct ? '✅ Taste the Sample Verified!' : '🧑‍🏫 Coach Maara • AI Human Touch Guidance'}</span>
         </h4>
         <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30 font-semibold flex items-center gap-1">
           <i class="fas fa-sparkles text-[9px] text-amber-300"></i>
@@ -982,78 +880,11 @@ function renderSampleCodeFeedback() {
         </span>
       </div>
 
-      <p class="text-xs leading-relaxed text-slate-200 font-sans whitespace-pre-line">
+      <div class="text-xs leading-relaxed text-slate-200 font-sans whitespace-pre-line bg-slate-900/70 p-3.5 rounded-xl border border-white/5 shadow-inner">
         ${fb.feedback}
-      </p>
-
-      ${fb.correction && !fb.correct ? `
-        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 font-sans mt-1 space-y-2 shadow-inner">
-          <div class="flex items-start gap-2">
-            <i class="fas fa-lightbulb text-amber-400 mt-0.5 shrink-0"></i>
-            <div class="flex-1">
-              <span class="font-bold text-amber-300 mr-1.5">Coach's Next Step Clue:</span>
-              <span class="font-mono text-amber-100">${fb.correction}</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 pt-1 flex-wrap">
-            <button
-              id="btn-insert-sample-clue"
-              class="text-[11px] bg-amber-500/25 hover:bg-amber-500/40 text-amber-200 border border-amber-500/40 px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold transition-all active:scale-95 cursor-pointer"
-            >
-              <i class="fas fa-paste text-[10px]"></i>
-              <span>Insert Clue into Editor</span>
-            </button>
-            <button
-              id="btn-different-sample-hint"
-              class="text-[11px] bg-white/10 hover:bg-white/20 text-slate-300 px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold transition-all active:scale-95 cursor-pointer"
-            >
-              <i class="fas fa-redo text-[10px]"></i>
-              <span>Different AI Hint</span>
-            </button>
-          </div>
-        </div>
-      ` : ''}
-
-      ${fb.suggestedInput ? `
-        <div class="pt-1">
-          <button
-            id="btn-insert-sample-example"
-            class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 px-3 py-1.5 rounded-xl flex items-center gap-2 transition-all font-semibold cursor-pointer"
-          >
-            <i class="fas fa-magic text-amber-400"></i>
-            <span>Insert Prototype Example</span>
-          </button>
-        </div>
-      ` : ''}
+      </div>
     </div>
   `;
-
-  const insertClueBtn = document.getElementById('btn-insert-sample-clue');
-  if (insertClueBtn) {
-    insertClueBtn.onclick = () => {
-      state.inputs.samplecode = appendBelowExisting(state.inputs.samplecode, fb.correction);
-      renderStageCards();
-      scheduleAutoSave();
-      triggerToast('Next step clue inserted into code editor!', 'success');
-    };
-  }
-
-  const diffHintBtn = document.getElementById('btn-different-sample-hint');
-  if (diffHintBtn) {
-    diffHintBtn.onclick = () => {
-      handleGenerateSectionHint('samplecode', 'Can you give me another human touch hint with a different explanation?');
-    };
-  }
-
-  const insertSampleExBtn = document.getElementById('btn-insert-sample-example');
-  if (insertSampleExBtn) {
-    insertSampleExBtn.onclick = () => {
-      state.inputs.samplecode = appendBelowExisting(state.inputs.samplecode, fb.suggestedInput);
-      renderStageCards();
-      scheduleAutoSave();
-      triggerToast('Prototype example inserted below your input!', 'info');
-    };
-  }
 }
 
 // User Actions & Handlers
@@ -1223,7 +1054,7 @@ async function handleGenerateSectionHint(section, customPrompt) {
   const prob = PROBLEMS[state.currentProblemId] || PROBLEMS['sum-natural-numbers'];
   const stageLabels = { logic: 'Logic', recipe: 'Recipe', ingredients: 'Ingredients', samplecode: 'Taste Sample' };
 
-  triggerToast(`✨ Coach Maya is generating your AI human touch hint for ${stageLabels[section]}...`, 'info');
+  triggerToast(`✨ Coach Maara is generating your AI human touch hint for ${stageLabels[section]}...`, 'info');
   state.activeHintSection = section;
 
   try {
@@ -1272,17 +1103,17 @@ async function handleGenerateSectionHint(section, customPrompt) {
     }
 
     if (data.correct && currentText.length >= 4 && !customPrompt) {
-      triggerToast(`🎉 ${stageLabels[section]} Approved! Outstanding work with Coach Maya!`, 'success');
+      triggerToast(`🎉 ${stageLabels[section]} Approved! Outstanding work with Coach Maara!`, 'success');
       state.completed[section] = true;
       if (section === 'samplecode' && state.completed.logic && state.completed.recipe && state.completed.ingredients) {
         state.showCompletePopup = true;
       }
     } else {
-      triggerToast(`✨ Coach Maya generated a human touch hint for your ${stageLabels[section]}!`, 'info');
+      triggerToast(`✨ Coach Maara generated a human touch hint for your ${stageLabels[section]}!`, 'info');
     }
   } catch (err) {
     console.error(err);
-    triggerToast(`Could not reach Coach Maya AI for ${stageLabels[section]}.`, 'error');
+    triggerToast(`Could not reach Coach Maara AI for ${stageLabels[section]}.`, 'error');
   } finally {
     state.isGeneratingSectionHint[section] = false;
     renderNavbar();
@@ -1307,7 +1138,7 @@ async function checkInput(section, forceStuck = false) {
 
   if (section === 'samplecode') {
     state.isGeneratingSectionHint.samplecode = true;
-    triggerToast('✨ Coach Maya is analyzing your code with AI human touch...', 'info');
+    triggerToast('✨ Coach Maara is analyzing your code with AI human touch...', 'info');
     state.activeHintSection = 'samplecode';
     state.feedbackOpen = true;
   } else {
@@ -1364,7 +1195,7 @@ async function checkInput(section, forceStuck = false) {
       }
     } else {
       if (section === 'samplecode') {
-        triggerToast('✨ Coach Maya generated AI Human Touch guidance for your code!', 'info');
+        triggerToast('✨ Coach Maara generated AI Human Touch guidance for your code!', 'info');
         if (data.feedback) {
           state.currentHint = {
             hint: data.feedback,

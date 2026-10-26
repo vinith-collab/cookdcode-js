@@ -1,7 +1,7 @@
 import { SEED_PROBLEMS } from "../data/seedData.js";
 import { GoogleGenAI, Type } from "@google/genai";
 import { firebaseHintService } from "./firebaseHintService.js";
-import { validateOddEvenClassification } from "./oddEvenValidator.js";
+import { validateOddEvenClassification, validateOddEvenRecipe, validateOddEvenLogic, validateOddEvenSampleCode } from "./oddEvenValidator.js";
 import { detectProblemType } from "./problemTypes.js";
 import { checkSumArithmetic, validateSumOfNLogic, validateSumOfNRecipe, validateSumOfNIngredients, validateSumOfNSampleCode } from "./sumOfNValidator.js";
 import { validateFactorialLogic, validateFactorialRecipe, validateFactorialIngredients, validateFactorialSampleCode } from "./factorialValidator.js";
@@ -24,6 +24,7 @@ import { validateMaximumOfTwoLogic, validateMaximumOfTwoRecipe, validateMaximumO
 import { validateVowelConsonantLogic, validateVowelConsonantRecipe, validateVowelConsonantIngredients, validateVowelConsonantSampleCode } from "./vowelConsonantValidator.js";
 import { validateSeniorCitizenLogic, validateSeniorCitizenRecipe, validateSeniorCitizenIngredients, validateSeniorCitizenSampleCode } from "./seniorCitizenValidator.js";
 import { getConditionalSpec, generateUniversalIfDirectives } from "./conditionalEngine.js";
+import { detectCrossProblemMismatch } from "./crossProblemDetector.js";
 let genAIClient = null;
 function getGenAI() {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -40,33 +41,61 @@ function getGenAI() {
 }
 const CANDIDATE_MODELS = [
   "gemini-3.1-flash-lite",
+  "gemini-3-flash-preview",
   "gemini-flash-latest",
-  "gemini-3.8-flash",
-  "gemini-3.1-pro-preview"
+  "gemini-flash-lite-latest",
+  "gemini-2.5-flash",
+  "gemini-3.5-flash-lite"
 ];
 const modelCooldownMap = /* @__PURE__ */ new Map();
+let globalQuotaCooldownUntil = 0;
+
+function isStarterRequest(text) {
+  if (!text || text.trim().length < 2) return true;
+  const norm = text.toLowerCase().trim();
+  return (
+    norm === "what should we do" ||
+    norm === "what should i do" ||
+    norm === "what to do" ||
+    norm === "what do i do" ||
+    norm === "how to start" ||
+    norm === "where to start" ||
+    norm === "how to do" ||
+    norm === "help" ||
+    norm === "start" ||
+    norm === "i don't know" ||
+    norm === "i dont know" ||
+    norm === "dont know" ||
+    norm === "don't know" ||
+    norm === "puriyala" ||
+    norm === "theriyala" ||
+    norm === "no idea" ||
+    /^(what should (we|i) do|how to start|where to start|what do i do|what to do)\b/i.test(norm)
+  );
+}
+
 function synthesizeHumanTouch(rawHint, section, studentInput, attemptCount = 1) {
   if (!rawHint) {
     if (attemptCount >= 3) {
-      return "\u{1F31F} Coach Maya here! Let's solve this step together\u2014look at the template above and try filling in the blanks!";
+      return "\u{1F31F} Coach Maara here! Let's solve this step together\u2014look at the template above and try filling in the blanks!";
     }
     if (attemptCount === 2) {
-      return "\u{1F31F} Coach Maya checking back in! You're making progress. Let's think carefully about what's needed for this specific step in your worksheet!";
+      return "\u{1F31F} Coach Maara checking back in! You're making progress. Let's think carefully about what's needed for this specific step in your worksheet!";
     }
-    return "\u{1F31F} Coach Maya here! You are making great strides. Let's think through this step together in your worksheet\u2014what do you think comes next?";
+    return "\u{1F31F} Coach Maara here! You are making great strides. Let's think through this step together in your worksheet\u2014what do you think comes next?";
   }
   let clean = rawHint.trim();
-  clean = clean.replace(/^🌟\s*Coach Maya note:\s*/i, "");
-  if (/^(🌟|coach maya|hey there|awesome|spot on|great work|you're doing|you are doing)/i.test(clean)) {
+  clean = clean.replace(/^🌟\s*Coach Maara note:\s*/i, "");
+  if (/^(🌟|coach maara|hey there|awesome|spot on|great work|you're doing|you are doing)/i.test(clean)) {
     return clean;
   }
   const greetings = [
-    "\u{1F31F} Coach Maya here! ",
-    "\u{1F31F} Coach Maya checking back! ",
-    "\u{1F31F} Coach Maya with a fresh tip! ",
-    "\u{1F31F} Coach Maya encouraging you! "
+    "\u{1F31F} Coach Maara here! ",
+    "\u{1F31F} Coach Maara checking back! ",
+    "\u{1F31F} Coach Maara with a fresh tip! ",
+    "\u{1F31F} Coach Maara encouraging you! "
   ];
-  const greeting = greetings[Math.max(0, attemptCount - 1) % greetings.length] || "\u{1F31F} Coach Maya here! ";
+  const greeting = greetings[Math.max(0, attemptCount - 1) % greetings.length] || "\u{1F31F} Coach Maara here! ";
   return `${greeting}${clean.charAt(0).toUpperCase() + clean.slice(1)}`;
 }
 function extractLatestInput(text) {
@@ -105,6 +134,422 @@ function stripCodeWords(s) {
   if (!s || typeof s !== "string") return "";
   return s.replace(/\bprint\s*\(\s*(['"]?)(.*?)\1\s*\)/gi, 'announce "$2"').replace(/\bprintln\s*\(\s*(['"]?)(.*?)\1\s*\)/gi, 'announce "$2"').replace(/\bconsole\.log\s*\(\s*(['"]?)(.*?)\1\s*\)/gi, 'announce "$2"').replace(/\bprint\s+(['"])(.*?)\1/gi, 'announce "$2"').replace(/\bprint\s+(?!message|result|eligible|not eligible)([a-zA-Z0-9_]+)/gi, "announce $1").replace(/\bprint\b/gi, "announce").replace(/\bch\s*==\s*['"]?([a-z])['"]?/gi, "character equals '$1'").replace(/\bch\b/gi, "character").replace(/\bLogical OR\s*\(\s*\|\|\s*\)/gi, "or rule").replace(/\bLogical OR\b/gi, "or rule").replace(/\bOR operator\s*\(\s*\|\|\s*\)/gi, "or rule").replace(/\bOR operator\b/gi, "or rule").replace(/\s*\(\s*\|\|\s*\)/gi, "").replace(/\s*\(\s*&&\s*\)/gi, "").replace(/\b(?:var|let|const|int|float|double|boolean|char|String)\s+([a-zA-Z0-9_]+)\s*=\s*/gi, "input $1 starting at ").replace(/\blet\b(?!['’]s\b|\s+us\b|\s+me\b|\s+them\b|\s+it\b)/gi, "input value").replace(/\b(?:var|const|int|float|double|boolean|char|String)\b/gi, "input value").replace(/\b(?:relational|comparison|modulo|arithmetic|logical)\s+operators?\b/gi, "rule").replace(/\boperators?\b/gi, "rule").replace(/\boperator\b/gi, "rule").replace(/\bvariables?\b/gi, "value").replace(/\bvariable\b/gi, "value").replace(/\bsyntax\b/gi, "wording").replace(/\bcode\b/gi, "steps").replace(/\bprogramming\b/gi, "step-by-step").replace(/\bif-else\s+(?:statements?|blocks?|constructs?)\b/gi, "decision steps").replace(/\b(?:if|else)\s+blocks?\b/gi, "decision step").replace(/\bif\s+conditions?\b/gi, "decision step").replace(/\b['"]?else['"]?\s+conditions?\b/gi, "otherwise case").replace(/\b['"]?else['"]?\s+branch\b/gi, "otherwise step").replace(/\belse\s+display\b/gi, "otherwise display").replace(/\belse\s+announce\b/gi, "otherwise announce").replace(/\belse\s+show\b/gi, "otherwise show").replace(/\b,\s*else\s+->\s*/gi, ", otherwise ").replace(/\belse\s*->\s*/gi, "otherwise ").replace(/\belse\b/gi, "otherwise").replace(/\bconditional\s+statements?\b/gi, "decision steps").replace(/\bconditions\b/gi, "cases").replace(/\s*>=\s*/g, " is greater than or equal to ").replace(/\s*<=\s*/g, " is less than or equal to ").replace(/\s*==\s*/g, " is equal to ").replace(/\s*!=\s*/g, " is not equal to ").replace(/\s*&&\s*/g, " and ").replace(/\s*\|\|\s*/g, " or ").replace(/[{}`]/g, "").replace(/\bL\.S\s*:\s*[^\s,]+,?/gi, "").replace(/\bR\.S\s*:\s*[^\s,]+,?/gi, "").replace(/\bLeft Side\s*:\s*[^\s,]+,?/gi, "").replace(/\bRight Side\s*:\s*[^\s,]+,?/gi, "").replace(/\s{2,}/g, " ").trim();
 }
+function sanitizePrematurePraise(result, section, problemTitle = "") {
+  if (!result || typeof result !== "object") return result;
+  if (result.correct === true) return result;
+
+  const feedbackText = String(result.feedback || "");
+  const prematurePraiseRegex = /\b(?:hurray|hurrah|kudos|congratulations|congrats|you got it|all \d+ ingredients are verified|all \d+ steps (?:are )?verified|verified!|brilliant work! you've identified all|proceed to (?:ingredients|recipe|taste the sample|sample code)|ready to (?:move on|proceed)|move on to the next|mastered the logic|fantastic work|solution verified)\b/i;
+
+  if (prematurePraiseRegex.test(feedbackText)) {
+    let cleaned = feedbackText
+      .replace(/🌟 Coach Maara here!\s*(?:Hurray|Hurrah|Kudos|Congrats|Congratulations)[^!.]*[!.]\s*/gi, "🌟 Coach Maara here! Let's examine your current step carefully.\n\n")
+      .replace(/\b(?:Hurray|Hurrah|Kudos|Congrats|Congratulations)\s*(?:you got it)?[!.]\s*/gi, "Let's check your current step carefully: ")
+      .replace(/Brilliant work! You've identified all \d+ essential programming ingredients[^!.]*[!.]\s*/gi, "Good effort! Let's check your ingredients carefully.\n\n")
+      .replace(/Kudos!? You've sequenced all \d+ steps[^!.]*[!.]\s*/gi, "Good progress! Let's refine your sequence.\n\n")
+      .replace(/Proceed to (?:ingredients|recipe|taste the sample|sample code)[^!.]*[!.]?/gi, "Review your current step and update your worksheet.");
+
+    if (cleaned.trim().length < 15 || prematurePraiseRegex.test(cleaned)) {
+      cleaned = `🌟 Coach Maara here! Take a close look at your ${section} thinking for "${problemTitle || "this problem"}". Ensure your variables, formulas, and logic steps are fully defined and accumulating accurately.`;
+    }
+    result.feedback = cleaned.trim();
+  }
+  return result;
+}
+
+function detectTasteSampleSyntaxHelp(text) {
+  if (!text || typeof text !== "string") return null;
+  const norm = text.toLowerCase().trim();
+
+  // Words expressing not knowing / confusion / how-to:
+  const hasNotKnowing = /(?:therila|theriyala|theriyathunu|theriyathu|puriyala|purila|don'?t\s*know|dont\s*know|not\s*sure|no\s*idea|epdi\s*(?:eluthanum|eluthurathu|podanum|pannanum|create\s*pannanum)?|how\s*to\s*(?:write|declare|use|code|start|create)|how\s*do\s*i|how\s*can\s*i|help|example|explain|doubt)/i.test(norm);
+  const hasSyntaxWord = /\b(?:synatx|syntax|code|coding)\b/i.test(norm);
+
+  const mentionsVar = /\b(?:varable|variable|variables|declaring|declaration|initialization|var|let|const)\b/i.test(norm);
+  const mentionsIf = /\b(?:if\s*condition|if\s*statement|if\s*else|condition|conditions|\bif\b)\b/i.test(norm);
+  const mentionsLoop = /\b(?:for\s*loop|while\s*loop|\bloop\b|looping|forloop|\bfor\b)\b/i.test(norm);
+
+  const isSyntaxQuery = (hasSyntaxWord && hasNotKnowing) ||
+    (hasSyntaxWord && (mentionsVar || mentionsIf || mentionsLoop)) ||
+    (hasNotKnowing && (mentionsVar || mentionsIf || mentionsLoop)) ||
+    /\b(?:syntax help|syntax example|how to write syntax|how to code syntax|how to write for loop|how to write if condition|how to declare variable|how to write variable)\b/i.test(norm);
+
+  if (!isSyntaxQuery) return null;
+
+  const countSpecific = (mentionsVar ? 1 : 0) + (mentionsIf ? 1 : 0) + (mentionsLoop ? 1 : 0);
+  const isGeneralOrAll = countSpecific >= 3 || countSpecific === 0;
+
+  return {
+    mentionsVar,
+    mentionsIf,
+    mentionsLoop,
+    isGeneralOrAll
+  };
+}
+
+function generateTasteSampleSyntaxResponse(syntaxInfo, problemTitle = "", problemType = "") {
+  // Problem-specific contextual snippets
+  let varExampleJs = "var n = 10;";
+  let varExamplePy = "n = 10";
+  let ifExampleJs = `if (n % 2 === 0) {
+  console.log("Even");
+} else {
+  console.log("Odd");
+}`;
+  let ifExamplePy = `if n % 2 == 0:
+    print("Even")
+else:
+    print("Odd")`;
+  let loopExampleJs = `for (let i = 1; i <= n; i++) {
+  // your repeated code here
+}`;
+  let loopExamplePy = `for i in range(1, n + 1):
+    # your repeated code here`;
+
+  if (problemType === "sum-natural-numbers") {
+    varExampleJs = "var n = 5;\nvar sum = 0;";
+    varExamplePy = "n = 5\nsum = 0";
+    loopExampleJs = `for (let i = 1; i <= n; i++) {
+  sum = sum + i;
+}`;
+    loopExamplePy = `for i in range(1, n + 1):
+    sum = sum + i`;
+  } else if (problemType === "factorial") {
+    varExampleJs = "var n = 5;\nvar fact = 1;";
+    varExamplePy = "n = 5\nfact = 1";
+    loopExampleJs = `for (let i = 1; i <= n; i++) {
+  fact = fact * i;
+}`;
+    loopExamplePy = `for i in range(1, n + 1):
+    fact = fact * i`;
+  } else if (problemType === "maximum-of-two") {
+    varExampleJs = "var a = 10, b = 25;";
+    varExamplePy = "a = 10\nb = 25";
+    ifExampleJs = `if (a > b) {
+  console.log("a is greater");
+} else {
+  console.log("b is greater");
+}`;
+    ifExamplePy = `if a > b:
+    print("a is greater")
+else:
+    print("b is greater")`;
+  } else if (problemType === "positive-negative") {
+    varExampleJs = "var num = -5;";
+    varExamplePy = "num = -5";
+    ifExampleJs = `if (num > 0) {
+  console.log("Positive");
+} else {
+  console.log("Negative");
+}`;
+    ifExamplePy = `if num > 0:
+    print("Positive")
+else:
+    print("Negative")`;
+  } else if (problemType === "multiplication-table") {
+    varExampleJs = "var n = 5;";
+    varExamplePy = "n = 5";
+    loopExampleJs = `for (let i = 1; i <= 10; i++) {
+  console.log(n + " x " + i + " = " + (n * i));
+}`;
+    loopExamplePy = `for i in range(1, 11):
+    print(f"{n} x {i} = {n * i}")`;
+  } else if (problemType === "vowel-consonant") {
+    varExampleJs = "var ch = 'e';";
+    varExamplePy = "ch = 'e'";
+    ifExampleJs = `if (ch === 'a' || ch === 'e' || ch === 'i' || ch === 'o' || ch === 'u') {
+  console.log("Vowel");
+} else {
+  console.log("Consonant");
+}`;
+    ifExamplePy = `if ch in ['a', 'e', 'i', 'o', 'u']:
+    print("Vowel")
+else:
+    print("Consonant")`;
+  }
+
+  // Check which sections to build
+  if (syntaxInfo.isGeneralOrAll || (syntaxInfo.mentionsVar && syntaxInfo.mentionsIf && syntaxInfo.mentionsLoop)) {
+    return `🌟 Coach Maara here! Don't worry at all—getting comfortable with programming syntax is a completely natural step for every coder! Let's break down how variables, if-conditions, and for-loops work with simple syntax examples:
+
+📌 **1. Variables (Data Containers)**
+A variable stores a value in computer memory (like an input number or running total) so your code can use it and update it.
+💻 **JavaScript:**
+\`\`\`javascript
+${varExampleJs}
+\`\`\`
+🐍 **Python:**
+\`\`\`python
+${varExamplePy}
+\`\`\`
+
+📌 **2. If Condition (Decision Making)**
+An \`if\` statement tests whether an expression inside \`( )\` is true. If true, the code inside \`{ }\` runs; otherwise, the optional \`else\` block executes.
+💻 **JavaScript:**
+\`\`\`javascript
+${ifExampleJs}
+\`\`\`
+🐍 **Python:**
+\`\`\`python
+${ifExamplePy}
+\`\`\`
+
+📌 **3. For Loop (Repeating Steps)**
+A \`for\` loop repeats code across a range with 3 parts: start value, stop condition, and step increment.
+💻 **JavaScript:**
+\`\`\`javascript
+${loopExampleJs}
+\`\`\`
+🐍 **Python:**
+\`\`\`python
+${loopExamplePy}
+\`\`\`
+
+👉 **Next Step:** Start by typing your first variable declaration in the editor above. What variable name and starting value would you like to begin with?`;
+  }
+
+  // Only Variable requested
+  if (syntaxInfo.mentionsVar && !syntaxInfo.mentionsIf && !syntaxInfo.mentionsLoop) {
+    return `🌟 Coach Maara here! Happy to help you with variable syntax!
+
+A **variable** is a named storage container in memory that holds a value (such as an input number, boundary, or counter) so your program can read or update it.
+
+💻 **JavaScript:**
+\`\`\`javascript
+${varExampleJs}
+\`\`\`
+
+🐍 **Python:**
+\`\`\`python
+${varExamplePy}
+\`\`\`
+
+👉 **Next Step:** Try typing your variable declaration in the editor above (for example: \`${varExampleJs.split("\n")[0]}\`). What variable name did you choose in your ingredients?`;
+  }
+
+  // Only If Condition requested
+  if (syntaxInfo.mentionsIf && !syntaxInfo.mentionsVar && !syntaxInfo.mentionsLoop) {
+    return `🌟 Coach Maara here! Happy to help you with if-condition syntax!
+
+An **if condition** allows your program to make decisions. It evaluates whether an expression inside parentheses \`( )\` is true. If it is true, the code inside the curly braces \`{ }\` executes. You can also add an \`else\` block to run when the condition is false.
+
+💻 **JavaScript:**
+\`\`\`javascript
+${ifExampleJs}
+\`\`\`
+
+🐍 **Python:**
+\`\`\`python
+${ifExamplePy}
+\`\`\`
+
+👉 **Next Step:** Try writing your \`if\` condition with the comparison you planned in your ingredients!`;
+  }
+
+  // Only Loop requested
+  if (syntaxInfo.mentionsLoop && !syntaxInfo.mentionsVar && !syntaxInfo.mentionsIf) {
+    return `🌟 Coach Maara here! Happy to help you with for-loop syntax!
+
+A **for loop** repeats instructions across a range of numbers. It controls iteration using 3 parts:
+1. **Start**: Initializing the loop counter (e.g. \`let i = 1\`)
+2. **Stop / Condition**: How long to keep repeating (e.g. \`i <= n\`)
+3. **Next Step**: Updating the counter each time (e.g. \`i++\` to advance by 1)
+
+💻 **JavaScript:**
+\`\`\`javascript
+${loopExampleJs}
+\`\`\`
+
+🐍 **Python:**
+\`\`\`python
+${loopExamplePy}
+\`\`\`
+
+👉 **Next Step:** Try writing your for-loop header with the start, end, and next step you defined in your ingredients!`;
+  }
+
+  // Combinations (e.g. variable + if)
+  let parts = [];
+  if (syntaxInfo.mentionsVar) {
+    parts.push(`📌 **Variables:**
+A variable stores data in memory.
+💻 **JavaScript:**
+\`\`\`javascript
+${varExampleJs}
+\`\`\`
+🐍 **Python:**
+\`\`\`python
+${varExamplePy}
+\`\`\``);
+  }
+  if (syntaxInfo.mentionsIf) {
+    parts.push(`📌 **If Condition:**
+Tests a condition and executes the block if true.
+💻 **JavaScript:**
+\`\`\`javascript
+${ifExampleJs}
+\`\`\`
+🐍 **Python:**
+\`\`\`python
+${ifExamplePy}
+\`\`\``);
+  }
+  if (syntaxInfo.mentionsLoop) {
+    parts.push(`📌 **For Loop:**
+Repeats actions with start, condition, and step increment.
+💻 **JavaScript:**
+\`\`\`javascript
+${loopExampleJs}
+\`\`\`
+🐍 **Python:**
+\`\`\`python
+${loopExamplePy}
+\`\`\``);
+  }
+
+  return `🌟 Coach Maara here! Happy to help you with the syntax! Let's review the syntax structures you asked about:
+
+${parts.join("\n\n")}
+
+👉 **Next Step:** Try typing the first line in your code editor above!`;
+}
+
+function isTasteSampleStructurallyComplete(code, problemType) {
+  if (!code || typeof code !== "string") return false;
+  const norm = code.toLowerCase();
+
+  // Basic check: must have at least an assignment/variable and print/output
+  const hasVar = /(?:(?:let|var|const|int|float|double|long|char|string)\s+)?[a-zA-Z_]\w*\s*=\s*[^=]/i.test(code) ||
+                 /\b(?:input|scanner|cin|prompt|read|sys\.stdin)\b/i.test(norm);
+  const hasPrint = /\b(?:print|println|printf|console\.log|system\.out\.print|cout\s*<<|echo|puts)\b/i.test(norm);
+  if (!hasVar || !hasPrint) return false;
+
+  if (problemType === "odd-even") {
+    const hasMod = /%\s*2/.test(norm) || /modulo|remainder/i.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    const hasEven = /\beven\b/i.test(norm);
+    const hasOdd = /\bodd\b/i.test(norm);
+    const hasForeign = /\b(?:eligible|not\s*eligible|adult|minor|positive|negative|prime)\b/i.test(norm);
+    return hasMod && hasIf && hasEven && hasOdd && !hasForeign;
+  }
+
+  if (problemType === "positive-negative") {
+    const hasComp = />\s*0|<\s*0|>=\s*0|<=\s*0/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    const hasPos = /positive/i.test(norm);
+    const hasNeg = /negative/i.test(norm);
+    return hasComp && hasIf && hasPos && hasNeg;
+  }
+
+  if (problemType === "maximum-of-two") {
+    const hasComp = />|</.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasComp && hasIf;
+  }
+
+  if (problemType === "leap-year") {
+    const hasMod = /%\s*4|%\s*400/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasMod && hasIf;
+  }
+
+  if (problemType === "vowel-consonant" || problemType === "vowel-or-consonant") {
+    const hasVowelCheck = /[aeiou]/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasVowelCheck && hasIf;
+  }
+
+  if (problemType === "divisible-by-5") {
+    const hasMod = /%\s*5/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasMod && hasIf;
+  }
+
+  if (problemType === "three-digit-number") {
+    const hasComp = />=\s*100|>\s*99|len\s*\(/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasComp && hasIf;
+  }
+
+  if (problemType === "greater-than-100") {
+    const hasComp = />\s*100|>=\s*101/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasComp && hasIf;
+  }
+
+  if (problemType === "profit-loss") {
+    const hasProfit = /profit|loss/i.test(norm) || />|</.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasProfit && hasIf;
+  }
+
+  if (problemType === "senior-citizen" || problemType === "adult-minor" || problemType === "voting-eligibility" || problemType === "pass-fail") {
+    const hasComp = />=|>|<=|</.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasComp && hasIf;
+  }
+
+  if (problemType === "sum-natural-numbers") {
+    const hasAccumulator = /(?:sum|total)\s*=\s*0\b/i.test(norm) || /(?:sum|total)\s*\+=\s*/i.test(norm) || /(?:sum|total)\s*=\s*(?:sum|total)\s*\+/i.test(norm);
+    const hasLoop = /\b(?:for|while)\b/i.test(norm);
+    return (hasAccumulator || /\+/.test(norm)) && hasLoop;
+  }
+
+  if (problemType === "factorial") {
+    const hasAccumulator = /(?:fact|factorial|prod|product)\s*=\s*1\b/i.test(norm) || /(?:fact|factorial|prod|product)\s*\*=\s*/i.test(norm) || /(?:fact|factorial|prod|product)\s*=\s*(?:fact|factorial|prod|product)\s*\*/i.test(norm);
+    const hasLoop = /\b(?:for|while)\b/i.test(norm);
+    return (hasAccumulator || /\*/.test(norm)) && hasLoop;
+  }
+
+  if (problemType === "multiplication-table") {
+    const hasLoop = /\b(?:for|while)\b/i.test(norm);
+    const hasMult = /\*/.test(norm);
+    return hasLoop && hasMult;
+  }
+
+  if (problemType === "divisors" || problemType === "divisor-of-a-number") {
+    const hasLoop = /\b(?:for|while)\b/i.test(norm);
+    const hasMod = /%/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasLoop && hasMod && hasIf;
+  }
+
+  if (problemType === "prime-number") {
+    const hasLoop = /\b(?:for|while)\b/i.test(norm);
+    const hasMod = /%/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasLoop && (hasMod || hasIf);
+  }
+
+  if (problemType === "next-prime-number") {
+    const hasLoop = /\b(?:for|while)\b/i.test(norm);
+    return hasLoop;
+  }
+
+  if (problemType === "prime-between-range") {
+    const hasLoop = /\b(?:for|while)\b/i.test(norm);
+    return hasLoop;
+  }
+
+  if (problemType === "sexy-prime-number") {
+    const hasDiff = /6/.test(norm);
+    const hasIf = /\bif\b/.test(norm);
+    return hasDiff && (hasIf || hasPrint);
+  }
+
+  // General conditional fallback: if it has var, if, and print
+  if (/\bif\b/.test(norm) && hasPrint) {
+    return true;
+  }
+
+  // General loop fallback: if it has loop and print
+  if (/\b(?:for|while)\b/.test(norm) && hasPrint) {
+    return true;
+  }
+
+  return false;
+}
+
 class InputCheckerService {
   /**
    * Detects if the student explicitly indicated they are stuck or asked for a worked example
@@ -160,6 +605,144 @@ class InputCheckerService {
     ];
     return stuckKeywords.some((kw) => t.includes(kw));
   }
+  resolveWorksheetCandidates(text, section) {
+    if (!text || typeof text !== "string") return [text || ""];
+    const raw = text.trim();
+    if (!raw) return [""];
+    const candidates = [raw];
+
+    const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    if (lines.length <= 1) return candidates;
+
+    // Candidate 1: Detect subsequent attempt starting with Step 1 or starter header
+    const step1Indices = [];
+    lines.forEach((l, idx) => {
+      if (/^(?:step\s*1\b|1[\.\:\)]|\bpart\s*1\b|\bstage\s*1\b)/i.test(l)) {
+        step1Indices.push(idx);
+      }
+    });
+    if (step1Indices.length > 1) {
+      const lastStep1Idx = step1Indices[step1Indices.length - 1];
+      const latestAttempt = lines.slice(lastStep1Idx).join("\n");
+      if (latestAttempt && latestAttempt !== raw && !candidates.includes(latestAttempt)) {
+        candidates.push(latestAttempt);
+      }
+    }
+
+    // Candidate 2: Step-level deduplication (later step X replaces earlier step X)
+    const stepMap = new Map();
+    const nonStepLines = [];
+    lines.forEach((l, idx) => {
+      const stepMatch = l.match(/^(?:step\s*(\d+)|(\d+)[\.\:\)])\s*[:\-\s]*(.*)$/i);
+      if (stepMatch) {
+        const stepNum = parseInt(stepMatch[1] || stepMatch[2], 10);
+        stepMap.set(stepNum, l);
+      } else {
+        nonStepLines.push({ idx, text: l });
+      }
+    });
+
+    if (stepMap.size > 0) {
+      const sortedStepNums = Array.from(stepMap.keys()).sort((a, b) => a - b);
+      const dedupedLines = sortedStepNums.map((n) => stepMap.get(n));
+      const trailingNonSteps = nonStepLines.filter((item) => item.idx > 0).map((item) => item.text);
+      const dedupedText = [...dedupedLines, ...trailingNonSteps].join("\n");
+      if (dedupedText && dedupedText !== raw && !candidates.includes(dedupedText)) {
+        candidates.push(dedupedText);
+      }
+    }
+
+    // Candidate 3: In logic / equations, deduplicate equations by left-hand side operands
+    const eqMap = new Map();
+    let hasEqs = false;
+    lines.forEach((l) => {
+      const eqMatch = l.match(/(\d+\s*[\+\-\*\/%]\s*\d+)\s*=\s*(\d+)/);
+      if (eqMatch) {
+        hasEqs = true;
+        const lhs = eqMatch[1].replace(/\s+/g, "");
+        eqMap.set(lhs, l);
+      }
+    });
+    if (hasEqs && eqMap.size > 0) {
+      const dedupedEqLines = lines.map((l) => {
+        const eqMatch = l.match(/(\d+\s*[\+\-\*\/%]\s*\d+)\s*=\s*(\d+)/);
+        if (eqMatch) {
+          const lhs = eqMatch[1].replace(/\s+/g, "");
+          if (eqMap.get(lhs) === l) return l;
+          return null;
+        }
+        return l;
+      }).filter(Boolean);
+      const dedupedEqText = dedupedEqLines.join("\n");
+      if (dedupedEqText && dedupedEqText !== raw && !candidates.includes(dedupedEqText)) {
+        candidates.push(dedupedEqText);
+      }
+    }
+
+    // Candidate 4: Category list deduplication in logic (e.g. odd: / even:)
+    const catMap = new Map();
+    let hasCats = false;
+    lines.forEach((l) => {
+      const catMatch = l.match(/^\s*(odd|even)\s*[:=]/i);
+      if (catMatch) {
+        hasCats = true;
+        catMap.set(catMatch[1].toLowerCase(), l);
+      }
+    });
+    if (hasCats && catMap.size > 0) {
+      const dedupedCatLines = lines.map((l) => {
+        const catMatch = l.match(/^\s*(odd|even)\s*[:=]/i);
+        if (catMatch) {
+          if (catMap.get(catMatch[1].toLowerCase()) === l) return l;
+          return null;
+        }
+        return l;
+      }).filter(Boolean);
+      const dedupedCatText = dedupedCatLines.join("\n");
+      if (dedupedCatText && dedupedCatText !== raw && !candidates.includes(dedupedCatText)) {
+        candidates.push(dedupedCatText);
+      }
+    }
+
+    // Candidate 5: Samplecode / prototype code blocks (if multiple blocks or repeated var declarations)
+    if (section === "samplecode") {
+      const varMatches = Array.from(raw.matchAll(/(?:^|\n)\s*(?:(?:let|var|const|int|float|double|long|char|string)\s+)?[a-zA-Z_]\w*\s*=\s*(?:[0-9]+|int\(input|prompt|scanner|cin)/gi));
+      if (varMatches.length > 1) {
+        const lastIdx = varMatches[varMatches.length - 1].index;
+        const latestCode = raw.slice(lastIdx).trim();
+        if (latestCode && latestCode !== raw && !candidates.includes(latestCode)) {
+          candidates.push(latestCode);
+        }
+      }
+      const ifMatches = Array.from(raw.matchAll(/(?:^|\n)\s*if\s*\(/gi));
+      if (ifMatches.length > 1) {
+        const lastIfIdx = ifMatches[ifMatches.length - 1].index;
+        const topCode = raw.slice(0, lastIfIdx);
+        const varLine = topCode.split(/\r?\n/).find((l) => /(?:(?:let|var|const|int|float|double)\s+)?[a-zA-Z_]\w*\s*=/i.test(l));
+        const latestIfCode = ((varLine ? varLine + "\n" : "") + raw.slice(lastIfIdx)).trim();
+        if (latestIfCode && !candidates.includes(latestIfCode)) {
+          candidates.push(latestIfCode);
+        }
+      }
+      const blocks = raw.split(/\n\s*\n\s*\n/).map((b) => b.trim()).filter(Boolean);
+      if (blocks.length > 1) {
+        const lastBlock = blocks[blocks.length - 1];
+        if (lastBlock && !candidates.includes(lastBlock)) {
+          candidates.push(lastBlock);
+        }
+      }
+    }
+
+    // Candidate 6: Replace second-to-last line with last line (user appended a correction directly below the error)
+    if (lines.length >= 2) {
+      const lastLineReplaced = [...lines.slice(0, lines.length - 2), lines[lines.length - 1]].join("\n");
+      if (!candidates.includes(lastLineReplaced)) {
+        candidates.push(lastLineReplaced);
+      }
+    }
+
+    return candidates;
+  }
   /**
    * Dynamic AI-driven evaluation for ANY problem and ANY stage,
    * retrieving curriculum hints from Firebase and modifying them with human touch.
@@ -167,25 +750,95 @@ class InputCheckerService {
   async check(category, problemID, section, userInput, options) {
     const text = (userInput || "").trim();
     const isStuck = this.isUserStuck(text, options);
-    if (!text || text.length < 2) {
-      return {
-        correct: false,
-        feedback: "Hey there! \u{1F44B} I'm Coach Maya, your personal coding trainer. Before we evaluate, write down your thoughts, questions, or steps in the worksheet. Give it a shot!",
-        correction: `Write your ${section} thinking or question in the worksheet.`
-      };
-    }
+    const isStarter = isStarterRequest(text);
+
     const seedProblem = SEED_PROBLEMS[problemID];
     const problemTitle = options?.problemTitle || seedProblem?.programName || problemID.replace(/-/g, " ");
     const problemDescription = options?.problemDescription || seedProblem?.description || `Problem: ${problemTitle}`;
     const concept = options?.concept || seedProblem?.concept || "Programming logic and algorithmic problem solving";
+    const attemptCount = typeof options?.attemptCount === "number" && options.attemptCount > 0 ? options.attemptCount : 1;
+
+    const evalInput = (text && text.length >= 2) ? text : "what should we do";
+
+    // Strict Cross-Problem Protection: Reject logic/recipe/ingredients/code belonging to any other problem!
+    if (text && text.length >= 5) {
+      const crossMismatch = detectCrossProblemMismatch(problemID, section, text);
+      if (crossMismatch) {
+        return {
+          correct: false,
+          feedback: crossMismatch.message,
+          correction: `Please write the ${section === "samplecode" ? "code" : section} specifically for ${crossMismatch.currentTitle}.`,
+          isCrossProblemMismatch: true
+        };
+      }
+    }
     const reveal = options?.reveal || {
       logic: seedProblem?.logicReveal,
       recipe: seedProblem?.recipeReveal,
       ingredients: seedProblem?.ingredientsReveal,
       samplecode: seedProblem?.sampleReveal
     };
-    const { latestInput, latestLine } = extractLatestInput(text);
+    const { latestInput, latestLine } = extractLatestInput(evalInput);
+    const problemType = detectProblemType(problemID, problemTitle);
+    const candidates = this.resolveWorksheetCandidates(evalInput, section);
+
     let matchedFirebase = null;
+
+    // Fast-path verification across candidates:
+    // If student made a mistake in an earlier step/line but corrected it below (or rewrote all steps),
+    // immediately identify the correct step and grant completion without repeating previous errors!
+    for (const cand of candidates) {
+      if (section === "samplecode") {
+        if (problemType === "odd-even") {
+          const sampleVal = validateOddEvenSampleCode(cand);
+          if (sampleVal.allVerified) {
+            return sanitizePrematurePraise({
+              correct: true,
+              feedback: sampleVal.feedback,
+              correction: null,
+              suggestedInput: null,
+              sampleCodeStepProgress: sampleVal.sampleCodeStepProgress,
+              stepProgress: sampleVal.stepProgress,
+              source: "ai_human_touch"
+            }, section, problemTitle);
+          }
+        } else {
+          const syntaxQuery = detectTasteSampleSyntaxHelp(cand) || detectTasteSampleSyntaxHelp(latestInput);
+          if (!syntaxQuery && isTasteSampleStructurallyComplete(cand, problemType)) {
+            return sanitizePrematurePraise({
+              correct: true,
+              feedback: `🌟 Coach Maara here! Fantastic job! Your code prototype for "${problemTitle}" is structurally verified across all components! Proceed to the Compiler to compile and run your code!`,
+              correction: null,
+              suggestedInput: null,
+              source: "ai_human_touch"
+            }, section, problemTitle);
+          }
+        }
+      }
+
+      if (problemType === "odd-even" && section === "logic") {
+        const logicVal = validateOddEvenLogic(cand);
+        if (logicVal.isFullyVerified) {
+          return sanitizePrematurePraise({
+            correct: true,
+            feedback: logicVal.feedback,
+            correction: null,
+            suggestedInput: null,
+            logicStepProgress: logicVal.logicStepProgress,
+            stepProgress: logicVal.logicStepProgress,
+            source: "ai_human_touch"
+          }, section, problemTitle);
+        }
+      }
+
+      const detResult = this.generateSafetyFallback(section, problemTitle, cand, isStuck, matchedFirebase, problemID, attemptCount);
+      if (detResult && detResult.correct === true) {
+        detResult.source = "ai_human_touch";
+        return sanitizePrematurePraise(detResult, section, problemTitle);
+      }
+    }
+
+    const evalTarget = evalInput;
     try {
       matchedFirebase = await firebaseHintService.findBestMatchingPair(problemID, section, latestInput);
       if ((!matchedFirebase || matchedFirebase.score < 25) && latestLine !== latestInput) {
@@ -194,7 +847,8 @@ class InputCheckerService {
           matchedFirebase = lineMatch;
         }
       }
-      if ((!matchedFirebase || matchedFirebase.score < 90) && text !== latestInput) {
+      const isQuestionOrNewThought = latestInput.includes("?") || /why|how|what|puriyala|table|modulo|arithmetic|rem|remainder/i.test(latestInput);
+      if (!isQuestionOrNewThought && (!matchedFirebase || matchedFirebase.score < 50) && text !== latestInput) {
         const fullMatch = await firebaseHintService.findBestMatchingPair(problemID, section, text);
         if (fullMatch && fullMatch.score > (matchedFirebase?.score ?? 0)) {
           matchedFirebase = fullMatch;
@@ -203,7 +857,6 @@ class InputCheckerService {
     } catch (err) {
       console.warn("[InputCheckerService] Error fetching Firebase hint pair:", err?.message || err);
     }
-    const attemptCount = typeof options?.attemptCount === "number" && options.attemptCount > 0 ? options.attemptCount : 1;
     let dynamicAiResult = null;
     try {
       dynamicAiResult = await Promise.race([
@@ -213,7 +866,7 @@ class InputCheckerService {
           concept,
           reveal[section],
           section,
-          text,
+          evalTarget,
           isStuck,
           matchedFirebase,
           problemID,
@@ -226,9 +879,85 @@ class InputCheckerService {
       console.warn("[InputCheckerService] Gemini evaluation timed out or failed, falling back.");
     }
     if (dynamicAiResult) {
-      return dynamicAiResult;
+      dynamicAiResult.source = "ai_human_touch";
+      if (!dynamicAiResult.correct) {
+        const stageFallback = this.generateSafetyFallback(section, problemTitle, evalTarget, isStuck, matchedFirebase, problemID, attemptCount);
+        dynamicAiResult.correction = dynamicAiResult.correction || stageFallback?.correction || null;
+        dynamicAiResult.suggestedInput = dynamicAiResult.suggestedInput || stageFallback?.suggestedInput || null;
+        dynamicAiResult.proofType = dynamicAiResult.proofType || stageFallback?.proofType || "mathematical";
+      } else {
+        dynamicAiResult.correction = null;
+        dynamicAiResult.suggestedInput = null;
+      }
+      return sanitizePrematurePraise(dynamicAiResult, section, problemTitle);
     }
-    return this.generateSafetyFallback(section, problemTitle, text, isStuck, matchedFirebase, problemID, attemptCount);
+
+    // Dynamic AI Human Touch Fallback (Generates dynamic response reflecting student's exact questions/input)
+    const normText = evalInput.toLowerCase();
+    let dynamicFb = "";
+
+    if (section === "samplecode") {
+      const syntaxQuery = detectTasteSampleSyntaxHelp(evalInput) || detectTasteSampleSyntaxHelp(latestInput);
+      if (syntaxQuery) {
+        dynamicFb = generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType);
+      } else if (isTasteSampleStructurallyComplete(evalInput, problemType)) {
+        return sanitizePrematurePraise({
+          correct: true,
+          feedback: `🌟 Coach Maara here! Outstanding! Your code prototype for "${problemTitle}" is structurally verified across all components! Proceed to the Compiler to compile and run your code!`,
+          correction: null,
+          suggestedInput: null,
+          source: "ai_human_touch"
+        }, section, problemTitle);
+      }
+    }
+
+    if (problemType === "odd-even" && section === "logic") {
+      const logicVal = validateOddEvenLogic(evalInput);
+      if (logicVal.isFullyVerified) {
+        return sanitizePrematurePraise({
+          correct: true,
+          feedback: logicVal.feedback,
+          correction: null,
+          suggestedInput: null,
+          logicStepProgress: logicVal.logicStepProgress,
+          stepProgress: logicVal.logicStepProgress,
+          source: "ai_human_touch"
+        }, section, problemTitle);
+      } else {
+        return sanitizePrematurePraise({
+          correct: false,
+          feedback: logicVal.feedback,
+          correction: logicVal.correction,
+          suggestedInput: logicVal.suggestedInput,
+          logicStepProgress: logicVal.logicStepProgress,
+          stepProgress: logicVal.logicStepProgress,
+          source: "ai_human_touch"
+        }, section, problemTitle);
+      }
+    }
+
+    const fallbackResult = this.generateSafetyFallback(section, problemTitle, evalInput, isStuck, matchedFirebase, problemID, attemptCount);
+
+    if (!dynamicFb) {
+      if (fallbackResult && fallbackResult.feedback) {
+        fallbackResult.source = "ai_human_touch";
+        return sanitizePrematurePraise(fallbackResult, section, problemTitle);
+      }
+      dynamicFb = synthesizeHumanTouch(
+        matchedFirebase?.bestPair?.hint || `Take a close look at your ${section} thinking for "${problemTitle}". What do you think comes next in your steps?`,
+        section,
+        evalInput,
+        attemptCount
+      );
+    }
+    return sanitizePrematurePraise({
+      correct: false,
+      feedback: dynamicFb,
+      correction: fallbackResult?.correction || null,
+      suggestedInput: fallbackResult?.suggestedInput || null,
+      proofType: fallbackResult?.proofType || "mathematical",
+      source: "ai_human_touch"
+    }, section, problemTitle);
   }
   /**
    * Evaluates student input in real time using Gemini AI,
@@ -270,8 +999,14 @@ Concept: Modulo Operator & Parity
      Step 1: Get input number
      Step 2: Modulo divide by 2
      Step 3: Check remainder
-     Step 4: Remainder 0 even, else odd
-   - All 4 steps must be sequenced before 'correct': true.
+     Step 4: Remainder 0 even, else odd (or remainder 1 is odd)
+   - CRITICAL PARITY CHECK FOR STEP 4:
+     * If the student claims remainder 0 (or zero) is odd, OR remainder 1 (or one) is even:
+       -> THIS IS MATHEMATICALLY INVERTED AND WRONG!
+       -> Set 'correct': false!
+       -> Explain that dividing by 2 leaves remainder 0 for EVEN numbers and remainder 1 for ODD numbers.
+       -> Guide them to correct Step 4.
+   - All 4 steps must be accurately sequenced with correct parity before 'correct': true.
 `;
     } else if (problemType === "sum-natural-numbers") {
       problemSpecificDirectives = `
@@ -359,6 +1094,12 @@ Concept: Sequential Accumulation & Loops
        MUST BE MARKED 'correct': false!
      * Merely stating an intent to use variables without naming 'n', 'sum = 0', 'i = 1', 'for/while loop', and operators is NOT acceptable for passing!
      * If ANY ingredient is missing, set 'correct': false and clearly guide the student on what is missing and what to write.
+     * CRITICAL ACCUMULATOR CHECK IN INGREDIENTS:
+       - If student writes "sum = a + i" or "sum = n + i" or "sum = 0 + i" or "sum = i" in ingredients:
+         -> THIS IS A CRITICAL ACCUMULATOR BUG!
+         -> 'a' (or 'n') is the input limit/boundary, not the accumulator container!
+         -> 'correct' MUST BE FALSE! NEVER say "Hurray you got it!" or "Good work, proceed to taste the sample!".
+         -> Explain clearly: "Notice that 'a' (or 'n') is your input limit, not the accumulator! If you write 'sum = a + i', the previous total is not accumulated. To accumulate each number from the loop into the running total, use: sum = sum + i (or sum += i)."
      * Populate 'ingredientsStepProgress' tracking all 5 ingredients.
 
 4. STAGE 4 (SAMPLE CODE / TASTE THE SAMPLE):
@@ -369,9 +1110,10 @@ Concept: Sequential Accumulation & Loops
      Step 3: Loop construct iterating from 1 to n (e.g. for (let i = 1; i <= n; i++), for i in range(1, n + 1):)
      Step 4: Sum accumulation inside loop body: sum = sum + i (or sum += i)
      Step 5: Output display statement outside loop: print(sum) (or console.log(sum))
-   - AI HUMAN-TOUCH & COACHING GUIDELINES (COACH MAYA):
-     * Speak warmly as Coach Maya, your empathetic 1-on-1 coding mentor.
+   - AI HUMAN-TOUCH & COACHING GUIDELINES (COACH MAARA):
+     * Speak warmly as Coach Maara, your empathetic 1-on-1 coding mentor.
      * Answer syntax queries or conceptual questions warmly with clear examples.
+     * ACCUMULATOR OVERWRITE ERROR: If student writes "sum = a + i" or "sum = n + i" or "sum = i" inside loop body, set 'correct': false and explain that this overwrites 'sum' on every iteration instead of accumulating into the running total. Instruct: sum = sum + i (or sum += i).
      * ZERO ACCUMULATOR ERROR: If student starts sum at 1, remind them that sum starts at 0.
      * PYTHON RANGE: If range(1, n), explain that range(1, n + 1) is needed to include n.
      * Populate 'sampleCodeStepProgress' tracking all 5 steps.
@@ -447,9 +1189,9 @@ Concept: Sequential Product & Accumulation
      * If the student has completed Step 5 (or asked why a=a*i is done) but has NOT yet written the print statement (Step 6):
        -> Set 'correct': false!
        -> Step 6 is NOT completed!
-       -> If they asked a conceptual question (e.g. "Why we do a=a*i"), answer warmly as Coach Maya explaining why the running product is updated, AND then guide them to add the final ingredient: Step 6 to print the result!
+       -> If they asked a conceptual question (e.g. "Why we do a=a*i"), answer warmly as Coach Maara explaining why the running product is updated, AND then guide them to add the final ingredient: Step 6 to print the result!
    - HUMAN-TOUCH & COACHING GUIDELINES:
-     * Speak warmly as Coach Maya, like an encouraging personal tutor having an open dialogue with the student.
+     * Speak warmly as Coach Maara, like an encouraging personal tutor having an open dialogue with the student.
      * Recognize the student's own chosen variable names! If they used 'b' for input and 'a' for container, address them by their chosen names 'b' and 'a'.
      * ZERO CONTAINER MISTAKE: If the student initializes their container to 0 (e.g. b = 0, fact = 0):
        -> Set 'correct': false!
@@ -482,8 +1224,8 @@ Concept: Sequential Product & Accumulation
      Step 3: Loop construct iterating through the numbers from 1 to the input limit (e.g. for (let i = 1; i <= n; i++), for i in range(1, n + 1):, while (i <= n))
      Step 4: Factorial accumulation inside loop body: fact = fact * i (or a = a * i, fact *= i)
      Step 5: Output statement to print/display the final factorial result outside the loop: print(fact) (or print(containerName), console.log(fact)). CRITICAL: Never print the input variable (e.g. print(a) or print(n)) or loop counter (print(i))!
-   - AI HUMAN-TOUCH & COACHING GUIDELINES (COACH MAYA):
-     * Speak warmly as Coach Maya, like an encouraging personal tutor having an open dialogue with the student.
+   - AI HUMAN-TOUCH & COACHING GUIDELINES (COACH MAARA):
+     * Speak warmly as Coach Maara, like an encouraging personal tutor having an open dialogue with the student.
      * Recognize and honor the student's chosen variable names from earlier stages! If they used 'b' for input and 'a' for container, address them by 'b' and 'a'.
      * CRITICAL - WRONG OUTPUT VARIABLE MISTAKE:
        If the student prints their input variable (e.g. print(a) when 'a' is input and 'b' is container, or print(n)) or prints the loop counter (e.g. print(i)):
@@ -513,7 +1255,7 @@ Concept: Sequential Product & Accumulation
        }
        \`\`\`"
      * ANSWER CONCEPTUAL & SYNTAX QUESTIONS WARMLY:
-       If the student asks syntax questions (e.g. "how to write for loop in python", "syntax error", "how to write while loop", "why we do a=a*i", "what does i++ mean"), answer warmly as Coach Maya with clear, simple, human-friendly examples, AND then encourage them on what code line to write next.
+       If the student asks syntax questions (e.g. "how to write for loop in python", "syntax error", "how to write while loop", "why we do a=a*i", "what does i++ mean"), answer warmly as Coach Maara with clear, simple, human-friendly examples, AND then encourage them on what code line to write next.
      * ZERO CONTAINER MISTAKE: If initialized to 0 (fact = 0 or a = 0), gently explain why 0 \xD7 anything stays 0, and suggest starting at 1.
      * ADDITION MISTAKE: If using + or += (fact = fact + i or a += i), explain that factorial calculates the running product with *.
      * MULTIPLYING BY N MISTAKE: If fact = fact * n, explain that n is the fixed limit and they need to multiply by the loop counter i which visits each number.
@@ -618,7 +1360,7 @@ Grounded in Firebase structure hints/problem04.
      Step 3: Modulo condition checking divisibility (if (n % i == 0))
      Step 4: Output statement printing divisor i inside if block (print(i);)
    - CRITICAL MENTOR DIRECTIVES & HUMAN TOUCH ERROR ANALYSIS:
-     * When analyzing student's latest code line, identify any exact syntax or logical misconception and explain it as Coach Maya with warm empathy:
+     * When analyzing student's latest code line, identify any exact syntax or logical misconception and explain it as Coach Maara with warm empathy:
      * DIVISION OPERATOR (/) INSTEAD OF MODULO (%):
        If student wrote if(a/i==0) or if(n/i==0) or used / in condition:
        Explain: "You wrote if(a/i==0). In programming, the / operator calculates the quotient (e.g. 5 / 1 = 5, not 0), while % calculates the remainder. To test if a number divides evenly with remainder 0, use the modulo operator %: if (a % i == 0)!"
@@ -909,9 +1651,9 @@ Concept: Prime Number Pairs with Difference of 6 (Both numbers must be prime)
      Step 5: If both numbers are prime, display them as a pair
    - CRITICAL USER CONFUSION & QUESTION GUIDELINES ("I DID NOT UNDERSTAND / Puriyala"):
      * When the student says "I DID NOT UNDERSTAND", "puriyala", or asks why we do a step:
-       Explain with genuine 1-on-1 human empathy as Coach Maya using simple real-world reasoning!
+       Explain with genuine 1-on-1 human empathy as Coach Maara using simple real-world reasoning!
        Example for Step 2 ("Why 6 less than the limit?"):
-       "\u{1F31F} Coach Maya here! Let me explain why we stop at 6 less than the limit with a simple example:
+       "\u{1F31F} Coach Maara here! Let me explain why we stop at 6 less than the limit with a simple example:
        Suppose our upper limit is 30.
        If we take 24, adding 6 gives 24 + 6 = 30 (which is inside our limit!).
        But if we took 25, adding 6 gives 25 + 6 = 31 (which exceeds our limit 30!).
@@ -1382,8 +2124,8 @@ Mathematical Rule:
      } else {
        print("Not Divisible by 5");
      }
-   - DYNAMIC MENTOR VOICE (COACH MAYA):
-     * Speak directly to the student as Coach Maya with genuine warmth, empathy, and encouragement!
+   - DYNAMIC MENTOR VOICE (COACH MAARA):
+     * Speak directly to the student as Coach Maara with genuine warmth, empathy, and encouragement!
      * Directly acknowledge what the student typed in their latest line ("${latestInput}").
      * Honor and adopt whatever variable name the student uses (e.g. n, num, val, a, x).
    - STRICT STEP-BY-STEP GUIDANCE (NEVER DUMP THE ENTIRE SOLUTION):
@@ -1414,7 +2156,7 @@ Firebase Hints Node: "hints/problem19"
      \u2022 "if age >= 60 senior citizen" -> "Spot on! If age >= 60 -> Senior Citizen, else -> Not Senior Citizen. Proceed to Recipe."
    - CRITICAL REQUIREMENT (USER MANDATE):
      \u2022 Even if the student explains the theory in words ("A person 60 or older is a senior citizen, otherwise not"), they MUST ALSO provide a mathematical example (e.g. "For age = 65: 65 >= 60 is true -> Senior Citizen, or for age = 45: 45 >= 60 is false -> Not Senior Citizen")!
-     \u2022 If theory is present without mathematical example, Coach Maya praises their theory and asks for a concrete numerical example.
+     \u2022 If theory is present without mathematical example, Coach Maara praises their theory and asks for a concrete numerical example.
    - ZERO CODE WORDS! Do NOT use 'var', 'int', 'print', 'printf', 'console.log', 'syntax'.
 
 2. STAGE 2 (RECIPE) - 2-STEP EVERYDAY ENGLISH (ZERO CODE WORDS & SOCRATIC INCREMENTAL STEP-BY-STEP):
@@ -1533,7 +2275,7 @@ else print("b is max");"
      } else {
        print("b is max");
      }
-   - DYNAMIC MENTOR VOICE (COACH MAYA):
+   - DYNAMIC MENTOR VOICE (COACH MAARA):
      * Acknowledge student's typed line ("${latestInput}") directly with warmth.
      * Guide line by line through the code assembly.
      * Explain why 'else' takes no condition if they wrote 'else (a <= b)'.
@@ -1591,7 +2333,7 @@ Guide the student sequentially through ${section} stage with warm Socratic guida
 `;
       }
     }
-    const systemInstruction = `You are Coach Maya, a world-class, friendly, warm 1-on-1 personal coding trainer on the Cook The Code (CTC) platform.
+    const systemInstruction = `You are Coach Maara, a world-class, friendly, warm 1-on-1 personal coding trainer on the Cook The Code (CTC) platform.
 Your mission is to evaluate the student's submission or question in real time, integrate the curriculum knowledge from Firebase, and guide them with genuine empathy and human touch.
 
 CURRENT CONTEXT:
@@ -1651,11 +2393,44 @@ ${problemSpecificDirectives}
      * If a student tries to define Left Side, Right Side, or Operator for 'else', gently clarify:
        "'if' requires a condition (Left Side, Operator, Right Side), but 'else' is a catch-all branch that does NOT need any condition\u2014it automatically runs when 'if' is false! For 'else', you ONLY need to define the action inside it (e.g. Step 4: Inside 'else' block: print('...'))!"
 
+5. UNIVERSAL STAGE 4 (TASTE THE SAMPLE / SAMPLE CODE) SYNTAX GUIDANCE MANDATE (CRITICAL USER DIRECTIVE ACROSS ALL PROGRAMS):
+   - When the student in Stage 4 (Taste the Sample) asks or mentions that they don't know the syntax, or asks how to write / declare / use:
+     * Variables (e.g. declaring variables, initializing values)
+     * If condition / If-else (e.g. if conditions, comparisons, branching)
+     * Loops (e.g. for loop, while loop, iteration)
+     * General syntax (e.g. "syntax therila", "syntax epdi eluthanum", "varable,if condition,for loop lam synatx epdi eluthanum nu therila", "how to write syntax", "how to code"):
+   - YOU MUST:
+     1. Explain the requested concept(s) clearly, simply, and warmly in Coach Maara mentor style.
+     2. ALWAYS provide small, clean syntax examples in JavaScript and Python (or their requested programming language).
+     3. Scaffold gently: provide ONLY a small syntax example for what they asked (e.g. var n = 10; or if (n % 2 === 0) { ... } or for (let i = 1; i <= n; i++) { ... }), NEVER dump the entire completed program!
+     4. Set 'correct': false!
+     5. Guide them with an encouraging next step to try typing the first line in their editor!
+
+6. UNIVERSAL STAGE 4 (TASTE THE SAMPLE) MULTI-LANGUAGE FREEDOM & STRUCTURAL COMPLETION MANDATE (CRITICAL USER DIRECTIVE):
+   - The student can write their code prototype in ANY programming language (Python, JavaScript, C, C++, Java, etc.) or pseudocode!
+   - Taste the Sample is strictly about algorithmic prototype structure, NOT language syntax!
+   - You MUST NOT require JavaScript-specific syntax (such as 'var', 'let', semicolons, console.log, or curly braces) if the student writes in Python, C, Java, or pseudocode!
+   - In Python, for example:
+     'num = 5' is completely valid variable declaration!
+     'if (num % 2 == 0):' or 'if num % 2 == 0:' is completely valid condition!
+     'print("even number")' is completely valid print!
+     'else:' and 'print("odd number")' are completely valid branches!
+   - AS LONG AS THE REQUIRED STRUCTURAL COMPONENTS ARE PRESENT (input variables, condition/check/loop, output branches), YOU MUST MARK 'correct': true!
+   - Do NOT reject code because of minor syntax variations or string differences (e.g. "even number" vs "even")! The compiler stage will handle language compilation.
+
+7. CRITICAL OVERRIDE MANDATE (SUBSEQUENT & LOWER-LINE STEPS OVERRIDE PREVIOUS ERRORS):
+   - When students work across the 4 stages (Logic, Recipe, Ingredients, Taste the Sample), they may make a mistake on the final step, receive an error hint, and then write the correct step below (or rewrite all steps from the beginning).
+   - If an earlier line in the worksheet had an error or typo, but in subsequent lines or lower down in their text the student has written the correct step or fulfilled the missing requirement:
+     * The lower/subsequent correct step OVERRULES and FIXES the earlier mistake!
+     * NEVER repeat the previous error message!
+     * If all required steps/components for this stage are satisfied anywhere in their latest text, you MUST set 'correct': true!
+     * Warmly celebrate that they successfully completed the stage and guide them to proceed to the next stage!
+
 CORE PEDAGOGICAL & HUMAN-TOUCH RULES:
 1. NEVER output the raw Firebase hint verbatim or mechanically.
 2. The Firebase hint is your pedagogical guide: identify the exact concept or step it addresses.
 3. Transform it by adding a warm, conversational HUMAN TOUCH:
-   - Speak directly to the student as Coach Maya with friendly empathy and encouragement.
+   - Speak directly to the student as Coach Maara with friendly empathy and encouragement.
    - Acknowledge what the student specifically typed in their LATEST line.
    - Guide them toward their single next step or thought without giving away the full code or full answer.
 
@@ -1684,6 +2459,16 @@ CORE PEDAGOGICAL & HUMAN-TOUCH RULES:
    - In Stage 3 (Ingredients): 'correct' is true ONLY when ALL 5 ingredients are completed (Step 1 variables, Step 2 if condition, Step 3 inside if, Step 4 else, Step 5 inside else)!
    - In Stage 4 (Taste the Sample): 'correct' is true ONLY when ALL 5 code lines/steps are completed!
    - When the student enters an intermediate single step, warmly acknowledge and praise that step in 'feedback', guide them to their next missing step, and keep 'correct': false!
+
+7. SUBSEQUENT CORRECTION / REWRITING FROM START SUPERSEDES PREVIOUS ERROR (CRITICAL USER MANDATE):
+   - User requirement: "scenario ipa intha 4 sectionlaium user ella step kandupuduchathuku apram kadasi step matum thappa potrukan so antha thappa identifie pannathuku apram user thiru ella stepaium first lenthu eluthumbothu thirumbi antha finel step error eh thirumba kata kudathu athuku killa ulla correct ana step iruntha atha identifie panni complete kudukanu thirumbi kudutha error eh kuduka kudathu."
+   - Across ALL 4 SECTIONS (Logic, Recipe, Ingredients, and Taste the Sample):
+   - If the student made a mistake in an earlier step (especially the final step), and subsequently:
+     a) Re-wrote the steps from the beginning with the correct steps, OR
+     b) Appended the correct step / line below the erroneous line:
+   - YOU MUST evaluate based on the LATEST / LOWER CORRECT STEP!
+   - The correct step written below ALWAYS OVERRIDES and CLEARS the earlier error!
+   - Mark 'correct': true, celebrate completion warmly, and NEVER repeat or display the previous final-step error!
 `;
     const responseSchema = {
       type: Type.OBJECT,
@@ -1722,7 +2507,7 @@ CURRICULUM PEDAGOGY INSIGHT (POSITIVE OR NEGATIVE NUMBER - LOGIC):
 - Target Educational Concept: "${pnLog.feedback || matchedFirebase?.bestPair?.hint}"
 - Recommended Next Step: "${pnLog.correction || ""}"
 - Status: Fully Verified: ${pnLog.isFullyVerified}, Has Positive Concept: ${pnLog.hasPositiveConcept}, Has Negative Concept: ${pnLog.hasNegativeConcept}, Has Positive Example: ${pnLog.hasPositiveExample}, Has Negative Example: ${pnLog.hasNegativeExample}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Socratic Step-by-Step Rule: Focus only on what is currently missing.
 2. If the user only gave example numbers (e.g. 1, 2, 3, -1, -2, -3), acknowledge the examples and ask for the logical rule comparing with 0.
 3. If the user only gave definitions, ask for concrete example numbers.
@@ -1763,7 +2548,7 @@ CURRICULUM PEDAGOGY INSIGHT (POSITIVE OR NEGATIVE NUMBER - INGREDIENTS):
       - This condition checks for NEGATIVE numbers!
       - Therefore, the action inside the 'if' block (Step 3) MUST BE print("Negative"), NOT print("Positive")!
       - The action inside the 'else' block (Step 4) will be print("Positive").
-      - Coach Maya must praise their choice of testing for negative numbers first and ask for 'Step 3: Inside if block: print("Negative")'.
+      - Coach Maara must praise their choice of testing for negative numbers first and ask for 'Step 3: Inside if block: print("Negative")'.
     - If student defined 'operator: >' (or 'a > 0'):
       - This condition checks for POSITIVE numbers.
       - Action inside 'if' block (Step 3) is print("Positive"), and inside 'else' (Step 4) is print("Negative").
@@ -1802,7 +2587,7 @@ CURRICULUM PEDAGOGY INSIGHT (NUMBER IS 3-DIGIT OR NOT - LOGIC):
 - Target Educational Concept: "${tdLog.feedback || matchedFirebase?.bestPair?.hint || "A 3-digit number has 3 digits and ranges from 100 to 999 inclusive."}"
 - Recommended Next Step: "${tdLog.correction || ""}"
 - Suggested Next Input: "${tdLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & ADAPTIVE 1-ON-1 COACHING):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & ADAPTIVE 1-ON-1 COACHING):
   * DYNAMIC INPUT RECOGNITION: Speak directly to what the student typed in their latest input ("${latestInput}").
   * BOUNDARY CHECKING:
     - Lower limit: Must be >= 100 (from 100 upwards).
@@ -1847,7 +2632,7 @@ CURRICULUM PEDAGOGY INSIGHT (NUMBER IS 3-DIGIT OR NOT - INGREDIENTS):
 - Fully Verified: ${tdIng.isFullyVerified}
 - Recommended Next Step: "${tdIng.correction || ""}"
 - Suggested Next Input: "${tdIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Guide the student ONE SINGLE INGREDIENT AT A TIME.
   * Variable name flexibility: allow any variable name (e.g., 'a', 'n', 'num').
   * Compound condition: Left side, relational operators (>= and <=), Right sides (100 and 999), and logical AND (&&).
@@ -1861,7 +2646,7 @@ CURRICULUM PEDAGOGY INSIGHT (NUMBER IS 3-DIGIT OR NOT - SAMPLE CODE):
 - Fully Verified: ${tdSample.allVerified}
 - Recommended Next Step: "${tdSample.correction || ""}"
 - Suggested Next Input: "${tdSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Check condition: \`if (n >= 100 && n <= 999)\` (or \`< 1000\`).
   * Check both branches: must print "3-digit number" in if-block, and "Not a 3-digit number" in else-block.
 `;
@@ -1880,7 +2665,7 @@ CURRICULUM PEDAGOGY INSIGHT (ELIGIBLE OR NOT ELIGIBLE TO VOTE - LOGIC):
 - Target Educational Concept: "${voteLog.feedback || matchedFirebase?.bestPair?.hint || "A person must be 18 years old or above (age >= 18) to be eligible to vote."}"
 - Recommended Next Step: "${voteLog.correction || ""}"
 - Suggested Next Input: "${voteLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & ADAPTIVE 1-ON-1 COACHING):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & ADAPTIVE 1-ON-1 COACHING):
   * DYNAMIC INPUT RECOGNITION: Speak directly to what the student typed in their latest input ("${latestInput}").
   * AGE REQUIREMENT: Must be 18 or above (age >= 18).
   * BOTH BRANCHES: If age >= 18 then "Eligible to Vote", else "Not Eligible to Vote".
@@ -1897,7 +2682,7 @@ CURRICULUM PEDAGOGY INSIGHT (ELIGIBLE OR NOT ELIGIBLE TO VOTE - RECIPE):
 - Fully Verified: ${voteRec.isFullyVerified}
 - Recommended Next Step: "${voteRec.correction || ""}"
 - Suggested Next Input: "${voteRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Guide step-by-step in natural everyday English.
   * Step 1: Get input age.
   * Step 2: If age is greater than or equal to 18, display Eligible, else display Not Eligible.
@@ -1911,7 +2696,7 @@ CURRICULUM PEDAGOGY INSIGHT (ELIGIBLE OR NOT ELIGIBLE TO VOTE - INGREDIENTS):
 - Fully Verified: ${voteIng.isFullyVerified}
 - Recommended Next Step: "${voteIng.correction || ""}"
 - Suggested Next Input: "${voteIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Guide the student ONE SINGLE INGREDIENT AT A TIME.
   * If the student has already written/declared a variable (e.g. 'Variable a=25', 'var a = 25', 'Variable age'):
     - Step 1 IS COMPLETE! DO NOT ask them to write Step 1 or define a variable again!
@@ -1930,7 +2715,7 @@ CURRICULUM PEDAGOGY INSIGHT (ELIGIBLE OR NOT ELIGIBLE TO VOTE - SAMPLE CODE):
 - Fully Verified: ${voteSample.allVerified}
 - Recommended Next Step: "${voteSample.correction || ""}"
 - Suggested Next Input: "${voteSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Variable: var age = 20;
   * Condition: if (age >= 18) {
   * Mandatory quotes on print strings: print("Eligible"); and print("Not Eligible");
@@ -1951,7 +2736,7 @@ CURRICULUM PEDAGOGY INSIGHT (PASS OR FAIL BASED ON MARK - LOGIC):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || passLog.feedback}"
 - Recommended Next Step: "${passLog.correction || ""}"
 - Suggested Next Input: "${passLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & ADAPTIVE 1-ON-1 COACHING):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & ADAPTIVE 1-ON-1 COACHING):
   * DYNAMIC INPUT RECOGNITION: Speak directly to what the student typed in their latest input ("${latestInput}").
   * PASS MARK RULE: Must score 35 or above (mark >= 35) to Pass; below 35 is Fail.
   * ZERO CODE WORDS: No 'print', 'var', 'if-else', 'operator'.
@@ -1966,7 +2751,7 @@ CURRICULUM PEDAGOGY INSIGHT (PASS OR FAIL BASED ON MARK - RECIPE):
 - Fully Verified: ${passRec.isFullyVerified}
 - Recommended Next Step: "${passRec.correction || ""}"
 - Suggested Next Input: "${passRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Guide step-by-step in natural everyday English.
   * Step 1: Get mark input.
   * Step 2: If mark is greater than or equal to 35, display Pass, else display Fail.
@@ -1980,7 +2765,7 @@ CURRICULUM PEDAGOGY INSIGHT (PASS OR FAIL BASED ON MARK - INGREDIENTS):
 - Fully Verified: ${passIng.isFullyVerified}
 - Recommended Next Step: "${passIng.correction || ""}"
 - Suggested Next Input: "${passIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Guide the student ONE SINGLE INGREDIENT AT A TIME.
   * If the student has already written/declared a variable (e.g. 'mark variable', 'var mark = 45'):
     - Step 1 IS COMPLETE! DO NOT ask them to write Step 1 or define a variable again!
@@ -1999,7 +2784,7 @@ CURRICULUM PEDAGOGY INSIGHT (PASS OR FAIL BASED ON MARK - SAMPLE CODE):
 - Fully Verified: ${passSample.allVerified}
 - Recommended Next Step: "${passSample.correction || ""}"
 - Suggested Next Input: "${passSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Variable: var mark = 45;
   * Condition: if (mark >= 35) {
   * Mandatory quotes on print strings: print("Pass"); and print("Fail");
@@ -2019,7 +2804,7 @@ CURRICULUM PEDAGOGY INSIGHT (NUMBER IS GREATER THAN 100 OR NOT - LOGIC):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || gtLog.feedback}"
 - Recommended Next Step: "${gtLog.correction || ""}"
 - Suggested Next Input: "${gtLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & ADAPTIVE 1-ON-1 COACHING):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & ADAPTIVE 1-ON-1 COACHING):
   * DYNAMIC INPUT RECOGNITION: Speak directly to what the student typed in their latest input ("${latestInput}").
   * GREATER THAN 100 RULE: If number is greater than 100 (num > 100) -> Greater, otherwise Not Greater.
   * ZERO CODE WORDS: No 'print', 'var', 'if-else', 'operator'.
@@ -2034,7 +2819,7 @@ CURRICULUM PEDAGOGY INSIGHT (NUMBER IS GREATER THAN 100 OR NOT - RECIPE):
 - Fully Verified: ${gtRec.isFullyVerified}
 - Recommended Next Step: "${gtRec.correction || ""}"
 - Suggested Next Input: "${gtRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Guide step-by-step in natural everyday English.
   * Step 1: Get number input.
   * Step 2: If number is greater than 100, display Greater than 100, else display Not greater than 100.
@@ -2048,7 +2833,7 @@ CURRICULUM PEDAGOGY INSIGHT (NUMBER IS GREATER THAN 100 OR NOT - INGREDIENTS):
 - Fully Verified: ${gtIng.isFullyVerified}
 - Recommended Next Step: "${gtIng.correction || ""}"
 - Suggested Next Input: "${gtIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Guide the student ONE SINGLE INGREDIENT AT A TIME.
   * Step 1: Input variable (num or student's variable name)
   * Step 2: Condition breakdown (Left Side: num, Operator: >, Right Side: 100)
@@ -2064,7 +2849,7 @@ CURRICULUM PEDAGOGY INSIGHT (NUMBER IS GREATER THAN 100 OR NOT - SAMPLE CODE):
 - Fully Verified: ${gtSample.allVerified}
 - Recommended Next Step: "${gtSample.correction || ""}"
 - Suggested Next Input: "${gtSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (1-ON-1 EMPATHETIC HUMAN TOUCH):
+- INSTRUCTION FOR COACH MAARA (1-ON-1 EMPATHETIC HUMAN TOUCH):
   * NEVER output robotic, static, or repetitive templates!
   * Directly acknowledge what the student typed in their latest input ("${latestInput}") with genuine warmth.
   * Notice and use whatever variable name the student chose (e.g. if they declared 'a', use 'a'; if 'n', use 'n'; if 'num', use 'num').
@@ -2089,7 +2874,7 @@ CURRICULUM PEDAGOGY INSIGHT (PROFIT OR LOSS - LOGIC):
 - Evaluated Feedback: "${plLog.feedback}"
 - Recommended Next Step: "${plLog.correction || ""}"
 - Suggested Next Input: "${plLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * DYNAMIC INPUT RECOGNITION (CRITICAL):
     - If student provided numbers (e.g. Cost Price is 50, Selling Price is 100):
       DIRECTLY ANALYZE THEIR NUMBERS! Calculate the difference, explain if it is Profit or Loss, and connect to their rule!
@@ -2119,7 +2904,7 @@ CURRICULUM PEDAGOGY INSIGHT (PROFIT OR LOSS - RECIPE):
 - Evaluated Feedback: "${plRec.feedback}"
 - Recommended Next Step: "${plRec.correction || ""}"
 - Suggested Next Input: "${plRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * ZERO CODE WORDS (STRICT PEDAGOGICAL MANDATE):
     - STRICTLY FORBIDDEN: 'print', 'var', 'if', 'else', 'operator', 'syntax', '>', '<', 'variable', 'code'.
     - Use plain English words: 'get', 'input', 'read', 'compare', 'higher than', 'greater than', 'display', 'announce', 'otherwise'.
@@ -2156,7 +2941,7 @@ CURRICULUM PEDAGOGY INSIGHT (PROFIT OR LOSS - INGREDIENTS):
 - Evaluated Feedback: "${plIng.feedback}"
 - Recommended Next Step: "${plIng.correction || ""}"
 - Suggested Next Input: "${plIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * DYNAMIC INGREDIENTS RECOGNITION:
     The 4 Ingredients for Profit or Loss:
     1. Input variables: cp (Cost Price) and sp (Selling Price)
@@ -2191,7 +2976,7 @@ CURRICULUM PEDAGOGY INSIGHT (PROFIT OR LOSS - SAMPLE CODE / TASTE THE SAMPLE):
 - Evaluated Feedback: "${plSample.feedback}"
 - Recommended Next Step: "${plSample.correction || ""}"
 - Suggested Next Input: "${plSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * NEVER dump the complete solution code at once!
   * Directly acknowledge what the student typed in their latest input ("${latestInput}") with genuine warmth.
   * Notice their variable names and test values (e.g. var cp = 100; var sp = 150;).
@@ -2222,7 +3007,7 @@ CURRICULUM PEDAGOGY INSIGHT (DIVISIBLE BY 5 OR NOT - LOGIC):
 - Has Contradiction: ${divLog.hasContradiction || false}
 - Recommended Next Step: "${divLog.correction || ""}"
 - Suggested Next Input: "${divLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * CRITICAL PEDAGOGY RULE (MATHEMATICAL DEFINITION MANDATE):
     - Even if the student writes plain words (e.g. "take the number 20", "numbers ending in 0 or 5"), they MUST ALSO define it mathematically (n % 5 == 0) with example calculations (e.g. 25 % 5 = 0 -> Divisible by 5, 23 % 5 = 3 != 0 -> Not Divisible by 5) before Logic can be approved!
     - If mathematical check is missing, DO NOT approve logic (correct: false). Guide them warmly to write the modulo condition n % 5 == 0.
@@ -2237,7 +3022,7 @@ CURRICULUM PEDAGOGY INSIGHT (DIVISIBLE BY 5 OR NOT - RECIPE):
 - Recipe Step Progress: ${JSON.stringify(divRec.recipeStepProgress)}
 - Recommended Next Step: "${divRec.correction || ""}"
 - Suggested Next Input: "${divRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * STRICT STEP-BY-STEP RULE (NEVER SHOW ALL STEPS IN ONE HINT):
     - Do NOT dump all steps at once!
     - Only guide for their current missing step:
@@ -2256,8 +3041,8 @@ CURRICULUM PEDAGOGY INSIGHT (DIVISIBLE BY 5 OR NOT - INGREDIENTS):
 - Pedagogical Diagnostic Insight: "${divIng.feedback}"
 - Recommended Next Step: "${divIng.correction || ""}"
 - Suggested Next Input: "${divIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
-  * DYNAMIC MENTOR VOICE: Speak directly as Coach Maya with genuine warmth, empathy, and conversational human touch!
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+  * DYNAMIC MENTOR VOICE: Speak directly as Coach Maara with genuine warmth, empathy, and conversational human touch!
   * Do NOT repeat raw static template text or mechanical strings. Synthesize a dynamic, conversational explanation acknowledging what the student wrote ("${latestInput}").
   * Guide step-by-step through the programming tools:
     1) Step 1: Input variable (n)
@@ -2280,8 +3065,8 @@ CURRICULUM PEDAGOGY INSIGHT (DIVISIBLE BY 5 OR NOT - SAMPLE CODE / TASTE THE SAM
 - Evaluated Feedback: "${divSample.feedback}"
 - Recommended Next Step: "${divSample.correction || ""}"
 - Suggested Next Input: "${divSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
-  * DYNAMIC MENTOR VOICE: Speak directly as Coach Maya with genuine warmth, empathy, and conversational human touch!
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+  * DYNAMIC MENTOR VOICE: Speak directly as Coach Maara with genuine warmth, empathy, and conversational human touch!
   * Do NOT repeat raw static template text or mechanical strings. Synthesize a dynamic, conversational explanation acknowledging what the student wrote ("${latestInput}").
   * Guide step-by-step through the prototype code lines:
     1) Step 1: Declare sample variable: var n = 25; (or with student's chosen variable name)
@@ -2311,7 +3096,7 @@ CURRICULUM PEDAGOGY INSIGHT (SENIOR CITIZEN - LOGIC):
 - Has Contradiction: ${scLog.hasContradiction || false}
 - Recommended Next Step: "${scLog.correction || ""}"
 - Suggested Next Input: "${scLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * Target Firebase Hint: "A person aged 60 or above (age >= 60) is considered a Senior Citizen; otherwise Not a Senior Citizen."
   * CRITICAL BOUNDARY RULE: A person aged exactly 60 is a Senior Citizen! If the student only wrote strictly greater than (> 60) for numbers like 70 or 25, remind them that 60 > 60 is false, so age 60 would be excluded! Ask them to include age 60 using >= 60 or "60 or above".
   * USER MANDATE: Even if they explain theory in words, they must also write a mathematical example (e.g. 65 >= 60 -> Senior Citizen). If mathematical example is missing, warmly ask for it!
@@ -2329,7 +3114,7 @@ CURRICULUM PEDAGOGY INSIGHT (SENIOR CITIZEN - RECIPE):
 - Has Otherwise Path ("otherwise display Not Senior Citizen"): ${scRec.hasStep2Otherwise || false}
 - Recommended Next Step: "${scRec.correction || ""}"
 - Suggested Next Input: "${scRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * CRITICAL: Do NOT mark Recipe as verified until BOTH parts of Step 2 are completed:
     1) Must include age 60: use "60 or greater" or "60 or above" (not strictly "greater than 60"!).
     2) Must include the fallback/otherwise path: "otherwise display Not Senior Citizen"!
@@ -2350,7 +3135,7 @@ CURRICULUM PEDAGOGY INSIGHT (SENIOR CITIZEN - INGREDIENTS):
 - Step 5 Completed (print Not Senior Citizen inside else): ${scIng.ingredientsStepProgress?.[4]?.completed}
 - Recommended Next Step: "${scIng.correction || ""}"
 - Suggested Next Input: "${scIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * CRITICAL: If the student asks a question like "what is fallback block we need to use", they have NOT identified the fallback block yet! Answer their question directly: explain that the fallback block is called the "else" block, and guide them to write "Step 4: else block"! NEVER say "You correctly identified" when the student asked a question!
   * Guide step-by-step; catch single '=' in operator and inverted outputs.
 `;
@@ -2363,7 +3148,7 @@ CURRICULUM PEDAGOGY INSIGHT (SENIOR CITIZEN - SAMPLE CODE):
 - Sample Code Step Progress: ${JSON.stringify(scSample.sampleCodeStepProgress)}
 - Recommended Next Step: "${scSample.correction || ""}"
 - Suggested Next Input: "${scSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Honor and mirror student's variable name.
   * Catch single '=', self-comparison (age >= age), unquoted strings.
 `;
@@ -2382,7 +3167,7 @@ CURRICULUM PEDAGOGY INSIGHT (VOWEL OR CONSONANT - LOGIC):
 - Has Contradiction: ${vcLog.hasContradiction || false}
 - Recommended Next Step: "${vcLog.correction || ""}"
 - Suggested Next Input: "${vcLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * Target Firebase Hint: "Check if character ch equals 'a', 'e', 'i', 'o', or 'u' using logical OR (||). If true, it is a Vowel; else Consonant."
   * Speak with warmth, encouragement, and concrete examples (e.g. 'e' matches vowel -> Vowel; 'x' doesn't match -> Consonant).
 `;
@@ -2395,7 +3180,7 @@ CURRICULUM PEDAGOGY INSIGHT (VOWEL OR CONSONANT - RECIPE):
 - Recipe Step Progress: ${JSON.stringify(vcRec.recipeStepProgress)}
 - Recommended Next Step: "${vcRec.correction || ""}"
 - Suggested Next Input: "${vcRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * STRICT EVERYDAY ENGLISH (NO CODE WORDS): Never use var, ==, print, ||, syntax.
   * 3 clear steps:
     1) Step 1: Get character input ch.
@@ -2411,7 +3196,7 @@ CURRICULUM PEDAGOGY INSIGHT (VOWEL OR CONSONANT - INGREDIENTS):
 - Fully Verified: ${vcIng.isFullyVerified}
 - Recommended Next Step: "${vcIng.correction || ""}"
 - Suggested Next Input: "${vcIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * 5 programming ingredients:
     1) Step 1: ch variable
     2) Step 2: If condition checking ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u'
@@ -2429,7 +3214,7 @@ CURRICULUM PEDAGOGY INSIGHT (VOWEL OR CONSONANT - SAMPLE CODE):
 - Evaluated Feedback: "${vcSample.feedback}"
 - Recommended Next Step: "${vcSample.correction || ""}"
 - Suggested Next Input: "${vcSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
   * Step-by-step code assembly:
     1) var ch = 'e';
     2) if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
@@ -2452,7 +3237,7 @@ CURRICULUM PEDAGOGY INSIGHT (MAXIMUM OF TWO NUMBERS - LOGIC):
 - Has Contradiction: ${maxLog.hasContradiction || false}
 - Recommended Next Step: "${maxLog.correction || ""}"
 - Suggested Next Input: "${maxLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * Target Firebase Hint: "Compare number a and number b using the greater-than operator (>). If a > b, a is greater; else b is greater. Proceed to Recipe."
   * Speak with warmth, encouragement, and concrete number examples (e.g. 25 > 10 is true -> 25 is maximum; 7 > 15 is false -> 15 is maximum).
   * If comparison or mathematical check is missing, guide them to state: 'If a > b, a is maximum, else b is maximum.'
@@ -2467,7 +3252,7 @@ CURRICULUM PEDAGOGY INSIGHT (MAXIMUM OF TWO NUMBERS - RECIPE):
 - Recipe Step Progress: ${JSON.stringify(maxRec.recipeStepProgress)}
 - Recommended Next Step: "${maxRec.correction || ""}"
 - Suggested Next Input: "${maxRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * Target Firebase Hint: "Step 1: Get two numbers a and b. Step 2: Compare a and b. Step 3: Print result."
   * STRICT EVERYDAY ENGLISH (NO CODE WORDS): Never use var, ==, print, operator, syntax.
   * Two simple steps:
@@ -2486,7 +3271,7 @@ CURRICULUM PEDAGOGY INSIGHT (MAXIMUM OF TWO NUMBERS - INGREDIENTS):
 - Pedagogical Diagnostic Insight: "${maxIng.feedback}"
 - Recommended Next Step: "${maxIng.correction || ""}"
 - Suggested Next Input: "${maxIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * Target Firebase Hints:
     - "Input variables a and b, and an if-else condition using comparison operator >."
     - "Step 1: a and b for input variables"
@@ -2511,7 +3296,7 @@ CURRICULUM PEDAGOGY INSIGHT (MAXIMUM OF TWO NUMBERS - SAMPLE CODE / TASTE THE SA
 - Evaluated Feedback: "${maxSample.feedback}"
 - Recommended Next Step: "${maxSample.correction || ""}"
 - Suggested Next Input: "${maxSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * Target Firebase Hints:
     - "Draft the code comparing a and b.
 Example:
@@ -2542,7 +3327,7 @@ CURRICULUM PEDAGOGY INSIGHT (ADULT OR MINOR - LOGIC):
 - Has Contradiction: ${amLog.hasContradiction || false}
 - Recommended Next Step: "${amLog.correction || ""}"
 - Suggested Next Input: "${amLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * PEDAGOGICAL ESSENCE:
     - An Adult is someone whose age is 18 or older (age >= 18).
     - A Minor is someone whose age is under 18 (age < 18).
@@ -2558,7 +3343,7 @@ CURRICULUM PEDAGOGY INSIGHT (ADULT OR MINOR - RECIPE):
 - Recipe Step Progress: ${JSON.stringify(amRec.recipeStepProgress)}
 - Recommended Next Step: "${amRec.correction || ""}"
 - Suggested Next Input: "${amRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * STRICT STEP-BY-STEP RULE (NEVER SHOW ALL STEPS IN ONE HINT):
     - Do NOT dump all steps at once!
     - Only guide for their current missing step:
@@ -2575,7 +3360,7 @@ CURRICULUM PEDAGOGY INSIGHT (ADULT OR MINOR - INGREDIENTS):
 - Fully Verified: ${amIng.isFullyVerified}
 - Recommended Next Step: "${amIng.correction || ""}"
 - Suggested Next Input: "${amIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * DYNAMIC MENTOR VOICE: Act as an encouraging human teacher!
   * Guide step-by-step through the programming tools:
     1) Step 1: Input variable (age)
@@ -2596,8 +3381,8 @@ CURRICULUM PEDAGOGY INSIGHT (ADULT OR MINOR - SAMPLE CODE / TASTE THE SAMPLE):
 - Evaluated Feedback: "${amSample.feedback}"
 - Recommended Next Step: "${amSample.correction || ""}"
 - Suggested Next Input: "${amSample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
-  * DYNAMIC MENTOR VOICE: Speak directly as Coach Maya with genuine warmth, empathy, and conversational human touch!
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+  * DYNAMIC MENTOR VOICE: Speak directly as Coach Maara with genuine warmth, empathy, and conversational human touch!
   * Directly acknowledge what the student wrote in "${latestInput}" with specific praise for what they've gotten right.
   * Guide one line at a time:
     1) Step 1: Declare sample variable: var age = 20; (or with student's chosen variable)
@@ -2626,7 +3411,7 @@ CURRICULUM PEDAGOGY INSIGHT (LEAP YEAR OR NOT - LOGIC):
 - Has Contradiction: ${lyLog.hasContradiction || false}
 - Recommended Next Step: "${lyLog.correction || ""}"
 - Suggested Next Input: "${lyLog.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * ZERO CODE WORDS (STRICT PEDAGOGICAL MANDATE):
     - STRICTLY FORBIDDEN: 'print', 'var', 'if', 'else', 'operator', 'syntax', '>', '<', 'variable', 'code', 'semicolon'.
     - Use everyday human language: 'calendar', 'days in a year', 'every 4 years', 'divisible by 4', 'splits evenly without leftovers (remainder 0)'.
@@ -2647,7 +3432,7 @@ CURRICULUM PEDAGOGY INSIGHT (LEAP YEAR OR NOT - RECIPE):
 - Recipe Step Progress: ${JSON.stringify(lyRec.recipeStepProgress)}
 - Recommended Next Step: "${lyRec.correction || ""}"
 - Suggested Next Input: "${lyRec.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * DYNAMIC MENTOR VOICE: Speak directly to the student as an encouraging, live human mentor! Never use robotic, template phrases like "Complete Step X by writing: 'Step X: ...'".
   * ZERO CODE WORDS: No 'print', 'var', 'if', 'else', 'operator', 'syntax', '==', '%'. Use everyday action words.
   * STEP ANALYSIS:
@@ -2664,7 +3449,7 @@ CURRICULUM PEDAGOGY INSIGHT (LEAP YEAR OR NOT - INGREDIENTS):
 - Fully Verified: ${lyIng.isFullyVerified}
 - Recommended Next Step: "${lyIng.correction || ""}"
 - Suggested Next Input: "${lyIng.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * DYNAMIC MENTOR VOICE: Act as a warm, enthusiastic human teacher! Acknowledge what the student typed in "${latestInput}".
   * SYNTAX & OPERATOR DIAGNOSTICS:
     - If student wrote 'year/4' on the Left Side: Explain that '/' is division (quotient), but we need the remainder modulo operator '%' ('year % 4').
@@ -2688,7 +3473,7 @@ CURRICULUM PEDAGOGY INSIGHT (LEAP YEAR OR NOT - SAMPLE CODE / TASTE THE SAMPLE):
 - Evaluated Feedback: "${lySample.feedback}"
 - Recommended Next Step: "${lySample.correction || ""}"
 - Suggested Next Input: "${lySample.suggestedInput || ""}"
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 Socratic Guidance):
   * DYNAMIC MENTOR VOICE: Celebrate their coding progress with genuine warmth and specific reference to their variables and test values.
   * If they have a syntax error (like else with parentheses or inverted print messages), explain why it happens in a friendly, conversational way with an example year!
   * Guide one line at a time:
@@ -2707,7 +3492,7 @@ CURRICULUM PEDAGOGY INSIGHT (DIVISORS OF A NUMBER - LOGIC):
 - Student Intent / Classification: "${divLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || divLog.feedback}"
 - Recommended Next Step: "${divLog.correction || ""}"
-- INSTRUCTION FOR COACH MAYA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student typed ("${latestInput}"), and guide them warmly without reproducing the reference hint word-for-word.
+- INSTRUCTION FOR COACH MAARA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student typed ("${latestInput}"), and guide them warmly without reproducing the reference hint word-for-word.
 `;
       } else if (section === "recipe") {
         const rec = validateDivisorRecipe(userInput);
@@ -2717,7 +3502,7 @@ CURRICULUM PEDAGOGY INSIGHT (DIVISORS OF A NUMBER - RECIPE):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || rec.feedback}"
 - Recommended Next Step: "${rec.correction || ""}"
 - Progress: Step 1 (Input n): ${rec.hasStep1}, Step 2 (Loop 1..n): ${rec.hasStep2}, Step 2.1 (Check remainder 0): ${rec.hasStep21}, Step 2.2 (Record divisor): ${rec.hasStep22}
-- INSTRUCTION FOR COACH MAYA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student specifically typed ("${latestInput}"), and guide them warmly in plain everyday English without code keywords (no loop, for, while, i++, code), without reproducing the reference hint word-for-word.
+- INSTRUCTION FOR COACH MAARA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student specifically typed ("${latestInput}"), and guide them warmly in plain everyday English without code keywords (no loop, for, while, i++, code), without reproducing the reference hint word-for-word.
 `;
       } else if (section === "ingredients") {
         const ing = validateDivisorIngredients(userInput);
@@ -2727,7 +3512,7 @@ CURRICULUM PEDAGOGY INSIGHT (DIVISORS OF A NUMBER - INGREDIENTS):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || ing.feedback}"
 - Recommended Next Step: "${ing.correction || ""}"
 - Progress: Step 1 (Var n): ${ing.hasInput}, Step 2 (Loop 1..n): ${ing.hasLoop}, Step 2.1 (if n % i == 0): ${ing.hasCondition}, Step 2.2 (print(i)): ${ing.hasPrint}
-- INSTRUCTION FOR COACH MAYA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student specifically typed ("${latestInput}"), and guide them warmly to specify the exact missing ingredient or fix any syntax/operator bug, without reproducing the reference hint word-for-word.
+- INSTRUCTION FOR COACH MAARA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student specifically typed ("${latestInput}"), and guide them warmly to specify the exact missing ingredient or fix any syntax/operator bug, without reproducing the reference hint word-for-word.
 `;
       } else if (section === "samplecode") {
         const sampleVal = validateDivisorSampleCode(userInput);
@@ -2740,7 +3525,7 @@ CURRICULUM PEDAGOGY INSIGHT (DIVISORS OF A NUMBER - SAMPLE CODE):
 - Progress: Input: ${sampleVal.hasInput}, Loop: ${sampleVal.hasLoop}, Condition: ${sampleVal.hasCondition}, Print: ${sampleVal.hasPrint}
 - Detected Input Variable: "${sampleVal.detectedInputName || "a"}"
 - Detected Loop Variable: "${sampleVal.detectedLoopVar || "i"}"
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Connect this stage directly to the INGREDIENTS stage from Stage 3!
 2. Acknowledge what the student specifically typed in their latest input ("${latestInput}").
 3. If the student has an error (such as using / division instead of % modulo, order reversed, = assignment, or loop boundary bugs), EXPLAIN WHY IT IS AN ERROR with deep empathy and human touch, and guide them on what to change!
@@ -2757,7 +3542,7 @@ CURRICULUM PEDAGOGY INSIGHT (MULTIPLICATION TABLE - LOGIC):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || mulLog.feedback}"
 - Recommended Next Step: "${mulLog.correction || ""}"
 - Fully Verified Status: ${mulLog.isFullyVerified}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Deliver this educational concept dynamically with an encouraging, empathetic human touch.
 2. Acknowledge what the student typed ("${latestInput}").
 3. MANDATORY CRITERIA: A multiplication table must cover multipliers sequentially from 1 up to 10. If the student stopped early (e.g. only wrote up to 7 like 1*4=4 ... 7*4=28 without reaching 10 or mentioning 'up to 10'), it is an INCOMPLETE SUBMISSION. You MUST set correct to FALSE, praise their steps up to 7, and clearly instruct them to complete the table all the way up to 10!
@@ -2771,7 +3556,7 @@ CURRICULUM PEDAGOGY INSIGHT (MULTIPLICATION TABLE - RECIPE):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || mulRec.feedback}"
 - Recommended Next Step: "${mulRec.correction || ""}"
 - Progress: Step 1 (Input n): ${mulRec.hasStep1}, Step 2 (Multipliers 1..10): ${mulRec.hasStep2}, Step 2.1 (Multiply input by current multiplier): ${mulRec.hasStep21}, Step 2.2/2.3 (Display product & repeat): ${mulRec.hasStep22}
-- INSTRUCTION FOR COACH MAYA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student specifically typed ("${latestInput}"), and guide them warmly in plain everyday English without code keywords (no loop, for, while, i++, code), without reproducing the reference hint word-for-word.
+- INSTRUCTION FOR COACH MAARA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student specifically typed ("${latestInput}"), and guide them warmly in plain everyday English without code keywords (no loop, for, while, i++, code), without reproducing the reference hint word-for-word.
 `;
       } else if (section === "ingredients") {
         const mulIng = validateMultiplicationIngredients(userInput);
@@ -2781,7 +3566,7 @@ CURRICULUM PEDAGOGY INSIGHT (MULTIPLICATION TABLE - INGREDIENTS):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || mulIng.feedback}"
 - Recommended Next Step: "${mulIng.correction || ""}"
 - Progress: Step 1 (Var n): ${mulIng.hasInput}, Step 2 (Loop 1..10): ${mulIng.hasLoop}, Step 3 (Variable to store calculation: product = n * i): ${mulIng.hasCalculation}, Step 4 (Print inside loop): ${mulIng.hasPrint}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Deliver this educational concept dynamically with an encouraging, empathetic human touch.
 2. Acknowledge what the student specifically typed ("${latestInput}").
 3. VARIABLE NAME FLEXIBILITY: Students may use any valid variable names (such as \`a\`, \`n\`, \`num\`, \`x\` for input; \`i\`, \`count\` for loop; \`result\`, \`product\`, \`res\`, \`ans\` for calculation). NEVER force a single rigid variable name like only \`product\` if they named it \`result\`. Acknowledge and adopt their chosen variable names!
@@ -2797,7 +3582,7 @@ CURRICULUM PEDAGOGY INSIGHT (MULTIPLICATION TABLE - SAMPLE CODE):
 - Recommended Next Step: "${mulSample.correction || ""}"
 - Suggested Code Input: "${mulSample.suggestedInput || ""}"
 - Progress: Input: ${mulSample.hasInput}, Loop: ${mulSample.hasLoop}, Calculation: ${mulSample.hasProductCalculation}, Formatted Print: ${mulSample.hasFormattedPrint}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Connect this stage directly to the INGREDIENTS stage from Stage 3!
 2. Acknowledge what the student specifically typed in their latest input ("${latestInput}").
 3. PROGRESSION AND CODE EXAMPLES:
@@ -2819,7 +3604,7 @@ CURRICULUM PEDAGOGY INSIGHT (NEXT PRIME NUMBER - LOGIC):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || npLog.feedback}"
 - Recommended Next Step: "${npLog.correction || ""}"
 - Fully Verified Status: ${npLog.isFullyVerified}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Deliver this educational concept dynamically with an encouraging, empathetic human touch.
 2. Acknowledge what the student typed ("${latestInput}").
 3. Explain candidate selection starting at n + 1 and testing each consecutive candidate until a prime is found.
@@ -2833,7 +3618,7 @@ CURRICULUM PEDAGOGY INSIGHT (NEXT PRIME NUMBER - RECIPE):
 - Recommended Next Step: "${npRec.correction || ""}"
 - Step Progress: ${JSON.stringify(npRec.stepProgress)}
 - Fully Verified: ${npRec.isFullyVerified}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Ground every recipe step directly on the student's mathematical logic from Stage 1!
 2. All 5 sequential steps must be present without missing any step:
    - Step 1: Get input number N
@@ -2853,7 +3638,7 @@ CURRICULUM PEDAGOGY INSIGHT (NEXT PRIME NUMBER - INGREDIENTS):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || npIng.feedback}"
 - Recommended Next Step: "${npIng.correction || ""}"
 - Step Progress: ${JSON.stringify(npIng.stepProgress)}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Deliver this educational concept dynamically with an encouraging, empathetic human touch.
 2. Acknowledge what the student specifically typed ("${latestInput}").
 3. CRITICAL INGREDIENT HINT STRUCTURE:
@@ -2880,7 +3665,7 @@ CURRICULUM PEDAGOGY INSIGHT (NEXT PRIME NUMBER - SAMPLE CODE):
 - Suggested Code Input: "${npSample.suggestedInput || ""}"
 - Detected Programming Language: "${npSample.detectedLang || "generic"}"
 - Progress: Input: ${npSample.hasInput}, Candidate: ${npSample.hasCandidate}, OuterLoop: ${npSample.hasOuterLoop}, InnerLoop: ${npSample.hasInnerLoop}, ModuloCondition: ${npSample.hasModuloCondition}, Print: ${npSample.hasPrint}, Break: ${npSample.hasBreak}, Increment: ${npSample.hasIncrement}
-- INSTRUCTION FOR COACH MAYA (SYNTAX SCAFFOLDING & MULTI-LANGUAGE FREEDOM):
+- INSTRUCTION FOR COACH MAARA (SYNTAX SCAFFOLDING & MULTI-LANGUAGE FREEDOM):
 1. CRITICAL PEDAGOGY: Do NOT give the full direct completed code immediately on early attempts!
 2. Instead, provide a clear syntax structure / pattern example (syntax scaffold) so the student can look at the pattern and write the code themselves!
 3. The student can write in ANY programming language (Python, C, C++, Java, JavaScript, TypeScript, etc.).
@@ -2899,7 +3684,7 @@ CURRICULUM PEDAGOGY INSIGHT (PRIME NUMBERS IN A GIVEN RANGE - LOGIC):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || prLog.feedback}"
 - Recommended Next Step: "${prLog.correction || ""}"
 - Fully Verified Status: ${prLog.isFullyVerified}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Deliver this educational concept dynamically with an encouraging, empathetic human touch.
 2. Acknowledge what the student typed ("${latestInput}").
 3. CRITICAL MATHEMATICAL TRACING & COMPLETION RULE:
@@ -2916,7 +3701,7 @@ CURRICULUM PEDAGOGY INSIGHT (PRIME NUMBERS IN A GIVEN RANGE - RECIPE):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || prRec.feedback}"
 - Recommended Next Step: "${prRec.correction || ""}"
 - Step Progress: ${JSON.stringify(prRec.stepProgress)}
-- INSTRUCTION FOR COACH MAYA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student specifically typed ("${latestInput}"), and guide them warmly in plain everyday English without code keywords (no loop, for, while, i++, code), without reproducing the reference hint word-for-word.
+- INSTRUCTION FOR COACH MAARA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student specifically typed ("${latestInput}"), and guide them warmly in plain everyday English without code keywords (no loop, for, while, i++, code), without reproducing the reference hint word-for-word.
 `;
       } else if (section === "ingredients") {
         const prIng = validatePrimeRangeIngredients(userInput);
@@ -2937,7 +3722,7 @@ CURRICULUM PEDAGOGY INSIGHT (PRIME NUMBERS IN A GIVEN RANGE - INGREDIENTS):
   * Step 4 (Inner loop ${innerVar} 1 to ${outerVar}): ${prIng.innerLoopIdentified}
   * Step 5 (Modulo check ${outerVar} % ${innerVar} == 0, count++): ${prIng.moduloCheckIdentified}
   * Step 6 (Prime check count == 2, print ${outerVar}): ${prIng.primeCheckIdentified}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. DYNAMIC VARIABLE ADAPTATION (CRITICAL):
    - The student explicitly chose "${outerVar}" for outer loop / candidate number and "${innerVar}" for inner loop / divisor.
    - You MUST adapt your hints, explanations, and code examples to use their exact variable names ("${outerVar}" and "${innerVar}")!
@@ -2978,7 +3763,7 @@ CURRICULUM PEDAGOGY INSIGHT (PRIME NUMBERS IN A GIVEN RANGE - SAMPLE CODE):
 - Detected Programming Language: "${prSample.detectedLang || "generic"}"
 - Progress: Start: ${prSample.hasStart}, End: ${prSample.hasEnd}, OuterLoop: ${prSample.hasOuterLoop}, CountInit: ${prSample.hasCountInit}, InnerLoop: ${prSample.hasInnerLoop}, ModuloCondition: ${prSample.hasModuloCondition}, CountIncrement: ${prSample.hasCountIncrement}, PrimeCheck: ${prSample.hasPrimeCheck}, Print: ${prSample.hasPrint}
 - Step Progress Breakdown: ${JSON.stringify(prSample.sampleCodeStepProgress)}
-- INSTRUCTION FOR COACH MAYA (SYNTAX SCAFFOLDING & MULTI-LANGUAGE FREEDOM):
+- INSTRUCTION FOR COACH MAARA (SYNTAX SCAFFOLDING & MULTI-LANGUAGE FREEDOM):
 1. CRITICAL PEDAGOGY: Do NOT give the full direct completed code immediately on early attempts!
 2. Instead, deliver dynamic, empathetic human-touch guidance acknowledging what the student specifically typed in their latest input ("${latestInput}").
 3. The student can write in ANY programming language (Python, C, C++, Java, JavaScript, TypeScript, etc.).
@@ -2997,7 +3782,7 @@ CURRICULUM PEDAGOGY INSIGHT (SEXY PRIME NUMBERS - LOGIC):
 - Target Educational Concept: "${matchedFirebase?.bestPair?.hint || spLog.feedback}"
 - Recommended Next Step: "${spLog.correction || ""}"
 - Progress: Difference of 6: ${spLog.hasPairDifference}, Both Prime: ${spLog.hasBothMustBePrime}, Limit: ${spLog.hasRangeLimit}, Fully Verified: ${spLog.isFullyVerified}
-- INSTRUCTION FOR COACH MAYA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student typed ("${latestInput}"), and guide them warmly without reproducing the reference hint word-for-word.
+- INSTRUCTION FOR COACH MAARA: Deliver this educational concept dynamically with an encouraging, empathetic human touch. Acknowledge what the student typed ("${latestInput}"), and guide them warmly without reproducing the reference hint word-for-word.
 `;
       } else if (section === "recipe") {
         const spRec = validateSexyPrimeRecipe(userInput, attemptCount);
@@ -3008,7 +3793,7 @@ CURRICULUM PEDAGOGY INSIGHT (SEXY PRIME NUMBERS - RECIPE):
 - Recommended Next Step: "${spRec.correction || ""}"
 - Progress: Step 1 (Get limit): ${spRec.hasStep1Input}, Step 2 (Check up to 6 less than limit): ${spRec.hasStep2OuterLoop}, Step 3 (First prime check): ${spRec.hasStep3CheckPPrime}, Step 4 (Second candidate +6 prime check): ${spRec.hasStep4CheckPPlus6Prime}, Step 5 (Display pair): ${spRec.hasStep5PrintPair}
 - Step Progress Breakdown: ${JSON.stringify(spRec.stepProgress)}
-- INSTRUCTION FOR COACH MAYA:
+- INSTRUCTION FOR COACH MAARA:
 1. Deliver dynamic, empathetic human-touch guidance acknowledging what the student specifically typed ("${latestInput}").
 2. Explain in plain, natural everyday English without variables (no p, n, n-6, etc.).
 3. If the student expressed confusion ("I did not understand", "puriyala", or asks why a step is done), provide a simple, warm explanation with an intuitive example (e.g. why we check numbers up to 6 less than the limit, since candidate + 6 would exceed the limit!).
@@ -3028,7 +3813,7 @@ CURRICULUM PEDAGOGY INSIGHT (SEXY PRIME NUMBERS - INGREDIENTS):
   * Step 3 (Distinct counters count1 = 0 for p, count2 = 0 for p + 6): ${spIng.hasSeparateCounters}
   * Step 4 (Divisor modulo conditions & factor count increment for prime checking): ${spIng.hasCombinedCondition}
   * Step 5 (Combined decision if count1 == 2 && count2 == 2 print pair): ${spIng.isFullyVerified}
-- SITUATIONAL COACHING DIRECTIVES FOR COACH MAYA:
+- SITUATIONAL COACHING DIRECTIVES FOR COACH MAARA:
 1. STRICT INCREMENTAL RULE (ANTI-SPOILER / SOCRATIC COACHING):
    - NEVER dump the entire solution, multiple future steps, or both numbers' loops and modulo checks in one giant block!
    - Give ONLY the single immediate next clue based specifically on what the student just wrote in their latest input ("${latestInput}")!
@@ -3088,7 +3873,7 @@ CURRICULUM PEDAGOGY INSIGHT (SEXY PRIME NUMBERS - SAMPLE CODE / TASTE THE SAMPLE
   * Single Prime Only Bug: ${spSample.hasSinglePrimeOnlyBug}
   * Upper Limit Overflow Bug: ${spSample.hasUpperLimitOverflowBug}
 
-- INSTRUCTION FOR COACH MAYA (AI HUMAN TOUCH & 1-ON-1 COACHING):
+- INSTRUCTION FOR COACH MAARA (AI HUMAN TOUCH & 1-ON-1 COACHING):
 1. DEEP LINE-BY-LINE ANALYSIS & STRICT STAGE PROGRESSION:
    - Acknowledge exactly what the student typed in their latest input ("${latestInput}").
    - CRITICAL RULE (NEVER JUMP AHEAD): Look at their FIRST inner loop! If the student is working on candidate 1's divisor loop (e.g. \`for(j=1; j<=a; j++)\` or \`for(j=1; j<=i; j++)\`):
@@ -3111,7 +3896,7 @@ CURRICULUM PEDAGOGY INSIGHT (SEXY PRIME NUMBERS - SAMPLE CODE / TASTE THE SAMPLE
 `;
       }
     }
-    const prompt = `EVALUATE THIS SUBMISSION AS COACH MAYA:
+    const prompt = `EVALUATE THIS SUBMISSION AS COACH MAARA:
 PROBLEM: "${problemTitle}" (${problemType})
 CURRENT STAGE: ${section.toUpperCase()}
 REFERENCE SOLUTION FOR THIS STAGE: "${referenceSolution || "Not provided"}"
@@ -3130,28 +3915,57 @@ STUDENT INDICATED THEY ARE STUCK / REQUESTED WORKED EXAMPLE: ${isStuck}
 ${firebaseContext}
 ${diagnosticContext}
 
-Evaluate now according to Coach Maya's rules. Return JSON matching the schema.`;
+Evaluate now according to Coach Maara's rules. Return JSON matching the schema.`;
+    if (globalQuotaCooldownUntil > Date.now()) {
+      return null;
+    }
     for (const model of CANDIDATE_MODELS) {
       const cooldownUntil = modelCooldownMap.get(model) || 0;
       if (cooldownUntil > Date.now()) {
         continue;
       }
       try {
+        const reqConfig = {
+          systemInstruction,
+          temperature: attemptCount > 1 ? 0.6 : 0.25,
+          responseMimeType: "application/json",
+          responseSchema,
+          maxOutputTokens: 1000
+        };
+        if (model.includes("2.5")) {
+          reqConfig.thinkingConfig = { thinkingBudget: 0 };
+        }
         const response = await ai.models.generateContent({
           model,
           contents: prompt,
-          config: {
-            systemInstruction,
-            temperature: attemptCount > 1 ? 0.6 : 0.25,
-            responseMimeType: "application/json",
-            responseSchema
-          }
+          config: reqConfig
         });
         modelCooldownMap.delete(model);
-        const text = response.text;
-        if (!text) continue;
-        const parsed = JSON.parse(text);
+        const rawText = response.text || "";
+        if (!rawText.trim()) continue;
+
+        let parsed = null;
+        try {
+          let cleaned = rawText.trim();
+          if (cleaned.startsWith("```json")) {
+            cleaned = cleaned.replace(/^```json/i, "").replace(/```$/, "").trim();
+          } else if (cleaned.startsWith("```")) {
+            cleaned = cleaned.replace(/^```/i, "").replace(/```$/, "").trim();
+          }
+          const match = cleaned.match(/\{[\s\S]*\}/);
+          parsed = JSON.parse(match ? match[0] : cleaned);
+        } catch (parseErr) {
+          const feedbackMatch = rawText.match(/"feedback"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+          if (feedbackMatch) {
+            parsed = {
+              correct: /"correct"\s*:\s*true/.test(rawText),
+              feedback: feedbackMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"')
+            };
+          }
+        }
+        if (!parsed) continue;
         if (typeof parsed.correct === "boolean" && typeof parsed.feedback === "string") {
+          const originalGeminiFeedback = parsed.feedback;
           if (problemType === "odd-even") {
             if (section === "logic") {
               const oddEvenVal = validateOddEvenClassification(userInput);
@@ -3161,64 +3975,94 @@ Evaluate now according to Coach Maya's rules. Return JSON matching the schema.`;
                 parsed.correction = oddEvenVal.correction;
                 parsed.suggestedInput = oddEvenVal.suggestedInput;
               }
-              if (parsed.correct === true) {
-                const norm = userInput.toLowerCase();
-                const clean = userInput.replace(/\s+/g, "");
-                const evenMath = /%\s*2\s*(=|==)\s*0/.test(norm) || /([02468]|\b[0-9]*[02468]\b)\s*%\s*2\s*(=|==)\s*0/.test(clean) || /(remainder|rem)\s*(is|=|:)?\s*0/.test(norm) || /0\s*(is|=|means)\s*(an?\s*)?even/.test(norm) || /even\s*.*(remainder|rem)\s*(is|=|:)?\s*0/.test(norm) || /divisible\s*by\s*2\s*(and|with)?\s*remainder\s*0/.test(norm) || /(else|otherwise)\s*(it\s*is\s*)?even/.test(norm);
-                const oddMath = /%\s*2\s*(=|==)\s*1/.test(norm) || /%\s*2\s*(!=|!==)\s*0/.test(norm) || /([13579]|\b[0-9]*[13579]\b)\s*%\s*2\s*(=|==)\s*1/.test(clean) || /(remainder|rem)\s*(is|=|:)?\s*1/.test(norm) || /(remainder|rem)\s*(is|=|:)?\s*(not\s*0|non\s*zero)/.test(norm) || /1\s*(is|=|means)\s*(an?\s*)?odd/.test(norm) || /odd\s*.*(remainder|rem)\s*(is|=|:)?\s*1/.test(norm) || /(else|otherwise)\s*(it\s*is\s*)?odd/.test(norm) || /not\s*divisible\s*by\s*2/.test(norm);
-                if (!evenMath || !oddMath) {
-                  parsed.correct = false;
-                  if (evenMath && !oddMath) {
-                    parsed.feedback = "Superb start! You've correctly identified the mathematical rule for even numbers using remainder 0 (e.g. 4 % 2 = 0). However, this problem checks whether a number is Odd OR Even\u2014we also need to define odd numbers mathematically! How do we check if a number is odd? What happens when you divide an odd number (like 5 or 3) by 2 using the modulo % operator?";
-                    parsed.correction = "Now define an odd number mathematically too (e.g. test 5 % 2 or state what remainder an odd number gives).";
-                  } else if (oddMath && !evenMath) {
-                    parsed.feedback = "Great job! You've explained the mathematical logic for odd numbers, but we also need to mathematically define even numbers. What remainder does an even number give when divided by 2 using modulo?";
-                    parsed.correction = "Define even numbers mathematically too using remainder 0 or modulo 2.";
-                  } else {
-                    if (norm.includes("%") || norm.includes("modulo")) {
-                      parsed.feedback = "Spot on! You have already identified both key concepts: dividing by 2 and using the modulo operator (%). To use them: when a computer divides a number by 2 using % (e.g. number % 2), it calculates the leftover remainder. If the remainder is 0 (like 4 % 2 = 0), the number is Even. If the remainder is 1 (like 5 % 2 = 1), the number is Odd. State this rule in your worksheet!";
-                      parsed.correction = "Write down how to use % with 2: When divided by 2 using %, remainder 0 is Even and remainder 1 is Odd.";
-                      parsed.suggestedInput = "When divided by 2 using %, remainder 0 is Even and remainder 1 is Odd";
-                    } else {
-                      parsed.feedback = "You've done a wonderful job identifying these examples! However, a computer cannot check an endless list of numbers\u2014it needs a mathematical rule that works for any number. Look closely at your even numbers (2, 4, 6...). Which multiplication table do they all belong to? What arithmetic operation (+,-,*,/) could test if a number fits into that pattern?";
-                      parsed.correction = "Look at the even numbers (2, 4, 6...). Which multiplication table do they belong to? Think about what arithmetic operation (+,-,*,/) tests if a number fits into that pattern.";
-                    }
-                  }
-                }
+              const logicVal = validateOddEvenLogic(userInput);
+              parsed.logicStepProgress = logicVal.logicStepProgress;
+              parsed.stepProgress = logicVal.logicStepProgress;
+              delete parsed.recipeStepProgress;
+
+              if (!logicVal.isFullyVerified) {
+                parsed.correct = false;
+                parsed.feedback = logicVal.feedback;
+                parsed.correction = logicVal.correction;
+                parsed.suggestedInput = logicVal.suggestedInput;
+              } else {
+                parsed.correct = true;
+                parsed.feedback = "🎉 Logic Approved! Spot on! You've defined both Even (remainder 0) and Odd (remainder 1) using modulo 2. Proceed to the Recipe stage!";
+                parsed.correction = void 0;
+                parsed.suggestedInput = void 0;
               }
             }
             if (section === "recipe") {
-              const norm = userInput.toLowerCase();
-              const hasInputStep = /(get|read|take|input|receive|accept)\b/i.test(norm) || /step\s*1/i.test(norm) && /(input|number|value)/i.test(norm);
-              const hasModulo = /(modulo|%|mod\b|modulodivide)/i.test(norm);
-              const textWithoutStepLabels = norm.replace(/\bstep\s*[0-9]+/gi, "").replace(/^[0-9]+[\.\)\:\-]\s*/gm, "");
-              const has2 = /by\s*2\b/i.test(norm) || /%\s*2\b/.test(norm) || /(modulo|modulodivide)\s*(divide\s*)?(the\s*input\s*)?(by\s*)?2\b/i.test(norm) || /\b(2|two)\b/.test(textWithoutStepLabels);
-              const hasModuloBy2 = hasModulo && has2 || /(modulo|modulodivide|%)\s*(divide\s*)?(the\s*input\s*)?(by\s*)?2/i.test(norm) || /divide\s*.*by\s*2/i.test(norm) || /%\s*2/.test(norm);
-              const hasExplicitStep3 = /(step\s*3|3\.)/i.test(norm);
-              const hasCheckWord = /\b(check|see|test|inspect|verify|find\s*out|determine)\b/i.test(norm);
-              const hasRemainderWord = /(remainder|rem\b|remind)/i.test(norm);
-              const hasCheckRemainderStep = hasExplicitStep3 && hasRemainderWord || hasCheckWord && hasRemainderWord;
-              const hasEven = /\beven\b/i.test(norm);
-              const hasOdd = /\bodd\b/i.test(norm);
-              const hasZero = /\b0\b/.test(norm);
-              const hasOneOrElse = /\b(1|one|else|otherwise)\b/i.test(norm);
-              const hasEvenAndOddDecision = hasEven && hasOdd || hasZero && hasOneOrElse && (hasEven || hasOdd);
-              const step1Done = Boolean(hasInputStep);
-              const step2Done = Boolean(hasModuloBy2);
-              const step3Done = Boolean(hasCheckRemainderStep);
-              const step4Done = Boolean(hasEvenAndOddDecision);
-              parsed.recipeStepProgress = [
-                { stepNumber: 1, title: "Get input number", completed: step1Done, current: !step1Done },
-                { stepNumber: 2, title: "Modulo divide by 2", completed: step2Done, current: step1Done && !step2Done },
-                { stepNumber: 3, title: "Check remainder", completed: step3Done, current: step1Done && step2Done && !step3Done },
-                { stepNumber: 4, title: "Remainder 0 even, else odd", completed: step4Done, current: step1Done && step2Done && step3Done && !step4Done }
-              ];
-              if (!step1Done || !step2Done || !step3Done || !step4Done) {
+              const rec = validateOddEvenRecipe(userInput);
+              parsed.recipeStepProgress = rec.recipeStepProgress;
+              if (rec.isParityInverted) {
                 parsed.correct = false;
+                parsed.feedback = rec.feedback;
+                parsed.correction = rec.correction;
+                parsed.suggestedInput = rec.suggestedInput;
+              } else if (!rec.isFullyVerified) {
+                parsed.correct = false;
+                const isClaimingDone = /proceed to ingredients|ingredients stage|recipe verified|all \d+ steps completed|congratulations/i.test(parsed.feedback || "");
+                if (!parsed.feedback || isClaimingDone || parsed.feedback.trim().length < 20) {
+                  parsed.feedback = rec.feedback;
+                }
+                parsed.correction = rec.correction;
+                parsed.suggestedInput = rec.suggestedInput;
               } else {
                 parsed.correct = true;
-                parsed.feedback = "\u{1F389} Recipe Successful! Brilliant work! You've sequenced all 4 steps of the algorithm from reading input to making the final decision. You're ready to proceed to the Ingredients stage!";
+                if (!parsed.feedback || parsed.feedback.trim().length < 20) {
+                  parsed.feedback = "\u{1F389} Recipe Successful! Brilliant work! You've sequenced all 4 steps of the algorithm from reading input to making the final decision. You're ready to proceed to the Ingredients stage!";
+                }
                 parsed.correction = "Proceed to Ingredients to identify the required programming components.";
+              }
+            }
+            if (section === "ingredients") {
+              const norm = userInput.toLowerCase();
+              const hasN = /\b(?:let|var|const|int)?\s*n\b/.test(norm);
+              const hasMod = /%\s*2/.test(norm) || /modulo/.test(norm);
+              const hasEven = /even/i.test(norm);
+              const hasOdd = /odd/i.test(norm);
+              const hasElse = /else/i.test(norm);
+              const isDone = hasN && hasMod && hasEven && hasOdd && hasElse;
+              parsed.ingredientsStepProgress = [
+                { stepNumber: 1, title: "Input variable n", completed: hasN, current: !hasN },
+                { stepNumber: 2, title: "If condition (n % 2 == 0)", completed: hasMod, current: hasN && !hasMod },
+                { stepNumber: 3, title: "Print 'Even' block", completed: hasEven, current: hasN && hasMod && !hasEven },
+                { stepNumber: 4, title: "Else fallback block", completed: hasElse, current: hasN && hasMod && hasEven && !hasElse },
+                { stepNumber: 5, title: "Print 'Odd' block", completed: hasOdd, current: hasN && hasMod && hasEven && hasElse && !hasOdd }
+              ];
+              if (!isDone) {
+                parsed.correct = false;
+                const isClaimingDone = /proceed to taste|taste the sample|sample code|ingredients verified|congratulations/i.test(parsed.feedback || "");
+                if (!parsed.feedback || isClaimingDone || parsed.feedback.trim().length < 20) {
+                  parsed.feedback = "\u{1F31F} Coach Maara here! For Odd or Even, identify the 5 programming ingredients: 1) input variable n, 2) If condition testing n % 2 == 0, 3) inside if block: print('Even'), 4) fallback else block, and 5) inside else block: print('Odd').";
+                }
+                parsed.correction = "List all 5 ingredients: variable n, if (n % 2 == 0), print('Even'), else, print('Odd').";
+                parsed.suggestedInput = "step 1: variable n\nstep 2: If condition with L.S: n % 2, Operator: ==, R.S: 0\nstep 3: Inside if: print(\"Even\")\nstep 4: else block\nstep 5: Inside else: print(\"Odd\")";
+              } else {
+                parsed.correct = true;
+                if (!parsed.feedback || parsed.feedback.trim().length < 20) {
+                  parsed.feedback = "\u{1F389} Ingredients Verified! Brilliant work! You've identified all 5 essential programming ingredients for checking Odd or Even. Proceed to Taste the Sample!";
+                }
+                parsed.correction = "Proceed to Taste the Sample stage to draft your prototype.";
+              }
+            }
+            if (section === "samplecode") {
+              const sampleVal = validateOddEvenSampleCode(userInput);
+              parsed.sampleCodeStepProgress = sampleVal.sampleCodeStepProgress;
+              parsed.stepProgress = sampleVal.sampleCodeStepProgress;
+              if (sampleVal.allVerified) {
+                parsed.correct = true;
+                if (!parsed.feedback || parsed.feedback.trim().length < 20) {
+                  parsed.feedback = sampleVal.feedback;
+                }
+                parsed.correction = void 0;
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                parsed.feedback = sampleVal.feedback;
+                parsed.correction = sampleVal.correction;
+                parsed.suggestedInput = sampleVal.suggestedInput;
               }
             }
           }
@@ -3268,12 +4112,12 @@ Evaluate now according to Coach Maya's rules. Return JSON matching the schema.`;
                 const wordsList = rec.foundProgrammingWords.map((w) => `'${w}'`).join(", ");
                 parsed.feedback = `In the Recipe stage, please avoid programming tools and code words (detected: ${wordsList}). The Recipe should be written in plain, human-readable English without programming keywords or code syntax! For example, use 'repeat until reaching n' instead of 'loop', and 'starting number 1' instead of 'counter i = 1'.`;
                 parsed.correction = "Replace programming words with everyday language (use 'repeat', 'current number', 'next number').";
-                parsed.suggestedInput = "Step 1: Get the input number n\nStep 2: Start with total sum as 0 and current number as 1\nStep 3: Move to the next number and repeat until reaching n\nStep 4: Add the current number to the total sum\nStep 5: Display the final total sum";
+                parsed.suggestedInput = rec.suggestedInput || (!rec.hasStep1 ? "Step 1: Get the input number n" : !rec.hasStep2 ? "Step 2: Start with total sum as 0 and current number as 1" : !rec.hasStep3 ? "Step 3: Move to the next number and repeat until reaching n" : !rec.hasStep4 ? "Step 4: Add the current number to the total sum" : "Step 5: Display the final total sum");
               } else if (rec.hasCombinedStep3) {
                 parsed.correct = false;
                 parsed.feedback = "You've combined adding to the sum and repeating until n into one single step! In our algorithm recipe, each action must be an atomic step. Please split into 2 distinct steps: Step 3 for moving to the next number and repeat until reaching n, and Step 4 for adding the current number to the total sum.";
                 parsed.correction = "Split into: Step 3: Move to next number and repeat until n, and Step 4: Add current number to total sum.";
-                parsed.suggestedInput = "Step 3: Move to the next number and repeat until reaching n\nStep 4: Add the current number to the total sum\nStep 5: Display the final total sum";
+                parsed.suggestedInput = "Step 3: Move to the next number and repeat until reaching n";
               } else if (rec.allStepsDone) {
                 parsed.correct = true;
                 const donePair = matchedFirebase?.allPairs?.find((p) => p.input.toLowerCase().includes("step 5")) || matchedFirebase?.bestPair;
@@ -3282,10 +4126,13 @@ Evaluate now according to Coach Maya's rules. Return JSON matching the schema.`;
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
-                if (!parsed.feedback || parsed.feedback.trim().length === 0) {
-                  parsed.feedback = synthesizeHumanTouch(matchedFirebase?.bestPair?.hint, "recipe", latestInput);
+                if (rec.isPrintingInputInsteadOfSum || rec.hasWrongAddInRecipe || rec.hasProgrammingWords || rec.hasCombinedStep3 || !parsed.feedback || parsed.feedback.trim().length === 0) {
+                  parsed.feedback = synthesizeHumanTouch(rec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput);
                 }
-                if (!rec.hasStep1 && !rec.hasStep2) {
+                if (rec.correction) {
+                  parsed.correction = rec.correction;
+                  parsed.suggestedInput = rec.suggestedInput;
+                } else if (!rec.hasStep1 && !rec.hasStep2) {
                   parsed.correction = "Start with Step 1: Get the input number n from the user.";
                   parsed.suggestedInput = "Step 1: Get the input number n from the user";
                 } else if (!rec.hasStep1 && rec.hasStep2) {
@@ -3309,17 +4156,27 @@ Evaluate now according to Coach Maya's rules. Return JSON matching the schema.`;
             if (section === "ingredients") {
               const ing = validateSumOfNIngredients(userInput);
               parsed.ingredientsStepProgress = ing.ingredientsStepProgress;
-              if (ing.allIngredientsDone) {
+              const feedbackIndicatesCompletion = !ing.hasPrintedInputVarInIngredients && !ing.hasWrongSumAccumulation && ing.hasInputVar && /ready to (?:move on|proceed)|taste the sample|everything is (?:perfectly )?in place|all \d+ ingredients (?:are )?verified|ingredients verified|solution verified/i.test(parsed.feedback || "");
+              if (ing.allIngredientsDone || (feedbackIndicatesCompletion && (ing.completedCount >= 3 || parsed.correct === true) && !ing.hasPrintedInputVarInIngredients && ing.hasInputVar)) {
                 parsed.correct = true;
-                parsed.feedback = ing.feedback || "\u{1F389} Ingredients Verified! Brilliant work! You've identified all 5 essential programming ingredients, including your loop and sum accumulation step (sum = sum + i). You're ready to proceed to Taste the Sample stage to assemble your code!";
+                if (!parsed.feedback || parsed.feedback.trim().length === 0 || !feedbackIndicatesCompletion) {
+                  parsed.feedback = ing.feedback || "\u{1F389} Ingredients Verified! Brilliant work! You've identified all 5 essential programming ingredients, including your loop and sum accumulation step (sum = sum + i). You're ready to proceed to Taste the Sample stage to assemble your code!";
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput);
+                }
                 parsed.correction = "Proceed to Taste the sample stage to assemble your code!";
                 parsed.suggestedInput = void 0;
+                if (parsed.ingredientsStepProgress) {
+                  parsed.ingredientsStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
               } else {
                 parsed.correct = false;
-                if (ing.hasWrongSumAccumulation) {
-                  parsed.feedback = ing.feedback;
+                if (ing.hasWrongSumAccumulation || ing.hasPrintedInputVarInIngredients || !ing.hasInputVar) {
+                  parsed.feedback = synthesizeHumanTouch(ing.feedback, "ingredients", latestInput);
                   parsed.correction = ing.correction;
-                  parsed.suggestedInput = "Step 5: sum = sum + i";
+                  parsed.suggestedInput = ing.suggestedInput;
+                } else if (feedbackIndicatesCompletion) {
+                  parsed.feedback = synthesizeHumanTouch(ing.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput);
                 } else {
                   if (!parsed.feedback || parsed.feedback.trim().length === 0) {
                     parsed.feedback = synthesizeHumanTouch(matchedFirebase?.bestPair?.hint || ing.feedback, "ingredients", latestInput);
@@ -3386,7 +4243,11 @@ ${loopControlsNote}`;
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
-                if (!sampleVal.hasPrint && sampleVal.hasInput && sampleVal.hasAccumulator && sampleVal.hasLoop && sampleVal.hasSumUpdate) {
+                if (sampleVal.hasVarMismatch || sampleVal.hasStrictLessThan || !sampleVal.hasLoop) {
+                  parsed.feedback = synthesizeHumanTouch(sampleVal.feedback, "samplecode", latestInput);
+                  parsed.correction = sampleVal.correction;
+                  parsed.suggestedInput = sampleVal.suggestedInput;
+                } else if (!sampleVal.hasPrint && sampleVal.hasInput && sampleVal.hasAccumulator && sampleVal.hasLoop && sampleVal.hasSumUpdate) {
                   parsed.feedback = sampleVal.feedback;
                   parsed.correction = sampleVal.correction;
                   parsed.suggestedInput = sampleVal.suggestedInput;
@@ -3431,22 +4292,14 @@ for (int i = 1; i <= n; i++) {
               const factLog = validateFactorialLogic(userInput);
               if (factLog.isFullyVerified) {
                 parsed.correct = true;
-                parsed.feedback = factLog.feedback || `\u{1F389} Logic Approved! Spot on! You've clearly demonstrated how factorial accumulates step by step (for n=${factLog.detectedN}). You are ready to proceed to the Recipe stage!`;
+                parsed.feedback = factLog.feedback || `🎉 Logic Approved! Spot on! You've clearly demonstrated how factorial accumulates step by step (for n=${factLog.detectedN}). You are ready to proceed to the Recipe stage!`;
                 parsed.correction = "Proceed to the Recipe stage to write the step-by-step algorithm.";
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
-                if (factLog.isOneLineDirectProduct || !parsed.feedback || parsed.feedback.trim().length === 0) {
-                  parsed.feedback = factLog.feedback || synthesizeHumanTouch(matchedFirebase?.bestPair?.hint, "logic", latestInput);
-                  parsed.correction = factLog.correction;
-                  parsed.suggestedInput = factLog.suggestedInput;
-                } else {
-                  if (parsed.feedback.toLowerCase().includes("ready to move on") || parsed.feedback.toLowerCase().includes("ready to transition")) {
-                    parsed.feedback = factLog.feedback || `Great start! While this formula is mathematically correct, in programming a computer accumulates the product step by step. Can you break this down for n=${factLog.detectedN} into sequential multiplications?`;
-                    parsed.correction = factLog.correction || "Write the sequential multiplication steps.";
-                    parsed.suggestedInput = factLog.suggestedInput;
-                  }
-                }
+                parsed.feedback = factLog.feedback || synthesizeHumanTouch(matchedFirebase?.bestPair?.hint, "logic", latestInput);
+                parsed.correction = factLog.correction || "Write the sequential multiplication steps.";
+                parsed.suggestedInput = factLog.suggestedInput;
               }
               if (parsed.suggestedInput && (parsed.suggestedInput.toLowerCase().includes("step 1") || parsed.suggestedInput.toLowerCase().includes("accept a number") || parsed.suggestedInput.toLowerCase().includes("recipe"))) {
                 parsed.suggestedInput = parsed.correct ? void 0 : factLog.suggestedInput;
@@ -3556,19 +4409,25 @@ Now to finish our ingredients roster, what final statement do we need outside th
             if (section === "samplecode") {
               const sampleVal = validateFactorialSampleCode(userInput, attemptCount);
               parsed.sampleCodeStepProgress = sampleVal.sampleCodeStepProgress;
+              const feedbackIndicatesCompletion = /officially completed|successfully assembled all the pieces|ready to (?:run this code|execute|proceed|taste the sample)|all \d+ steps (?:of the [a-z]+ algorithm )?(?:are )?verified|sample (?:code )?verified|taste the sample verified/i.test(parsed.feedback || "");
               if (sampleVal.isSyntaxQuery) {
                 parsed.correct = false;
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput) : sampleVal.feedback;
                 parsed.correction = sampleVal.correction;
                 parsed.suggestedInput = sampleVal.suggestedInput;
-              } else if (sampleVal.allVerified) {
+              } else if (sampleVal.allVerified || (feedbackIndicatesCompletion && parsed.correct === true)) {
                 parsed.correct = true;
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput) : sampleVal.feedback;
                 parsed.correction = sampleVal.correction;
                 parsed.suggestedInput = void 0;
+                if (parsed.sampleCodeStepProgress) {
+                  parsed.sampleCodeStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
               } else {
                 parsed.correct = false;
-                if (!sampleVal.hasPrint && sampleVal.hasInput && sampleVal.hasAccumulator && sampleVal.hasLoop && sampleVal.hasProductUpdate) {
+                if (feedbackIndicatesCompletion) {
+                  parsed.feedback = synthesizeHumanTouch(sampleVal.feedback, "samplecode", latestInput);
+                } else if (!sampleVal.hasPrint && sampleVal.hasInput && sampleVal.hasAccumulator && sampleVal.hasLoop && sampleVal.hasProductUpdate) {
                   parsed.feedback = sampleVal.feedback;
                   parsed.correction = sampleVal.correction;
                   parsed.suggestedInput = sampleVal.suggestedInput;
@@ -3637,14 +4496,20 @@ for (int i = 1; i <= ${varName}; i++) {
             if (section === "recipe") {
               const rec = validateDivisorRecipe(userInput);
               parsed.recipeStepProgress = rec.recipeStepProgress;
-              if (rec.isFullyVerified && parsed.correct) {
+              const feedbackIndicatesCompletion = /ready to (?:move on|proceed)|proceed to ingredients|recipe (?:is )?verified|recipe successful/i.test(parsed.feedback || "");
+              if (rec.isFullyVerified || (feedbackIndicatesCompletion && (rec.completedCount >= 3 || parsed.correct === true))) {
                 parsed.correct = true;
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput) : rec.feedback || "\u{1F389} Recipe Successful! Kudos! You've sequenced all the steps of the Divisors of a Number algorithm in plain English. Proceed to the Ingredients stage!";
                 parsed.correction = "Proceed to Ingredients to identify variables and programming constructs.";
                 parsed.suggestedInput = void 0;
+                if (parsed.recipeStepProgress) {
+                  parsed.recipeStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
               } else {
                 parsed.correct = false;
-                if (parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate, write down")) {
+                if (feedbackIndicatesCompletion) {
+                  parsed.feedback = synthesizeHumanTouch(rec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput);
+                } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate, write down")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "recipe", latestInput);
                 } else {
                   parsed.feedback = synthesizeHumanTouch(rec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput);
@@ -3656,14 +4521,20 @@ for (int i = 1; i <= ${varName}; i++) {
             if (section === "ingredients") {
               const ing = validateDivisorIngredients(userInput);
               parsed.ingredientsStepProgress = ing.ingredientsStepProgress;
-              if (ing.isFullyVerified && parsed.correct) {
+              const feedbackIndicatesCompletion = /ready to (?:move on|proceed)|taste the sample|everything is (?:perfectly )?in place|all \d+ ingredients (?:are )?verified|ingredients verified|solution verified/i.test(parsed.feedback || "");
+              if (ing.isFullyVerified || (feedbackIndicatesCompletion && (ing.completedStepsCount >= 3 || parsed.correct === true))) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput) : ing.feedback || "\u{1F389} Ingredients Verified! Brilliant work! You've identified all the key programming ingredients: input variable n, loop from 1 to n, modulo condition (n % i == 0), and print(i). You are ready to assemble your sample code!";
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput) : (ing.feedback || "\u{1F389} Ingredients Verified! Brilliant work! You've identified all the key programming ingredients: input variable n, loop from 1 to n, modulo condition (n % i == 0), and print(i). You are ready to assemble your sample code!");
                 parsed.correction = "Proceed to Taste the Sample stage to assemble your code!";
                 parsed.suggestedInput = void 0;
+                if (parsed.ingredientsStepProgress) {
+                  parsed.ingredientsStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
               } else {
                 parsed.correct = false;
-                if (ing.hasLoopStepDecrement) {
+                if (feedbackIndicatesCompletion) {
+                  parsed.feedback = synthesizeHumanTouch(ing.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput);
+                } else if (ing.hasLoopStepDecrement) {
                   parsed.feedback = synthesizeHumanTouch(ing.feedback, "ingredients", latestInput);
                 } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate, write down")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput);
@@ -3679,14 +4550,20 @@ for (int i = 1; i <= ${varName}; i++) {
             if (section === "samplecode") {
               const sampleVal = validateDivisorSampleCode(userInput, attemptCount);
               parsed.sampleCodeStepProgress = sampleVal.sampleCodeStepProgress;
-              if (sampleVal.allVerified && parsed.correct) {
+              const feedbackIndicatesCompletion = /ready to (?:move on|proceed)|code verified|all tests passed|sample code complete|taste the sample verified/i.test(parsed.feedback || "");
+              if (sampleVal.allVerified || (feedbackIndicatesCompletion && parsed.correct === true)) {
                 parsed.correct = true;
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput) : sampleVal.feedback;
                 parsed.correction = void 0;
                 parsed.suggestedInput = void 0;
+                if (parsed.sampleCodeStepProgress) {
+                  parsed.sampleCodeStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
               } else {
                 parsed.correct = false;
-                if (parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate, write down")) {
+                if (feedbackIndicatesCompletion) {
+                  parsed.feedback = synthesizeHumanTouch(sampleVal.feedback, "samplecode", latestInput);
+                } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate, write down")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput);
                 } else if (sampleVal.feedback) {
                   parsed.feedback = synthesizeHumanTouch(sampleVal.feedback, "samplecode", latestInput);
@@ -3763,7 +4640,7 @@ for (int i = 1; i <= ${varName}; i++) {
               parsed.sampleCodeStepProgress = mulSample.sampleCodeStepProgress;
               if (mulSample.allVerified) {
                 parsed.correct = true;
-                parsed.feedback = "\u{1F31F} Coach Maya here! Outstanding work! \u{1F389} You have successfully assembled all 4 essential ingredients for your multiplication table prototype: input variable declaration, loop from 1 to 10, calculating the product, and printing each step. You have mastered the prototype and are ready to proceed to the complete code editor!";
+                parsed.feedback = "\u{1F31F} Coach Maara here! Outstanding work! \u{1F389} You have successfully assembled all 4 essential ingredients for your multiplication table prototype: input variable declaration, loop from 1 to 10, calculating the product, and printing each step. You have mastered the prototype and are ready to proceed to the complete code editor!";
                 parsed.correction = void 0;
                 parsed.suggestedInput = void 0;
               } else {
@@ -3859,7 +4736,7 @@ for (int i = 1; i <= ${varName}; i++) {
               parsed.sampleCodeStepProgress = primeSample.sampleCodeStepProgress;
               if (primeSample.allVerified) {
                 parsed.correct = true;
-                parsed.feedback = "\u{1F31F} Coach Maya here! Outstanding work! \u{1F389} You have successfully assembled all essential ingredients for your prime number checker prototype: declaring variables, counting divisors with a loop, testing divisibility with modulo, and printing the Prime/Not Prime verdict. You have mastered the prototype and are ready to proceed to the complete code editor!";
+                parsed.feedback = "\u{1F31F} Coach Maara here! Outstanding work! \u{1F389} You have successfully assembled all essential ingredients for your prime number checker prototype: declaring variables, counting divisors with a loop, testing divisibility with modulo, and printing the Prime/Not Prime verdict. You have mastered the prototype and are ready to proceed to the complete code editor!";
                 parsed.correction = void 0;
                 parsed.suggestedInput = void 0;
               } else {
@@ -5152,7 +6029,7 @@ for (int i = 1; i <= ${varName}; i++) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount);
                 }
                 parsed.correction = scSample.correction;
-                parsed.suggestedInput = isStuck || attemptCount >= 2 ? scSample.suggestedInput ? stripCodeWords(scSample.suggestedInput) : void 0 : void 0;
+                parsed.suggestedInput = isStuck || attemptCount >= 2 ? (scSample.suggestedInput ? stripCodeWords(scSample.suggestedInput) : void 0) : void 0;
               }
             }
           }
@@ -5233,7 +6110,7 @@ for (int i = 1; i <= ${varName}; i++) {
                 parsed.correct = false;
                 parsed.feedback = vcSample.feedback || synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount);
                 parsed.correction = vcSample.correction;
-                parsed.suggestedInput = isStuck || attemptCount >= 2 ? vcSample.suggestedInput ? stripCodeWords(vcSample.suggestedInput) : void 0 : void 0;
+                parsed.suggestedInput = isStuck || attemptCount >= 2 ? (vcSample.suggestedInput ? stripCodeWords(vcSample.suggestedInput) : void 0) : void 0;
               }
             }
           }
@@ -5326,9 +6203,75 @@ for (int i = 1; i <= ${varName}; i++) {
               }
             }
           }
-          let sanitizedFeedback = typeof parsed.feedback === "string" ? parsed.feedback : "";
+          // Universal Taste the Sample Multi-Language Structural Exit Gate:
+          const syntaxQuery = (section === "samplecode") ? (detectTasteSampleSyntaxHelp(latestInput) || detectTasteSampleSyntaxHelp(userInput)) : null;
+
+          if (section === "samplecode" && !syntaxQuery) {
+            if (problemType === "odd-even") {
+              const sampleVal = validateOddEvenSampleCode(userInput);
+              if (!sampleVal.allVerified) {
+                parsed.correct = false;
+                parsed.feedback = sampleVal.feedback;
+                parsed.correction = sampleVal.correction;
+                parsed.suggestedInput = sampleVal.suggestedInput;
+                parsed.sampleCodeStepProgress = sampleVal.sampleCodeStepProgress;
+                parsed.stepProgress = sampleVal.sampleCodeStepProgress;
+              } else {
+                parsed.correct = true;
+                parsed.correction = void 0;
+                parsed.suggestedInput = void 0;
+                parsed.sampleCodeStepProgress = sampleVal.sampleCodeStepProgress;
+                parsed.stepProgress = sampleVal.sampleCodeStepProgress;
+              }
+            } else {
+              const isStructurallyComplete = isTasteSampleStructurallyComplete(userInput, problemType);
+              const isGeminiPraisingCompletion = /successfully (?:written|assembled|implemented|completed)|you nailed it|congratulations|sample code (?:is )?verified|all \d+ steps (?:are )?completed|prototype correctly implements|fantastic job! you've successfully|outstanding! your (?:sample )?code|ready to (?:run|move on|proceed|test)/i.test(originalGeminiFeedback || "") || /successfully (?:written|assembled|implemented|completed)|you nailed it|congratulations|sample code (?:is )?verified|all \d+ steps (?:are )?completed|prototype correctly implements|fantastic job! you've successfully|outstanding! your (?:sample )?code|ready to (?:run|move on|proceed|test)/i.test(parsed.feedback || "");
+
+              if (parsed.correct === true || isGeminiPraisingCompletion || isStructurallyComplete) {
+                parsed.correct = true;
+                parsed.correction = void 0;
+                parsed.suggestedInput = void 0;
+              }
+            }
+          }
+
+          // Universal Dynamic AI Feedback Preservation across ALL stages & problems:
+          const isPrematureApproval = !parsed.correct && /proceed to (?:ingredients|recipe|taste the sample|sample code|compiler)|stage completed|congratulations|hurray|kudos|logic approved|recipe approved|recipe successful|ingredients verified|sample code verified|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(originalGeminiFeedback || "");
+          const hasRichGemini = typeof originalGeminiFeedback === "string" && originalGeminiFeedback.trim().length >= 20 && !originalGeminiFeedback.includes("Before we evaluate");
+
+          let sanitizedFeedback = (hasRichGemini && !isPrematureApproval)
+            ? synthesizeHumanTouch(originalGeminiFeedback, section, latestInput, attemptCount)
+            : (typeof parsed.feedback === "string" ? parsed.feedback : "Let's review this step together in the worksheet.");
+
+          if (section === "samplecode" && !syntaxQuery && parsed.correct === true) {
+            if (!sanitizedFeedback || sanitizedFeedback.trim().length < 20 || sanitizedFeedback.includes("assemble the prototype") || sanitizedFeedback.includes("Check your worksheet")) {
+              sanitizedFeedback = `🌟 Coach Maara here! Fantastic job! Your code prototype structure for "${problemTitle}" is verified across all required components! You are ready to proceed to the Compiler to compile and run your code!`;
+            }
+          }
+
+          // Universal Taste the Sample Syntax Query Enforcement:
+          if (syntaxQuery) {
+            parsed.correct = false;
+            const hasCodeExample = typeof sanitizedFeedback === "string" && (
+              sanitizedFeedback.includes("```") ||
+              sanitizedFeedback.includes("`var") ||
+              sanitizedFeedback.includes("`let") ||
+              sanitizedFeedback.includes("`if") ||
+              sanitizedFeedback.includes("`for") ||
+              sanitizedFeedback.includes("for (") ||
+              sanitizedFeedback.includes("for i in")
+            );
+            if (!hasCodeExample || !hasRichGemini || isPrematureApproval) {
+              sanitizedFeedback = generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType);
+            }
+          }
+
           let sanitizedCorrection = typeof parsed.correction === "string" ? parsed.correction : void 0;
           let sanitizedSuggestedInput = typeof parsed.suggestedInput === "string" ? parsed.suggestedInput : void 0;
+          if (syntaxQuery) {
+            sanitizedCorrection = void 0;
+            sanitizedSuggestedInput = void 0;
+          }
           if (sanitizedCorrection) {
             sanitizedCorrection = sanitizedCorrection.replace(/\bL\.S\s*:\s*/gi, "Left Side: ").replace(/\bR\.S\s*:\s*/gi, "Right Side: ").replace(/\bLogical Op\s*:\s*/gi, "Logical Operator: ");
           }
@@ -5341,13 +6284,16 @@ for (int i = 1; i <= ${varName}; i++) {
               sanitizedSuggestedInput = stripCodeWords(sanitizedSuggestedInput);
             }
           }
+          console.info(`[InputCheckerService] ✅ Dynamic AI Hint generated successfully using model: ${model}`);
           return {
             correct: Boolean(parsed.correct),
             feedback: sanitizedFeedback || (typeof parsed.feedback === "string" ? parsed.feedback : "Let's review this step together in the worksheet."),
             correction: sanitizedCorrection || (parsed.correct ? void 0 : "Check your worksheet step and try again."),
             suggestedInput: sanitizedSuggestedInput || void 0,
             proofType: section === "logic" ? parsed.proofType === "theoretical" ? "theoretical" : "mathematical" : parsed.proofType || (section === "recipe" ? "recipe" : section === "ingredients" ? "ingredients" : section === "samplecode" ? "code" : "mathematical"),
-            recipeStepProgress: Array.isArray(parsed.recipeStepProgress) ? parsed.recipeStepProgress : void 0,
+            recipeStepProgress: section === "logic" ? void 0 : (Array.isArray(parsed.recipeStepProgress) ? parsed.recipeStepProgress : void 0),
+            logicStepProgress: Array.isArray(parsed.logicStepProgress) ? parsed.logicStepProgress : void 0,
+            stepProgress: Array.isArray(parsed.stepProgress) ? parsed.stepProgress : (Array.isArray(parsed.logicStepProgress) ? parsed.logicStepProgress : void 0),
             ingredientsStepProgress: Array.isArray(parsed.ingredientsStepProgress) ? parsed.ingredientsStepProgress : void 0,
             sampleCodeStepProgress: Array.isArray(parsed.sampleCodeStepProgress) ? parsed.sampleCodeStepProgress : void 0,
             operationTestCases: Array.isArray(parsed.operationTestCases) ? parsed.operationTestCases : void 0
@@ -5364,7 +6310,8 @@ for (int i = 1; i <= ${varName}; i++) {
             cooldownSeconds = Math.ceil(parseFloat(match[1])) + 2;
           }
           modelCooldownMap.set(model, Date.now() + cooldownSeconds * 1e3);
-          console.info(`[InputCheckerService] Model ${model} rate-limited/quota exceeded (429), cooling down for ${cooldownSeconds}s. Falling back to next candidate model...`);
+          console.info(`[InputCheckerService] Model ${model} quota reached (429). Setting ${cooldownSeconds}s cooldown on this model and trying next candidate model...`);
+          continue;
         } else if (isBusy) {
           modelCooldownMap.set(model, Date.now() + 15e3);
           console.info(`[InputCheckerService] Model ${model} temporarily busy (503/high demand), falling back to next candidate model...`);
@@ -5381,20 +6328,110 @@ for (int i = 1; i <= ${varName}; i++) {
    */
   generateSafetyFallback(section, problemTitle, userInput, isStuck, matchedFirebase, problemID, attemptCount = 1) {
     const problemType = detectProblemType(problemID, problemTitle);
-    if (problemType === "odd-even" && section === "logic") {
-      const oddEvenVal = validateOddEvenClassification(userInput);
-      if (oddEvenVal.hasList && !oddEvenVal.isCorrect) {
+    if (section === "samplecode") {
+      const syntaxQuery = detectTasteSampleSyntaxHelp(userInput);
+      if (syntaxQuery) {
         return {
           correct: false,
-          feedback: `Hey there! Coach Maya here. ${oddEvenVal.feedback}`,
-          correction: oddEvenVal.correction || "Check your numbers: Even numbers can be split into 2 equal parts (2, 4, 6...), while Odd numbers leave 1 leftover (1, 3, 5...).",
-          suggestedInput: oddEvenVal.suggestedInput
+          feedback: generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType),
+          correction: void 0,
+          suggestedInput: void 0,
+          sampleCodeStepProgress: [
+            { stepNumber: 1, title: "Input Variable", completed: false, current: true }
+          ]
+        };
+      }
+      if (problemType === "odd-even") {
+        const sampleVal = validateOddEvenSampleCode(userInput);
+        return {
+          correct: sampleVal.allVerified,
+          feedback: sampleVal.feedback,
+          correction: sampleVal.correction,
+          suggestedInput: sampleVal.suggestedInput,
+          sampleCodeStepProgress: sampleVal.sampleCodeStepProgress,
+          stepProgress: sampleVal.stepProgress
+        };
+      }
+      if (isTasteSampleStructurallyComplete(userInput, problemType)) {
+        return {
+          correct: true,
+          feedback: `🌟 Coach Maara here! Fantastic job! Your code prototype for "${problemTitle}" is structurally verified across all components! Proceed to the Compiler to compile and run your code!`,
+          correction: void 0,
+          suggestedInput: void 0,
+          sampleCodeStepProgress: [
+            { stepNumber: 1, title: "Input Variable", completed: true, current: false },
+            { stepNumber: 2, title: "Algorithm Logic", completed: true, current: false },
+            { stepNumber: 3, title: "Program Output", completed: true, current: false }
+          ]
+        };
+      }
+    }
+    if (problemType === "odd-even") {
+      if (section === "logic") {
+        const oddEvenVal = validateOddEvenClassification(userInput);
+        if (oddEvenVal.hasList && !oddEvenVal.isCorrect) {
+          return {
+            correct: false,
+            feedback: `Hey there! Coach Maara here. ${oddEvenVal.feedback}`,
+            correction: oddEvenVal.correction || "Check your numbers: Even numbers can be split into 2 equal parts (2, 4, 6...), while Odd numbers leave 1 leftover (1, 3, 5...).",
+            suggestedInput: oddEvenVal.suggestedInput
+          };
+        }
+        const logicVal = validateOddEvenLogic(userInput);
+        return {
+          correct: logicVal.isFullyVerified,
+          feedback: synthesizeHumanTouch(logicVal.feedback, "logic", userInput, attemptCount),
+          correction: logicVal.correction,
+          suggestedInput: logicVal.isFullyVerified ? void 0 : logicVal.suggestedInput,
+          logicStepProgress: logicVal.logicStepProgress,
+          stepProgress: logicVal.logicStepProgress
+        };
+      }
+      if (section === "recipe") {
+        const rec = validateOddEvenRecipe(userInput);
+        return {
+          correct: rec.isFullyVerified,
+          feedback: synthesizeHumanTouch(rec.feedback, "recipe", userInput, attemptCount),
+          correction: rec.correction,
+          suggestedInput: rec.isFullyVerified ? void 0 : rec.suggestedInput,
+          recipeStepProgress: rec.recipeStepProgress
+        };
+      }
+      if (section === "ingredients") {
+        const norm = (userInput || "").toLowerCase();
+        const hasN = /\b(?:let|var|const|int)?\s*n\b/.test(norm);
+        const hasMod = /%\s*2/.test(norm) || /modulo/.test(norm);
+        const hasEven = /even/i.test(norm);
+        const hasOdd = /odd/i.test(norm);
+        const hasElse = /else/i.test(norm);
+        const isDone = hasN && hasMod && hasEven && hasOdd && hasElse;
+        const ingredientsStepProgress = [
+          { stepNumber: 1, title: "Input variable n", completed: hasN, current: !hasN },
+          { stepNumber: 2, title: "If condition (n % 2 == 0)", completed: hasMod, current: hasN && !hasMod },
+          { stepNumber: 3, title: "Print 'Even' block", completed: hasEven, current: hasN && hasMod && !hasEven },
+          { stepNumber: 4, title: "Else fallback block", completed: hasElse, current: hasN && hasMod && hasEven && !hasElse },
+          { stepNumber: 5, title: "Print 'Odd' block", completed: hasOdd, current: hasN && hasMod && hasEven && hasElse && !hasOdd }
+        ];
+        return {
+          correct: isDone,
+          feedback: isDone ? "🎉 Ingredients Verified! Brilliant work! You've identified all 5 essential programming ingredients for checking Odd or Even. Proceed to Taste the Sample!" : synthesizeHumanTouch("Identify the 5 ingredients: input variable n, if condition testing n % 2 == 0, print Even, else block, and print Odd.", "ingredients", userInput, attemptCount),
+          correction: "step 1: variable n\nstep 2: If condition with L.S: n % 2, Operator: ==, R.S: 0\nstep 3: Inside if: print(\"Even\")\nstep 4: else block\nstep 5: Inside else: print(\"Odd\")",
+          suggestedInput: isDone ? void 0 : "step 1: variable n\nstep 2: If condition with L.S: n % 2, Operator: ==, R.S: 0\nstep 3: Inside if: print(\"Even\")\nstep 4: else block\nstep 5: Inside else: print(\"Odd\")",
+          ingredientsStepProgress
+        };
+      }
+      if (section === "samplecode") {
+        return {
+          correct: false,
+          feedback: synthesizeHumanTouch("Assemble the code: declare variable n, write the if condition (n % 2 == 0) printing 'Even', and the else block printing 'Odd'.", "samplecode", userInput, attemptCount),
+          correction: "var n = 5;\nif (n % 2 == 0) {\n  print(\"Even\");\n} else {\n  print(\"Odd\");\n}",
+          suggestedInput: "var n = 5;\nif (n % 2 == 0) {\n  print(\"Even\");\n} else {\n  print(\"Odd\");\n}"
         };
       }
     }
     if (problemType === "sum-natural-numbers") {
       if (section === "logic") {
-        const sumVal = validateSumOfNLogic(userInput);
+        const sumVal = validateSumOfNLogic(userInput, attemptCount);
         if (sumVal.isCorrect && sumVal.hasAccumulation) {
           return {
             correct: true,
@@ -5402,18 +6439,18 @@ for (int i = 1; i <= ${varName}; i++) {
             correction: "Proceed to the Recipe stage to write the step-by-step instructions."
           };
         }
-        if (matchedFirebase?.bestPair?.hint) {
+        if (!sumVal.isCorrect && sumVal.feedback) {
           return {
             correct: false,
-            feedback: matchedFirebase.bestPair.hint,
+            feedback: synthesizeHumanTouch(sumVal.feedback, "logic", userInput, attemptCount),
             correction: sumVal.correction || "Check your worksheet calculation.",
             suggestedInput: sumVal.suggestedInput
           };
         }
-        if (!sumVal.isCorrect && sumVal.feedback) {
+        if (matchedFirebase?.bestPair?.hint) {
           return {
             correct: false,
-            feedback: sumVal.feedback,
+            feedback: synthesizeHumanTouch(matchedFirebase.bestPair.hint, "logic", userInput, attemptCount),
             correction: sumVal.correction || "Check your worksheet calculation.",
             suggestedInput: sumVal.suggestedInput
           };
@@ -5422,24 +6459,24 @@ for (int i = 1; i <= ${varName}; i++) {
       if (section === "recipe") {
         const rec = validateSumOfNRecipe(userInput);
         const doneHint = matchedFirebase?.allPairs?.find((p) => p.input.toLowerCase().includes("step 5"))?.hint || "Kudos. You've sequenced all 5 steps of the algorithm in plain English. Proceed to ingredients.";
-        const rawHint = rec.allStepsDone ? doneHint : matchedFirebase?.bestPair?.hint || "whatever you found in logic, write it here step by step.\nEx: Step 1: Get the input\nStep 2: Do the process etc..";
+        const rawHint = rec.allStepsDone ? doneHint : (rec.feedback || matchedFirebase?.bestPair?.hint || "whatever you found in logic, write it here step by step.\nEx: Step 1: Get the input\nStep 2: Do the process etc..");
         return {
           correct: rec.allStepsDone,
           feedback: synthesizeHumanTouch(rawHint, "recipe", userInput),
-          correction: rec.allStepsDone ? "Proceed to ingredients." : "Start with Step 1: Get the input number n from the user.",
-          suggestedInput: rec.allStepsDone ? void 0 : "Step 1: Get the input number n from the user",
+          correction: rec.allStepsDone ? "Proceed to ingredients." : (rec.correction || "Start with Step 1: Get the input number n from the user."),
+          suggestedInput: rec.allStepsDone ? void 0 : (rec.suggestedInput || "Step 1: Get the input number n from the user"),
           recipeStepProgress: rec.recipeStepProgress
         };
       }
       if (section === "ingredients") {
         const ing = validateSumOfNIngredients(userInput);
         const doneHint = matchedFirebase?.allPairs?.find((p) => p.input.toLowerCase().includes("step 5: sum = sum + i") || p.hint.toLowerCase().includes("all 5 ingredients are verified") || p.hint.toLowerCase().includes("all the ingredients ready"))?.hint || "Good work. You have all the ingredients ready. Now let's proceed to taste the sample.";
-        const rawHint = ing.allIngredientsDone ? doneHint : ing.hasWrongSumAccumulation ? ing.feedback : matchedFirebase?.bestPair?.hint || ing.feedback;
+        const rawHint = ing.allIngredientsDone ? doneHint : (ing.feedback || matchedFirebase?.bestPair?.hint);
         return {
           correct: ing.allIngredientsDone,
           feedback: synthesizeHumanTouch(rawHint, "ingredients", userInput),
-          correction: ing.allIngredientsDone ? "Proceed to taste the sample." : ing.hasWrongSumAccumulation ? ing.correction : "List the input variable n, accumulator sum = 0, loop construct, loop controls (start = 1, end = n), and sum update (sum = sum + i).",
-          suggestedInput: ing.allIngredientsDone ? void 0 : ing.hasWrongSumAccumulation ? "Step 5: sum = sum + i" : "Step 1: n\nStep 2: sum = 0\nStep 3: for loop\nStep 4: start = 1, end = n, next step = +1\nStep 5: sum = sum + i",
+          correction: ing.allIngredientsDone ? "Proceed to taste the sample." : (ing.correction || "List the input variable n, accumulator sum = 0, loop construct, loop controls (start = 1, end = n), and sum update (sum = sum + i)."),
+          suggestedInput: ing.allIngredientsDone ? void 0 : (ing.suggestedInput || "Step 1: n\nStep 2: sum = 0\nStep 3: for loop\nStep 4: start = 1, end = n, next step = +1\nStep 5: sum = sum + i"),
           ingredientsStepProgress: ing.ingredientsStepProgress
         };
       }
@@ -5640,7 +6677,7 @@ for (int i = 1; i <= ${varName}; i++) {
     }
     if (problemType === "next-prime-number") {
       if (section === "logic") {
-        const npLog = validateNextPrimeLogic(userInput);
+        const npLog = validateNextPrimeLogic(userInput, attemptCount);
         return {
           correct: npLog.isFullyVerified,
           feedback: synthesizeHumanTouch(npLog.feedback, "logic", userInput, attemptCount),
@@ -5943,7 +6980,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const gtLog = validateGreaterThan100Logic(userInput);
         let fb;
         let corr;
-        const sug = isStuck || attemptCount >= 2 ? gtLog.suggestedInput : void 0;
+        const sug = gtLog.suggestedInput;
         if (isQuestion2) {
           fb = "Great question! In this worksheet stage, our goal is to explain how to check whether any given number is greater than 100 in plain everyday words. Think of any number\u2014if it is strictly more than 100 (like 120 or 150), it is 'Greater than 100'; if it is 100 or less (like 50, 80, or 100 itself), it is 'Not greater than 100'. How would you explain this in your own words?";
           corr = "Explain both outcomes: what makes a number Greater than 100, and what happens when it is 100 or less.";
@@ -5968,7 +7005,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const gtRec = validateGreaterThan100Recipe(userInput);
         const fb = stripCodeWords(gtRec.feedback || matchedFirebase?.bestPair?.hint || "Step 1: Get number input. Step 2: If number is greater than 100, display Greater than 100, else display Not greater than 100.");
         const corr = stripCodeWords(gtRec.correction || "Step 1: Get number input.");
-        const sug = isStuck || attemptCount >= 2 ? gtRec.suggestedInput ? stripCodeWords(gtRec.suggestedInput) : void 0 : void 0;
+        const sug = gtRec.suggestedInput ? stripCodeWords(gtRec.suggestedInput) : void 0;
         return {
           correct: gtRec.isFullyVerified,
           feedback: synthesizeHumanTouch(fb, "recipe", userInput, attemptCount),
@@ -5983,7 +7020,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: gtIng.isFullyVerified,
           feedback: synthesizeHumanTouch(gtIng.feedback || matchedFirebase?.bestPair?.hint || "Input variable num, and an if-else condition using comparison operator >.", "ingredients", userInput, attemptCount),
           correction: gtIng.correction || "step 1 : num variable\nstep 2 : If condition with L.S: num, R.S: 100, Operator: >",
-          suggestedInput: isStuck || attemptCount >= 2 ? gtIng.suggestedInput : void 0,
+          suggestedInput: gtIng.suggestedInput,
           ingredientsStepProgress: gtIng.ingredientsStepProgress
         };
       }
@@ -5993,7 +7030,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: gtSample.allVerified,
           feedback: synthesizeHumanTouch(gtSample.feedback || matchedFirebase?.bestPair?.hint || 'var num = 120;\nif (num > 100) print("Greater than 100");\nelse print("Not greater than 100");', "samplecode", userInput, attemptCount),
           correction: gtSample.correction,
-          suggestedInput: isStuck || attemptCount >= 2 ? gtSample.suggestedInput || void 0 : void 0,
+          suggestedInput: gtSample.suggestedInput || void 0,
           sampleCodeStepProgress: gtSample.sampleCodeStepProgress
         };
       }
@@ -6004,7 +7041,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const plLog = validateProfitLossLogic(userInput);
         let fb;
         let corr;
-        const sug = isStuck || attemptCount >= 2 ? plLog.suggestedInput : void 0;
+        const sug = plLog.suggestedInput;
         if (plLog.isFullyVerified) {
           fb = plLog.feedback || "Spot on! Correct! Logic Approved! \u{1F389}";
           corr = "Proceed to the Recipe stage to sequence the steps.";
@@ -6029,7 +7066,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const plRec = validateProfitLossRecipe(userInput);
         const fb = stripCodeWords(plRec.feedback || matchedFirebase?.bestPair?.hint || "Step 1: Get cost price and selling price. Step 2: If selling price is greater than cost price, display Profit, else display Loss.");
         const corr = stripCodeWords(plRec.correction || "Step 1: Get cost price and selling price.");
-        const sug = isStuck || attemptCount >= 2 ? plRec.suggestedInput ? stripCodeWords(plRec.suggestedInput) : void 0 : void 0;
+        const sug = plRec.suggestedInput ? stripCodeWords(plRec.suggestedInput) : void 0;
         return {
           correct: plRec.isFullyVerified,
           feedback: synthesizeHumanTouch(fb, "recipe", userInput, attemptCount),
@@ -6044,7 +7081,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: plIng.isFullyVerified,
           feedback: synthesizeHumanTouch(plIng.feedback || matchedFirebase?.bestPair?.hint || "Input variables cp and sp, and an if-else condition comparing sp > cp.", "ingredients", userInput, attemptCount),
           correction: plIng.correction || "step 1 : cp and sp variables\nstep 2 : If condition with L.S: sp, R.S: cp, Operator: >",
-          suggestedInput: isStuck || attemptCount >= 2 ? plIng.suggestedInput : void 0,
+          suggestedInput: plIng.suggestedInput,
           ingredientsStepProgress: plIng.ingredientsStepProgress
         };
       }
@@ -6054,7 +7091,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: plSample.allVerified,
           feedback: synthesizeHumanTouch(plSample.feedback || matchedFirebase?.bestPair?.hint || 'var cp = 100;\nvar sp = 150;\nif (sp > cp) print("Profit");\nelse print("Loss");', "samplecode", userInput, attemptCount),
           correction: plSample.correction,
-          suggestedInput: isStuck || attemptCount >= 2 ? plSample.suggestedInput || void 0 : void 0,
+          suggestedInput: plSample.suggestedInput || void 0,
           sampleCodeStepProgress: plSample.sampleCodeStepProgress
         };
       }
@@ -6064,7 +7101,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const divLog = validateDivisibleBy5Logic(userInput, attemptCount);
         const fb = divLog.feedback || matchedFirebase?.bestPair?.hint || "A number is divisible by 5 if n % 5 == 0 (leaves remainder 0).";
         const corr = divLog.correction || "Check if n % 5 == 0.";
-        const sug = isStuck || attemptCount >= 2 ? divLog.suggestedInput ? stripCodeWords(divLog.suggestedInput) : void 0 : void 0;
+        const sug = divLog.suggestedInput ? stripCodeWords(divLog.suggestedInput) : void 0;
         return {
           correct: divLog.isFullyVerified,
           proofType: "theoretical",
@@ -6078,7 +7115,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const divRec = validateDivisibleBy5Recipe(userInput, attemptCount);
         const fb = divRec.feedback || matchedFirebase?.bestPair?.hint || "Step 2: Check if dividing the number by 5 leaves remainder 0.";
         const corr = divRec.correction || "Step 2: Check if dividing the number by 5 leaves remainder 0.";
-        const sug = isStuck || attemptCount >= 2 ? divRec.suggestedInput ? stripCodeWords(divRec.suggestedInput) : void 0 : void 0;
+        const sug = divRec.suggestedInput ? stripCodeWords(divRec.suggestedInput) : void 0;
         return {
           correct: divRec.isFullyVerified,
           feedback: synthesizeHumanTouch(fb, "recipe", userInput, attemptCount),
@@ -6093,7 +7130,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: divIng.isFullyVerified,
           feedback: synthesizeHumanTouch(divIng.feedback || matchedFirebase?.bestPair?.hint || "Input variable n, and an if-else condition using modulo operator (%) and equality operator (==) with 0.", "ingredients", userInput, attemptCount),
           correction: divIng.correction || "step 1 : n variable\nstep 2 : If condition with L.S: n % 5, Operator: ==, R.S: 0",
-          suggestedInput: isStuck || attemptCount >= 2 ? divIng.suggestedInput : void 0,
+          suggestedInput: divIng.suggestedInput,
           ingredientsStepProgress: divIng.ingredientsStepProgress
         };
       }
@@ -6103,7 +7140,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: divSample.allVerified,
           feedback: synthesizeHumanTouch(divSample.feedback || matchedFirebase?.bestPair?.hint || 'var n = 25;\nif (n % 5 == 0) print("Divisible by 5");\nelse print("Not Divisible by 5");', "samplecode", userInput, attemptCount),
           correction: divSample.correction,
-          suggestedInput: isStuck || attemptCount >= 2 ? divSample.suggestedInput || void 0 : void 0,
+          suggestedInput: divSample.suggestedInput || void 0,
           sampleCodeStepProgress: divSample.sampleCodeStepProgress,
           operationTestCases: divSample.operationTestCases
         };
@@ -6114,7 +7151,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const amLog = validateAdultMinorLogic(userInput, attemptCount);
         const fb = amLog.feedback || matchedFirebase?.bestPair?.hint || "A person is an Adult if age >= 18, and a Minor if age < 18.";
         const corr = amLog.correction || "Check if age >= 18.";
-        const sug = isStuck || attemptCount >= 2 ? amLog.suggestedInput ? stripCodeWords(amLog.suggestedInput) : void 0 : void 0;
+        const sug = amLog.suggestedInput ? stripCodeWords(amLog.suggestedInput) : void 0;
         return {
           correct: amLog.isFullyVerified,
           proofType: "theoretical",
@@ -6128,7 +7165,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const amRec = validateAdultMinorRecipe(userInput, attemptCount);
         const fb = amRec.feedback || matchedFirebase?.bestPair?.hint || "Step 1: Get input age. Step 2: Check if age >= 18. Step 3: Print result.";
         const corr = amRec.correction || "Step 1: Get input age. Step 2: If age >= 18 display Adult, else display Minor.";
-        const sug = isStuck || attemptCount >= 2 ? amRec.suggestedInput ? stripCodeWords(amRec.suggestedInput) : void 0 : void 0;
+        const sug = amRec.suggestedInput ? stripCodeWords(amRec.suggestedInput) : void 0;
         return {
           correct: amRec.isFullyVerified,
           feedback: synthesizeHumanTouch(fb, "recipe", userInput, attemptCount),
@@ -6143,7 +7180,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: amIng.isFullyVerified,
           feedback: synthesizeHumanTouch(amIng.feedback || matchedFirebase?.bestPair?.hint || "Input variable age, and an if-else condition using comparison operator (>=) and threshold 18.", "ingredients", userInput, attemptCount),
           correction: amIng.correction || "step 1 : age variable\nstep 2 : If condition with L.S: age, Operator: >=, R.S: 18",
-          suggestedInput: isStuck || attemptCount >= 2 ? amIng.suggestedInput : void 0,
+          suggestedInput: amIng.suggestedInput,
           ingredientsStepProgress: amIng.ingredientsStepProgress
         };
       }
@@ -6153,7 +7190,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: amSample.allVerified,
           feedback: synthesizeHumanTouch(amSample.feedback || matchedFirebase?.bestPair?.hint || 'var age = 20;\nif (age >= 18) print("Adult");\nelse print("Minor");', "samplecode", userInput, attemptCount),
           correction: amSample.correction,
-          suggestedInput: isStuck || attemptCount >= 2 ? amSample.suggestedInput || void 0 : void 0,
+          suggestedInput: amSample.suggestedInput || void 0,
           sampleCodeStepProgress: amSample.sampleCodeStepProgress,
           operationTestCases: amSample.operationTestCases
         };
@@ -6164,7 +7201,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const lyLog = validateLeapYearLogic(userInput, attemptCount);
         const fb = lyLog.feedback || matchedFirebase?.bestPair?.hint || "A leap year has 366 days and occurs every 4 years. We check if year % 4 == 0.";
         const corr = lyLog.correction || "Check if year divided by 4 leaves remainder 0.";
-        const sug = isStuck || attemptCount >= 2 ? lyLog.suggestedInput ? stripCodeWords(lyLog.suggestedInput) : void 0 : void 0;
+        const sug = lyLog.suggestedInput ? stripCodeWords(lyLog.suggestedInput) : void 0;
         return {
           correct: lyLog.isFullyVerified,
           proofType: "theoretical",
@@ -6178,7 +7215,7 @@ for (int i = 1; i <= ${varName}; i++) {
         const lyRec = validateLeapYearRecipe(userInput, attemptCount);
         const fb = lyRec.feedback || matchedFirebase?.bestPair?.hint || "Step 1: Get input year. Step 2: Check if year % 4 == 0. Step 3: Print result.";
         const corr = lyRec.correction || "Step 1: Get input year. Step 2: If year % 4 leaves remainder 0, display Leap Year, else display Not a Leap Year.";
-        const sug = isStuck || attemptCount >= 2 ? lyRec.suggestedInput ? stripCodeWords(lyRec.suggestedInput) : void 0 : void 0;
+        const sug = lyRec.suggestedInput ? stripCodeWords(lyRec.suggestedInput) : void 0;
         return {
           correct: lyRec.isFullyVerified,
           feedback: synthesizeHumanTouch(fb, "recipe", userInput, attemptCount),
@@ -6193,7 +7230,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: lyIng.isFullyVerified,
           feedback: synthesizeHumanTouch(lyIng.feedback || matchedFirebase?.bestPair?.hint || "Input variable year, and an if-else condition using modulo operator (%) and equality operator (==).", "ingredients", userInput, attemptCount),
           correction: lyIng.correction || "step 1 : year variable\nstep 2 : If condition with L.S: year % 4, R.S: 0, Operator: ==",
-          suggestedInput: isStuck || attemptCount >= 2 ? lyIng.suggestedInput : void 0,
+          suggestedInput: lyIng.suggestedInput,
           ingredientsStepProgress: lyIng.ingredientsStepProgress
         };
       }
@@ -6203,7 +7240,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: lySample.allVerified,
           feedback: synthesizeHumanTouch(lySample.feedback || matchedFirebase?.bestPair?.hint || 'var year = 2024;\nif (year % 4 == 0) print("Leap Year");\nelse print("Not a Leap Year");', "samplecode", userInput, attemptCount),
           correction: lySample.correction,
-          suggestedInput: isStuck || attemptCount >= 2 ? lySample.suggestedInput || void 0 : void 0,
+          suggestedInput: lySample.suggestedInput || void 0,
           sampleCodeStepProgress: lySample.sampleCodeStepProgress,
           operationTestCases: lySample.operationTestCases
         };
@@ -6217,7 +7254,7 @@ for (int i = 1; i <= ${varName}; i++) {
           proofType: "theoretical",
           feedback: synthesizeHumanTouch(stripCodeWords(vcLog.feedback || matchedFirebase?.bestPair?.hint || "Check if the character equals 'a', 'e', 'i', 'o', or 'u'. If true, Vowel; otherwise Consonant."), "logic", userInput, attemptCount),
           correction: stripCodeWords(vcLog.correction || "Check if character equals 'a', 'e', 'i', 'o', or 'u': if true Vowel, otherwise Consonant."),
-          suggestedInput: isStuck || attemptCount >= 2 ? vcLog.suggestedInput ? stripCodeWords(vcLog.suggestedInput) : void 0 : void 0,
+          suggestedInput: vcLog.suggestedInput ? stripCodeWords(vcLog.suggestedInput) : void 0,
           operationTestCases: vcLog.operationTestCases
         };
       }
@@ -6227,7 +7264,7 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: vcRec.isFullyVerified,
           feedback: synthesizeHumanTouch(stripCodeWords(vcRec.feedback || matchedFirebase?.bestPair?.hint || "Step 1: Get character input. Step 2: If character is equal to 'a', 'e', 'i', 'o', or 'u', display Vowel, otherwise display Consonant."), "recipe", userInput, attemptCount),
           correction: stripCodeWords(vcRec.correction || "Step 1: Get character input. Step 2: If character is equal to 'a', 'e', 'i', 'o', or 'u', display Vowel, otherwise display Consonant."),
-          suggestedInput: isStuck || attemptCount >= 2 ? vcRec.suggestedInput ? stripCodeWords(vcRec.suggestedInput) : void 0 : void 0,
+          suggestedInput: vcRec.suggestedInput ? stripCodeWords(vcRec.suggestedInput) : void 0,
           recipeStepProgress: vcRec.recipeStepProgress
         };
       }
@@ -6241,7 +7278,7 @@ step 2 : If condition checking ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' 
 step 3 : Inside if block: print("Vowel")
 step 4 : Fallback else block
 step 5 : Inside else block: print("Consonant")`,
-          suggestedInput: isStuck || attemptCount >= 2 ? vcIng.suggestedInput : void 0,
+          suggestedInput: vcIng.suggestedInput,
           ingredientsStepProgress: vcIng.ingredientsStepProgress
         };
       }
@@ -6256,7 +7293,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
   print("Consonant");
 }`, "samplecode", userInput, attemptCount),
           correction: vcSample.correction || '} else {\n  print("Consonant");\n}',
-          suggestedInput: isStuck || attemptCount >= 2 ? vcSample.suggestedInput || void 0 : void 0,
+          suggestedInput: vcSample.suggestedInput || void 0,
           sampleCodeStepProgress: vcSample.sampleCodeStepProgress,
           operationTestCases: vcSample.operationTestCases
         };
@@ -6270,7 +7307,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
           proofType: "theoretical",
           feedback: synthesizeHumanTouch(stripCodeWords(scLog.feedback || matchedFirebase?.bestPair?.hint || "A person aged 60 or above (age >= 60) is considered a Senior Citizen; otherwise Not a Senior Citizen."), "logic", userInput, attemptCount),
           correction: stripCodeWords(scLog.correction || "Check if age >= 60 using comparison operator >= and include a mathematical example with actual numbers."),
-          suggestedInput: isStuck || attemptCount >= 2 ? scLog.suggestedInput ? stripCodeWords(scLog.suggestedInput) : void 0 : void 0,
+          suggestedInput: scLog.suggestedInput ? stripCodeWords(scLog.suggestedInput) : void 0,
           operationTestCases: scLog.operationTestCases
         };
       }
@@ -6280,7 +7317,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
           correct: scRec.isFullyVerified,
           feedback: synthesizeHumanTouch(stripCodeWords(scRec.feedback || matchedFirebase?.bestPair?.hint || "Step 1: Get age input. Step 2: If age is 60 or greater, display Senior Citizen, else display Not Senior Citizen."), "recipe", userInput, attemptCount),
           correction: stripCodeWords(scRec.correction || "Step 1: Get age input from the user."),
-          suggestedInput: isStuck || attemptCount >= 2 ? scRec.suggestedInput ? stripCodeWords(scRec.suggestedInput) : void 0 : void 0,
+          suggestedInput: scRec.suggestedInput ? stripCodeWords(scRec.suggestedInput) : void 0,
           recipeStepProgress: scRec.recipeStepProgress
         };
       }
@@ -6290,7 +7327,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
           correct: scIng.isFullyVerified,
           feedback: synthesizeHumanTouch(scIng.feedback || matchedFirebase?.bestPair?.hint || "Input variable age, and an if-else condition using comparison operator >= with threshold 60.", "ingredients", userInput, attemptCount),
           correction: scIng.correction || "step 1 : age variable\nstep 2 : If condition with L.S: age, R.S: 60, Operator: >=",
-          suggestedInput: isStuck || attemptCount >= 2 ? scIng.suggestedInput : void 0,
+          suggestedInput: scIng.suggestedInput,
           ingredientsStepProgress: scIng.ingredientsStepProgress
         };
       }
@@ -6300,7 +7337,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
           correct: scSample.allVerified,
           feedback: synthesizeHumanTouch(scSample.feedback || matchedFirebase?.bestPair?.hint || 'var age = 65;\nif (age >= 60) print("Senior Citizen");\nelse print("Not Senior Citizen");', "samplecode", userInput, attemptCount),
           correction: scSample.correction || 'if (age >= 60) print("Senior Citizen");\nelse print("Not Senior Citizen");',
-          suggestedInput: isStuck || attemptCount >= 2 ? scSample.suggestedInput || void 0 : void 0,
+          suggestedInput: scSample.suggestedInput || void 0,
           sampleCodeStepProgress: scSample.sampleCodeStepProgress,
           operationTestCases: scSample.operationTestCases
         };
@@ -6314,7 +7351,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
           proofType: "theoretical",
           feedback: synthesizeHumanTouch(stripCodeWords(maxLog.feedback || matchedFirebase?.bestPair?.hint || "Compare two numbers: If first number is greater than second number, first is maximum; otherwise second is maximum."), "logic", userInput, attemptCount),
           correction: stripCodeWords(maxLog.correction || "Compare two numbers: If first number is greater than second number, first is maximum; otherwise second is maximum."),
-          suggestedInput: isStuck || attemptCount >= 2 ? maxLog.suggestedInput ? stripCodeWords(maxLog.suggestedInput) : void 0 : void 0,
+          suggestedInput: maxLog.suggestedInput ? stripCodeWords(maxLog.suggestedInput) : void 0,
           operationTestCases: maxLog.operationTestCases
         };
       }
@@ -6324,7 +7361,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
           correct: maxRec.isFullyVerified,
           feedback: synthesizeHumanTouch(stripCodeWords(maxRec.feedback || matchedFirebase?.bestPair?.hint || "Step 1: Get two numbers from user. Step 2: If first number is greater than second number display first is maximum, otherwise display second is maximum."), "recipe", userInput, attemptCount),
           correction: stripCodeWords(maxRec.correction || "Step 1: Get two numbers from user. Step 2: If first number is greater than second number display first is maximum, otherwise display second is maximum."),
-          suggestedInput: isStuck || attemptCount >= 2 ? maxRec.suggestedInput ? stripCodeWords(maxRec.suggestedInput) : void 0 : void 0,
+          suggestedInput: maxRec.suggestedInput ? stripCodeWords(maxRec.suggestedInput) : void 0,
           recipeStepProgress: maxRec.recipeStepProgress
         };
       }
@@ -6334,7 +7371,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
           correct: maxIng.isFullyVerified,
           feedback: synthesizeHumanTouch(maxIng.feedback || matchedFirebase?.bestPair?.hint || "Declare variables a and b, then use an if condition (a > b) and fallback else block.", "ingredients", userInput, attemptCount),
           correction: maxIng.correction || 'step 1 : a and b variables\nstep 2 : If condition with L.S: a, R.S: b, Operator: >\nstep 3 : Inside if block: print("a is max")\nstep 4 : Fallback else block\nstep 5 : Inside else block: print("b is max")',
-          suggestedInput: isStuck || attemptCount >= 2 ? maxIng.suggestedInput : void 0,
+          suggestedInput: maxIng.suggestedInput,
           ingredientsStepProgress: maxIng.ingredientsStepProgress
         };
       }
@@ -6344,7 +7381,7 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
           correct: maxSample.allVerified,
           feedback: synthesizeHumanTouch(maxSample.feedback || matchedFirebase?.bestPair?.hint || 'var a = 20, b = 40;\nif (a > b) {\n  print("a is max");\n} else {\n  print("b is max");\n}', "samplecode", userInput, attemptCount),
           correction: maxSample.correction || '} else {\n  print("b is max");\n}',
-          suggestedInput: isStuck || attemptCount >= 2 ? maxSample.suggestedInput || void 0 : void 0,
+          suggestedInput: maxSample.suggestedInput || void 0,
           sampleCodeStepProgress: maxSample.sampleCodeStepProgress,
           operationTestCases: maxSample.operationTestCases
         };
@@ -6354,23 +7391,31 @@ if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
     if (matchedFirebase?.bestPair) {
       const baseHint = matchedFirebase.bestPair && matchedFirebase.bestPair.hint ? String(matchedFirebase.bestPair.hint) : "";
       const finalHint = section === "logic" || section === "recipe" ? stripCodeWords(baseHint) : baseHint;
+      const matchedInput = matchedFirebase.bestPair.input ? String(matchedFirebase.bestPair.input) : void 0;
+      let matchedCorrection = void 0;
+      if (matchedInput) {
+        matchedCorrection = `Try structuring your ${section} following this pattern: "${matchedInput.split('\n')[0]}"`;
+      }
       return {
         correct: false,
         feedback: synthesizeHumanTouch(finalHint, section, userInput),
-        correction: "Think about the next step and write it in the worksheet."
+        correction: matchedCorrection || `Think about the next step for ${problemTitle} and write it in the worksheet.`,
+        suggestedInput: matchedInput
       };
     }
     if (isQuestion) {
       return {
         correct: false,
         feedback: `Hey! I heard your question. For "${problemTitle}", start by picking a small sample number and working out the first step manually.`,
-        correction: "Pick a small test input and work through the first operation."
+        correction: "Pick a small test input and work through the first operation.",
+        suggestedInput: section === "logic" ? "n = 5" : section === "recipe" ? "Step 1: Get the input number n" : section === "ingredients" ? "Step 1: variable n" : "let n = 5;"
       };
     }
     return {
       correct: false,
       feedback: `Good effort! As your coach, take a close look at your ${section} thinking for "${problemTitle}". Make sure every step follows clearly from the previous one.`,
-      correction: `Review your ${section} steps and refine the sequence.`
+      correction: `Review your ${section} steps and refine the sequence.`,
+      suggestedInput: void 0
     };
   }
 }
@@ -6379,6 +7424,7 @@ export {
   InputCheckerService,
   extractLatestInput,
   inputCheckerService,
+  sanitizePrematurePraise,
   stripCodeWords,
   synthesizeHumanTouch
 };

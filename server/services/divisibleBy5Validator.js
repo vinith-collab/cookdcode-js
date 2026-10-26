@@ -3,7 +3,7 @@ function validateDivisibleBy5Logic(input, attemptCount = 1) {
   if (norm.length < 4) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! What mathematical operation tests if a number is divisible by 5, and what remainder should it leave?",
+      feedback: "\u{1F31F} Coach Maara here! What mathematical operation tests if a number is divisible by 5, and what remainder should it leave?",
       correction: "If n % 5 == 0 it is Divisible by 5; if n % 5 != 0 it is Not Divisible by 5.",
       suggestedInput: "If a number divided by 5 leaves remainder 0 (n % 5 == 0, e.g. 25 % 5 = 0), it is Divisible by 5. If remainder is not 0 (e.g. 23 % 5 = 3), it is Not Divisible by 5."
     };
@@ -12,7 +12,7 @@ function validateDivisibleBy5Logic(input, attemptCount = 1) {
   if (isQuestion) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! A number is divisible by 5 if dividing it by 5 leaves a remainder of 0 (`n % 5 == 0`). If the remainder is not 0, it is Not Divisible by 5.\n\nTo complete this logic stage, write this mathematical rule with an example in your worksheet:\n\u2022 For n = 25: `25 % 5 = 0` \u2794 Divisible by 5\n\u2022 For n = 23: `23 % 5 = 3 != 0` \u2794 Not Divisible by 5",
+      feedback: "\u{1F31F} Coach Maara here! A number is divisible by 5 if dividing it by 5 leaves a remainder of 0 (`n % 5 == 0`). If the remainder is not 0, it is Not Divisible by 5.\n\nTo complete this logic stage, write this mathematical rule with an example in your worksheet:\n\u2022 For n = 25: `25 % 5 = 0` \u2794 Divisible by 5\n\u2022 For n = 23: `23 % 5 = 3 != 0` \u2794 Not Divisible by 5",
       correction: "Check if n % 5 == 0: remainder 0 is Divisible by 5, remainder != 0 is Not Divisible by 5.",
       suggestedInput: "If a number divided by 5 leaves remainder 0 (n % 5 == 0, e.g. 25 % 5 = 0), it is Divisible by 5. Otherwise (n % 5 != 0, e.g. 23 % 5 = 3), it is Not Divisible by 5.",
       matchedFirebaseInput: "what is divisible by 5"
@@ -32,7 +32,7 @@ function validateDivisibleBy5Logic(input, attemptCount = 1) {
       return {
         isFullyVerified: false,
         hasContradiction: true,
-        feedback: `\u{1F31F} Coach Maya gentle check: Look closely at your arithmetic \`${left} % ${divisor} ${op} ${right}\`! When you divide ${left} by ${divisor}, ${divisor} goes into ${left} with a remainder of \`${actualRemainder}\` (not ${right}). So \`${left} % ${divisor} = ${actualRemainder}\`.`,
+        feedback: `\u{1F31F} Coach Maara gentle check: Look closely at your arithmetic \`${left} % ${divisor} ${op} ${right}\`! When you divide ${left} by ${divisor}, ${divisor} goes into ${left} with a remainder of \`${actualRemainder}\` (not ${right}). So \`${left} % ${divisor} = ${actualRemainder}\`.`,
         correction: `For ${left}: write \`${left} % 5 = ${actualRemainder}\` (${actualRemainder === 0 ? "Divisible by 5" : "Not Divisible by 5"}).`,
         suggestedInput: `For n = 25: 25 % 5 = 0 -> Divisible by 5. For n = 23: 23 % 5 = 3 != 0 -> Not Divisible by 5.`,
         matchedFirebaseInput: "how to check if a number is divisible by 5"
@@ -51,7 +51,7 @@ function validateDivisibleBy5Logic(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       hasContradiction: true,
-      feedback: "\u{1F31F} Coach Maya gentle check: Look closely at your divisibility definition! When dividing by 5 leaves a **remainder of 0** (`n % 5 == 0`), the number **IS Divisible by 5**! When there is a non-zero remainder (`n % 5 != 0`), it is **Not Divisible by 5**.",
+      feedback: "\u{1F31F} Coach Maara gentle check: Look closely at your divisibility definition! When dividing by 5 leaves a **remainder of 0** (`n % 5 == 0`), the number **IS Divisible by 5**! When there is a non-zero remainder (`n % 5 != 0`), it is **Not Divisible by 5**.",
       correction: "If n % 5 == 0 it is Divisible by 5; if n % 5 != 0 it is Not Divisible by 5.",
       suggestedInput: "If n % 5 == 0 (e.g. 25 % 5 = 0 -> true) -> Divisible by 5. If n % 5 != 0 (e.g. 23 % 5 = 3 -> true) -> Not Divisible by 5.",
       matchedFirebaseInput: "how to check if a number is divisible by 5"
@@ -65,14 +65,14 @@ function validateDivisibleBy5Logic(input, attemptCount = 1) {
       hasModuloCheck: false,
       hasDivisibleOutcome: mentionsDivisible,
       hasNotDivisibleOutcome: mentionsNotDivisible,
-      feedback: "\u{1F31F} Coach Maya here! Good conceptual start in words! You correctly identified that a number divisible by 5 leaves remainder 0. \u{1F44F}\n\nNow, **explain it mathematically with an example number!**\nShow the mathematical modulo remainder operation:\n\u2022 Take an example divisible number (like 25): `25 % 5 = 0` \u2794 **Divisible by 5**.\n\u2022 Take an example non-divisible number (like 23): `23 % 5 = 3 != 0` \u2794 **Not Divisible by 5**.\n\nWrite your mathematical comparison condition (`n % 5 == 0`) or example calculation in your worksheet to complete this logic stage!",
+      feedback: "\u{1F31F} Coach Maara here! Good conceptual start in words! You correctly identified that a number divisible by 5 leaves remainder 0. \u{1F44F}\n\nNow, **explain it mathematically with an example number!**\nShow the mathematical modulo remainder operation:\n\u2022 Take an example divisible number (like 25): `25 % 5 = 0` \u2794 **Divisible by 5**.\n\u2022 Take an example non-divisible number (like 23): `23 % 5 = 3 != 0` \u2794 **Not Divisible by 5**.\n\nWrite your mathematical comparison condition (`n % 5 == 0`) or example calculation in your worksheet to complete this logic stage!",
       correction: "Explain mathematically: If n % 5 == 0 (e.g. 25 % 5 = 0 -> true) it is Divisible by 5; otherwise Not Divisible by 5.",
       suggestedInput: "A number is divisible by 5 if dividing it by 5 leaves remainder 0. Mathematically: For n = 25, 25 % 5 = 0 is true -> Divisible by 5. For n = 23, 23 % 5 = 3 != 0 -> Not Divisible by 5.",
       matchedFirebaseInput: "how to check if a number is divisible by 5"
     };
   }
   if (!isQuestion && hasConceptualLogic && hasMathematicalCheck && mentionsDivisible && mentionsNotDivisible) {
-    const feedback2 = `\u{1F389} **Logic Approved by Coach Maya!** \u{1F3C6}
+    const feedback2 = `\u{1F389} **Logic Approved by Coach Maara!** \u{1F3C6}
 Your mathematical divisibility logic is 100% correct! You have clearly defined that when dividing by 5 leaves a remainder of 0 (\`n % 5 == 0\`), the number is **Divisible by 5**, and when remainder is not 0 (\`n % 5 != 0\`), it is **Not Divisible by 5**.
 
 Fantastic job! Proceed to Stage 2: Recipe!`;
@@ -88,9 +88,9 @@ Fantastic job! Proceed to Stage 2: Recipe!`;
       matchedFirebaseInput: "if n % 5 == 0 then divisible by 5"
     };
   }
-  let feedback = "\u{1F31F} Coach Maya here! What mathematical operation tests if a number is divisible by 5, and what must the remainder be?";
+  let feedback = "\u{1F31F} Coach Maara here! What mathematical operation tests if a number is divisible by 5, and what must the remainder be?";
   if (attemptCount >= 2) {
-    feedback = "\u{1F31F} Coach Maya checking back! A number is Divisible by 5 if the remainder after dividing by 5 is 0 (`n % 5 == 0`). Write this mathematical rule with an example in everyday words!";
+    feedback = "\u{1F31F} Coach Maara checking back! A number is Divisible by 5 if the remainder after dividing by 5 is 0 (`n % 5 == 0`). Write this mathematical rule with an example in everyday words!";
   }
   return {
     isFullyVerified: false,
@@ -138,9 +138,9 @@ function validateDivisibleBy5Recipe(input, attemptCount = 1) {
     }
   ];
   if (hasRecipeContradiction || hasWrongRemainderInStep2) {
-    let contradictionMsg = "\u{1F31F} Coach Maya gentle check: Look closely at Step 2! You wrote that when remainder is zero, it is 'not divisible by 5'. But when dividing by 5 leaves a **remainder of 0**, the number **IS Divisible by 5**!\n\nTo fix this: write Step 2 to check the remainder with 5: `Step 2: Check if dividing the number by 5 leaves remainder 0`.";
+    let contradictionMsg = "\u{1F31F} Coach Maara gentle check: Look closely at Step 2! You wrote that when remainder is zero, it is 'not divisible by 5'. But when dividing by 5 leaves a **remainder of 0**, the number **IS Divisible by 5**!\n\nTo fix this: write Step 2 to check the remainder with 5: `Step 2: Check if dividing the number by 5 leaves remainder 0`.";
     if (hasRemainderNot0DivisibleContradiction || hasWrongRemainderInStep2) {
-      contradictionMsg = "\u{1F31F} Coach Maya gentle check: Look closely at Step 2! You wrote that when remainder is 1 (or non-zero), it is divisible by 5. But when dividing by 5 leaves a remainder of 1 (like 21 % 5 = 1), the number is **NOT Divisible by 5**! A number is only divisible by 5 when dividing by 5 leaves a **remainder of 0**.\n\nTo fix this: update Step 2 to check for remainder 0: `Step 2: Check if dividing the number by 5 leaves remainder 0`.";
+      contradictionMsg = "\u{1F31F} Coach Maara gentle check: Look closely at Step 2! You wrote that when remainder is 1 (or non-zero), it is divisible by 5. But when dividing by 5 leaves a remainder of 1 (like 21 % 5 = 1), the number is **NOT Divisible by 5**! A number is only divisible by 5 when dividing by 5 leaves a **remainder of 0**.\n\nTo fix this: update Step 2 to check for remainder 0: `Step 2: Check if dividing the number by 5 leaves remainder 0`.";
     }
     return {
       isFullyVerified: false,
@@ -170,7 +170,7 @@ function validateDivisibleBy5Recipe(input, attemptCount = 1) {
     };
   }
   if (!hasStep1) {
-    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya checking back! What is the very first thing our recipe needs before making any decision? We must get the input number! Write: 'Step 1: Get input number n'." : "\u{1F31F} Coach Maya here! Let's think like a chef writing a recipe step by step. What is the very first step we must take? (Step 1: Get input number n).";
+    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara checking back! What is the very first thing our recipe needs before making any decision? We must get the input number! Write: 'Step 1: Get input number n'." : "\u{1F31F} Coach Maara here! Let's think like a chef writing a recipe step by step. What is the very first step we must take? (Step 1: Get input number n).";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -181,7 +181,7 @@ function validateDivisibleBy5Recipe(input, attemptCount = 1) {
     };
   }
   if (hasStep1 && !hasStep2Condition) {
-    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya here! Step 1 looks solid! \u{1F44F} Now for Step 2: What condition checks if the number divided by 5 leaves remainder 0? (Check if n divided by 5 leaves remainder 0)." : "\u{1F31F} Coach Maya here! Great start with Step 1! \u{1F44F} For Step 2, what mathematical check tests if dividing by 5 leaves a remainder of 0?";
+    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara here! Step 1 looks solid! \u{1F44F} Now for Step 2: What condition checks if the number divided by 5 leaves remainder 0? (Check if n divided by 5 leaves remainder 0)." : "\u{1F31F} Coach Maara here! Great start with Step 1! \u{1F44F} For Step 2, what mathematical check tests if dividing by 5 leaves a remainder of 0?";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -192,7 +192,7 @@ function validateDivisibleBy5Recipe(input, attemptCount = 1) {
     };
   }
   if (hasStep1 && hasStep2Condition && !hasStep3Outcome) {
-    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya here! You've set up the remainder check condition perfectly! \u{1F44F} Now for Step 3: What message should be displayed if the remainder is 0, and what message if it is not?" : "\u{1F31F} Coach Maya here! Superb work on the condition! \u{1F31F} To wrap up our recipe in Step 3, what should we display when remainder is 0, and what should we show otherwise?";
+    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara here! You've set up the remainder check condition perfectly! \u{1F44F} Now for Step 3: What message should be displayed if the remainder is 0, and what message if it is not?" : "\u{1F31F} Coach Maara here! Superb work on the condition! \u{1F31F} To wrap up our recipe in Step 3, what should we display when remainder is 0, and what should we show otherwise?";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -205,7 +205,7 @@ function validateDivisibleBy5Recipe(input, attemptCount = 1) {
   return {
     isFullyVerified: false,
     recipeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Let's build our recipe step by step. Start with Step 1: Get input number n.",
+    feedback: "\u{1F31F} Coach Maara here! Let's build our recipe step by step. Start with Step 1: Get input number n.",
     correction: "Step 1: Get input number n.",
     suggestedInput: "Step 1: Get input number n.",
     matchedFirebaseInput: "what steps to write"
@@ -219,9 +219,9 @@ function validateDivisibleBy5Ingredients(input, attemptCount = 1) {
   const detectedVar = userVarMatch ? userVarMatch[1] || "n" : "n";
   const extractStepText = (stepNum) => {
     const nextStepNum = stepNum + 1;
-    const regex = new RegExp(`(?:step\\s*${stepNum}|(?:^|\\n|;)\\s*${stepNum}[\\.\\)])\\s*[:\\-\\s]*([\\s\\S]*?)(?=(?:step\\s*${nextStepNum}|(?:^|\\n|;)\\s*${nextStepNum}[\\.\\)]|$))`, "i");
-    const match = norm.match(regex);
-    return match ? match[1].trim() : "";
+    const regex = new RegExp(`(?:step\\s*${stepNum}|(?:^|\\n|;)\\s*${stepNum}[\\.\\)])\\s*[:\\-\\s]*([\\s\\S]*?)(?=(?:step\\s*${nextStepNum}|(?:^|\\n|;)\\s*${nextStepNum}[\\.\\)]|$))`, "gi");
+    const matches = Array.from(norm.matchAll(regex));
+    return matches.length > 0 ? matches[matches.length - 1][1].trim() : "";
   };
   const step1Text = extractStepText(1);
   const step2Text = extractStepText(2);
@@ -337,7 +337,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya checking Step 2 Left Side: Look at your Left Side (L.S)! You wrote \`Left side: ${wrongLeftSideDetected}\`. In the condition \`${detectedVar} % 5 == 0\`, the Left Side calculates the remainder using modulo 5: \`${detectedVar} % 5\` (\`Left side: ${detectedVar} % 5\` or \`L.S: ${detectedVar} % 5\`).`,
+      feedback: `\u{1F31F} Coach Maara checking Step 2 Left Side: Look at your Left Side (L.S)! You wrote \`Left side: ${wrongLeftSideDetected}\`. In the condition \`${detectedVar} % 5 == 0\`, the Left Side calculates the remainder using modulo 5: \`${detectedVar} % 5\` (\`Left side: ${detectedVar} % 5\` or \`L.S: ${detectedVar} % 5\`).`,
       correction: `step 2 : If condition with L.S: ${detectedVar} % 5, Operator: ==, R.S: 0`,
       suggestedInput: `step 2 : If condition with L.S: ${detectedVar} % 5, Operator: ==, R.S: 0`,
       matchedFirebaseInput: "step 2 : If condition with L.S: n % 5, Operator: ==, R.S: 0"
@@ -348,7 +348,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya operator check: You wrote \`operator: ${wrongOperatorDetected}\`. To test if the remainder equals 0, use the equality operator \`==\` (\`operator: ==\`).`,
+      feedback: `\u{1F31F} Coach Maara operator check: You wrote \`operator: ${wrongOperatorDetected}\`. To test if the remainder equals 0, use the equality operator \`==\` (\`operator: ==\`).`,
       correction: `step 2 : If condition with L.S: ${detectedVar} % 5, Operator: ==, R.S: 0`,
       suggestedInput: `step 2 : If condition with L.S: ${detectedVar} % 5, Operator: ==, R.S: 0`,
       matchedFirebaseInput: "step 2 : If condition with L.S: n % 5, Operator: ==, R.S: 0"
@@ -359,7 +359,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya checking Step 2 Right Side: Look at your Right Side (R.S)! You wrote \`right side: ${wrongRightSideDetected}\`. In the condition \`${detectedVar} % 5 == 0\`, the Right Side is the remainder value **0** (\`right side: 0\` or \`R.S: 0\`).`,
+      feedback: `\u{1F31F} Coach Maara checking Step 2 Right Side: Look at your Right Side (R.S)! You wrote \`right side: ${wrongRightSideDetected}\`. In the condition \`${detectedVar} % 5 == 0\`, the Right Side is the remainder value **0** (\`right side: 0\` or \`R.S: 0\`).`,
       correction: `step 2 : If condition with L.S: ${detectedVar} % 5, Operator: ==, R.S: 0`,
       suggestedInput: `step 2 : If condition with L.S: ${detectedVar} % 5, Operator: ==, R.S: 0`,
       matchedFirebaseInput: "step 2 : If condition with L.S: n % 5, Operator: ==, R.S: 0"
@@ -370,7 +370,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya checking Step 2 Right Side value: Look at your comparison threshold \`${wrongThresholdDetected}\`! In the condition \`${detectedVar} % 5 == 0\`, to check if a number is divisible by 5, the remainder must be **0** (not ${wrongThresholdDetected}).`,
+      feedback: `\u{1F31F} Coach Maara checking Step 2 Right Side value: Look at your comparison threshold \`${wrongThresholdDetected}\`! In the condition \`${detectedVar} % 5 == 0\`, to check if a number is divisible by 5, the remainder must be **0** (not ${wrongThresholdDetected}).`,
       correction: `step 2 : If condition with L.S: ${detectedVar} % 5, Operator: ==, R.S: 0`,
       suggestedInput: `step 2 : If condition with L.S: ${detectedVar} % 5, Operator: ==, R.S: 0`,
       matchedFirebaseInput: "step 2 : If condition with L.S: n % 5, Operator: ==, R.S: 0"
@@ -381,7 +381,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya logic alert: Look closely at Step 3! In Step 2, the condition tests if \`n % 5 == 0\` (remainder is 0). When this condition is **true**, the number is **Divisible by 5**! Step 3 must print Divisible by 5: \`step 3 : Inside if block: print("Divisible by 5")\`.`,
+      feedback: `\u{1F31F} Coach Maara logic alert: Look closely at Step 3! In Step 2, the condition tests if \`n % 5 == 0\` (remainder is 0). When this condition is **true**, the number is **Divisible by 5**! Step 3 must print Divisible by 5: \`step 3 : Inside if block: print("Divisible by 5")\`.`,
       correction: 'step 3 : Inside if block: print("Divisible by 5")',
       suggestedInput: 'step 3 : Inside if block: print("Divisible by 5")',
       matchedFirebaseInput: "how to write if condition"
@@ -392,7 +392,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya logic alert: Look closely at Step 5! In the \`else\` block (when remainder is not 0), the number is **Not Divisible by 5**! Step 5 must print Not Divisible by 5: \`step 5 : Inside else block: print("Not Divisible by 5")\`.`,
+      feedback: `\u{1F31F} Coach Maara logic alert: Look closely at Step 5! In the \`else\` block (when remainder is not 0), the number is **Not Divisible by 5**! Step 5 must print Not Divisible by 5: \`step 5 : Inside else block: print("Not Divisible by 5")\`.`,
       correction: 'step 5 : Inside else block: print("Not Divisible by 5")',
       suggestedInput: 'step 5 : Inside else block: print("Not Divisible by 5")',
       matchedFirebaseInput: "how to write if condition"
@@ -404,7 +404,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya checking Step 4: You wrote another `if` condition for the not divisible case! In programming with if-else constructs, we use the simple blanket fallback **`else` block** (`step 4 : else block`) to automatically handle all numbers that leave a remainder. Please update Step 4 to use `step 4 : else block`.",
+      feedback: "\u{1F31F} Coach Maara checking Step 4: You wrote another `if` condition for the not divisible case! In programming with if-else constructs, we use the simple blanket fallback **`else` block** (`step 4 : else block`) to automatically handle all numbers that leave a remainder. Please update Step 4 to use `step 4 : else block`.",
       correction: "step 4 : else block",
       suggestedInput: 'step 4 : else block\nstep 5 : Inside else block: print("Not Divisible by 5")',
       matchedFirebaseInput: "how to write if condition"
@@ -414,7 +414,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya syntax alert: Wrap text strings in quotation marks: `print("Divisible by 5")` and `print("Not Divisible by 5")`. Without quotes, the compiler looks for undeclared variables!',
+      feedback: '\u{1F31F} Coach Maara syntax alert: Wrap text strings in quotation marks: `print("Divisible by 5")` and `print("Not Divisible by 5")`. Without quotes, the compiler looks for undeclared variables!',
       correction: 'print("Divisible by 5"); and print("Not Divisible by 5");',
       suggestedInput: 'step 3 : Inside if block: print("Divisible by 5")\nstep 4 : else block\nstep 5 : Inside else block: print("Not Divisible by 5")',
       matchedFirebaseInput: "how to write if condition"
@@ -443,7 +443,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! What programming ingredients do we need? Start with Step 1: Input variable `n`.",
+      feedback: "\u{1F31F} Coach Maara here! What programming ingredients do we need? Start with Step 1: Input variable `n`.",
       correction: "step 1 : n variable",
       suggestedInput: "step 1 : n variable",
       matchedFirebaseInput: "what ingredients do we need"
@@ -453,7 +453,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Spot on! You have the `n` variable. \u{1F44F} Now for Step 2: How do you write the if condition using Left Side (L.S: `n % 5`), Operator (`==`), and Right Side (R.S: `0`)?",
+      feedback: "\u{1F31F} Coach Maara here! Spot on! You have the `n` variable. \u{1F44F} Now for Step 2: How do you write the if condition using Left Side (L.S: `n % 5`), Operator (`==`), and Right Side (R.S: `0`)?",
       correction: "step 2 : If condition with L.S: n % 5, Operator: ==, R.S: 0",
       suggestedInput: "step 2 : If condition with L.S: n % 5, Operator: ==, R.S: 0",
       matchedFirebaseInput: "step 1 : n variable"
@@ -463,7 +463,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Great condition! Now for Step 3: Inside the if block, write the winning print statement: `step 3 : Inside if block: print("Divisible by 5")`.',
+      feedback: '\u{1F31F} Coach Maara here! Great condition! Now for Step 3: Inside the if block, write the winning print statement: `step 3 : Inside if block: print("Divisible by 5")`.',
       correction: 'step 3 : Inside if block: print("Divisible by 5")',
       suggestedInput: 'step 3 : Inside if block: print("Divisible by 5")',
       matchedFirebaseInput: "how to write if condition"
@@ -473,7 +473,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Step 1, Step 2, and Step 3 are ready! \u{1F44F} Now add the fallback `else` construct: `step 4 : else block`. This handles all numbers with a remainder.",
+      feedback: "\u{1F31F} Coach Maara here! Step 1, Step 2, and Step 3 are ready! \u{1F44F} Now add the fallback `else` construct: `step 4 : else block`. This handles all numbers with a remainder.",
       correction: "step 4 : else block",
       suggestedInput: 'step 4 : else block\nstep 5 : Inside else block: print("Not Divisible by 5")',
       matchedFirebaseInput: "what ingredients do we need"
@@ -483,7 +483,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Almost finished with ingredients! Add Step 5 inside the else block to print the negative message: `step 5 : Inside else block: print("Not Divisible by 5")`.',
+      feedback: '\u{1F31F} Coach Maara here! Almost finished with ingredients! Add Step 5 inside the else block to print the negative message: `step 5 : Inside else block: print("Not Divisible by 5")`.',
       correction: 'step 5 : Inside else block: print("Not Divisible by 5")',
       suggestedInput: 'step 5 : Inside else block: print("Not Divisible by 5")',
       matchedFirebaseInput: "what ingredients do we need"
@@ -492,7 +492,7 @@ Since you are testing the condition (\`${detectedVar} % 5 == 0\`), replace \`els
   return {
     isFullyVerified: false,
     ingredientsStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Let's gather all 5 ingredients step by step.",
+    feedback: "\u{1F31F} Coach Maara here! Let's gather all 5 ingredients step by step.",
     correction: "step 1 : n variable",
     suggestedInput: "step 1 : n variable",
     matchedFirebaseInput: "what ingredients do we need"
@@ -588,7 +588,7 @@ Your prototype code runs flawlessly and handles both divisible and non-divisible
       isFullyVerified: false,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Start your prototype code in Step 1 by declaring a sample integer: `var n = 25;`.",
+      feedback: "\u{1F31F} Coach Maara here! Start your prototype code in Step 1 by declaring a sample integer: `var n = 25;`.",
       correction: "var n = 25;",
       suggestedInput: "var n = 25;",
       matchedFirebaseInput: "var n = 25;"
@@ -599,7 +599,7 @@ Your prototype code runs flawlessly and handles both divisible and non-divisible
       isFullyVerified: false,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Variable declared! Now for Step 2: Write the `if` statement to check if `n % 5 == 0`.",
+      feedback: "\u{1F31F} Coach Maara here! Variable declared! Now for Step 2: Write the `if` statement to check if `n % 5 == 0`.",
       correction: "if (n % 5 == 0)",
       suggestedInput: 'var n = 25;\nif (n % 5 == 0) {\n  print("Divisible by 5");\n}',
       matchedFirebaseInput: "if (n % 5 == 0)"
@@ -610,7 +610,7 @@ Your prototype code runs flawlessly and handles both divisible and non-divisible
       isFullyVerified: false,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Great condition! Now for Step 3: Inside the if block, write `print("Divisible by 5");`.',
+      feedback: '\u{1F31F} Coach Maara here! Great condition! Now for Step 3: Inside the if block, write `print("Divisible by 5");`.',
       correction: 'print("Divisible by 5");',
       suggestedInput: 'var n = 25;\nif (n % 5 == 0) {\n  print("Divisible by 5");\n}',
       matchedFirebaseInput: 'print("Divisible by 5")'
@@ -621,7 +621,7 @@ Your prototype code runs flawlessly and handles both divisible and non-divisible
       isFullyVerified: false,
       allVerified: false,
       sampleCodeStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Almost done! Complete the code with the `else` block: `else { print("Not Divisible by 5"); }`.',
+      feedback: '\u{1F31F} Coach Maara here! Almost done! Complete the code with the `else` block: `else { print("Not Divisible by 5"); }`.',
       correction: 'else {\n  print("Not Divisible by 5");\n}',
       suggestedInput: 'var n = 25;\nif (n % 5 == 0) {\n  print("Divisible by 5");\n} else {\n  print("Not Divisible by 5");\n}',
       matchedFirebaseInput: 'else print("Not Divisible by 5")'
@@ -631,7 +631,7 @@ Your prototype code runs flawlessly and handles both divisible and non-divisible
     isFullyVerified: false,
     allVerified: false,
     sampleCodeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Let's write the complete code step by step.",
+    feedback: "\u{1F31F} Coach Maara here! Let's write the complete code step by step.",
     correction: 'var n = 25;\nif (n % 5 == 0) {\n  print("Divisible by 5");\n} else {\n  print("Not Divisible by 5");\n}',
     suggestedInput: 'var n = 25;\nif (n % 5 == 0) {\n  print("Divisible by 5");\n} else {\n  print("Not Divisible by 5");\n}',
     matchedFirebaseInput: "var n = 25;"

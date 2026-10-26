@@ -4,13 +4,15 @@ function validateAdultMinorLogic(input, attemptCount = 1) {
   if (isQuestion && !norm.includes(">=") && !norm.includes(">") && !norm.includes("18")) {
     return {
       isFullyVerified: false,
-      feedback: "\u{1F31F} Coach Maya here! A person is an Adult if their age is 18 or older, and a Minor if they are under 18. To check this in logic, we test if `age >= 18`. What comparison tests if someone is an adult?",
+      feedback: "\u{1F31F} Coach Maara here! A person is an Adult if their age is 18 or older, and a Minor if they are under 18. To check this in logic, we test if `age >= 18`. What comparison tests if someone is an adult?",
       correction: "Check if age is 18 or older: age >= 18 is Adult, age < 18 is Minor.",
       suggestedInput: "If age is 18 or older (age >= 18), the person is an Adult. If age is under 18 (age < 18), the person is a Minor.",
       matchedFirebaseInput: "what is adult or minor"
     };
   }
   const rawComparisonMatches = Array.from(input.matchAll(/(\d+)\s*(>=|<=|>|<|==|!=|=)\s*(\d+)/g));
+  const validComparisons = [];
+  const invalidComparisons = [];
   for (const match of rawComparisonMatches) {
     const left = parseInt(match[1], 10);
     const op = match[2];
@@ -22,16 +24,23 @@ function validateAdultMinorLogic(input, attemptCount = 1) {
     else if (op === ">=") isMathFactTrue = left >= right;
     else if (op === "==" || op === "=") isMathFactTrue = left === right;
     else if (op === "!=") isMathFactTrue = left !== right;
-    if (!isMathFactTrue) {
-      return {
-        isFullyVerified: false,
-        hasContradiction: true,
-        feedback: `\u{1F31F} Coach Maya gentle check: Look closely at your mathematical comparison \`${left} ${op} ${right}\`! ${left} is ${left > right ? "greater than" : "less than"} ${right}, so \`${left} ${op} ${right}\` is mathematically false! For age ${left}, the correct comparison is \`${left} ${left >= right ? ">=" : "<"} ${right}\`.`,
-        correction: `For age ${left}: write \`${left} ${left >= right ? ">=" : "<"} ${right}\` (${left >= 18 ? "Adult" : "Minor"}).`,
-        suggestedInput: `If age >= 18 (e.g. 25 >= 18 -> true) -> Adult. If age < 18 (e.g. 12 < 18 -> true) -> Minor.`,
-        matchedFirebaseInput: "how to check if a person is adult or minor"
-      };
+    if (isMathFactTrue) {
+      validComparisons.push({ left, op, right });
+    } else {
+      invalidComparisons.push({ left, op, right });
     }
+  }
+  const uncorrected = invalidComparisons.filter((inv) => !validComparisons.some((v) => v.left === inv.left));
+  if (uncorrected.length > 0) {
+    const { left, op, right } = uncorrected[0];
+    return {
+      isFullyVerified: false,
+      hasContradiction: true,
+      feedback: `\u{1F31F} Coach Maara gentle check: Look closely at your mathematical comparison \`${left} ${op} ${right}\`! ${left} is ${left > right ? "greater than" : "less than"} ${right}, so \`${left} ${op} ${right}\` is mathematically false! For age ${left}, the correct comparison is \`${left} ${left >= right ? ">=" : "<"} ${right}\`.`,
+      correction: `For age ${left}: write \`${left} ${left >= right ? ">=" : "<"} ${right}\` (${left >= 18 ? "Adult" : "Minor"}).`,
+      suggestedInput: `If age >= 18 (e.g. 25 >= 18 -> true) -> Adult. If age < 18 (e.g. 12 < 18 -> true) -> Minor.`,
+      matchedFirebaseInput: "how to check if a person is adult or minor"
+    };
   }
   const wroteStrictlyGreaterSymbol = /\b(?:1[89]|2[0-9]|[3-9][0-9]|age)\s*>\s*18\b/.test(norm) || />\s*18\b/.test(norm);
   const hasGreaterEqualSymbol = />=\s*18|age\s*>=\s*18|\b(?:1[89]|2[0-9]|[3-9][0-9])\s*>=\s*18|>\s*17/i.test(norm);
@@ -39,7 +48,7 @@ function validateAdultMinorLogic(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       hasContradiction: true,
-      feedback: "\u{1F31F} Coach Maya gentle check: Look closely at your mathematical operator! You wrote strictly `>` without `=` (`25 > 18` or `age > 18`). What happens if someone is exactly 18 years old? `18 > 18` is false, but an 18-year-old **IS an Adult**! You must use `>=` (`25 >= 18` or `age >= 18`) with the `=` sign so that age 18 is included.",
+      feedback: "\u{1F31F} Coach Maara gentle check: Look closely at your mathematical operator! You wrote strictly `>` without `=` (`25 > 18` or `age > 18`). What happens if someone is exactly 18 years old? `18 > 18` is false, but an 18-year-old **IS an Adult**! You must use `>=` (`25 >= 18` or `age >= 18`) with the `=` sign so that age 18 is included.",
       correction: "Write `>= 18` (greater than or equal to 18) with the `=` sign: `25 >= 18` or `age >= 18`.",
       suggestedInput: "If age is 18 or older (age >= 18, e.g. 25 >= 18 -> true), the person is an Adult. If age < 18 (e.g. 12 < 18 -> true), the person is a Minor.",
       matchedFirebaseInput: "how to check if a person is adult or minor"
@@ -50,7 +59,7 @@ function validateAdultMinorLogic(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       hasContradiction: true,
-      feedback: "\u{1F31F} Coach Maya gentle check: Look closely at your minor condition! You wrote 'less than or equal to 18' (`<= 18`) for Minor. But if a person is 18 years old, they **are an Adult**! A Minor is strictly **under 18** (`< 18`), so use `< 18` (less than 18) for minors.",
+      feedback: "\u{1F31F} Coach Maara gentle check: Look closely at your minor condition! You wrote 'less than or equal to 18' (`<= 18`) for Minor. But if a person is 18 years old, they **are an Adult**! A Minor is strictly **under 18** (`< 18`), so use `< 18` (less than 18) for minors.",
       correction: "If age >= 18 it is Adult; if age < 18 it is Minor.",
       suggestedInput: "If age is 18 or older (age >= 18), the person is an Adult. If age is under 18 (age < 18), the person is a Minor.",
       matchedFirebaseInput: "how to check if a person is adult or minor"
@@ -69,7 +78,7 @@ function validateAdultMinorLogic(input, attemptCount = 1) {
     return {
       isFullyVerified: false,
       hasContradiction: true,
-      feedback: "\u{1F31F} Coach Maya gentle check: Look closely at your age definitions! An **Adult** is someone whose age is **18 or older** (`age >= 18`), while a **Minor** is someone **under 18** (`age < 18`). Please check your condition outcomes!",
+      feedback: "\u{1F31F} Coach Maara gentle check: Look closely at your age definitions! An **Adult** is someone whose age is **18 or older** (`age >= 18`), while a **Minor** is someone **under 18** (`age < 18`). Please check your condition outcomes!",
       correction: "If age >= 18 it is Adult; if age < 18 it is Minor.",
       suggestedInput: "If age >= 18 (e.g. 20 >= 18) -> Adult. If age < 18 (e.g. 15 < 18) -> Minor.",
       matchedFirebaseInput: "how to check if a person is adult or minor"
@@ -84,7 +93,7 @@ function validateAdultMinorLogic(input, attemptCount = 1) {
       hasAdultOutcome: mentionsAdult,
       hasMinorOutcome: mentionsMinor,
       hasMathematicalCheck: false,
-      feedback: "\u{1F31F} Coach Maya here! Good conceptual start in words! You correctly identified that someone 18 or older is an Adult, and under 18 is a Minor. \u{1F44F}\n\nNow, **explain it mathematically with an example age!**\nShow the mathematical comparison operation:\n\u2022 Take an example adult age (like 20): `20 >= 18 (true)` \u2794 **Adult**.\n\u2022 Take an example minor age (like 15): `15 >= 18 (false)` \u2794 **Minor**.\n\nWrite your mathematical comparison condition (`age >= 18`) or example age calculation in your worksheet to complete this logic stage!",
+      feedback: "\u{1F31F} Coach Maara here! Good conceptual start in words! You correctly identified that someone 18 or older is an Adult, and under 18 is a Minor. \u{1F44F}\n\nNow, **explain it mathematically with an example age!**\nShow the mathematical comparison operation:\n\u2022 Take an example adult age (like 20): `20 >= 18 (true)` \u2794 **Adult**.\n\u2022 Take an example minor age (like 15): `15 >= 18 (false)` \u2794 **Minor**.\n\nWrite your mathematical comparison condition (`age >= 18`) or example age calculation in your worksheet to complete this logic stage!",
       correction: "Explain mathematically: If age >= 18 (e.g. 20 >= 18 -> true) it is Adult; otherwise Minor.",
       suggestedInput: "An adult is 18 or older, and a minor is under 18. Mathematically: For age = 20, 20 >= 18 is true -> Adult. For age = 15, 15 >= 18 is false -> Minor.",
       matchedFirebaseInput: "how to check if a person is adult or minor"
@@ -141,9 +150,9 @@ function validateAdultMinorLogic(input, attemptCount = 1) {
       matchedFirebaseInput: "if age >= 18 then adult"
     };
   }
-  let feedback = "\u{1F31F} Coach Maya here! What is the minimum age to be considered an Adult, and what mathematical comparison tests if a person's age meets that threshold?";
+  let feedback = "\u{1F31F} Coach Maara here! What is the minimum age to be considered an Adult, and what mathematical comparison tests if a person's age meets that threshold?";
   if (attemptCount >= 2) {
-    feedback = "\u{1F31F} Coach Maya checking back! A person is an Adult at age 18 or older (`age >= 18`), and a Minor if under 18 (`age < 18`). Write this comparison rule with an example in everyday words!";
+    feedback = "\u{1F31F} Coach Maara checking back! A person is an Adult at age 18 or older (`age >= 18`), and a Minor if under 18 (`age < 18`). Write this comparison rule with an example in everyday words!";
   }
   return {
     isFullyVerified: false,
@@ -193,9 +202,9 @@ function validateAdultMinorRecipe(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya gentle check: Look closely at Step 3! You wrote 'less than or equal to 18 it is called as minor'. But if a person is 18 years old, they **ARE an Adult**! Saying 'less than or equal to 18' mistakenly includes age 18 in the minor group.\n\nYou should write strictly 'less than 18' (under 18), or simply: 'Step 3: Otherwise (or if age < 18), it is called as minor'.",
+      feedback: "\u{1F31F} Coach Maara gentle check: Look closely at Step 3! You wrote 'less than or equal to 18 it is called as minor'. But if a person is 18 years old, they **ARE an Adult**! Saying 'less than or equal to 18' mistakenly includes age 18 in the minor group.\n\nYou should write strictly 'less than 18' (under 18), or simply: 'Step 3: Otherwise (or if age < 18), it is called as minor'.",
       correction: "Step 3: If age is less than 18 (or otherwise), it is called as minor.",
-      suggestedInput: "Step 1: Get the age\nStep 2: If age is greater than or equal to 18, it is called as adult\nStep 3: Otherwise (or if age is less than 18), it is called as minor",
+      suggestedInput: "Step 3: Otherwise (or if age is less than 18), it is called as minor",
       matchedFirebaseInput: "step 2 : If age is 18 or older display Adult, else display Minor"
     };
   }
@@ -204,9 +213,9 @@ function validateAdultMinorRecipe(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya gentle check: In Step 2, you wrote 'greater than 18' without 'or equal to'. A person who is exactly 18 years old **is an Adult**! If you use strictly 'greater than 18', an 18-year-old would not be counted as an Adult. Please update Step 2 to: 'greater than or equal to 18' (or '18 or older').",
+      feedback: "\u{1F31F} Coach Maara gentle check: In Step 2, you wrote 'greater than 18' without 'or equal to'. A person who is exactly 18 years old **is an Adult**! If you use strictly 'greater than 18', an 18-year-old would not be counted as an Adult. Please update Step 2 to: 'greater than or equal to 18' (or '18 or older').",
       correction: "Step 2: If age is greater than or equal to 18, it is called as adult.",
-      suggestedInput: "Step 1: Get the age\nStep 2: If age is greater than or equal to 18, it is called as adult\nStep 3: Otherwise, it is called as minor",
+      suggestedInput: "Step 2: If age is greater than or equal to 18, it is called as adult",
       matchedFirebaseInput: "step 2 : If age is 18 or older display Adult, else display Minor"
     };
   }
@@ -215,7 +224,7 @@ function validateAdultMinorRecipe(input, attemptCount = 1) {
       isFullyVerified: false,
       hasContradiction: true,
       recipeStepProgress,
-      feedback: "\u{1F31F} Coach Maya gentle check: Look closely at Step 3! When age is 18 or older (`age >= 18`), the person **IS an Adult**! When age is under 18, they are a **Minor**.\n\nPlease update Step 3: 'Step 3: If age >= 18 display Adult, else display Minor'.",
+      feedback: "\u{1F31F} Coach Maara gentle check: Look closely at Step 3! When age is 18 or older (`age >= 18`), the person **IS an Adult**! When age is under 18, they are a **Minor**.\n\nPlease update Step 3: 'Step 3: If age >= 18 display Adult, else display Minor'.",
       correction: "Step 3: If age >= 18 display Adult, else display Minor.",
       suggestedInput: "Step 3: If age >= 18 display Adult, else display Minor.",
       matchedFirebaseInput: "step 2 : If age is 18 or older display Adult, else display Minor"
@@ -239,7 +248,7 @@ function validateAdultMinorRecipe(input, attemptCount = 1) {
     };
   }
   if (!hasStep1) {
-    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya checking back! What is the very first thing our recipe needs before making any decision? We must get the person's age! Write: 'Step 1: Get input age'." : "\u{1F31F} Coach Maya here! Let's think like a chef writing a recipe step by step. What is the very first step we must take? (Step 1: Get input age).";
+    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara checking back! What is the very first thing our recipe needs before making any decision? We must get the person's age! Write: 'Step 1: Get input age'." : "\u{1F31F} Coach Maara here! Let's think like a chef writing a recipe step by step. What is the very first step we must take? (Step 1: Get input age).";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -250,7 +259,7 @@ function validateAdultMinorRecipe(input, attemptCount = 1) {
     };
   }
   if (hasStep1 && !hasStep2Condition) {
-    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya here! Step 1 looks solid! \u{1F44F} Now for Step 2: What condition tests whether the person is at least 18 years old? (Check if age >= 18)." : "\u{1F31F} Coach Maya here! Great start with Step 1! \u{1F44F} For Step 2, what mathematical comparison checks if the person is 18 or older?";
+    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara here! Step 1 looks solid! \u{1F44F} Now for Step 2: What condition tests whether the person is at least 18 years old? (Check if age >= 18)." : "\u{1F31F} Coach Maara here! Great start with Step 1! \u{1F44F} For Step 2, what mathematical comparison checks if the person is 18 or older?";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -261,7 +270,7 @@ function validateAdultMinorRecipe(input, attemptCount = 1) {
     };
   }
   if (hasStep1 && hasStep2Condition && !hasStep3Outcome) {
-    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maya here! You've set up the age comparison condition perfectly! \u{1F44F} Now for Step 3: What message should be displayed if age >= 18 is true, and what message if it is false?" : "\u{1F31F} Coach Maya here! Superb work on the condition! \u{1F31F} To wrap up our recipe in Step 3, what should we display when the age meets 18, and what should we show otherwise?";
+    const feedback = attemptCount >= 2 ? "\u{1F31F} Coach Maara here! You've set up the age comparison condition perfectly! \u{1F44F} Now for Step 3: What message should be displayed if age >= 18 is true, and what message if it is false?" : "\u{1F31F} Coach Maara here! Superb work on the condition! \u{1F31F} To wrap up our recipe in Step 3, what should we display when the age meets 18, and what should we show otherwise?";
     return {
       isFullyVerified: false,
       recipeStepProgress,
@@ -274,7 +283,7 @@ function validateAdultMinorRecipe(input, attemptCount = 1) {
   return {
     isFullyVerified: false,
     recipeStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Let's build our recipe step by step. Start with Step 1: Get input age.",
+    feedback: "\u{1F31F} Coach Maara here! Let's build our recipe step by step. Start with Step 1: Get input age.",
     correction: "Step 1: Get input age.",
     suggestedInput: "Step 1: Get input age.",
     matchedFirebaseInput: "what steps to write"
@@ -285,9 +294,9 @@ function validateAdultMinorIngredients(input, attemptCount = 1) {
   const hasVariableAge = /step\s*1\s*:?\s*age|variable\s*:?\s*age|var\s+age|age\s*=\s*\d+|input\s*variable\s*age/i.test(norm) || /\bage\b/i.test(norm);
   const extractStepText = (stepNum) => {
     const nextStepNum = stepNum + 1;
-    const regex = new RegExp(`(?:step\\s*${stepNum}|(?:^|\\n|;)\\s*${stepNum}[\\.\\)])\\s*[:\\-\\s]*([\\s\\S]*?)(?=(?:step\\s*${nextStepNum}|(?:^|\\n|;)\\s*${nextStepNum}[\\.\\)]|$))`, "i");
-    const match = norm.match(regex);
-    return match ? match[1].trim() : "";
+    const regex = new RegExp(`(?:step\\s*${stepNum}|(?:^|\\n|;)\\s*${stepNum}[\\.\\)])\\s*[:\\-\\s]*([\\s\\S]*?)(?=(?:step\\s*${nextStepNum}|(?:^|\\n|;)\\s*${nextStepNum}[\\.\\)]|$))`, "gi");
+    const matches = Array.from(norm.matchAll(regex));
+    return matches.length > 0 ? matches[matches.length - 1][1].trim() : "";
   };
   const step1Text = extractStepText(1);
   const step2Text = extractStepText(2);
@@ -404,7 +413,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya checking Step 2 Left Side: Look at your Left Side (L.S)! You wrote \`Left side: ${wrongLeftSideDetected}\`. The Left Side of the comparison must be our input variable \`age\` (e.g. \`Left side: age\` or \`L.S: age\`).`,
+      feedback: `\u{1F31F} Coach Maara checking Step 2 Left Side: Look at your Left Side (L.S)! You wrote \`Left side: ${wrongLeftSideDetected}\`. The Left Side of the comparison must be our input variable \`age\` (e.g. \`Left side: age\` or \`L.S: age\`).`,
       correction: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       suggestedInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       matchedFirebaseInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18"
@@ -425,7 +434,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya operator check: ${operatorTip}`,
+      feedback: `\u{1F31F} Coach Maara operator check: ${operatorTip}`,
       correction: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       suggestedInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       matchedFirebaseInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18"
@@ -436,7 +445,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya checking Step 2 Right Side: Look at your Right Side (R.S)! You wrote \`right side: ${wrongRightSideDetected}\`. In the condition \`age >= 18\`, the Right Side is the threshold value **18** (\`right side: 18\` or \`R.S: 18\`).`,
+      feedback: `\u{1F31F} Coach Maara checking Step 2 Right Side: Look at your Right Side (R.S)! You wrote \`right side: ${wrongRightSideDetected}\`. In the condition \`age >= 18\`, the Right Side is the threshold value **18** (\`right side: 18\` or \`R.S: 18\`).`,
       correction: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       suggestedInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       matchedFirebaseInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18"
@@ -447,7 +456,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya threshold check: In Step 2, you set Right Side (R.S) to \`${wrongThresholdDetected}\`. The legal threshold to be classified as an Adult is 18. Please update Right Side to 18 (\`R.S: 18\`).`,
+      feedback: `\u{1F31F} Coach Maara threshold check: In Step 2, you set Right Side (R.S) to \`${wrongThresholdDetected}\`. The legal threshold to be classified as an Adult is 18. Please update Right Side to 18 (\`R.S: 18\`).`,
       correction: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       suggestedInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       matchedFirebaseInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18"
@@ -458,7 +467,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya logic alert: Look closely at Step 3! The condition in Step 2 tests if \`age >= 18\` (18 or older). When this condition is **true**, the person is an **Adult**! Step 3 must print Adult: \`step 3 : Inside if block: print("Adult")\`.`,
+      feedback: `\u{1F31F} Coach Maara logic alert: Look closely at Step 3! The condition in Step 2 tests if \`age >= 18\` (18 or older). When this condition is **true**, the person is an **Adult**! Step 3 must print Adult: \`step 3 : Inside if block: print("Adult")\`.`,
       correction: 'step 3 : Inside if block: print("Adult")',
       suggestedInput: 'step 3 : Inside if block: print("Adult")',
       matchedFirebaseInput: "how to write if condition"
@@ -469,7 +478,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: `\u{1F31F} Coach Maya logic alert: Look closely at Step 5! In the \`else\` block (when age is under 18), the person is a **Minor**! Step 5 must print Minor: \`step 5 : Inside else block: print("Minor")\`.`,
+      feedback: `\u{1F31F} Coach Maara logic alert: Look closely at Step 5! In the \`else\` block (when age is under 18), the person is a **Minor**! Step 5 must print Minor: \`step 5 : Inside else block: print("Minor")\`.`,
       correction: 'step 5 : Inside else block: print("Minor")',
       suggestedInput: 'step 5 : Inside else block: print("Minor")',
       matchedFirebaseInput: "how to write if condition"
@@ -481,7 +490,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya checking Step 4: You wrote another `if` condition for the minor case! In programming with if-else constructs, we use the simple blanket fallback **`else` block** (`step 4 : else block`) to automatically handle all ages under 18. Please update Step 4 to use `step 4 : else block`.",
+      feedback: "\u{1F31F} Coach Maara checking Step 4: You wrote another `if` condition for the minor case! In programming with if-else constructs, we use the simple blanket fallback **`else` block** (`step 4 : else block`) to automatically handle all ages under 18. Please update Step 4 to use `step 4 : else block`.",
       correction: "step 4 : else block",
       suggestedInput: 'step 4 : else block\nstep 5 : Inside else block: print("Minor")',
       matchedFirebaseInput: "how to write if condition"
@@ -492,7 +501,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
       isFullyVerified: false,
       hasContradiction: true,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya checking Step 2 Operator: You wrote `operator: =`. In programming, a single `=` is for assigning a value. For comparing if age is 18 or older, use the greater-than-or-equal operator `>=` \u2794 `operator: >=`.",
+      feedback: "\u{1F31F} Coach Maara checking Step 2 Operator: You wrote `operator: =`. In programming, a single `=` is for assigning a value. For comparing if age is 18 or older, use the greater-than-or-equal operator `>=` \u2794 `operator: >=`.",
       correction: "operator: >=",
       suggestedInput: "Step 2: If\nLeft side: age\noperator: >=\nRight side: 18",
       matchedFirebaseInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18"
@@ -502,7 +511,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya syntax alert: Wrap text strings in quotation marks: `print("Adult")` and `print("Minor")`. Without quotes, the compiler looks for undeclared variables!',
+      feedback: '\u{1F31F} Coach Maara syntax alert: Wrap text strings in quotation marks: `print("Adult")` and `print("Minor")`. Without quotes, the compiler looks for undeclared variables!',
       correction: 'print("Adult"); and print("Minor");',
       suggestedInput: 'step 3 : Inside if block: print("Adult")\nstep 4 : else block\nstep 5 : Inside else block: print("Minor")',
       matchedFirebaseInput: "how to write if condition"
@@ -531,7 +540,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! What programming ingredients do we need? Start with Step 1: Input variable `age`.",
+      feedback: "\u{1F31F} Coach Maara here! What programming ingredients do we need? Start with Step 1: Input variable `age`.",
       correction: "step 1 : age variable",
       suggestedInput: "step 1 : age variable",
       matchedFirebaseInput: "what ingredients do we need"
@@ -541,7 +550,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Spot on! You have the `age` variable. \u{1F44F} Now for Step 2: How do you write the if condition using Left Side (L.S: `age`), Operator (`>=`), and Right Side (R.S: `18`)?",
+      feedback: "\u{1F31F} Coach Maara here! Spot on! You have the `age` variable. \u{1F44F} Now for Step 2: How do you write the if condition using Left Side (L.S: `age`), Operator (`>=`), and Right Side (R.S: `18`)?",
       correction: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       suggestedInput: "step 2 : If condition with L.S: age, Operator: >=, R.S: 18",
       matchedFirebaseInput: "step 1 : age variable"
@@ -551,7 +560,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Great condition! Now for Step 3: Inside the if block, write the winning print statement: `step 3 : Inside if block: print("Adult")`.',
+      feedback: '\u{1F31F} Coach Maara here! Great condition! Now for Step 3: Inside the if block, write the winning print statement: `step 3 : Inside if block: print("Adult")`.',
       correction: 'step 3 : Inside if block: print("Adult")',
       suggestedInput: 'step 3 : Inside if block: print("Adult")',
       matchedFirebaseInput: "how to write if condition"
@@ -561,7 +570,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: "\u{1F31F} Coach Maya here! Step 1, Step 2, and Step 3 are ready! \u{1F44F} Now add the fallback `else` construct: `step 4 : else block`. This handles all ages under 18.",
+      feedback: "\u{1F31F} Coach Maara here! Step 1, Step 2, and Step 3 are ready! \u{1F44F} Now add the fallback `else` construct: `step 4 : else block`. This handles all ages under 18.",
       correction: "step 4 : else block",
       suggestedInput: 'step 4 : else block\nstep 5 : Inside else block: print("Minor")',
       matchedFirebaseInput: "what ingredients do we need"
@@ -571,7 +580,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
     return {
       isFullyVerified: false,
       ingredientsStepProgress,
-      feedback: '\u{1F31F} Coach Maya here! Almost finished with ingredients! Add Step 5 inside the else block to print the negative message: `step 5 : Inside else block: print("Minor")`.',
+      feedback: '\u{1F31F} Coach Maara here! Almost finished with ingredients! Add Step 5 inside the else block to print the negative message: `step 5 : Inside else block: print("Minor")`.',
       correction: 'step 5 : Inside else block: print("Minor")',
       suggestedInput: 'step 5 : Inside else block: print("Minor")',
       matchedFirebaseInput: "what ingredients do we need"
@@ -580,7 +589,7 @@ Since you are testing the condition (\`age >= 18\`), replace \`else\` with the *
   return {
     isFullyVerified: false,
     ingredientsStepProgress,
-    feedback: "\u{1F31F} Coach Maya here! Let's gather all 5 ingredients step by step.",
+    feedback: "\u{1F31F} Coach Maara here! Let's gather all 5 ingredients step by step.",
     correction: "step 1 : age variable",
     suggestedInput: "step 1 : age variable",
     matchedFirebaseInput: "what ingredients do we need"
@@ -694,7 +703,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
       hasElseWithCondition: true,
       sampleCodeStepProgress,
       operationTestCases,
-      feedback: "\u{1F31F} Coach Maya syntax alert: `else` is a blanket fallback and never takes parentheses or a condition! Just write `else {`.",
+      feedback: "\u{1F31F} Coach Maara syntax alert: `else` is a blanket fallback and never takes parentheses or a condition! Just write `else {`.",
       correction: 'else {\n  print("Minor");\n}',
       suggestedInput: 'else {\n  print("Minor");\n}',
       matchedFirebaseInput: "how to write sample code"
@@ -706,7 +715,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
       hasInvertedBranches: true,
       sampleCodeStepProgress,
       operationTestCases,
-      feedback: '\u{1F31F} Coach Maya logic check: Inverted print statements! When `age >= 18` is true, print `"Adult"` inside the `if` block, and print `"Minor"` inside the `else` block.',
+      feedback: '\u{1F31F} Coach Maara logic check: Inverted print statements! When `age >= 18` is true, print `"Adult"` inside the `if` block, and print `"Minor"` inside the `else` block.',
       correction: 'if (age >= 18) {\n  print("Adult");\n} else {\n  print("Minor");\n}',
       suggestedInput: 'var age = 20;\nif (age >= 18) {\n  print("Adult");\n} else {\n  print("Minor");\n}',
       matchedFirebaseInput: "how to write sample code"
@@ -717,7 +726,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
       allVerified: false,
       sampleCodeStepProgress,
       operationTestCases,
-      feedback: "\u{1F31F} Coach Maya here! Let's build your program step by step! Start with Line 1 by declaring your age variable: `var age = 20;`.",
+      feedback: "\u{1F31F} Coach Maara here! Let's build your program step by step! Start with Line 1 by declaring your age variable: `var age = 20;`.",
       correction: "var age = 20;",
       suggestedInput: "var age = 20;",
       matchedFirebaseInput: "where to start"
@@ -729,7 +738,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
       hasVariable: true,
       sampleCodeStepProgress,
       operationTestCases,
-      feedback: "\u{1F31F} Coach Maya here! Great variable declaration! \u{1F44F} Now add Line 2: Write the if statement: `if (age >= 18) {`.",
+      feedback: "\u{1F31F} Coach Maara here! Great variable declaration! \u{1F44F} Now add Line 2: Write the if statement: `if (age >= 18) {`.",
       correction: "if (age >= 18) {",
       suggestedInput: "if (age >= 18) {",
       matchedFirebaseInput: "how to write if condition"
@@ -742,7 +751,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
       hasCondition: true,
       sampleCodeStepProgress,
       operationTestCases,
-      feedback: '\u{1F31F} Coach Maya here! Spot on condition! \u{1F44F} Inside the if block on Line 3, write: `print("Adult");`.',
+      feedback: '\u{1F31F} Coach Maara here! Spot on condition! \u{1F44F} Inside the if block on Line 3, write: `print("Adult");`.',
       correction: 'print("Adult");',
       suggestedInput: 'print("Adult");',
       matchedFirebaseInput: "how to write if condition"
@@ -755,7 +764,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
       hasCondition: true,
       sampleCodeStepProgress,
       operationTestCases,
-      feedback: '\u{1F31F} Coach Maya syntax alert: Wrap text strings in double quotes: `print("Adult");`.',
+      feedback: '\u{1F31F} Coach Maara syntax alert: Wrap text strings in double quotes: `print("Adult");`.',
       correction: 'print("Adult");',
       suggestedInput: 'print("Adult");',
       matchedFirebaseInput: "how to write if condition"
@@ -769,7 +778,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
       hasQuotedPositivePrint: true,
       sampleCodeStepProgress,
       operationTestCases,
-      feedback: "\u{1F31F} Coach Maya here! Close the if block and add the else fallback on Line 4: `} else {`.",
+      feedback: "\u{1F31F} Coach Maara here! Close the if block and add the else fallback on Line 4: `} else {`.",
       correction: "} else {",
       suggestedInput: "} else {",
       matchedFirebaseInput: "how to write sample code"
@@ -785,7 +794,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
         hasElse: true,
         sampleCodeStepProgress,
         operationTestCases,
-        feedback: '\u{1F31F} Coach Maya syntax alert: Wrap text in quotation marks: `print("Minor");`.',
+        feedback: '\u{1F31F} Coach Maara syntax alert: Wrap text in quotation marks: `print("Minor");`.',
         correction: 'print("Minor");',
         suggestedInput: 'print("Minor");',
         matchedFirebaseInput: "how to write sample code"
@@ -799,7 +808,7 @@ function validateAdultMinorSampleCode(input, attemptCount = 1) {
       hasElse: true,
       sampleCodeStepProgress,
       operationTestCases,
-      feedback: '\u{1F31F} Coach Maya here! Inside the else block on Line 5, write: `print("Minor");` and close with `}`.',
+      feedback: '\u{1F31F} Coach Maara here! Inside the else block on Line 5, write: `print("Minor");` and close with `}`.',
       correction: '  print("Minor");\n}',
       suggestedInput: '  print("Minor");\n}',
       matchedFirebaseInput: "how to write sample code"

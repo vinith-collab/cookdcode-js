@@ -1,43 +1,66 @@
-function checkFactorialArithmetic(text) {
-  const eqRegex = /(\d+)\s*[\*×x]\s*(\d+)\s*=\s*(\d+)/gi;
-  const equations = [];
-  let match;
-  while ((match = eqRegex.exec(text)) !== null) {
-    const a = parseInt(match[1], 10);
-    const b = parseInt(match[2], 10);
-    const prod = parseInt(match[3], 10);
-    equations.push({ a, b, prod, raw: match[0] });
-  }
-  if (equations.length === 0) {
-    return {
-      hasEquations: false,
-      equationsCount: 0,
-      allEquationsValid: true,
-      hasAccumulationChain: false
-    };
-  }
-  const allEquationsValid = equations.every((eq) => eq.a * eq.b === eq.prod);
-  let hasAccumulationChain = false;
-  if (equations.length >= 2 && allEquationsValid) {
-    let chainCount = 0;
-    for (let i = 1; i < equations.length; i++) {
-      const prevProd = equations[i - 1].prod;
-      if (equations[i].a === prevProd || equations[i].b === prevProd) {
-        chainCount++;
-      }
-    }
-    if (chainCount >= equations.length - 1) {
-      hasAccumulationChain = true;
-    }
-  }
-  return {
-    hasEquations: true,
-    equationsCount: equations.length,
-    allEquationsValid,
-    hasAccumulationChain,
-    finalProduct: equations[equations.length - 1]?.prod
-  };
+function getFactorialValue(n) {
+  let val = 1;
+  for (let i = 1; i <= n; i++) val *= i;
+  return val;
 }
+
+function getFactorialTerms(n) {
+  const terms = [];
+  for (let i = n; i >= 1; i--) terms.push(i);
+  return terms.join(" * ");
+}
+
+function getFactorialFormula(n) {
+  const terms = [];
+  for (let i = n; i >= 1; i--) terms.push(i);
+  return `${terms.join("*")} = ${getFactorialValue(n)}`;
+}
+
+function getFactorialStepByStepTrace(n) {
+  if (n <= 1) return `1*1=1`;
+  const steps = [];
+  let running = n;
+  for (let i = n - 1; i >= 1; i--) {
+    const nextVal = running * i;
+    steps.push(`${running}*${i}=${nextVal}`);
+    running = nextVal;
+  }
+  return steps.join("\n");
+}
+
+function extractFactorialN(text) {
+  const nMatch = text.match(/(?:^|\b)(?:n|num|number|input)\s*[:=]\s*(\d+)/i);
+  if (nMatch) {
+    const parsed = parseInt(nMatch[1], 10);
+    if (parsed >= 1 && parsed <= 20) return parsed;
+  }
+  const factMatch = text.match(/(\d+)\s*!/);
+  if (factMatch) {
+    const parsed = parseInt(factMatch[1], 10);
+    if (parsed >= 1 && parsed <= 20) return parsed;
+  }
+  const eqRegex = /(?:^|[^\*×x\d])(\d+)\s*[\*×x]\s*(\d+)\s*=\s*(\d+)/gi;
+  const eqList = [];
+  let m;
+  while ((m = eqRegex.exec(text)) !== null) {
+    eqList.push({ a: parseInt(m[1], 10), b: parseInt(m[2], 10), prod: parseInt(m[3], 10) });
+  }
+  if (eqList.length > 0) {
+    const firstMax = Math.max(eqList[0].a, eqList[0].b);
+    const firstMin = Math.min(eqList[0].a, eqList[0].b);
+    if (firstMax >= 3 && firstMin === firstMax - 1) {
+      return firstMax;
+    }
+    let maxMultiplier = 1;
+    for (const eq of eqList) {
+      const smaller = Math.min(eq.a, eq.b);
+      if (smaller > maxMultiplier && smaller <= 20) maxMultiplier = smaller;
+    }
+    if (maxMultiplier >= 3 && maxMultiplier <= 20) return maxMultiplier;
+  }
+  return 5;
+}
+
 function checkFactorialProductExpression(text) {
   const chainRegex = /((?:\d+\s*[\*×x]\s*)+\d+)(?:\s*=\s*(\d+))?/gi;
   let match;
@@ -99,47 +122,282 @@ function checkFactorialProductExpression(text) {
     termsCount: 0
   };
 }
-function extractFactorialN(text) {
-  const nMatch = text.match(/(?:^|\b)(?:n|num|number|input)\s*[:=]\s*(\d+)/i);
-  if (nMatch) {
-    const parsed = parseInt(nMatch[1], 10);
-    if (parsed >= 1 && parsed <= 20) return parsed;
+
+function checkFactorialSequence(text, userN) {
+  const eqRegex = /(?:^|[^\*×x\d])(\d+)\s*[\*×x]\s*(\d+)\s*=\s*(\d+)/gi;
+  const equations = [];
+  let match;
+  while ((match = eqRegex.exec(text)) !== null) {
+    const a = parseInt(match[1], 10);
+    const b = parseInt(match[2], 10);
+    const prod = parseInt(match[3], 10);
+    equations.push({ a, b, prod, raw: `${a}*${b}=${prod}` });
   }
-  const factMatch = text.match(/(\d+)\s*!/);
-  if (factMatch) {
-    const parsed = parseInt(factMatch[1], 10);
-    if (parsed >= 1 && parsed <= 20) return parsed;
+
+  if (equations.length === 0) {
+    return {
+      hasEquations: false,
+      equationsCount: 0,
+      isValidChain: false,
+      isFullyComplete: false
+    };
   }
-  const chainMatch = text.match(/(\d+)\s*[\*×x]\s*(\d+)/);
-  if (chainMatch) {
-    const n1 = parseInt(chainMatch[1], 10);
-    const n2 = parseInt(chainMatch[2], 10);
-    const candidate = Math.max(n1, n2);
-    if (candidate >= 1 && candidate <= 20) return candidate;
+
+  const expectedFactVal = getFactorialValue(userN);
+  const termsStr = getFactorialTerms(userN);
+
+  // 1. Math arithmetic check: filter out errors that were subsequently corrected below
+  const validEquations = equations.filter((eq) => eq.a * eq.b === eq.prod);
+  const uncorrectedEquations = equations.filter((eq) => {
+    if (eq.a * eq.b === eq.prod) return false;
+    const isCorrected = validEquations.some((v) => (v.a === eq.a && v.b === eq.b) || (v.a === eq.b && v.b === eq.a));
+    return !isCorrected;
+  });
+
+  if (uncorrectedEquations.length > 0) {
+    const eq = uncorrectedEquations[0];
+    return {
+      hasEquations: true,
+      equationsCount: equations.length,
+      isValidChain: false,
+      isFullyComplete: false,
+      errorType: "arithmetic_error",
+      feedback: `🌟 Coach Maara here! Arithmetic check: In "${eq.raw}", ${eq.a} * ${eq.b} = ${eq.a * eq.b}, not ${eq.prod}! Please correct this multiplication before continuing.`,
+      correction: `Fix "${eq.raw}" to ${eq.a} * ${eq.b} = ${eq.a * eq.b}.`,
+      suggestedInput: `${eq.a} * ${eq.b} = ${eq.a * eq.b}`
+    };
   }
-  return 5;
-}
-function getFactorialValue(n) {
-  let val = 1;
-  for (let i = 1; i <= n; i++) val *= i;
-  return val;
-}
-function getFactorialFormula(n) {
-  const terms = [];
-  for (let i = n; i >= 1; i--) terms.push(i);
-  return `${terms.join("*")} = ${getFactorialValue(n)}`;
-}
-function getFactorialStepByStepTrace(n) {
-  if (n <= 1) return `1*1=1`;
-  const steps = [];
-  let running = n;
-  for (let i = n - 1; i >= 1; i--) {
-    const nextVal = running * i;
-    steps.push(`${running}*${i}=${nextVal}`);
-    running = nextVal;
+
+  // Use only valid equations for chain tracing if corrected equations exist
+  if (validEquations.length > 0 && validEquations.length < equations.length) {
+    equations = validEquations;
   }
-  return steps.join("\n");
+
+  // 2. Determine sequence direction (Descending vs Ascending)
+  const eq0 = equations[0];
+  const max0 = Math.max(eq0.a, eq0.b);
+  const min0 = Math.min(eq0.a, eq0.b);
+
+  const isDescending = (max0 === userN && min0 === userN - 1) || (max0 >= 3 && min0 === max0 - 1);
+  const isAscending = (eq0.a === 1 && eq0.b === 2) || (eq0.a === 2 && eq0.b === 1) || (eq0.a === 1 && eq0.b === 1);
+
+  if (!isDescending && !isAscending) {
+    if (max0 === userN) {
+      return {
+        hasEquations: true,
+        equationsCount: equations.length,
+        isValidChain: false,
+        isFullyComplete: false,
+        errorType: "wrong_first_step",
+        feedback: `🌟 Coach Maara here! Factorial starts by multiplying ${userN} with the consecutive number right below it (${userN - 1}). For ${userN}!, the first step should be ${userN} * ${userN - 1} = ${userN * (userN - 1)}.`,
+        correction: `Start with ${userN} * ${userN - 1} = ${userN * (userN - 1)}.`,
+        suggestedInput: `${userN} * ${userN - 1} = ${userN * (userN - 1)}`
+      };
+    }
+
+    return {
+      hasEquations: true,
+      equationsCount: equations.length,
+      isValidChain: false,
+      isFullyComplete: false,
+      errorType: "invalid_start",
+      feedback: `🌟 Coach Maara here! To demonstrate ${userN}! step by step, start with either descending (${userN} * ${userN - 1} = ${userN * (userN - 1)}) or ascending (1 * 2 = 2).`,
+      correction: `Start with ${userN} * ${userN - 1} = ${userN * (userN - 1)}.`,
+      suggestedInput: `${userN} * ${userN - 1} = ${userN * (userN - 1)}`
+    };
+  }
+
+  // 3. Trace Descending Chain
+  if (isDescending) {
+    let currentProd = max0 * min0;
+    let nextMultiplier = min0 - 1;
+
+    if (equations.length === 1) {
+      if (currentProd === expectedFactVal) {
+        return {
+          hasEquations: true,
+          equationsCount: 1,
+          isValidChain: true,
+          isFullyComplete: true,
+          finalProduct: currentProd
+        };
+      }
+      return {
+        hasEquations: true,
+        equationsCount: 1,
+        isValidChain: true,
+        isFullyComplete: false,
+        isIncomplete: true,
+        feedback: `🌟 Coach Maara here! Good start! You calculated ${eq0.raw}. But ${userN}! is not complete yet (${userN}! = ${expectedFactVal}). Continue by multiplying your result ${currentProd} by the next number (${nextMultiplier}): ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+        correction: `Next step: multiply ${currentProd} by ${nextMultiplier} (${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}).`,
+        suggestedInput: `${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}`
+      };
+    }
+
+    for (let i = 1; i < equations.length; i++) {
+      const eq = equations[i];
+      const hasPrevProd = (eq.a === currentProd || eq.b === currentProd);
+
+      if (!hasPrevProd) {
+        return {
+          hasEquations: true,
+          equationsCount: equations.length,
+          isValidChain: false,
+          isFullyComplete: false,
+          errorType: "broken_chain",
+          feedback: `🌟 Coach Maara here! In factorial, each step multiplies the accumulated product by the next number. After reaching ${currentProd}, you need to multiply ${currentProd} with the next number in sequence (${nextMultiplier}): ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+          correction: `Multiply the previous result ${currentProd} by ${nextMultiplier}: ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+          suggestedInput: `${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}`
+        };
+      }
+
+      const actualMultiplier = (eq.a === currentProd) ? eq.b : eq.a;
+
+      // Allow optional terminal step multiplying by 1 if already reached expectedFactVal
+      if (currentProd === expectedFactVal && actualMultiplier === 1) {
+        currentProd = currentProd * 1;
+        continue;
+      }
+
+      if (actualMultiplier !== nextMultiplier) {
+        return {
+          hasEquations: true,
+          equationsCount: equations.length,
+          isValidChain: false,
+          isFullyComplete: false,
+          errorType: "wrong_multiplier",
+          feedback: `🌟 Coach Maara here! In ${userN}! (${userN} factorial), each number from ${userN} down to 1 is multiplied once (${termsStr}). After ${equations[i - 1].raw}, the next number to multiply is ${nextMultiplier} (${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}), not ${actualMultiplier}!`,
+          correction: `Change "${eq.raw}" to ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+          suggestedInput: `${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}`
+        };
+      }
+
+      currentProd = currentProd * nextMultiplier;
+      nextMultiplier--;
+    }
+
+    if (currentProd === expectedFactVal) {
+      return {
+        hasEquations: true,
+        equationsCount: equations.length,
+        isValidChain: true,
+        isFullyComplete: true,
+        finalProduct: currentProd
+      };
+    }
+
+    return {
+      hasEquations: true,
+      equationsCount: equations.length,
+      isValidChain: true,
+      isFullyComplete: false,
+      isIncomplete: true,
+      feedback: `🌟 Coach Maara here! Good progress! You've reached ${currentProd}. But ${userN}! is not complete yet (${userN}! = ${expectedFactVal}). Next step: multiply your result ${currentProd} by ${nextMultiplier} (${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}).`,
+      correction: `Add the next step: ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+      suggestedInput: `${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}`
+    };
+  }
+
+  // 4. Trace Ascending Chain
+  if (isAscending) {
+    let currentProd = eq0.prod;
+    let nextMultiplier = 2;
+    if (eq0.a === 1 && eq0.b === 2 || eq0.a === 2 && eq0.b === 1) {
+      currentProd = 2;
+      nextMultiplier = 3;
+    }
+
+    if (equations.length === 1 && currentProd !== expectedFactVal) {
+      return {
+        hasEquations: true,
+        equationsCount: 1,
+        isValidChain: true,
+        isFullyComplete: false,
+        isIncomplete: true,
+        feedback: `🌟 Coach Maara here! Good start! You calculated ${eq0.raw}. To complete ${userN}! = ${expectedFactVal}, next step: multiply ${currentProd} by ${nextMultiplier} (${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}).`,
+        correction: `Next step: multiply ${currentProd} by ${nextMultiplier} (${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}).`,
+        suggestedInput: `${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}`
+      };
+    }
+
+    for (let i = 1; i < equations.length; i++) {
+      const eq = equations[i];
+      const hasPrevProd = (eq.a === currentProd || eq.b === currentProd);
+
+      if (!hasPrevProd) {
+        return {
+          hasEquations: true,
+          equationsCount: equations.length,
+          isValidChain: false,
+          isFullyComplete: false,
+          errorType: "broken_chain",
+          feedback: `🌟 Coach Maara here! In factorial, each step multiplies the accumulated product by the next number. After reaching ${currentProd}, you need to multiply ${currentProd} with the next number in sequence (${nextMultiplier}): ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+          correction: `Multiply the previous result ${currentProd} by ${nextMultiplier}: ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+          suggestedInput: `${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}`
+        };
+      }
+
+      const actualMultiplier = (eq.a === currentProd) ? eq.b : eq.a;
+
+      if (actualMultiplier !== nextMultiplier) {
+        return {
+          hasEquations: true,
+          equationsCount: equations.length,
+          isValidChain: false,
+          isFullyComplete: false,
+          errorType: "wrong_multiplier",
+          feedback: `🌟 Coach Maara here! In ${userN}! (${userN} factorial), numbers are multiplied consecutively from 1 to ${userN}. After ${equations[i - 1].raw}, the next number to multiply is ${nextMultiplier} (${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}), not ${actualMultiplier}!`,
+          correction: `Change "${eq.raw}" to ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+          suggestedInput: `${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}`
+        };
+      }
+
+      currentProd = currentProd * nextMultiplier;
+      nextMultiplier++;
+    }
+
+    if (currentProd === expectedFactVal) {
+      return {
+        hasEquations: true,
+        equationsCount: equations.length,
+        isValidChain: true,
+        isFullyComplete: true,
+        finalProduct: currentProd
+      };
+    }
+
+    return {
+      hasEquations: true,
+      equationsCount: equations.length,
+      isValidChain: true,
+      isFullyComplete: false,
+      isIncomplete: true,
+      feedback: `🌟 Coach Maara here! Good progress! You've reached ${currentProd}. To complete ${userN}! = ${expectedFactVal}, next step: multiply ${currentProd} by ${nextMultiplier} (${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}).`,
+      correction: `Add the next step: ${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}.`,
+      suggestedInput: `${currentProd} * ${nextMultiplier} = ${currentProd * nextMultiplier}`
+    };
+  }
+
+  return {
+    hasEquations: true,
+    equationsCount: equations.length,
+    isValidChain: false,
+    isFullyComplete: false
+  };
 }
+
+function checkFactorialArithmetic(text) {
+  const userN = extractFactorialN(text);
+  const seq = checkFactorialSequence(text, userN);
+  return {
+    hasEquations: seq.hasEquations,
+    equationsCount: seq.equationsCount,
+    allEquationsValid: seq.errorType !== "arithmetic_error",
+    hasAccumulationChain: seq.isValidChain,
+    finalProduct: seq.finalProduct
+  };
+}
+
 function validateFactorialLogic(text) {
   const norm = text.toLowerCase().replace(/[^a-z0-9\s*×=]/g, " ");
   const userN = extractFactorialN(text);
@@ -147,46 +405,95 @@ function validateFactorialLogic(text) {
   const stepByStepStr = getFactorialStepByStepTrace(userN);
   const firstStep = userN >= 2 ? `${userN}*${userN - 1}=${userN * (userN - 1)}` : "1*1=1";
   const expectedFactVal = getFactorialValue(userN);
+
   const hasMultiplication = norm.includes("multiply") || norm.includes("product") || norm.includes("*") || norm.includes("\xD7") || norm.includes("into");
   const hasStartFromOne = norm.includes("start with 1") || norm.includes("start fact with 1") || norm.includes("from 1") || norm.includes("fact = 1") || norm.includes("product = 1") || norm.includes("1 to n") || norm.includes(`1 to ${userN}`) || norm.includes("1 to 5");
   const hasZeroSpecialCase = norm.includes("0! = 1") || norm.includes("0 factorial is 1") || norm.includes("zero factorial");
-  const hasAscendingTrace = (/1\s*[\*×]\s*1\s*=\s*1/i.test(text) || /1\s*[\*×]\s*2\s*=\s*2/i.test(text)) && (/2\s*[\*×]\s*3\s*=\s*6/i.test(text) || /6\s*[\*×]\s*4\s*=\s*24/i.test(text) || /24\s*[\*×]\s*5\s*=\s*120/i.test(text));
-  const hasDescendingTrace = (/5\s*[\*×]\s*4\s*=\s*20/i.test(text) || /4\s*[\*×]\s*3\s*=\s*12/i.test(text) || /3\s*[\*×]\s*2\s*=\s*6/i.test(text)) && (/20\s*[\*×]\s*3\s*=\s*60/i.test(text) || /12\s*[\*×]\s*2\s*=\s*24/i.test(text) || /6\s*[\*×]\s*1\s*=\s*6/i.test(text) || /60\s*[\*×]\s*2\s*=\s*120/i.test(text) || /120\s*[\*×]\s*1\s*=\s*120/i.test(text) || /24\s*[\*×]\s*1\s*=\s*24/i.test(text));
-  const arith = checkFactorialArithmetic(text);
+
+  const seq = checkFactorialSequence(text, userN);
   const prodChain = checkFactorialProductExpression(text);
-  const hasStepByStepTrace = hasAscendingTrace || hasDescendingTrace || arith.hasEquations && arith.hasAccumulationChain && arith.allEquationsValid && arith.equationsCount >= 2;
-  const hasVerbalAccumulationLogic = (norm.includes("multiply") || norm.includes("product")) && (norm.includes("first two") && (norm.includes("result") || norm.includes("next number")) || norm.includes("result") && (norm.includes("next number") || norm.includes("next")) || norm.includes("previous") && norm.includes("next") || norm.includes("one by one") && (norm.includes("1 to") || norm.includes("multiply")) || norm.includes("each number") && norm.includes("multiply") || (norm.includes("multiply all numbers") || norm.includes("multiply 1 to")));
-  const isOneLineDirectProduct = prodChain.hasValidProductChain && !hasStepByStepTrace && !hasVerbalAccumulationLogic;
-  let isFullyVerified = false;
-  let feedback;
-  let correction;
-  let suggestedInput;
-  if (hasStepByStepTrace || hasVerbalAccumulationLogic) {
-    isFullyVerified = true;
-    feedback = `\u{1F389} Logic Approved! Spot on! You've clearly demonstrated how factorial accumulates step by step (reaching ${expectedFactVal} for n=${userN}). You are ready to proceed to the Recipe stage!`;
-    correction = "Proceed to the Recipe stage to write the step-by-step algorithm.";
-  } else if (isOneLineDirectProduct) {
-    isFullyVerified = false;
-    feedback = `Great start! While ${formulaStr} is mathematically true, in programming a computer cannot multiply all numbers at once in a single step! It calculates the product step by step using a loop and a running total. Can you break this down for n=${userN} into sequential multiplications (e.g., starting with ${firstStep}, then multiplying that result by the next number)?`;
-    correction = `Break down ${userN}! into step-by-step multiplications showing how each previous result multiplies with the next number.`;
-    suggestedInput = stepByStepStr;
-  } else {
-    isFullyVerified = false;
-    feedback = `To find the factorial of ${userN} (${userN}!), how does a computer multiply the numbers step by step to reach ${expectedFactVal}? Try showing the sequential calculations (e.g. starting with ${firstStep}...).`;
-    correction = `Write the sequential multiplication steps starting from ${firstStep}.`;
-    suggestedInput = stepByStepStr;
+
+  // If equations exist, sequential equation validation is definitive
+  if (seq.hasEquations) {
+    if (seq.isFullyComplete) {
+      return {
+        isFullyVerified: true,
+        hasMultiplication: true,
+        hasAccumulationTrace: true,
+        hasStartFromOne,
+        hasZeroSpecialCase,
+        isOneLineDirectProduct: false,
+        detectedN: userN,
+        feedback: `🎉 Logic Approved! Spot on! You've clearly demonstrated how factorial accumulates step by step (reaching ${expectedFactVal} for n=${userN}). You are ready to proceed to the Recipe stage!`,
+        correction: "Proceed to the Recipe stage to write the step-by-step algorithm.",
+        suggestedInput: void 0
+      };
+    } else {
+      return {
+        isFullyVerified: false,
+        hasMultiplication: true,
+        hasAccumulationTrace: seq.isValidChain,
+        hasStartFromOne,
+        hasZeroSpecialCase,
+        isOneLineDirectProduct: false,
+        detectedN: userN,
+        feedback: seq.feedback || `🌟 Coach Maara here! To find the factorial of ${userN} (${userN}!), show each multiplication step by step until you reach ${expectedFactVal}.`,
+        correction: seq.correction || `Write the sequential multiplication steps starting from ${firstStep}.`,
+        suggestedInput: seq.suggestedInput || stepByStepStr
+      };
+    }
   }
+
+  // If single line product chain (e.g. 5*4*3*2*1=120 or 5!=120) without sequential steps
+  if (prodChain.hasValidProductChain) {
+    return {
+      isFullyVerified: false,
+      hasMultiplication: true,
+      hasAccumulationTrace: false,
+      hasStartFromOne,
+      hasZeroSpecialCase,
+      isOneLineDirectProduct: true,
+      detectedN: userN,
+      feedback: `🌟 Coach Maara here! While ${formulaStr} is mathematically true, in programming a computer cannot multiply all numbers at once in a single step! It calculates the product step by step using a loop and a running total. Can you break this down for n=${userN} into sequential multiplications (e.g., starting with ${firstStep}, then multiplying that result by the next number)?`,
+      correction: `Break down ${userN}! into step-by-step multiplications showing how each previous result multiplies with the next number.`,
+      suggestedInput: stepByStepStr
+    };
+  }
+
+  // Verbal explanation check (only if student writes detailed algorithmic sentences without equations)
+  const hasVerbalAccumulationLogic = (norm.includes("multiply") || norm.includes("product")) && (
+    (norm.includes("start") && norm.includes("1") && (norm.includes("loop") || norm.includes("each number") || norm.includes("repeat"))) ||
+    (norm.includes("fact") && norm.includes("1") && norm.includes("multiply") && (norm.includes("each") || norm.includes("1 to"))) ||
+    (norm.includes("running") && (norm.includes("product") || norm.includes("total")) && norm.includes("multiply")) ||
+    (norm.includes("previous") && (norm.includes("result") || norm.includes("product")) && norm.includes("next number"))
+  );
+
+  if (hasVerbalAccumulationLogic) {
+    return {
+      isFullyVerified: true,
+      hasMultiplication: true,
+      hasAccumulationTrace: true,
+      hasStartFromOne,
+      hasZeroSpecialCase,
+      isOneLineDirectProduct: false,
+      detectedN: userN,
+      feedback: `🎉 Logic Approved! Spot on! You've clearly explained how factorial accumulates step by step (starting with 1 and sequentially multiplying each number). You are ready to proceed to the Recipe stage!`,
+      correction: "Proceed to the Recipe stage to write the step-by-step algorithm.",
+      suggestedInput: void 0
+    };
+  }
+
   return {
-    isFullyVerified,
+    isFullyVerified: false,
     hasMultiplication,
-    hasAccumulationTrace: hasStepByStepTrace,
+    hasAccumulationTrace: false,
     hasStartFromOne,
     hasZeroSpecialCase,
-    isOneLineDirectProduct,
+    isOneLineDirectProduct: false,
     detectedN: userN,
-    feedback,
-    correction,
-    suggestedInput
+    feedback: `🌟 Coach Maara here! To find the factorial of ${userN} (${userN}!), how does a computer multiply the numbers step by step to reach ${expectedFactVal}? Try showing the sequential calculations (e.g. starting with ${firstStep}...).`,
+    correction: `Write the sequential multiplication steps starting from ${firstStep}.`,
+    suggestedInput: stepByStepStr
   };
 }
 function validateFactorialRecipe(text) {
@@ -355,24 +662,24 @@ function validateFactorialIngredients(text) {
   let correction;
   let suggestedInput;
   if (hasZeroFactMistake) {
-    feedback = `\u{1F31F} Coach Maya here! Look closely at Step 2 where \`${detectedContainerName} = 0\`. In Factorial, we are calculating a continuous product by multiplying each number into this container. If we start multiplying from 0, what happens? (e.g. 0 \xD7 1 = 0, 0 \xD7 2 = 0)\u2014the entire result is wiped out to zero! What initial number should \`${detectedContainerName}\` start with so our multiplications work correctly?`;
+    feedback = `\u{1F31F} Coach Maara here! Look closely at Step 2 where \`${detectedContainerName} = 0\`. In Factorial, we are calculating a continuous product by multiplying each number into this container. If we start multiplying from 0, what happens? (e.g. 0 \xD7 1 = 0, 0 \xD7 2 = 0)\u2014the entire result is wiped out to zero! What initial number should \`${detectedContainerName}\` start with so our multiplications work correctly?`;
     correction = `Initialize ${detectedContainerName} to 1 instead of 0.`;
     suggestedInput = `Step 2: ${detectedContainerName} = 1 (container variable)`;
   } else if (hasSameStartStop) {
-    feedback = `\u{1F31F} Coach Maya here! Look closely at your loop controls: you have set both Start to \`${rawStart}\` and Stop to \`${rawStop}\`. If the loop starts at \`${rawStart}\` and stops immediately at \`${rawStop}\`, it won't be able to step through all the numbers! You selected \`${rawNextStep || "--"}\` to count downward from \`${rawStart}\`\u2014where should our loop stop so that it includes all positive numbers down to the end? (Hint: what is the lowest positive number we multiply by in factorial?)`;
+    feedback = `\u{1F31F} Coach Maara here! Look closely at your loop controls: you have set both Start to \`${rawStart}\` and Stop to \`${rawStop}\`. If the loop starts at \`${rawStart}\` and stops immediately at \`${rawStop}\`, it won't be able to step through all the numbers! You selected \`${rawNextStep || "--"}\` to count downward from \`${rawStart}\`\u2014where should our loop stop so that it includes all positive numbers down to the end? (Hint: what is the lowest positive number we multiply by in factorial?)`;
     correction = `Set Stop to 1 when counting down from ${rawStart} (e.g. Start: ${detectedInputName}, Stop: 1, next step: --).`;
     suggestedInput = `Start:${detectedInputName}
 Stop:1
 next step:--`;
   } else if (hasLoopDirectionMistake) {
     if (isDescendingCandidate) {
-      feedback = `\u{1F31F} Coach Maya here! Your loop starts at \`${rawStart}\` and aims down towards \`${rawStop}\`, but your next step is set to increase (\`${rawNextStep}\`). Stepping upward moves away from 1 towards infinity! How should we step downward to count down from \`${rawStart}\` to \`${rawStop}\`? (Hint: -- or -1)`;
+      feedback = `\u{1F31F} Coach Maara here! Your loop starts at \`${rawStart}\` and aims down towards \`${rawStop}\`, but your next step is set to increase (\`${rawNextStep}\`). Stepping upward moves away from 1 towards infinity! How should we step downward to count down from \`${rawStart}\` to \`${rawStop}\`? (Hint: -- or -1)`;
       correction = `Change next step to -- (or -1) when counting down from ${rawStart} to ${rawStop}.`;
       suggestedInput = `Start:${rawStart}
 Stop:${rawStop}
 next step:--`;
     } else {
-      feedback = `\u{1F31F} Coach Maya here! Your loop starts at \`${rawStart}\` and aims up towards \`${rawStop}\`, but your next step is set to decrease (\`${rawNextStep}\`). Stepping backward moves away into negative numbers! How should we step forward to count from \`${rawStart}\` up to \`${rawStop}\`? (Hint: +1 or ++)`;
+      feedback = `\u{1F31F} Coach Maara here! Your loop starts at \`${rawStart}\` and aims up towards \`${rawStop}\`, but your next step is set to decrease (\`${rawNextStep}\`). Stepping backward moves away into negative numbers! How should we step forward to count from \`${rawStart}\` up to \`${rawStop}\`? (Hint: +1 or ++)`;
       correction = `Change next step to +1 (or ++) when counting up from ${rawStart} to ${rawStop}.`;
       suggestedInput = `Start:${rawStart}
 Stop:${rawStop}
@@ -380,24 +687,24 @@ next step:+1`;
     }
   } else if (hasWrongStopMistake) {
     if (isDescendingCandidate) {
-      feedback = `\u{1F31F} Coach Maya here! In Factorial, when counting down from \`${rawStart}\`, our multiplication sequence needs to go all the way down to 1. Currently your stop is \`${rawStop}\`. What should the stop value be? (Hint: 1)`;
+      feedback = `\u{1F31F} Coach Maara here! In Factorial, when counting down from \`${rawStart}\`, our multiplication sequence needs to go all the way down to 1. Currently your stop is \`${rawStop}\`. What should the stop value be? (Hint: 1)`;
       correction = `Set Stop to 1 when counting down from ${rawStart}.`;
       suggestedInput = `Start:${rawStart}
 Stop:1
 next step:--`;
     } else {
-      feedback = `\u{1F31F} Coach Maya here! When counting up from 1, our loop needs to reach our input number \`${detectedInputName}\`. Currently your stop is \`${rawStop}\`. What should the stop value be?`;
+      feedback = `\u{1F31F} Coach Maara here! When counting up from 1, our loop needs to reach our input number \`${detectedInputName}\`. Currently your stop is \`${rawStop}\`. What should the stop value be?`;
       correction = `Set Stop to ${detectedInputName} when counting up from 1.`;
       suggestedInput = `Start:1
 Stop:${detectedInputName}
 next step:+1`;
     }
   } else if (hasAdditionMistake) {
-    feedback = `\u{1F31F} Coach Maya here! Factorial requires calculating the sequential product (multiplication), not the sum! How can we update our container using multiplication instead of addition?`;
+    feedback = `\u{1F31F} Coach Maara here! Factorial requires calculating the sequential product (multiplication), not the sum! How can we update our container using multiplication instead of addition?`;
     correction = `Use multiplication: ${detectedContainerName} = ${detectedContainerName} * i (or ${detectedContainerName} *= i).`;
     suggestedInput = `Step 5: ${detectedContainerName} = ${detectedContainerName} * i`;
   } else if (currentMissingStep === 1) {
-    feedback = "\u{1F31F} Coach Maya here! Let's gather our programming ingredients for Factorial! To begin, what is the input variable we need to receive the number from the user? Write Step 1 to declare our input variable.";
+    feedback = "\u{1F31F} Coach Maara here! Let's gather our programming ingredients for Factorial! To begin, what is the input variable we need to receive the number from the user? Write Step 1 to declare our input variable.";
     correction = "Step 1: n (input variable)";
     suggestedInput = "Step 1: n (input variable)";
   } else if (currentMissingStep === 2) {
@@ -464,14 +771,35 @@ function validateFactorialSampleCode(text, attemptCount = 1) {
       detectedInputName = candidate;
     }
   }
+
+  const loopVarMatch = text.match(/for\s*\(\s*(?:(?:let|var|const|int)\s+)?([a-zA-Z_]\w*)\s*=/i) || text.match(/for\s+([a-zA-Z_]\w*)\s+in\s+range/i) || text.match(/while\s*\(?\s*([a-zA-Z_]\w*)\s*(?:<=|<)/i);
+  const loopVar = loopVarMatch && loopVarMatch[1] ? loopVarMatch[1] : "i";
+
   let detectedContainerName = "fact";
-  const containerVarMatch = text.match(/(?:(?:let|const|var|int)\s+)?([a-z_]\w*)\s*=\s*(?:1|0)\b/i) || text.match(/(?:step\s*2[^\n]*?(?:variable\s+)?([a-z_]\w*)\s*=\s*(\d+))/i);
-  if (containerVarMatch && containerVarMatch[1]) {
-    const candidate = containerVarMatch[1].trim();
-    if (candidate.toLowerCase() !== detectedInputName.toLowerCase() && !["let", "const", "var", "int", "i", "j", "k", "n", "input"].includes(candidate.toLowerCase())) {
+  // 1. Check if student updates a container with multiplication: e.g. j = i * j, j = j * i, j *= i
+  const productVarMatch = text.match(/([a-z_]\w*)\s*(?:\*=\s*[a-z_]\w*|=\s*[a-z_]\w*\s*\*\s*[a-z_]\w*)/i);
+  if (productVarMatch && productVarMatch[1]) {
+    const candidate = productVarMatch[1].trim();
+    const candLower = candidate.toLowerCase();
+    if (candLower !== detectedInputName.toLowerCase() && candLower !== loopVar.toLowerCase() && !["let", "const", "var", "int", "for", "while"].includes(candLower)) {
       detectedContainerName = candidate;
     }
   }
+
+  // 2. Fallback: check variable initialized to 1 or 0
+  if (detectedContainerName === "fact") {
+    const containerVarRegex = /(?:(?:let|const|var|int)\s+)?([a-z_]\w*)\s*=\s*(?:1|0)\b/gi;
+    let cm;
+    while ((cm = containerVarRegex.exec(text)) !== null) {
+      const candidate = cm[1].trim();
+      const candLower = candidate.toLowerCase();
+      if (candLower !== detectedInputName.toLowerCase() && candLower !== loopVar.toLowerCase() && !["let", "const", "var", "int", "for", "while"].includes(candLower)) {
+        detectedContainerName = candidate;
+        break;
+      }
+    }
+  }
+
   const hasInput = new RegExp(`(?:let|const|var|int\\s+)?(?:${detectedInputName}|n)\\s*=\\s*(?:(?:int|parseInt)\\s*\\(\\s*(?:input|prompt)\\s*\\(\\s*\\)\\s*\\)|[0-9]+|input\\(\\)|prompt|scanner|cin)`, "i").test(text) || new RegExp(`\\b(?:let|const|var|int)?\\s*(?:${detectedInputName}|n)\\s*=`, "i").test(text) || /\b(?:input\(\)|scanner|cin|prompt)\b/i.test(norm);
   const hasAccumulatorOne = new RegExp(`(?:let|const|var|int\\s+)?(?:fact|factorial|prod|product|ans|${detectedContainerName})\\s*=\\s*1\\b`, "i").test(text);
   const hasAccumulatorZero = new RegExp(`(?:let|const|var|int\\s+)?(?:fact|factorial|prod|product|ans|${detectedContainerName})\\s*=\\s*0\\b`, "i").test(text);
@@ -517,7 +845,7 @@ for (int i = 1; i <= ${detectedInputName}; i++) {
           { stepNumber: 4, title: `Accumulate Product (${detectedContainerName} *= i)`, completed: false, current: false },
           { stepNumber: 5, title: `Display Result (print(${detectedContainerName}))`, completed: false, current: false }
         ],
-        feedback: `\u{1F31F} Coach Maya here! Happy to help with the loop! It is completely normal for loop syntax to feel tricky at first.
+        feedback: `\u{1F31F} Coach Maara here! Happy to help with the loop! It is completely normal for loop syntax to feel tricky at first.
 
 Since you have already set up your input \`${detectedInputName}\` and accumulator \`${detectedContainerName} = 1\`, ${loopExamples}
 
@@ -544,7 +872,7 @@ Since you have already set up your input \`${detectedInputName}\` and accumulato
         { stepNumber: 4, title: `Accumulate Product (${detectedContainerName} *= i)`, completed: false, current: false },
         { stepNumber: 5, title: `Display Result (print(${detectedContainerName}))`, completed: false, current: false }
       ],
-      feedback: `\u{1F31F} Coach Maya here! Happy to help with the loop syntax! ${loopExamples}
+      feedback: `\u{1F31F} Coach Maara here! Happy to help with the loop syntax! ${loopExamples}
 
 Let's start by assembling your code prototype: declare your input \`${detectedInputName}\` and initialize \`${detectedContainerName} = 1\`!`,
       correction: `Use standard for loop syntax: for (let i = 1; i <= ${detectedInputName}; i++)`,
@@ -562,32 +890,30 @@ Let's start by assembling your code prototype: declare your input \`${detectedIn
   let loopErrorCorrection = "";
   let loopSuggested = `for (let i = 1; i <= ${detectedInputName}; i++)`;
   if (hasColonInFor && hasIncrementInCondition) {
-    loopErrorFeedback = `\u26A0\uFE0F Coach Maya note: In Step 3, your \`for\` loop syntax needs semicolons (\`;\`) between each part, with condition (\`i <= ${detectedInputName}\`) second and increment (\`i++\`) third.
+    loopErrorFeedback = `\u26A0\uFE0F Coach Maara note: In Step 3, your \`for\` loop syntax needs semicolons (\`;\`) between each part, with condition (\`i <= ${detectedInputName}\`) second and increment (\`i++\`) third.
 
 Structure:
 \`for (let i = 1; i <= ${detectedInputName}; i++)\``;
     loopErrorCorrection = `Fix loop syntax: for (let i = 1; i <= ${detectedInputName}; i++)`;
   } else if (hasColonInFor) {
-    loopErrorFeedback = `\u26A0\uFE0F Coach Maya note: Separate the 3 parts of your \`for\` loop with semicolons (\`;\`), not colons (\`:\`).
+    loopErrorFeedback = `\u26A0\uFE0F Coach Maara note: Separate the 3 parts of your \`for\` loop with semicolons (\`;\`), not colons (\`:\`).
 
 Structure:
 \`for (let i = 1; i <= ${detectedInputName}; i++)\``;
     loopErrorCorrection = `Use semicolons in for loop: for (let i = 1; i <= ${detectedInputName}; i++)`;
   } else if (hasIncrementInCondition) {
-    loopErrorFeedback = `\u26A0\uFE0F Coach Maya note: Place the condition (\`i <= ${detectedInputName}\`) second and the increment (\`i++\`) third:
+    loopErrorFeedback = `\u26A0\uFE0F Coach Maara note: Place the condition (\`i <= ${detectedInputName}\`) second and the increment (\`i++\`) third:
 \`for (let i = 1; i <= ${detectedInputName}; i++)\``;
     loopErrorCorrection = `Order: for (initialization; condition; increment)`;
   } else if (hasInvertedCondition) {
-    loopErrorFeedback = `\u26A0\uFE0F Coach Maya note: Change loop condition to \`i <= ${detectedInputName}\` so it counts upwards from 1 to ${detectedInputName}.`;
+    loopErrorFeedback = `\u26A0\uFE0F Coach Maara note: Change loop condition to \`i <= ${detectedInputName}\` so it counts upwards from 1 to ${detectedInputName}.`;
     loopErrorCorrection = `Use i <= ${detectedInputName} in condition.`;
   } else if (pythonRangeWithoutPlusOne && !validPythonRange) {
-    loopErrorFeedback = `\u26A0\uFE0F Coach Maya note: In Python, \`range(1, ${detectedInputName})\` stops before \`${detectedInputName}\`. To include \`${detectedInputName}\`, use \`range(1, ${detectedInputName} + 1)\`:
+    loopErrorFeedback = `\u26A0\uFE0F Coach Maara note: In Python, \`range(1, ${detectedInputName})\` stops before \`${detectedInputName}\`. To include \`${detectedInputName}\`, use \`range(1, ${detectedInputName} + 1)\`:
 \`for i in range(1, ${detectedInputName} + 1):\``;
     loopErrorCorrection = `Use range(1, ${detectedInputName} + 1) to include ${detectedInputName}.`;
   }
   const hasLoop = (validJsJavaLoop || validPythonRange || validWhileLoop) && !hasColonInFor && !hasIncrementInCondition && !hasInvertedCondition;
-  const loopVarMatch = text.match(/for\s*\(\s*(?:(?:let|var|const|int)\s+)?([a-zA-Z_]\w*)\s*=/i) || text.match(/for\s+([a-zA-Z_]\w*)\s+in\s+range/i) || text.match(/while\s*\(?\s*([a-zA-Z_]\w*)\s*(?:<=|<)/i);
-  const loopVar = loopVarMatch && loopVarMatch[1] ? loopVarMatch[1] : "i";
   const validProductUpdateRegex = new RegExp(`(?:fact|factorial|prod|product|${detectedContainerName})\\s*(?:\\*=\\s*${loopVar}|=\\s*(?:fact|factorial|prod|product|${detectedContainerName})\\s*\\*\\s*${loopVar}|=\\s*${loopVar}\\s*\\*\\s*(?:fact|factorial|prod|product|${detectedContainerName}))\\b`, "i");
   const hasValidProductUpdate = validProductUpdateRegex.test(text);
   const hasFactAddI = new RegExp(`(?:fact|factorial|prod|product|${detectedContainerName})\\s*(?:\\+=\\s*${loopVar}|=\\s*(?:fact|factorial|prod|product|${detectedContainerName})\\s*\\+\\s*${loopVar})\\b`, "i").test(text);
@@ -597,19 +923,19 @@ Structure:
   let productErrorCorrection = "";
   let productSuggested = `    ${detectedContainerName} = ${detectedContainerName} * ${loopVar};`;
   if (hasFactAddI) {
-    productErrorFeedback = `\u26A0\uFE0F Coach Maya note: In Step 4, you used addition (\`+\`) instead of multiplication (\`*\`). Factorial calculates the running product of all numbers!
+    productErrorFeedback = `\u26A0\uFE0F Coach Maara note: In Step 4, you used addition (\`+\`) instead of multiplication (\`*\`). Factorial calculates the running product of all numbers!
 
 Update your loop body to multiply:
 \`${detectedContainerName} = ${detectedContainerName} * ${loopVar}\` (or \`${detectedContainerName} *= ${loopVar}\`).`;
     productErrorCorrection = `Change + to * (e.g. ${detectedContainerName} = ${detectedContainerName} * ${loopVar}).`;
     productSuggested = `    ${detectedContainerName} = ${detectedContainerName} * ${loopVar};`;
   } else if (hasFactMultiplyN) {
-    productErrorFeedback = `\u26A0\uFE0F Coach Maya note: In Step 4, you multiplied by \`${detectedInputName}\` (\`${detectedContainerName} = ${detectedContainerName} * ${detectedInputName}\`). \`${detectedInputName}\` is the constant boundary! To multiply each progressive number from the loop, multiply by \`${loopVar}\`:
+    productErrorFeedback = `\u26A0\uFE0F Coach Maara note: In Step 4, you multiplied by \`${detectedInputName}\` (\`${detectedContainerName} = ${detectedContainerName} * ${detectedInputName}\`). \`${detectedInputName}\` is the constant boundary! To multiply each progressive number from the loop, multiply by \`${loopVar}\`:
 \`${detectedContainerName} = ${detectedContainerName} * ${loopVar}\` (or \`${detectedContainerName} *= ${loopVar}\`).`;
     productErrorCorrection = `Multiply by loop variable ${loopVar}: ${detectedContainerName} = ${detectedContainerName} * ${loopVar}.`;
     productSuggested = `    ${detectedContainerName} = ${detectedContainerName} * ${loopVar};`;
   } else if (hasFactOverwriteNIntoI) {
-    productErrorFeedback = `\u26A0\uFE0F Coach Maya note: In Step 4, you wrote \`${detectedContainerName} = ${detectedInputName} * ${loopVar}\`. This overwrites \`${detectedContainerName}\` on each cycle instead of building upon the running product.
+    productErrorFeedback = `\u26A0\uFE0F Coach Maara note: In Step 4, you wrote \`${detectedContainerName} = ${detectedInputName} * ${loopVar}\`. This overwrites \`${detectedContainerName}\` on each cycle instead of building upon the running product.
 
 Use:
 \`${detectedContainerName} = ${detectedContainerName} * ${loopVar}\` (or \`${detectedContainerName} *= ${loopVar}\`).`;
@@ -656,7 +982,7 @@ You are fully ready to code and test!`;
     correction = "You're ready to code!";
     suggestedInput = "";
   } else if (!hasInput && !hasAccumulator && !hasLoop && !hasProductUpdate && !hasPrint) {
-    feedback = `\u{1F31F} Coach Maya here! Welcome to Stage 4: Taste the Sample! Let's assemble our verified ingredients into a working code prototype step by step.
+    feedback = `\u{1F31F} Coach Maara here! Welcome to Stage 4: Taste the Sample! Let's assemble our verified ingredients into a working code prototype step by step.
 
 \u{1F449} **Step 1 & 2:** Start by declaring your input variable \`${detectedInputName}\` and initializing your accumulator \`${detectedContainerName} = 1\`.`;
     correction = `Declare input ${detectedInputName} and accumulator ${detectedContainerName} = 1.`;
@@ -664,7 +990,7 @@ You are fully ready to code and test!`;
 ${detectedContainerName} = 1`;
   } else if (!hasInput || !hasAccumulator) {
     if (hasAccumulatorZero) {
-      feedback = `\u26A0\uFE0F Coach Maya note: In Step 2, you initialized \`${detectedContainerName} = 0\`. Multiplying anything by 0 keeps the product at 0 forever! Change it to start at 1:
+      feedback = `\u26A0\uFE0F Coach Maara note: In Step 2, you initialized \`${detectedContainerName} = 0\`. Multiplying anything by 0 keeps the product at 0 forever! Change it to start at 1:
 \`${detectedContainerName} = 1\``;
       correction = `Initialize ${detectedContainerName} = 1 instead of 0.`;
       suggestedInput = `${detectedContainerName} = 1`;
@@ -681,7 +1007,7 @@ ${detectedContainerName} = 1`;
       correction = loopErrorCorrection;
       suggestedInput = loopSuggested;
     } else if (attemptCount >= 3) {
-      feedback = `\u{1F31F} Coach Maya here! Let's get your factorial loop connected right away! Place this exact loop after initializing \`${detectedContainerName} = 1\`:
+      feedback = `\u{1F31F} Coach Maara here! Let's get your factorial loop connected right away! Place this exact loop after initializing \`${detectedContainerName} = 1\`:
 
 \`\`\`javascript
 for (let i = 1; i <= ${detectedInputName}; i++) {
@@ -693,7 +1019,7 @@ for (let i = 1; i <= ${detectedInputName}; i++) {
       correction = `Step 3: Add your for loop iterating from 1 to ${detectedInputName}.`;
       suggestedInput = `for (let i = 1; i <= ${detectedInputName}; i++)`;
     } else if (attemptCount === 2) {
-      feedback = `\u{1F31F} Coach Maya checking back! You have \`${detectedInputName}\` and \`${detectedContainerName} = 1\` ready. Now we need our counting loop to repeat from 1 up to \`${detectedInputName}\`.
+      feedback = `\u{1F31F} Coach Maara checking back! You have \`${detectedInputName}\` and \`${detectedContainerName} = 1\` ready. Now we need our counting loop to repeat from 1 up to \`${detectedInputName}\`.
 
 \u2022 **Start:** \`i = 1\`
 \u2022 **Stop Condition:** \`i <= ${detectedInputName}\`
@@ -736,7 +1062,7 @@ Try adding the loop into your code!`;
       correction = productErrorCorrection;
       suggestedInput = productSuggested;
     } else if (attemptCount >= 2) {
-      feedback = `\u{1F31F} Coach Maya checking in! Inside the loop body, multiply the current number into your container:
+      feedback = `\u{1F31F} Coach Maara checking in! Inside the loop body, multiply the current number into your container:
 \`${detectedContainerName} = ${detectedContainerName} * ${loopVar};\` (or \`${detectedContainerName} *= ${loopVar};\`)
 
 This multiplies the previous product by the loop number on each iteration!`;
@@ -751,7 +1077,7 @@ This multiplies the previous product by the loop number on each iteration!`;
     }
   } else if (!hasPrint) {
     if (hasPrintedInputInstead) {
-      feedback = `\u26A0\uFE0F Coach Maya note: Take a close look at your last line where you wrote \`print(${detectedInputName})\`!
+      feedback = `\u26A0\uFE0F Coach Maara note: Take a close look at your last line where you wrote \`print(${detectedInputName})\`!
 
 Variable \`${detectedInputName}\` holds your starting input number (like 5), whereas your accumulated factorial product is safely stored in variable \`${detectedContainerName}\`!
 
@@ -762,19 +1088,19 @@ If you print \`${detectedInputName}\`, you will only output the input number ins
       correction = `Change print(${detectedInputName}) to print(${detectedContainerName}) to output the final factorial result.`;
       suggestedInput = `print(${detectedContainerName})`;
     } else if (hasPrintedLoopVarInstead) {
-      feedback = `\u26A0\uFE0F Coach Maya note: In Step 5, you printed the loop variable \`${loopVar}\` (\`print(${loopVar})\`). \`${loopVar}\` is only the counter variable! Your accumulated product is in \`${detectedContainerName}\`.
+      feedback = `\u26A0\uFE0F Coach Maara note: In Step 5, you printed the loop variable \`${loopVar}\` (\`print(${loopVar})\`). \`${loopVar}\` is only the counter variable! Your accumulated product is in \`${detectedContainerName}\`.
 
 \u{1F449} **Update your print statement to output your container:**
 \`print(${detectedContainerName})\``;
       correction = `Change print(${loopVar}) to print(${detectedContainerName}) to output the final result.`;
       suggestedInput = `print(${detectedContainerName})`;
     } else if (hasAnyOtherPrint) {
-      feedback = `\u26A0\uFE0F Coach Maya note: In Step 5, you added an output statement, but make sure to print your accumulator variable \`${detectedContainerName}\` to display the final factorial product:
+      feedback = `\u26A0\uFE0F Coach Maara note: In Step 5, you added an output statement, but make sure to print your accumulator variable \`${detectedContainerName}\` to display the final factorial product:
 \`print(${detectedContainerName})\``;
       correction = `Print accumulator: print(${detectedContainerName}).`;
       suggestedInput = `print(${detectedContainerName})`;
     } else if (attemptCount >= 2) {
-      feedback = `\u{1F31F} Coach Maya here! Everything is computed! Add the output line after the loop to display the final factorial:
+      feedback = `\u{1F31F} Coach Maara here! Everything is computed! Add the output line after the loop to display the final factorial:
 \`print(${detectedContainerName})\` (or \`console.log(${detectedContainerName});\`)`;
       correction = `Step 5: Add print(${detectedContainerName}) to display the final result.`;
       suggestedInput = `print(${detectedContainerName});`;
@@ -806,6 +1132,7 @@ If you print \`${detectedInputName}\`, you will only output the input number ins
 export {
   checkFactorialArithmetic,
   checkFactorialProductExpression,
+  checkFactorialSequence,
   extractFactorialN,
   getFactorialFormula,
   getFactorialStepByStepTrace,
@@ -815,3 +1142,4 @@ export {
   validateFactorialRecipe,
   validateFactorialSampleCode
 };
+
