@@ -2530,6 +2530,23 @@
             const cBtnEl = document.getElementById('btnCompletedOpenCompiler');
             if (cBtnEl) cBtnEl.href = initialCompilerUrl;
 
+            // Backend Reachability & Circuit Breaker System
+            window.__isBackendReachable = sessionStorage.getItem("cookdcode_backend_unreachable") !== "true";
+
+            window.markBackendUnreachable = function (reason) {
+                if (window.__isBackendReachable !== false) {
+                    window.__isBackendReachable = false;
+                    sessionStorage.setItem("cookdcode_backend_unreachable", "true");
+                    console.info(`⚡ Circuit Breaker: Remote backend unreachable (${reason || "error"}). Fast in-browser validation & Firebase mode active.`);
+                }
+            };
+
+            window.resetBackendStatus = function () {
+                window.__isBackendReachable = true;
+                sessionStorage.removeItem("cookdcode_backend_unreachable");
+                console.log("🟢 Backend status reset. Remote API requests will retry.");
+            };
+
             let tokens = 999999;
 
             window.useToken = function (actionType) {
@@ -3753,22 +3770,26 @@
 
                     try {
                         let data = null;
-                        try {
-                            const response = await fetch(`${API_BASE}/api/clean-step`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    section: norm,
-                                    category: category || 'fundamentals',
-                                    problemID: problemID || 'problem01',
-                                    userInput: userContent
-                                })
-                            });
-                            if (response.ok) {
-                                data = await response.json();
+                        if (window.__isBackendReachable !== false) {
+                            try {
+                                const response = await fetch(`${API_BASE}/api/clean-step`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        section: norm,
+                                        category: category || 'fundamentals',
+                                        problemID: problemID || 'problem01',
+                                        userInput: userContent
+                                    })
+                                });
+                                if (response.ok) {
+                                    data = await response.json();
+                                } else {
+                                    window.markBackendUnreachable(`HTTP ${response.status}`);
+                                }
+                            } catch (netErr) {
+                                window.markBackendUnreachable(netErr.message);
                             }
-                        } catch (netErr) {
-                            console.info(`Backend API unreachable for clean-step. Using in-browser formatting fallback.`);
                         }
 
                         if (!data) {
@@ -4064,17 +4085,21 @@
 
                     try {
                         let localCheckData = null;
-                        try {
-                            const localCheckResponse = await fetch(`${API_BASE}/api/checkInput`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ category, problemID, section, userInput: userContent, recipeContent, logicContent })
-                            });
-                            if (localCheckResponse.ok) {
-                                localCheckData = await localCheckResponse.json();
+                        if (window.__isBackendReachable !== false) {
+                            try {
+                                const localCheckResponse = await fetch(`${API_BASE}/api/checkInput`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ category, problemID, section, userInput: userContent, recipeContent, logicContent })
+                                });
+                                if (localCheckResponse.ok) {
+                                    localCheckData = await localCheckResponse.json();
+                                } else {
+                                    window.markBackendUnreachable(`HTTP ${localCheckResponse.status}`);
+                                }
+                            } catch (netErr) {
+                                window.markBackendUnreachable(netErr.message);
                             }
-                        } catch (netErr) {
-                            console.info(`Backend API unreachable for checking ${section}. Using client-side validation fallback.`);
                         }
 
                         if (!localCheckData) {
@@ -4182,17 +4207,21 @@
 
                     try {
                         let localCheckData = null;
-                        try {
-                            const localCheckResponse = await fetch(`${API_BASE}/api/checkInput`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ category, problemID, section: 'samplecode', userInput: code })
-                            });
-                            if (localCheckResponse.ok) {
-                                localCheckData = await localCheckResponse.json();
+                        if (window.__isBackendReachable !== false) {
+                            try {
+                                const localCheckResponse = await fetch(`${API_BASE}/api/checkInput`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ category, problemID, section: 'samplecode', userInput: code })
+                                });
+                                if (localCheckResponse.ok) {
+                                    localCheckData = await localCheckResponse.json();
+                                } else {
+                                    window.markBackendUnreachable(`HTTP ${localCheckResponse.status}`);
+                                }
+                            } catch (netErr) {
+                                window.markBackendUnreachable(netErr.message);
                             }
-                        } catch (netErr) {
-                            console.info("Backend API unreachable for code checking. Using client-side code verification fallback.");
                         }
 
                         if (!localCheckData) {
@@ -5049,16 +5078,18 @@
 
                         let data = null;
 
-                        // 1. Primary Attempt: Backend API
-                        try {
-                            const res = await fetch(`${API_BASE}/api/getProblemDetails?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`);
-                            if (res.ok) {
-                                data = await res.json();
-                            } else {
-                                console.info(`Notice: Backend API returned ${res.status}. Seamlessly falling back to Firebase & local catalog.`);
+                        // 1. Primary Attempt: Backend API (if reachable)
+                        if (window.__isBackendReachable !== false) {
+                            try {
+                                const res = await fetch(`${API_BASE}/api/getProblemDetails?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`);
+                                if (res.ok) {
+                                    data = await res.json();
+                                } else {
+                                    window.markBackendUnreachable(`HTTP ${res.status}`);
+                                }
+                            } catch (netErr) {
+                                window.markBackendUnreachable(netErr.message);
                             }
-                        } catch (netErr) {
-                            console.info("Notice: Backend API is currently unreachable. Seamlessly activating Firebase & local problem catalog fallback.");
                         }
 
                         // 2. Secondary Attempt: Firebase Realtime Database
@@ -5117,19 +5148,23 @@
                         let hint = null;
                         let hintData = {};
 
-                        try {
-                            const res = await fetch(`${API_BASE}/api/rewriteHint`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ category, problemID, section: targetSec, hintLevel: 1 })
-                            });
-                            if (res.ok) {
-                                const data = await res.json();
-                                hint = data.hint || data.feedback;
-                                hintData = data;
+                        if (window.__isBackendReachable !== false) {
+                            try {
+                                const res = await fetch(`${API_BASE}/api/rewriteHint`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ category, problemID, section: targetSec, hintLevel: 1 })
+                                });
+                                if (res.ok) {
+                                    const data = await res.json();
+                                    hint = data.hint || data.feedback;
+                                    hintData = data;
+                                } else {
+                                    window.markBackendUnreachable(`HTTP ${res.status}`);
+                                }
+                            } catch (e) {
+                                window.markBackendUnreachable(e.message);
                             }
-                        } catch (e) {
-                            // Backend offline, fallback to built-in coach greeting
                         }
 
                         if (!hint) {

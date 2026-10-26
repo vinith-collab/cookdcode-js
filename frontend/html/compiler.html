@@ -291,6 +291,23 @@
             ? (isLocalHostEnvironment ? "" : "http://localhost:3001")
             : "https://api.cookdcode.com");
 
+    // Backend Reachability & Circuit Breaker System
+    window.__isBackendReachable = sessionStorage.getItem("cookdcode_backend_unreachable") !== "true";
+
+    window.markBackendUnreachable = function (reason) {
+      if (window.__isBackendReachable !== false) {
+        window.__isBackendReachable = false;
+        sessionStorage.setItem("cookdcode_backend_unreachable", "true");
+        console.info(`⚡ Circuit Breaker: Remote backend unreachable (${reason || "error"}). Fast in-browser execution fallback active.`);
+      }
+    };
+
+    window.resetBackendStatus = function () {
+      window.__isBackendReachable = true;
+      sessionStorage.removeItem("cookdcode_backend_unreachable");
+      console.log("🟢 Backend status reset. Remote API requests will retry.");
+    };
+
     // Set Back to CTC button URL
     const backBtn = document.getElementById("backToCtcBtn");
     if (backBtn) {
@@ -465,10 +482,18 @@
     async function loadProblemData() {
       try {
         let meta = null;
-        try {
-          const res = await fetch(`${API_BASE}/api/getProblemDetails?problemID=${encodeURIComponent(problemID)}&category=${encodeURIComponent(category)}`);
-          if (res.ok) meta = await res.json();
-        } catch (e) {}
+        if (window.__isBackendReachable !== false) {
+          try {
+            const res = await fetch(`${API_BASE}/api/getProblemDetails?problemID=${encodeURIComponent(problemID)}&category=${encodeURIComponent(category)}`);
+            if (res.ok) {
+              meta = await res.json();
+            } else {
+              window.markBackendUnreachable(`HTTP ${res.status}`);
+            }
+          } catch (e) {
+            window.markBackendUnreachable(e.message);
+          }
+        }
 
         if (!meta) {
           try {
@@ -632,18 +657,22 @@
       try {
         let result = null;
 
-        // 1. Primary Attempt: Backend API (/api/compile)
-        try {
-          const response = await fetch(`${API_BASE}/api/compile`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ language: lang, code, stdin })
-          });
-          if (response.ok) {
-            result = await response.json();
+        // 1. Primary Attempt: Backend API (/api/compile if reachable)
+        if (window.__isBackendReachable !== false) {
+          try {
+            const response = await fetch(`${API_BASE}/api/compile`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ language: lang, code, stdin })
+            });
+            if (response.ok) {
+              result = await response.json();
+            } else {
+              window.markBackendUnreachable(`HTTP ${response.status}`);
+            }
+          } catch (netErr) {
+            window.markBackendUnreachable(netErr.message);
           }
-        } catch (netErr) {
-          console.info("Backend compile API unreachable, using execution fallback engine.");
         }
 
         // 2. Secondary Attempt: Fallback execution (in-browser sandbox or Judge0 CE)
