@@ -2469,7 +2469,34 @@
             const mProb = cleanProblemID.match(/^problem0?(\d+)$/);
             const problemID = mProb ? `problem${parseInt(mProb[1], 10) < 10 ? '0' + mProb[1] : mProb[1]}` : cleanProblemID;
             const category = (params.get("category") || "fundamentals").toLowerCase().trim();
-            const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "" : (window.location.protocol === "file:" ? "http://localhost:3001" : "https://api.cookdcode.com");
+
+            // API Base Configuration:
+            // Default is "https://api.cookdcode.com".
+            // Localhost can be enabled via:
+            //   1. Changing ENABLE_LOCALHOST = true below, OR
+            //   2. Adding ?localhost=true in the URL, OR
+            //   3. Calling window.setLocalhost(true) in the browser console
+            const ENABLE_LOCALHOST = false;
+
+            window.setLocalhost = function (enable = true) {
+                if (enable) {
+                    localStorage.setItem("enable_localhost", "true");
+                    console.log("🟢 Localhost API Enabled: Requests will route to localhost:3001");
+                } else {
+                    localStorage.removeItem("enable_localhost");
+                    console.log("🔵 Production API Enabled: Requests will route to https://api.cookdcode.com");
+                }
+                window.location.reload();
+            };
+
+            const isLocalhostActive = ENABLE_LOCALHOST ||
+                localStorage.getItem("enable_localhost") === "true" ||
+                params.get("localhost") === "true" ||
+                params.get("local") === "true";
+
+            const API_BASE = isLocalhostActive
+                ? ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "" : "http://localhost:3001")
+                : "https://api.cookdcode.com";
 
             // Wire up compiler buttons on page load
             const initialCompilerUrl = `compiler.html?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`;

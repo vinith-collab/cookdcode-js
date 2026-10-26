@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node -e \"import('./server/app.js').then(() => console.log('Backend OK'))\""
+    "test": "node -e \"import('./backend/app.js').then(() => console.log('Backend OK'))\""
   },
   "dependencies": {
     "@google/genai": "^2.28.0",

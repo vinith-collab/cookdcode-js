@@ -37,3 +37,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Archives
+*.zip
+*.tar.gz
+
+
