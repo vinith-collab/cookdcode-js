@@ -439,12 +439,35 @@
       updateLineNumbers();
     };
 
-    // Load problem metadata from server
+    // Load problem metadata from server or Firebase fallback
     async function loadProblemData() {
       try {
-        const res = await fetch(`/api/getProblemDetails?problemID=${encodeURIComponent(problemID)}&category=${encodeURIComponent(category)}`);
-        if (res.ok) {
-          problemMetadata = await res.json();
+        let meta = null;
+        try {
+          const res = await fetch(`/api/getProblemDetails?problemID=${encodeURIComponent(problemID)}&category=${encodeURIComponent(category)}`);
+          if (res.ok) meta = await res.json();
+        } catch (e) {}
+
+        if (!meta) {
+          try {
+            const snap = await get(ref(db, `programs/${category}/${problemID}`));
+            if (snap && snap.exists()) {
+              const val = snap.val();
+              const numMatch = problemID.match(/\d+/);
+              const probNum = numMatch ? parseInt(numMatch[0], 10) : 1;
+              meta = {
+                title: (val.programName || val.title || problemID).replace(/^Challenge:\s*/i, "").trim(),
+                description: val.description || "Write a program to solve this challenge.",
+                phase: category === "fundamentals" ? "Phase 1" : (category === "string" ? "Phase 2" : "Phase 3"),
+                problemBadge: `Problem ${probNum}`,
+                concept: val.concept || "Programming Logic"
+              };
+            }
+          } catch (e) {}
+        }
+
+        if (meta) {
+          problemMetadata = meta;
           document.getElementById("problemTitleText").innerText = `${problemMetadata.problemBadge || 'Problem'}: ${problemMetadata.title.replace(/^Challenge:\s*/i, '')}`;
           document.getElementById("problemNumBadge").innerText = (problemMetadata.problemBadge || 'Problem').toUpperCase();
           document.getElementById("phaseBadge").innerText = `${problemMetadata.phase || 'Phase 1'}: ${category.charAt(0).toUpperCase() + category.slice(1)}`;

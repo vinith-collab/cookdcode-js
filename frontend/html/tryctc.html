@@ -2472,10 +2472,10 @@
 
             // API Base Configuration:
             // Default is "https://api.cookdcode.com".
-            // Localhost can be enabled via:
-            //   1. Changing ENABLE_LOCALHOST = true below, OR
-            //   2. Adding ?localhost=true in the URL, OR
-            //   3. Calling window.setLocalhost(true) in the browser console
+            // Localhost or Custom Backend can be configured via:
+            //   1. window.setApiUrl("https://your-backend.com")
+            //   2. window.setLocalhost(true)
+            //   3. Adding ?apiUrl=https://... or ?localhost=true in the URL
             const ENABLE_LOCALHOST = false;
 
             window.setLocalhost = function (enable = true) {
@@ -2489,14 +2489,32 @@
                 window.location.reload();
             };
 
+            window.setApiUrl = function (customUrl) {
+                if (customUrl && typeof customUrl === "string") {
+                    const cleaned = customUrl.trim().replace(/\/+$/, "");
+                    localStorage.setItem("cookdcode_api_url", cleaned);
+                    console.log("🟢 Custom API URL Enabled:", cleaned);
+                } else {
+                    localStorage.removeItem("cookdcode_api_url");
+                    console.log("🔵 Custom API URL cleared. Using default.");
+                }
+                window.location.reload();
+            };
+
+            const customApiFromQuery = params.get("apiUrl") || params.get("api");
+            const customApiStored = localStorage.getItem("cookdcode_api_url");
+            const customApiActive = (customApiFromQuery || customApiStored || "").replace(/\/+$/, "");
+
             const isLocalhostActive = ENABLE_LOCALHOST ||
                 localStorage.getItem("enable_localhost") === "true" ||
                 params.get("localhost") === "true" ||
                 params.get("local") === "true";
 
-            const API_BASE = isLocalhostActive
-                ? ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "" : "http://localhost:3001")
-                : "https://api.cookdcode.com";
+            const API_BASE = customApiActive
+                ? customApiActive
+                : (isLocalhostActive
+                    ? ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "" : "http://localhost:3001")
+                    : "https://api.cookdcode.com");
 
             // Wire up compiler buttons on page load
             const initialCompilerUrl = `compiler.html?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`;
@@ -4513,6 +4531,411 @@
                     // CTC progression roadmap in left sidebar replaced per user request with expanded Problem Definition
                 };
 
+                const CLIENT_PROBLEM_CATALOG = {
+                    "problem01": {
+                        title: "Odd or Even",
+                        description: "Write a program that takes an integer number from user input and determines whether the number is Even or Odd.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 1",
+                        concept: "Modulo Operator & Parity",
+                        objective: "Write a program that takes an integer number from user input and determines whether the number is Even or Odd.",
+                        specifications: [
+                            { label: "Input", desc: "A single integer number <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Determine whether the input number is Even or Odd.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Even'</code> if the number is even, or <code>'Odd'</code> if the number is odd.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "4", output: "'Even'" },
+                            { input: "7", output: "'Odd'" }
+                        ]
+                    },
+                    "problem02": {
+                        title: "Sum of N Natural Numbers",
+                        description: "Write a program to calculate the total sum of the first N positive natural numbers from 1 up to N.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 2",
+                        concept: "Loops and Accumulator",
+                        objective: "Write a program to calculate the total sum of the first N positive natural numbers from 1 up to N.",
+                        specifications: [
+                            { label: "Input", desc: "A single positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Calculate the total sum of all natural numbers from 1 up to <code>n</code>.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the final calculated sum.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "5", output: "15" },
+                            { input: "3", output: "6" }
+                        ]
+                    },
+                    "problem03": {
+                        title: "Factorial of a Number",
+                        description: "Write a program to calculate the factorial of a given positive integer N.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 3",
+                        concept: "Multiplication Accumulator & Loops",
+                        objective: "Write a program to calculate the factorial of a given positive integer N.",
+                        specifications: [
+                            { label: "Input", desc: "A single non-negative integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Calculate the factorial value of <code>n</code>.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the final factorial product.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "5", output: "120" },
+                            { input: "4", output: "24" }
+                        ]
+                    },
+                    "problem04": {
+                        title: "Divisors of a Number",
+                        description: "Write a program to find and display all positive divisors of a given number N.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 4",
+                        concept: "Factors & Remainder Division",
+                        objective: "Write a program to find and display all positive divisors of a given number N.",
+                        specifications: [
+                            { label: "Input", desc: "A single positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Find all positive integers that divide <code>n</code> completely.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Display the list of all matching divisors.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "6", output: "1, 2, 3, 6" },
+                            { input: "8", output: "1, 2, 4, 8" }
+                        ]
+                    },
+                    "problem05": {
+                        title: "Multiplication Table",
+                        description: "Write a program to display the multiplication table of a given number N.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 5",
+                        concept: "Arithmetic Progression & Iterative Multiples",
+                        objective: "Write a program to display the multiplication table of a given number N.",
+                        specifications: [
+                            { label: "Input", desc: "A single positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Generate the multiplication multiples for <code>n</code>.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Display the table rows up to 10 multiples.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "5", output: "Multiplication table of 5" }
+                        ]
+                    },
+                    "problem06": {
+                        title: "Prime Number Checker",
+                        description: "Write a program to check whether a given integer N is a Prime number or Not Prime.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 6",
+                        concept: "Primality Testing & Divisibility Boundary",
+                        objective: "Write a program to check whether a given integer N is a Prime number or Not Prime.",
+                        specifications: [
+                            { label: "Input", desc: "A single positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Determine if <code>n</code> is a Prime number or Not Prime.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Prime'</code> or <code>'Not Prime'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "13", output: "'Prime'" },
+                            { input: "9", output: "'Not Prime'" }
+                        ]
+                    },
+                    "problem07": {
+                        title: "Next Prime Number",
+                        description: "Write a program to find the smallest prime number strictly greater than a given integer n.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 7",
+                        concept: "Successor Primality Search",
+                        objective: "Write a program to find the smallest prime number strictly greater than a given integer n.",
+                        specifications: [
+                            { label: "Input", desc: "A single positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Find the smallest prime number strictly greater than <code>n</code>.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the next prime number.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "7", output: "11" },
+                            { input: "14", output: "17" }
+                        ]
+                    },
+                    "problem08": {
+                        title: "Prime Numbers in Range",
+                        description: "Write a program to find and print all prime numbers between a start range and an end range.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 8",
+                        concept: "Range Primality Filter",
+                        objective: "Write a program to find and print all prime numbers between a start range and an end range.",
+                        specifications: [
+                            { label: "Input", desc: "Start and end range limits <code>a</code> and <code>b</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Find all prime numbers between <code>a</code> and <code>b</code> inclusive.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print all prime numbers in the range separated by commas.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "10, 20", output: "11, 13, 17, 19" }
+                        ]
+                    },
+                    "problem09": {
+                        title: "Sexy Prime Pairs",
+                        description: "Write a program to check if two prime numbers differ by six (p, p+6), forming a sexy prime pair.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 9",
+                        concept: "Prime Constant Difference Pairs",
+                        objective: "Write a program to check if two prime numbers differ by six (p, p+6), forming a sexy prime pair.",
+                        specifications: [
+                            { label: "Input", desc: "Two prime integers <code>p1</code> and <code>p2</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Check if both are prime and differ by exactly 6.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Sexy Prime'</code> or <code>'Not Sexy Prime'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "5, 11", output: "'Sexy Prime'" },
+                            { input: "7, 11", output: "'Not Sexy Prime'" }
+                        ]
+                    },
+                    "problem10": {
+                        title: "Positive or Negative",
+                        description: "Write a program to determine whether a given integer is Positive (>0), Negative (<0), or Zero (==0).",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 10",
+                        concept: "Signum Classification",
+                        objective: "Write a program to determine whether a given integer is Positive, Negative, or Zero.",
+                        specifications: [
+                            { label: "Input", desc: "A single integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Evaluate whether <code>n</code> is positive, negative, or zero.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Positive'</code>, <code>'Negative'</code>, or <code>'Zero'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "5", output: "'Positive'" },
+                            { input: "-3", output: "'Negative'" }
+                        ]
+                    },
+                    "problem11": {
+                        title: "Three-Digit Number",
+                        description: "Write a program to check whether a given integer is a 3-digit number (between 100 and 999 inclusive).",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 11",
+                        concept: "Magnitude Range Checking",
+                        objective: "Write a program to check whether a given integer is a 3-digit number.",
+                        specifications: [
+                            { label: "Input", desc: "A single integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Check if <code>n</code> is between 100 and 999 inclusive.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Three-Digit'</code> or <code>'Not Three-Digit'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "450", output: "'Three-Digit'" },
+                            { input: "45", output: "'Not Three-Digit'" }
+                        ]
+                    },
+                    "problem12": {
+                        title: "Voting Eligibility",
+                        description: "Write a program to check whether a person is eligible to vote based on age (age >= 18).",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 12",
+                        concept: "Threshold Evaluation",
+                        objective: "Write a program to check whether a person is eligible to vote based on age.",
+                        specifications: [
+                            { label: "Input", desc: "A person's age <code>age</code> as an integer.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Check if <code>age</code> is greater than or equal to 18.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Eligible'</code> or <code>'Not Eligible'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "19", output: "'Eligible'" },
+                            { input: "16", output: "'Not Eligible'" }
+                        ]
+                    },
+                    "problem13": {
+                        title: "Pass or Fail",
+                        description: "Write a program to check if a student has passed or failed based on marks (mark >= 35 is Pass).",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 13",
+                        concept: "Academic Benchmark Evaluation",
+                        objective: "Write a program to check if a student has passed or failed based on marks.",
+                        specifications: [
+                            { label: "Input", desc: "Student mark <code>mark</code> as an integer.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Check if <code>mark</code> is at least 35.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Pass'</code> or <code>'Fail'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "42", output: "'Pass'" },
+                            { input: "28", output: "'Fail'" }
+                        ]
+                    },
+                    "problem14": {
+                        title: "Greater Than 100",
+                        description: "Write a program to check if an entered number is strictly greater than 100.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 14",
+                        concept: "Century Threshold Comparison",
+                        objective: "Write a program to check if an entered number is strictly greater than 100.",
+                        specifications: [
+                            { label: "Input", desc: "A single integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Verify if <code>n</code> is greater than 100.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Greater'</code> or <code>'Not Greater'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "150", output: "'Greater'" },
+                            { input: "95", output: "'Not Greater'" }
+                        ]
+                    },
+                    "problem15": {
+                        title: "Profit or Loss",
+                        description: "Write a program to calculate profit or loss by comparing Selling Price (SP) and Cost Price (CP).",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 15",
+                        concept: "Commercial Financial Difference",
+                        objective: "Write a program to calculate profit or loss by comparing Selling Price and Cost Price.",
+                        specifications: [
+                            { label: "Input", desc: "Cost Price <code>CP</code> and Selling Price <code>SP</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Compare SP and CP to determine profit, loss, or no profit.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Profit'</code>, <code>'Loss'</code>, or <code>'No Profit No Loss'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "100, 150", output: "'Profit'" },
+                            { input: "200, 160", output: "'Loss'" }
+                        ]
+                    },
+                    "problem16": {
+                        title: "Leap Year or Not",
+                        description: "Write a program to determine if a given year is a Leap Year.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 16",
+                        concept: "Gregorian Calendar Rules",
+                        objective: "Write a program to determine if a given year is a Leap Year.",
+                        specifications: [
+                            { label: "Input", desc: "A four-digit year <code>year</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Check leap year divisibility (divisible by 4, not 100 unless 400).", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Leap Year'</code> or <code>'Not Leap Year'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "2024", output: "'Leap Year'" },
+                            { input: "2023", output: "'Not Leap Year'" }
+                        ]
+                    },
+                    "problem17": {
+                        title: "Adult or Minor",
+                        description: "Write a program to classify a person as an Adult or Minor based on age.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 17",
+                        concept: "Demographic Classification",
+                        objective: "Write a program to classify a person as an Adult or Minor based on age.",
+                        specifications: [
+                            { label: "Input", desc: "A person's age <code>age</code> as an integer.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Classify as Adult (age >= 18) or Minor (age < 18).", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Adult'</code> or <code>'Minor'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "21", output: "'Adult'" },
+                            { input: "15", output: "'Minor'" }
+                        ]
+                    },
+                    "problem18": {
+                        title: "Divisible by 5 or Not",
+                        description: "Write a program to check if an entered number is divisible by 5.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 18",
+                        concept: "Divisibility Test",
+                        objective: "Write a program to check if an entered number is divisible by 5.",
+                        specifications: [
+                            { label: "Input", desc: "A single integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Check whether <code>n % 5 == 0</code>.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Divisible'</code> or <code>'Not Divisible'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "25", output: "'Divisible'" },
+                            { input: "14", output: "'Not Divisible'" }
+                        ]
+                    },
+                    "problem19": {
+                        title: "Maximum of Two Numbers",
+                        description: "Write a program to find and print the larger of two input numbers.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 19",
+                        concept: "Binary Extremum Comparison",
+                        objective: "Write a program to find and print the larger of two input numbers.",
+                        specifications: [
+                            { label: "Input", desc: "Two integers <code>a</code> and <code>b</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Compare both numbers to find the greater value.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the larger number.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "12, 25", output: "25" },
+                            { input: "80, 45", output: "80" }
+                        ]
+                    },
+                    "problem20": {
+                        title: "Vowel or Consonant",
+                        description: "Write a program to check if an entered character is a Vowel (a, e, i, o, u) or Consonant.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 20",
+                        concept: "Character Set Membership Test",
+                        objective: "Write a program to check if an entered character is a Vowel or Consonant.",
+                        specifications: [
+                            { label: "Input", desc: "A single alphabet character <code>ch</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Check if <code>ch</code> is in [a, e, i, o, u] (case-insensitive).", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print <code>'Vowel'</code> or <code>'Consonant'</code>.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "'e'", output: "'Vowel'" },
+                            { input: "'b'", output: "'Consonant'" }
+                        ]
+                    },
+                    "problem21": {
+                        title: "Multiplication Table",
+                        description: "Write a program to generate and display the multiplication table of a given number.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 21",
+                        concept: "Multiplication Loops",
+                        objective: "Write a program to generate and display the multiplication table of a given number.",
+                        specifications: [
+                            { label: "Input", desc: "A single positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Generate the multiplication multiples up to 10 for <code>n</code>.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Display the multiplication table.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "5", output: "Table of 5" }
+                        ]
+                    }
+                };
+
+                function resolveClientProblemData(pId, cat, fbVal) {
+                    const normId = (pId || "problem01").toLowerCase().trim();
+                    const numMatch = normId.match(/\d+/);
+                    const probNum = numMatch ? parseInt(numMatch[0], 10) : 1;
+                    const canonicalKey = `problem${probNum < 10 ? '0' + probNum : probNum}`;
+                    const catalogItem = CLIENT_PROBLEM_CATALOG[canonicalKey] || CLIENT_PROBLEM_CATALOG[normId];
+
+                    const phaseName = cat === "fundamentals" ? "Phase 1" : (cat === "string" ? "Phase 2" : (cat === "array" ? "Phase 3" : "Phase 4"));
+
+                    if (fbVal) {
+                        const rawTitle = (fbVal.programName || fbVal.title || (catalogItem ? catalogItem.title : normId)).replace(/^Challenge:\s*/i, "").trim();
+                        const desc = fbVal.description || (catalogItem ? catalogItem.description : `Write a program to solve ${rawTitle}.`);
+                        return {
+                            title: rawTitle,
+                            description: desc,
+                            phase: catalogItem?.phase || phaseName,
+                            problemBadge: catalogItem?.problemBadge || `Problem ${probNum}`,
+                            concept: fbVal.concept || catalogItem?.concept || "Programming Logic",
+                            objective: desc,
+                            specifications: (catalogItem && catalogItem.specifications) ? catalogItem.specifications : [
+                                { label: "Input", desc: "Read input value(s) from user as required by the challenge.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                                { label: "Task", desc: desc.replace(/^Write a program (to|that) /i, ""), icon: "fa-bullseye", color: "#7c3aed" },
+                                { label: "Output", desc: "Display or print the calculated result in the expected format.", icon: "fa-display", color: "#059669" }
+                            ],
+                            examples: (catalogItem && catalogItem.examples) ? catalogItem.examples : (fbVal.sample ? [{ input: "-", output: fbVal.sample }] : [])
+                        };
+                    }
+
+                    if (catalogItem) {
+                        return catalogItem;
+                    }
+
+                    return {
+                        title: `Challenge: ${normId.replace(/[-_]/g, ' ')}`,
+                        description: "Write a program to solve this challenge step-by-step.",
+                        phase: phaseName,
+                        problemBadge: `Problem ${probNum}`,
+                        concept: "Programming Logic",
+                        objective: "Write a program to solve this challenge step-by-step.",
+                        specifications: [
+                            { label: "Input", desc: "Read input value(s) from user as required.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Task", desc: "Solve the challenge requirements step-by-step.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Display or print the calculated result.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: []
+                    };
+                }
+
                 async function loadProblemDetails() {
                     try {
                         const selector = document.getElementById("quickProgramSelect");
@@ -4523,9 +4946,39 @@
                             selector.value = normalized;
                         }
 
-                        const res = await fetch(`${API_BASE}/api/getProblemDetails?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`);
-                        if (res.ok) {
-                            const data = await res.json();
+                        let data = null;
+
+                        // 1. Primary Attempt: Backend API
+                        try {
+                            const res = await fetch(`${API_BASE}/api/getProblemDetails?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`);
+                            if (res.ok) {
+                                data = await res.json();
+                            } else {
+                                console.info(`Notice: Backend API returned ${res.status}. Seamlessly falling back to Firebase & local catalog.`);
+                            }
+                        } catch (netErr) {
+                            console.info("Notice: Backend API is currently unreachable. Seamlessly activating Firebase & local problem catalog fallback.");
+                        }
+
+                        // 2. Secondary Attempt: Firebase Realtime Database
+                        if (!data) {
+                            try {
+                                const snap = await get(ref(db, `programs/${category}/${problemID}`));
+                                if (snap && snap.exists()) {
+                                    data = resolveClientProblemData(problemID, category, snap.val());
+                                }
+                            } catch (fbErr) {
+                                console.warn("Firebase program fetch error:", fbErr);
+                            }
+                        }
+
+                        // 3. Tertiary Attempt: Built-in Problem Catalog
+                        if (!data) {
+                            data = resolveClientProblemData(problemID, category, null);
+                        }
+
+                        // Apply problem details to UI
+                        if (data) {
                             const pTitle = document.getElementById("problemTitle");
                             const pPhase = document.getElementById("challengePhaseBadge");
                             const pProblem = document.getElementById("challengeProblemBadge");
@@ -4560,29 +5013,42 @@
                         else if (state.isRecipeCompleted && !state.isIngredientsCompleted) targetSec = 'ingredients';
                         else if (state.isIngredientsCompleted && !state.isSampleCompleted) targetSec = 'samplecode';
 
-                        const res = await fetch(`${API_BASE}/api/rewriteHint`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ category, problemID, section: targetSec, hintLevel: 1 })
-                        });
-                        if (res.ok) {
-                            const data = await res.json();
-                            const hint = data.hint || data.feedback || `🌟 Coach Maara here! Welcome to this challenge. Let's think through the Logic stage together.`;
-                            window.addHintToHistory({ 
-                                section: targetSec, 
-                                hint, 
-                                source: 'ai_human_touch', 
-                                isCorrect: false,
-                                correction: data.correction || null,
-                                suggestedInput: data.suggestedInput || null,
-                                proofType: data.proofType || null
+                        let hint = null;
+                        let hintData = {};
+
+                        try {
+                            const res = await fetch(`${API_BASE}/api/rewriteHint`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ category, problemID, section: targetSec, hintLevel: 1 })
                             });
-                            window.positionFeedbackCard(targetSec);
-                            feedbackCard.classList.remove('h-0', 'hidden', 'feedback-closed');
-                            feedbackCard.classList.add('feedback-open');
-                            window.navigateHint(0);
-                            feedbackContent.classList.remove('hidden');
+                            if (res.ok) {
+                                const data = await res.json();
+                                hint = data.hint || data.feedback;
+                                hintData = data;
+                            }
+                        } catch (e) {
+                            // Backend offline, fallback to built-in coach greeting
                         }
+
+                        if (!hint) {
+                            hint = `🌟 Coach Maara here! Welcome to this challenge. Let's think through the Logic stage together.`;
+                        }
+
+                        window.addHintToHistory({ 
+                            section: targetSec, 
+                            hint, 
+                            source: 'ai_human_touch', 
+                            isCorrect: false,
+                            correction: hintData.correction || null,
+                            suggestedInput: hintData.suggestedInput || null,
+                            proofType: hintData.proofType || null
+                        });
+                        window.positionFeedbackCard(targetSec);
+                        feedbackCard.classList.remove('h-0', 'hidden', 'feedback-closed');
+                        feedbackCard.classList.add('feedback-open');
+                        window.navigateHint(0);
+                        feedbackContent.classList.remove('hidden');
                     } catch (e) {
                         console.warn("Could not load initial mentor hint:", e);
                     }
