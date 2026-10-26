@@ -269,6 +269,28 @@
     const problemID = mProb ? `problem${parseInt(mProb[1], 10) < 10 ? '0' + mProb[1] : mProb[1]}` : cleanProblemID;
     const category = (params.get("category") || "fundamentals").toLowerCase().trim();
 
+    // API Base Configuration
+    const ENABLE_LOCALHOST = false;
+    const isLocalHostEnvironment = window.location.hostname === "localhost" ||
+                                   window.location.hostname === "127.0.0.1" ||
+                                   window.location.hostname === "";
+
+    const customApiFromQuery = params.get("apiUrl") || params.get("api");
+    const customApiStored = localStorage.getItem("cookdcode_api_url");
+    const customApiActive = (customApiFromQuery || customApiStored || "").replace(/\/+$/, "");
+
+    const isLocalhostActive = isLocalHostEnvironment ||
+        ENABLE_LOCALHOST ||
+        localStorage.getItem("enable_localhost") === "true" ||
+        params.get("localhost") === "true" ||
+        params.get("local") === "true";
+
+    const API_BASE = customApiActive
+        ? customApiActive
+        : (isLocalhostActive
+            ? (isLocalHostEnvironment ? "" : "http://localhost:3001")
+            : "https://api.cookdcode.com");
+
     // Set Back to CTC button URL
     const backBtn = document.getElementById("backToCtcBtn");
     if (backBtn) {
@@ -444,7 +466,7 @@
       try {
         let meta = null;
         try {
-          const res = await fetch(`/api/getProblemDetails?problemID=${encodeURIComponent(problemID)}&category=${encodeURIComponent(category)}`);
+          const res = await fetch(`${API_BASE}/api/getProblemDetails?problemID=${encodeURIComponent(problemID)}&category=${encodeURIComponent(category)}`);
           if (res.ok) meta = await res.json();
         } catch (e) {}
 
@@ -604,17 +626,31 @@
       runBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Compiling...</span>`;
 
       statusBanner.className = "terminal-status-banner status-idle";
-      statusBanner.innerHTML = `<i class="fas fa-spinner fa-spin text-blue-400"></i> <span>Executing code with real compiler...</span>`;
+      statusBanner.innerHTML = `<i class="fas fa-spinner fa-spin text-blue-400"></i> <span>Executing code with compiler...</span>`;
       outText.innerHTML = `<span style="color: #64748b;">Waiting for compiler output...</span>`;
 
       try {
-        const response = await fetch("/api/compile", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ language: lang, code, stdin })
-        });
+        let result = null;
 
-        const result = await response.json();
+        // 1. Primary Attempt: Backend API (/api/compile)
+        try {
+          const response = await fetch(`${API_BASE}/api/compile`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ language: lang, code, stdin })
+          });
+          if (response.ok) {
+            result = await response.json();
+          }
+        } catch (netErr) {
+          console.info("Backend compile API unreachable, using execution fallback engine.");
+        }
+
+        // 2. Secondary Attempt: Fallback execution (in-browser sandbox or Judge0 CE)
+        if (!result) {
+          result = await fallbackExecuteCode(lang, code, stdin);
+        }
+
         timeBadge.innerText = result.executionTime || "1ms";
 
         if (result.success) {
@@ -650,14 +686,96 @@
         }
       } catch (err) {
         statusBanner.className = "terminal-status-banner status-error";
-        statusBanner.innerHTML = `<i class="fas fa-times-circle"></i> <span>❌ Network / Server Error</span>`;
+        statusBanner.innerHTML = `<i class="fas fa-times-circle"></i> <span>❌ Execution Error</span>`;
         outText.className = "terminal-error-text";
-        outText.innerText = `Failed to connect to compiler server: ${err.message}`;
+        outText.innerText = `Error running code: ${err.message}`;
       } finally {
         runBtn.disabled = false;
         runBtn.innerHTML = `<i class="fas fa-play"></i> <span>Run Code</span>`;
       }
     };
+
+    // Fallback executor for offline / Netlify deployments
+    async function fallbackExecuteCode(language, code, stdin) {
+      const langKey = (language || "javascript").toString().toLowerCase().trim();
+
+      // In-browser execution for JavaScript: captures console.log & print, and catches real syntax errors
+      if (langKey === "javascript" || langKey === "js" || langKey === "node") {
+        let stdout = "";
+        let stderr = "";
+        const printFn = (...args) => {
+          stdout += args.map(a => (typeof a === "object" ? JSON.stringify(a) : String(a))).join(" ") + "\n";
+        };
+
+        try {
+          const customConsole = { log: printFn, error: (...a) => { stderr += a.join(" ") + "\n"; }, warn: printFn };
+          const startTime = performance.now();
+          const runner = new Function("console", "print", code);
+          runner(customConsole, printFn);
+          const execTime = `${Math.max(1, Math.round(performance.now() - startTime))}ms`;
+
+          return {
+            success: true,
+            stdout: stdout.trim(),
+            stderr: stderr.trim(),
+            executionTime: execTime
+          };
+        } catch (err) {
+          return {
+            success: false,
+            status: "Syntax / Runtime Error",
+            statusCode: 11,
+            stderr: `${err.name}: ${err.message}`,
+            compileOutput: `${err.name}: ${err.message}`,
+            executionTime: "1ms"
+          };
+        }
+      }
+
+      // Direct Judge0 CE execution for Python, C, C++, Java, etc.
+      const JUDGE0_MAP = {
+        javascript: 102, js: 102, node: 102,
+        python: 100, py: 100, python3: 100, python2: 70,
+        c: 103, "c-clang": 110,
+        cpp: 105, "c++": 105, "cpp-clang": 76,
+        java: 91,
+        csharp: 51, "c#": 51,
+        go: 107, golang: 107,
+        rust: 108,
+        ruby: 72, php: 98, kotlin: 111, swift: 83
+      };
+
+      const langId = JUDGE0_MAP[langKey] || 102;
+      try {
+        const judge0Res = await fetch("https://ce.judge0.com/submissions?wait=true", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ source_code: code, language_id: langId, stdin: stdin || "" })
+        });
+        if (judge0Res.ok) {
+          const jData = await judge0Res.json();
+          const isSuccess = jData.status?.id === 3;
+          return {
+            success: isSuccess,
+            status: jData.status?.description || (isSuccess ? "Success" : "Execution Error"),
+            statusCode: jData.status?.id,
+            stdout: (jData.stdout || "").trim(),
+            stderr: (jData.stderr || jData.compile_output || "").trim(),
+            compileOutput: (jData.compile_output || "").trim(),
+            executionTime: jData.time ? `${Math.round(parseFloat(jData.time) * 1000)}ms` : "1ms"
+          };
+        }
+      } catch (e) {}
+
+      return {
+        success: false,
+        status: "Execution Error",
+        statusCode: 503,
+        stderr: "Compiler backend is currently unreachable. Please check your syntax or internet connection.",
+        compileOutput: "",
+        executionTime: "0ms"
+      };
+    }
 
     const PROBLEM_TITLES = {
       "problem01": "Odd or Even",
