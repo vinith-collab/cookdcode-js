@@ -2530,12 +2530,15 @@
             const cBtnEl = document.getElementById('btnCompletedOpenCompiler');
             if (cBtnEl) cBtnEl.href = initialCompilerUrl;
 
-            // Backend Reachability & Circuit Breaker System
-            window.__isBackendReachable = sessionStorage.getItem("cookdcode_backend_unreachable") !== "true";
+            // Backend Reachability & Circuit Breaker System (persisted in localStorage)
+            const isOfflineCached = localStorage.getItem("cookdcode_backend_unreachable") === "true" ||
+                                   sessionStorage.getItem("cookdcode_backend_unreachable") === "true";
+            window.__isBackendReachable = !isOfflineCached;
 
             window.markBackendUnreachable = function (reason) {
                 if (window.__isBackendReachable !== false) {
                     window.__isBackendReachable = false;
+                    localStorage.setItem("cookdcode_backend_unreachable", "true");
                     sessionStorage.setItem("cookdcode_backend_unreachable", "true");
                     console.info(`⚡ Circuit Breaker: Remote backend unreachable (${reason || "error"}). Fast in-browser validation & Firebase mode active.`);
                 }
@@ -2543,8 +2546,18 @@
 
             window.resetBackendStatus = function () {
                 window.__isBackendReachable = true;
+                localStorage.removeItem("cookdcode_backend_unreachable");
                 sessionStorage.removeItem("cookdcode_backend_unreachable");
                 console.log("🟢 Backend status reset. Remote API requests will retry.");
+            };
+
+            window.setOfflineMode = function (offline = true) {
+                if (offline) {
+                    window.markBackendUnreachable("manual offline mode");
+                } else {
+                    window.resetBackendStatus();
+                }
+                window.location.reload();
             };
 
             let tokens = 999999;

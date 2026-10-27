@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
     "test": "node -e \"import('./backend/app.js').then(() => console.log('Backend OK'))\""
   },
   "dependencies": {
