@@ -2435,10 +2435,7 @@
             // Unregister any stale/cached Service Workers that may intercept API calls
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(regs => {
-                    regs.forEach(reg => {
-                        reg.unregister();
-                        console.info('[SW] Unregistered stale service worker:', reg.scope);
-                    });
+                    regs.forEach(reg => reg.unregister());
                 }).catch(() => {});
             }
 
