@@ -15,15 +15,17 @@
         }, true);
 
         // Auth Enforcement: If not logged in, redirect to newuser landing page (unless guest=true is requested)
-        const urlParams = new URLSearchParams(window.location.search);
-        const isGuestParam = urlParams.get("guest") === "true";
-        if (isGuestParam && !localStorage.getItem("userId")) {
-            localStorage.setItem("userId", "guest_tester");
-        }
-        const currentUid = localStorage.getItem("userId") || localStorage.getItem("uid") || localStorage.getItem("userEmail");
-        if (!currentUid || (currentUid === "guest_user" && !isGuestParam)) {
-            window.location.href = "newuser.html";
-        }
+        (function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isGuestParam = urlParams.get("guest") === "true";
+            if (isGuestParam && !localStorage.getItem("userId")) {
+                localStorage.setItem("userId", "guest_tester");
+            }
+            const authUid = localStorage.getItem("userId") || localStorage.getItem("uid") || localStorage.getItem("userEmail");
+            if (!authUid || (authUid === "guest_user" && !isGuestParam)) {
+                window.location.href = "newuser.html";
+            }
+        })();
 
         function getCompilerUrl() {
             const p = new URLSearchParams(window.location.search);
@@ -697,55 +699,53 @@
             flex-wrap: wrap !important;
         }
 
-        .badge-pill-blue {
+        .badge-pill-blue,
+        .badge-pill-gray,
+        .badge-pill-green {
+            height: 28px !important;
             display: inline-flex !important;
             align-items: center !important;
-            gap: 6px !important;
-            padding: 4.5px 11px !important;
+            justify-content: center !important;
+            padding: 0 12px !important;
             border-radius: 9999px !important;
-            background: #f0f7ff !important;
-            color: #1d4ed8 !important;
-            font-size: 11px !important;
+            font-size: 11.5px !important;
             font-weight: 750 !important;
             letter-spacing: 0.04em !important;
+            box-sizing: border-box !important;
+            white-space: nowrap !important;
+            line-height: 1 !important;
+        }
+
+        .badge-pill-blue {
+            background: #f0f7ff !important;
+            color: #1d4ed8 !important;
             text-transform: uppercase !important;
             border: 1px solid #dbeafe !important;
             box-shadow: 0 1px 2px rgba(37, 99, 235, 0.04) !important;
+            gap: 6px !important;
         }
 
         .badge-pill-gray {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 5px !important;
-            padding: 4.5px 10px !important;
-            border-radius: 9999px !important;
             background: #f8fafc !important;
             color: #475569 !important;
-            font-size: 11px !important;
-            font-weight: 650 !important;
             border: 1px solid #e2e8f0 !important;
+            gap: 5px !important;
         }
 
         .badge-pill-green {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 6px !important;
-            padding: 4.5px 12px !important;
-            border-radius: 9999px !important;
             background: #f0fdf4 !important;
             color: #15803d !important;
-            font-size: 11px !important;
-            font-weight: 750 !important;
             border: 1px solid #bbf7d0 !important;
             box-shadow: 0 1px 2px rgba(16, 185, 129, 0.04) !important;
+            gap: 6px !important;
         }
 
         /* Challenge Title Block */
         .challenge-title-block {
             display: flex !important;
             flex-direction: column !important;
-            gap: 5px !important;
-            padding-bottom: 10px !important;
+            gap: 6px !important;
+            padding-bottom: 14px !important;
             border-bottom: 1px solid #f1f5f9 !important;
             flex-shrink: 0 !important;
         }
@@ -754,48 +754,53 @@
             display: flex !important;
             align-items: center !important;
             justify-content: space-between !important;
+            min-height: 24px !important;
         }
 
         .challenge-subtitle {
             display: inline-flex !important;
             align-items: center !important;
-            gap: 6px !important;
-            font-size: 11px !important;
+            gap: 7px !important;
+            font-size: 11.5px !important;
             font-weight: 800 !important;
             color: #2563eb !important;
             text-transform: uppercase !important;
             letter-spacing: 0.08em !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
+            line-height: 1 !important;
         }
 
         .challenge-status-chip {
+            height: 22px !important;
             font-size: 10.5px !important;
             font-weight: 700 !important;
             color: #475569 !important;
             background: #f8fafc !important;
             border: 1px solid #e2e8f0 !important;
-            padding: 2.5px 8.5px !important;
+            padding: 0 9px !important;
             border-radius: 9999px !important;
             letter-spacing: 0.02em !important;
             display: inline-flex !important;
             align-items: center !important;
+            justify-content: center !important;
+            gap: 5px !important;
+            line-height: 1 !important;
         }
 
         .challenge-main-title {
-            font-size: 23px !important;
+            font-size: 24px !important;
             font-weight: 800 !important;
             color: #0f172a !important;
             line-height: 1.25 !important;
             letter-spacing: -0.03em !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            margin: 0 !important;
+            margin: 2px 0 0 0 !important;
         }
 
         /* Expanded Section Container - Fill vertical height evenly with perfect alignment */
         .expanded-problem-section {
             display: flex !important;
             flex-direction: column !important;
-            justify-content: space-between !important;
             flex: 1 !important;
             min-height: 0 !important;
             gap: 16px !important;
@@ -805,7 +810,7 @@
         .sidebar-section-wrap {
             display: flex !important;
             flex-direction: column !important;
-            gap: 11px !important;
+            gap: 12px !important;
             min-height: 0 !important;
         }
 
@@ -815,6 +820,7 @@
             justify-content: space-between !important;
             gap: 8px !important;
             flex-shrink: 0 !important;
+            min-height: 36px !important;
         }
 
         .sidebar-section-title-wrap {
@@ -827,7 +833,7 @@
         .sidebar-section-icon {
             width: 36px !important;
             height: 36px !important;
-            border-radius: 9.5px !important;
+            border-radius: 10px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -835,6 +841,7 @@
             flex-shrink: 0 !important;
             font-weight: 900 !important;
             transition: all 0.2s ease !important;
+            box-sizing: border-box !important;
         }
 
         .sidebar-section-icon.icon-blue {
@@ -866,19 +873,25 @@
             text-transform: uppercase !important;
             letter-spacing: 0.05em !important;
             margin: 0 !important;
+            line-height: 1 !important;
+            display: flex !important;
+            align-items: center !important;
         }
 
         .sidebar-section-badge {
+            height: 26px !important;
             display: inline-flex !important;
             align-items: center !important;
+            justify-content: center !important;
             gap: 5px !important;
-            font-size: 11.5px !important;
+            font-size: 11px !important;
             font-weight: 750 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.04em !important;
-            padding: 3.5px 10.5px !important;
+            padding: 0 10.5px !important;
             border-radius: 6px !important;
             line-height: 1 !important;
+            box-sizing: border-box !important;
         }
 
         .sidebar-section-badge.badge-blue {
@@ -899,14 +912,14 @@
             border: 1px solid #a7f3d0 !important;
         }
 
-        /* Problem Goal / Objective Card - Rich, Spacious & Highly Readable */
+        /* Problem Goal / Objective Card - Rich, Spacious & Prominently Increased Font Size */
         .problem-objective-card {
             background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%) !important;
             border: 1px solid #e2e8f0 !important;
-            border-left: 4px solid #2563eb !important;
+            border-left: 4.5px solid #2563eb !important;
             border-radius: 14px !important;
-            padding: 17px 20px !important;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 4px 12px -2px rgba(37, 99, 235, 0.04) !important;
+            padding: 18px 22px !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 4px 12px -2px rgba(37, 99, 235, 0.05) !important;
             transition: all 0.2s ease !important;
         }
 
@@ -918,261 +931,202 @@
         }
 
         .problem-objective-text {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-            font-size: 16px !important;
-            font-weight: 500 !important;
-            color: #1e293b !important;
-            line-height: 1.7 !important;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+            font-size: 18.5px !important; /* Increased font size as requested */
+            font-weight: 600 !important;
+            color: #0f172a !important;
+            line-height: 1.65 !important;
+            letter-spacing: -0.01em !important;
             margin: 0 !important;
         }
 
-        /* Program Specifications List & Cards - Clean Modern Specs with Increased Size */
+        /* ==========================================================================
+           Refined Program Specifications - Unified Flow Card
+           ========================================================================== */
         .program-specs-list {
             display: flex !important;
             flex-direction: column !important;
-            gap: 11px !important;
-        }
-
-        .program-spec-card {
-            display: flex !important;
-            align-items: center !important;
-            gap: 15px !important;
+            gap: 0 !important;
             background: #ffffff !important;
-            border: 1px solid #e8edf3 !important;
-            border-radius: 13px !important;
-            padding: 14px 18px !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02) !important;
-            position: relative !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 14px !important;
             overflow: hidden !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02) !important;
         }
 
-        .program-spec-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3.5px;
-            background: #cbd5e1;
-            transition: all 0.2s ease;
-        }
-
-        .program-spec-card.card-input::before {
-            background: #3b82f6 !important;
-        }
-
-        .program-spec-card.card-task::before {
-            background: #8b5cf6 !important;
-        }
-
-        .program-spec-card.card-output::before {
-            background: #10b981 !important;
-        }
-
-        .program-spec-card:hover {
-            border-color: #cbd5e1 !important;
-            box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06) !important;
-            transform: translateY(-1px) !important;
-        }
-
-        .program-spec-icon {
-            width: 42px !important;
-            height: 42px !important;
-            border-radius: 10px !important;
+        .spec-flow-row {
             display: flex !important;
+            align-items: flex-start !important;
+            gap: 14px !important;
+            padding: 13px 16px !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            transition: background 0.15s ease !important;
+        }
+
+        .spec-flow-row:last-child {
+            border-bottom: none !important;
+        }
+
+        .spec-flow-row:hover {
+            background: #fafcff !important;
+        }
+
+        .spec-flow-pill {
+            min-width: 84px !important;
+            height: 26px !important;
+            display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            font-size: 16.5px !important;
-            flex-shrink: 0 !important;
-            font-weight: 900 !important;
-            transition: all 0.2s ease !important;
-        }
-
-        .program-spec-icon.icon-input {
-            background: #eff6ff !important;
-            color: #2563eb !important;
-            border: 1px solid #dbeafe !important;
-        }
-
-        .program-spec-icon.icon-task {
-            background: #f5f3ff !important;
-            color: #7c3aed !important;
-            border: 1px solid #ede9fe !important;
-        }
-
-        .program-spec-icon.icon-output {
-            background: #ecfdf5 !important;
-            color: #059669 !important;
-            border: 1px solid #d1fae5 !important;
-        }
-
-        .program-spec-body {
-            flex: 1 !important;
-            min-width: 0 !important;
-        }
-
-        .program-spec-header-row {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
             gap: 6px !important;
-            margin-bottom: 3px !important;
-        }
-
-        .program-spec-label {
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-size: 13.5px !important;
+            font-size: 11px !important;
             font-weight: 800 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.05em !important;
-            margin: 0 !important;
+            border-radius: 6px !important;
+            flex-shrink: 0 !important;
+            line-height: 1 !important;
+            box-sizing: border-box !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            margin-top: 1px !important;
         }
 
-        .program-spec-label.label-input {
+        .spec-flow-pill.pill-input {
+            background: #eff6ff !important;
             color: #1d4ed8 !important;
+            border: 1px solid #bfdbfe !important;
         }
 
-        .program-spec-label.label-task {
+        .spec-flow-pill.pill-task {
+            background: #f5f3ff !important;
             color: #6d28d9 !important;
+            border: 1px solid #ddd6fe !important;
         }
 
-        .program-spec-label.label-output {
+        .spec-flow-pill.pill-output {
+            background: #f0fdf4 !important;
             color: #047857 !important;
+            border: 1px solid #bbf7d0 !important;
         }
 
-        .program-spec-desc {
+        .spec-flow-desc {
+            flex: 1 !important;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
             font-size: 14.5px !important;
             font-weight: 500 !important;
             color: #334155 !important;
-            line-height: 1.6 !important;
+            line-height: 1.55 !important;
             margin: 0 !important;
         }
 
-        .program-spec-desc code {
+        .spec-flow-desc code {
             background: #f1f5f9 !important;
             color: #0f172a !important;
-            padding: 2.5px 7.5px !important;
+            padding: 2px 7px !important;
             border-radius: 5px !important;
             font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace !important;
             font-size: 13.5px !important;
             font-weight: 600 !important;
             border: 1px solid #e2e8f0 !important;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
         }
 
-        /* Sample Test Cases Grid (Side-by-Side if 2, Full Width if 1) */
+        /* ==========================================================================
+           Refined Sample Test Cases - Clean, Modern Example Cards
+           ========================================================================== */
         .problem-examples-list {
             display: grid !important;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
             gap: 12px !important;
         }
 
-        .problem-testcase-card {
+        .example-box {
             background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%) !important;
             border: 1px solid #e2e8f0 !important;
             border-radius: 14px !important;
-            padding: 14px 16px !important;
+            padding: 13px 15px !important;
             display: flex !important;
             flex-direction: column !important;
             gap: 10px !important;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02) !important;
             box-sizing: border-box !important;
         }
 
-        .problem-testcase-card:hover {
+        .example-box:hover {
             border-color: #cbd5e1 !important;
             box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.06) !important;
             transform: translateY(-1px) !important;
         }
 
-        .testcase-header {
+        .example-box-header {
             display: flex !important;
             align-items: center !important;
             justify-content: space-between !important;
-            padding-bottom: 7px !important;
+            padding-bottom: 8px !important;
             border-bottom: 1px solid #f1f5f9 !important;
+            min-height: 22px !important;
         }
 
-        .testcase-badge {
+        .example-box-title {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 11.5px !important;
+            font-weight: 800 !important;
+            color: #334155 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
             display: inline-flex !important;
             align-items: center !important;
-            gap: 5px !important;
-            font-size: 11.5px !important;
-            font-weight: 750 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.04em !important;
-            color: #334155 !important;
-            background: #f8fafc !important;
-            padding: 3px 9px !important;
-            border-radius: 5px !important;
-            border: 1px solid #e2e8f0 !important;
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            gap: 6px !important;
         }
 
-        .testcase-status-indicator {
+        .example-box-status {
             font-size: 11px !important;
             font-weight: 600 !important;
             color: #059669 !important;
             display: inline-flex !important;
             align-items: center !important;
             gap: 4px !important;
+            background: #f0fdf4 !important;
+            border: 1px solid #d1fae5 !important;
+            padding: 2px 7px !important;
+            border-radius: 9999px !important;
         }
 
-        .testcase-row {
+        .example-box-row {
             display: flex !important;
             align-items: center !important;
             justify-content: space-between !important;
             gap: 10px !important;
+            min-height: 28px !important;
         }
 
-        .testcase-label {
+        .example-row-label {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 11.5px !important;
+            font-weight: 700 !important;
+            color: #64748b !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
             display: inline-flex !important;
             align-items: center !important;
-            gap: 4px !important;
-            font-size: 11.5px !important;
-            font-weight: 800 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.04em !important;
-            padding: 3px 8.5px !important;
-            border-radius: 5px !important;
-            flex-shrink: 0 !important;
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            gap: 5px !important;
         }
 
-        .testcase-label.label-in {
-            background: #eff6ff !important;
-            color: #1d4ed8 !important;
-            border: 1px solid #dbeafe !important;
-        }
-
-        .testcase-label.label-out {
-            background: #ecfdf5 !important;
-            color: #047857 !important;
-            border: 1px solid #a7f3d0 !important;
-        }
-
-        .testcase-val {
+        .example-row-code {
             font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace !important;
             font-size: 14px !important;
             font-weight: 700 !important;
             color: #0f172a !important;
-            background: #ffffff !important;
+            background: #f8fafc !important;
             border: 1px solid #e2e8f0 !important;
-            padding: 3.5px 10px !important;
+            padding: 3px 12px !important;
             border-radius: 6px !important;
-            text-align: right !important;
-            letter-spacing: 0.02em !important;
-            max-width: 240px !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02) !important;
+            text-align: center !important;
+            min-width: 44px !important;
+            box-sizing: border-box !important;
+            line-height: 1.2 !important;
         }
 
-        .testcase-val.val-out {
+        .example-row-code.code-out {
             background: #f0fdf4 !important;
             color: #15803d !important;
             border-color: #bbf7d0 !important;
@@ -1720,8 +1674,8 @@
                                                 <span class="ctc-example-guide-badge">
                                                     <i class="fas fa-lightbulb"></i> Beginner CTC Guide • Logic Example
                                                 </span>
-                                                <span class="ctc-example-ref-pill">
-                                                    <i class="fas fa-file-code text-blue-500 text-[10px]"></i> Problem: Voting Eligibility
+                                                <span class="ctc-example-ref-pill" id="guide-pill-logic">
+                                                    <i class="fas fa-file-code text-blue-500 text-[10px]"></i> <span id="guide-pill-text-logic">Problem: Voting Eligibility</span>
                                                 </span>
                                             </div>
                                             <button type="button" class="ctc-example-toggle-btn" aria-label="Toggle Example">
@@ -1857,8 +1811,8 @@
                                                 <span class="ctc-example-guide-badge">
                                                     <i class="fas fa-lightbulb"></i> Beginner CTC Guide • Recipe Example
                                                 </span>
-                                                <span class="ctc-example-ref-pill">
-                                                    <i class="fas fa-file-code text-blue-500 text-[10px]"></i> Problem: Voting Eligibility
+                                                <span class="ctc-example-ref-pill" id="guide-pill-recipe">
+                                                    <i class="fas fa-file-code text-blue-500 text-[10px]"></i> <span id="guide-pill-text-recipe">Problem: Voting Eligibility</span>
                                                 </span>
                                             </div>
                                             <button type="button" class="ctc-example-toggle-btn" aria-label="Toggle Example">
@@ -1996,8 +1950,8 @@
                                                 <span class="ctc-example-guide-badge">
                                                     <i class="fas fa-lightbulb"></i> Beginner CTC Guide • Ingredients Example
                                                 </span>
-                                                <span class="ctc-example-ref-pill">
-                                                    <i class="fas fa-file-code text-blue-500 text-[10px]"></i> Problem: Voting Eligibility
+                                                <span class="ctc-example-ref-pill" id="guide-pill-ingredients">
+                                                    <i class="fas fa-file-code text-blue-500 text-[10px]"></i> <span id="guide-pill-text-ingredients">Problem: Voting Eligibility</span>
                                                 </span>
                                             </div>
                                             <button type="button" class="ctc-example-toggle-btn" aria-label="Toggle Example">
@@ -2133,8 +2087,8 @@
                                                 <span class="ctc-example-guide-badge">
                                                     <i class="fas fa-lightbulb"></i> Beginner CTC Guide • Taste the Sample Example
                                                 </span>
-                                                <span class="ctc-example-ref-pill">
-                                                    <i class="fas fa-file-code text-blue-500 text-[10px]"></i> Problem: Voting Eligibility
+                                                <span class="ctc-example-ref-pill" id="guide-pill-samplecode">
+                                                    <i class="fas fa-file-code text-blue-500 text-[10px]"></i> <span id="guide-pill-text-samplecode">Problem: Voting Eligibility</span>
                                                 </span>
                                             </div>
                                             <button type="button" class="ctc-example-toggle-btn" aria-label="Toggle Example">
@@ -3074,6 +3028,9 @@
                 }
 
                 window.applyStageCompletedUI(norm, isFreshCheck);
+                if (typeof window.renderStepTracker === 'function') {
+                    window.renderStepTracker(norm);
+                }
 
                 const nextMap = {
                     'logic': 'recipe',
@@ -3515,41 +3472,1083 @@
                     }
                 };
 
-                // Algorithm Step Tracker Implementation
-                window.getSectionDefaultSteps = function (section) {
+                // Dynamic Problem Key Resolver for Guides & Trackers
+                function resolveProblemKey(id, title) {
+                    const norm = (id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const t = (title || '').toLowerCase();
+                    if (norm.includes('oddeven') || norm === 'problem01' || norm === 'problem1' || t.includes('odd or even')) return 'problem01';
+                    if (norm.includes('sum') || norm === 'problem02' || norm === 'problem2' || t.includes('sum of n') || t.includes('natural')) return 'problem02';
+                    if (norm.includes('factorial') || norm === 'problem03' || norm === 'problem3' || t.includes('factorial')) return 'problem03';
+                    if (norm.includes('divisor') || norm === 'problem04' || norm === 'problem4' || t.includes('divisor')) return 'problem04';
+                    if (norm.includes('multiplication') || norm.includes('table') || norm === 'problem05' || norm === 'problem5' || norm === 'problem21' || norm === 'problem021' || t.includes('table')) return 'problem05';
+                    if (norm.includes('nextprime') || norm === 'problem07' || norm === 'problem7' || t.includes('next prime')) return 'problem07';
+                    if (norm.includes('prime') && (norm.includes('range') || norm.includes('between')) || norm === 'problem08' || norm === 'problem8' || t.includes('prime numbers in range')) return 'problem08';
+                    if (norm.includes('sexy') || norm === 'problem09' || norm === 'problem9' || t.includes('sexy prime')) return 'problem09';
+                    if (norm.includes('prime') || norm === 'problem06' || norm === 'problem6' || t.includes('prime number')) return 'problem06';
+                    if (norm.includes('positive') || norm.includes('negative') || norm === 'problem10' || norm === 'problem010' || t.includes('positive or negative')) return 'problem10';
+                    if (norm.includes('threedigit') || norm.includes('3digit') || norm === 'problem11' || norm === 'problem011' || t.includes('three-digit')) return 'problem11';
+                    if (norm.includes('voting') || norm.includes('vote') || norm.includes('eligible') || norm === 'problem12' || norm === 'problem012' || t.includes('voting')) return 'problem12';
+                    if (norm.includes('pass') || norm.includes('fail') || norm === 'problem13' || norm === 'problem013' || t.includes('pass or fail')) return 'problem13';
+                    if (norm.includes('greaterthan100') || norm.includes('greater100') || norm === 'problem14' || norm === 'problem014' || t.includes('greater than 100')) return 'problem14';
+                    if (norm.includes('profit') || norm.includes('loss') || norm === 'problem15' || norm === 'problem015' || t.includes('profit or loss')) return 'problem15';
+                    if (norm.includes('leap') || norm === 'problem16' || norm === 'problem016' || t.includes('leap year')) return 'problem16';
+                    if (norm.includes('adult') || norm.includes('minor') || norm === 'problem17' || norm === 'problem017' || t.includes('adult or minor')) return 'problem17';
+                    if (norm.includes('divisibleby5') || norm.includes('divisible5') || norm === 'problem18' || norm === 'problem018' || t.includes('divisible by 5')) return 'problem18';
+                    if (norm.includes('maximum') || norm.includes('max') || norm === 'problem19' || norm === 'problem019' || t.includes('maximum of two')) return 'problem19';
+                    if (norm.includes('vowel') || norm.includes('consonant') || norm === 'problem20' || norm === 'problem020' || t.includes('vowel or consonant')) return 'problem20';
+                    return norm;
+                }
+
+                // Problem-Specific Beginner CTC Guides Catalog
+                const BEGINNER_CTC_GUIDES = {
+                    "problem01": {
+                        problemTitle: "Odd or Even",
+                        logic: {
+                            explanation: "Explain the real-world parity rule: dividing an integer by 2 leaves either 0 remainder (Even) or 1 remainder (Odd).",
+                            ruleTitle: "Odd or Even Parity Rule",
+                            ruleText: "A number is <strong class=\"text-slate-900 font-bold\">Even</strong> if dividing by 2 leaves remainder 0. If remainder is 1, it is <strong class=\"text-slate-900 font-bold\">Odd</strong>.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">If remainder == 0:</strong> Even number <span class="font-mono opacity-80">(e.g., 8 % 2 = 0)</span></div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">If remainder != 0:</strong> Odd number <span class="font-mono opacity-80">(e.g., 7 % 2 = 1)</span></div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Odd or Even Steps",
+                            steps: [
+                                "Take an integer number n from the user.",
+                                "Modulo divide n by 2 to find the remainder.",
+                                "Check whether the remainder is equal to 0.",
+                                "If remainder is 0, display 'Even'. Otherwise, display 'Odd'."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Odd or Even Components",
+                            items: [
+                                { label: "Variable", value: "n = 4", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "If Condition", value: "n % 2 == 0", tagClass: "tag-cond", icon: "fa-code-branch" },
+                                { label: "If True Action", value: "print('Even')", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-check" },
+                                { label: "If False Action", value: "print('Odd')", tagClass: "tag-false", valClass: "text-rose-700", icon: "fa-times" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Odd or Even (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> n = <span style="color: #fbbf24;">4</span>;\n\n<span style="color: #64748b;">// Parity check using modulo 2</span>\n<span style="color: #c084fc;">if</span> (n % <span style="color: #fbbf24;">2</span> == <span style="color: #fbbf24;">0</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"Even"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Odd"</span>);\n}`
+                        }
+                    },
+                    "problem02": {
+                        problemTitle: "Sum of N Natural Numbers",
+                        logic: {
+                            explanation: "Explain sequential addition: start with a total sum of 0, and add each natural number from 1 up to N step by step.",
+                            ruleTitle: "Sequential Addition & Accumulation",
+                            ruleText: "Natural numbers start from 1 up to N. Add each number iteratively into a <strong class=\"text-slate-900 font-bold\">running total sum</strong> starting at 0.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">Sample Trace (N=5):</strong> 0+1=1, 1+2=3, 3+3=6, 6+4=10, 10+5=15</div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">Initial State:</strong> Total sum begins at 0, counter starts from 1 up to N.</div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Sum of N Numbers Steps",
+                            steps: [
+                                "Get the input number n from the user.",
+                                "Start with total sum as 0 and current number as 1.",
+                                "Move to the next number and repeat until reaching n.",
+                                "Add the current number to the total sum.",
+                                "Display the final total sum as output."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Sum of N Components",
+                            items: [
+                                { label: "Input Variable", value: "n = 5", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Accumulator", value: "sum = 0", tagClass: "tag-var", icon: "fa-layer-group" },
+                                { label: "Loop Counter", value: "i = 1 to n", tagClass: "tag-cond", icon: "fa-rotate-right" },
+                                { label: "Sum Update", value: "sum = sum + i", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-plus" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Sum of N Numbers (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable & Accumulator Declarations</span>\n<span style="color: #f472b6;">var</span> n = <span style="color: #fbbf24;">5</span>;\n<span style="color: #f472b6;">var</span> sum = <span style="color: #fbbf24;">0</span>;\n\n<span style="color: #64748b;">// Iterate from 1 to n accumulating into sum</span>\n<span style="color: #c084fc;">for</span> (<span style="color: #f472b6;">var</span> i = <span style="color: #fbbf24;">1</span>; i &lt;= n; i++) {\n    sum = sum + i;\n}\n\n<span style="color: #64748b;">// Output final total sum</span>\n<span style="color: #38bdf8;">print</span>(sum);`
+                        }
+                    },
+                    "problem03": {
+                        problemTitle: "Factorial of a Number",
+                        logic: {
+                            explanation: "Explain sequential multiplication: Factorial (N!) is computed by iteratively multiplying the running product starting at 1 by each integer from 1 to N.",
+                            ruleTitle: "Sequential Product & Accumulation",
+                            ruleText: "Factorial multiplies 1 by 2, then by 3, up to N. The accumulator must start at <strong class=\"text-slate-900 font-bold\">1</strong> (never 0!).",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">Sample Trace (N=5):</strong> 1*1=1, 1*2=2, 2*3=6, 6*4=24, 24*5=120</div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">Initial State:</strong> Product begins at 1 (multiplicative identity).</div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Factorial Steps",
+                            steps: [
+                                "Get the input number n from the user.",
+                                "Start with factorial as 1 and current number as 1.",
+                                "Move to next number and repeat until reaching n.",
+                                "Multiply factorial by the current number.",
+                                "Display the final factorial result."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Factorial Components",
+                            items: [
+                                { label: "Input Variable", value: "n = 5", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Accumulator", value: "fact = 1", tagClass: "tag-var", icon: "fa-layer-group" },
+                                { label: "Loop Counter", value: "i = 1 to n", tagClass: "tag-cond", icon: "fa-rotate-right" },
+                                { label: "Multiply Update", value: "fact = fact * i", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-times" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Factorial of a Number (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable & Accumulator Declarations</span>\n<span style="color: #f472b6;">var</span> n = <span style="color: #fbbf24;">5</span>;\n<span style="color: #f472b6;">var</span> fact = <span style="color: #fbbf24;">1</span>;\n\n<span style="color: #64748b;">// Iteratively multiply running fact by i</span>\n<span style="color: #c084fc;">for</span> (<span style="color: #f472b6;">var</span> i = <span style="color: #fbbf24;">1</span>; i &lt;= n; i++) {\n    fact = fact * i;\n}\n\n<span style="color: #64748b;">// Output final factorial result</span>\n<span style="color: #38bdf8;">print</span>(fact);`
+                        }
+                    },
+                    "problem04": {
+                        problemTitle: "Divisors of a Number",
+                        logic: {
+                            explanation: "A number i is a divisor of N if dividing N by i leaves remainder 0 (n % i == 0).",
+                            ruleTitle: "Divisibility & Factor Rule",
+                            ruleText: "Iterate from 1 up to N. If <strong class=\"text-slate-900 font-bold\">n % i == 0</strong>, then i divides n evenly and is a divisor.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">Divisor Match (e.g. 6):</strong> 6%1=0, 6%2=0, 6%3=0, 6%6=0</div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">Non-Divisor:</strong> 6%4=2, 6%5=1 (remainder is non-zero)</div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Divisors Steps",
+                            steps: [
+                                "Take input number n from the user.",
+                                "Start counter i from 1 up to n.",
+                                "Check if n is divisible by i with no remainder (n % i == 0).",
+                                "If true, display the divisor i."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Divisors Components",
+                            items: [
+                                { label: "Variable", value: "n = 6", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Loop Counter", value: "i = 1 to n", tagClass: "tag-cond", icon: "fa-rotate-right" },
+                                { label: "Condition", value: "n % i == 0", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-code-branch" },
+                                { label: "Action", value: "print(i)", tagClass: "tag-var", icon: "fa-display" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Divisors of a Number (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Input variable</span>\n<span style="color: #f472b6;">var</span> n = <span style="color: #fbbf24;">6</span>;\n\n<span style="color: #64748b;">// Loop through potential divisors</span>\n<span style="color: #c084fc;">for</span> (<span style="color: #f472b6;">var</span> i = <span style="color: #fbbf24;">1</span>; i &lt;= n; i++) {\n    <span style="color: #c084fc;">if</span> (n % i == <span style="color: #fbbf24;">0</span>) {\n        <span style="color: #38bdf8;">print</span>(i);\n    }\n}`
+                        }
+                    },
+                    "problem05": {
+                        problemTitle: "Multiplication Table",
+                        logic: {
+                            explanation: "Multiply the target number N by each integer from 1 up to 10 in sequence.",
+                            ruleTitle: "Table Multiples Progression",
+                            ruleText: "For each multiplier i from 1 to 10, calculate the product <strong class=\"text-slate-900 font-bold\">n * i</strong>.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">Multiples (e.g. N=5):</strong> 5*1=5, 5*2=10, 5*3=15 ... 5*10=50</div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Multiplication Table Steps",
+                            steps: [
+                                "Take input number n from the user.",
+                                "Start counter i from 1 to 10.",
+                                "Calculate n multiplied by i.",
+                                "Display the multiplication product."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Multiplication Table Components",
+                            items: [
+                                { label: "Variable", value: "n = 5", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Loop Counter", value: "i = 1 to 10", tagClass: "tag-cond", icon: "fa-rotate-right" },
+                                { label: "Calculation", value: "result = n * i", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-calculator" },
+                                { label: "Output", value: "print(n * i)", tagClass: "tag-var", icon: "fa-display" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Multiplication Table (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Multiplier base variable</span>\n<span style="color: #f472b6;">var</span> n = <span style="color: #fbbf24;">5</span>;\n\n<span style="color: #64748b;">// Multiples from 1 to 10</span>\n<span style="color: #c084fc;">for</span> (<span style="color: #f472b6;">var</span> i = <span style="color: #fbbf24;">1</span>; i &lt;= <span style="color: #fbbf24;">10</span>; i++) {\n    <span style="color: #38bdf8;">print</span>(n * i);\n}`
+                        }
+                    },
+                    "problem06": {
+                        problemTitle: "Prime Number Checker",
+                        logic: {
+                            explanation: "A prime number is greater than 1 and has exactly 2 divisors: 1 and itself.",
+                            ruleTitle: "Primality Testing Rule",
+                            ruleText: "A positive integer n is <strong class=\"text-slate-900 font-bold\">Prime</strong> if it has exactly two factors (1 and n). If any number from 2 to n-1 divides n, it is not prime.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">Prime (e.g. 7):</strong> Divisors are only 1 and 7 (count == 2)</div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">Not Prime (e.g. 9):</strong> Divisible by 3 (count &gt; 2)</div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Prime Checker Steps",
+                            steps: [
+                                "Take input number n from the user.",
+                                "Count how many numbers from 1 to n divide n evenly.",
+                                "Check whether the total divisor count is equal to 2.",
+                                "If count == 2, display 'Prime'. Otherwise, display 'Not Prime'."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Prime Checker Components",
+                            items: [
+                                { label: "Variable", value: "n = 7", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Counter", value: "count = 0", tagClass: "tag-var", icon: "fa-hashtag" },
+                                { label: "Loop & Modulo", value: "for i=1..n if (n%i==0) count++", tagClass: "tag-cond", icon: "fa-rotate-right" },
+                                { label: "Decision", value: "if (count == 2) print('Prime')", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-check" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Prime Number Checker (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable declarations</span>\n<span style="color: #f472b6;">var</span> n = <span style="color: #fbbf24;">7</span>;\n<span style="color: #f472b6;">var</span> count = <span style="color: #fbbf24;">0</span>;\n\n<span style="color: #64748b;">// Count divisors from 1 to n</span>\n<span style="color: #c084fc;">for</span> (<span style="color: #f472b6;">var</span> i = <span style="color: #fbbf24;">1</span>; i &lt;= n; i++) {\n    <span style="color: #c084fc;">if</span> (n % i == <span style="color: #fbbf24;">0</span>) {\n        count = count + <span style="color: #fbbf24;">1</span>;\n    }\n}\n\n<span style="color: #64748b;">// Primality decision</span>\n<span style="color: #c084fc;">if</span> (count == <span style="color: #fbbf24;">2</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"Prime"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Not Prime"</span>);\n}`
+                        }
+                    },
+                    "problem10": {
+                        problemTitle: "Positive or Negative",
+                        logic: {
+                            explanation: "Compare the number against zero: greater than zero is Positive, less than zero is Negative, equal to zero is Zero.",
+                            ruleTitle: "Signum Classification Rule",
+                            ruleText: "A number is <strong class=\"text-slate-900 font-bold\">Positive</strong> if n &gt; 0, <strong class=\"text-slate-900 font-bold\">Negative</strong> if n &lt; 0, and <strong class=\"text-slate-900 font-bold\">Zero</strong> if n == 0.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">If n &gt; 0:</strong> Positive <span class="font-mono opacity-80">(e.g., 5)</span></div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">If n &lt; 0:</strong> Negative <span class="font-mono opacity-80">(e.g., -3)</span></div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Positive or Negative Steps",
+                            steps: [
+                                "Take an integer number n from the user.",
+                                "Check if n is greater than 0.",
+                                "If true display 'Positive'. Else check if n is less than 0.",
+                                "If n < 0 display 'Negative'. Otherwise, display 'Zero'."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Positive or Negative Components",
+                            items: [
+                                { label: "Variable", value: "n = 5", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "If Condition", value: "n > 0", tagClass: "tag-cond", icon: "fa-code-branch" },
+                                { label: "Else If", value: "n < 0", tagClass: "tag-cond", icon: "fa-code-branch" },
+                                { label: "Outputs", value: "print('Positive' / 'Negative')", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-display" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Positive or Negative (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> n = <span style="color: #fbbf24;">5</span>;\n\n<span style="color: #64748b;">// Signum comparison</span>\n<span style="color: #c084fc;">if</span> (n &gt; <span style="color: #fbbf24;">0</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"Positive"</span>);\n} <span style="color: #c084fc;">else if</span> (n &lt; <span style="color: #fbbf24;">0</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Negative"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #38bdf8;">"Zero"</span>);\n}`
+                        }
+                    },
+                    "problem12": {
+                        problemTitle: "Voting Eligibility",
+                        logic: {
+                            explanation: "A person must be 18 years old or older to be eligible to vote.",
+                            ruleTitle: "Voting Eligibility Rule",
+                            ruleText: "A person is <strong class=\"text-slate-900 font-bold\">Eligible to Vote</strong> if age &gt;= 18. Otherwise, they are <strong class=\"text-slate-900 font-bold\">Not Eligible</strong>.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">If age &gt;= 18:</strong> Eligible to Vote <span class="font-mono opacity-80">(e.g., age 20)</span></div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">If age &lt; 18:</strong> Not Eligible to Vote <span class="font-mono opacity-80">(e.g., age 16)</span></div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Voting Eligibility Steps",
+                            steps: [
+                                "Take the person's age.",
+                                "Check whether age is 18 or older.",
+                                "If yes, announce 'Eligible to Vote'.",
+                                "If no, announce 'Not Eligible to Vote'."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Voting Eligibility Components",
+                            items: [
+                                { label: "Variable", value: "age = 20", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "If Condition", value: "age >= 18", tagClass: "tag-cond", icon: "fa-code-branch" },
+                                { label: "If True Action", value: "print('Eligible')", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-check" },
+                                { label: "If False Action", value: "print('Not Eligible')", tagClass: "tag-false", valClass: "text-rose-700", icon: "fa-times" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Voting Eligibility (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> age = <span style="color: #fbbf24;">20</span>;\n\n<span style="color: #64748b;">// Condition check</span>\n<span style="color: #c084fc;">if</span> (age &gt;= <span style="color: #fbbf24;">18</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"Eligible"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Not Eligible"</span>);\n}`
+                        }
+                    },
+                    "problem16": {
+                        problemTitle: "Leap Year or Not",
+                        logic: {
+                            explanation: "A year is leap if divisible by 4 and not divisible by 100, or divisible by 400.",
+                            ruleTitle: "Leap Year Calendar Rule",
+                            ruleText: "Check divisibility: <strong class=\"text-slate-900 font-bold\">(year % 4 == 0 &amp;&amp; year % 100 != 0) || (year % 400 == 0)</strong>.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">Leap Year (e.g. 2024):</strong> 2024 % 4 == 0 and 2024 % 100 != 0</div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">Not Leap Year (e.g. 2023):</strong> 2023 % 4 != 0</div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Leap Year Steps",
+                            steps: [
+                                "Read the year number from user.",
+                                "Check if year is divisible by 4 and not 100, or divisible by 400.",
+                                "If true, display 'Leap Year'.",
+                                "Otherwise, display 'Not Leap Year'."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Leap Year Components",
+                            items: [
+                                { label: "Variable", value: "year = 2024", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Condition", value: "(year%4==0 && year%100!=0) || year%400==0", tagClass: "tag-cond", icon: "fa-code-branch" },
+                                { label: "If True", value: "print('Leap Year')", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-check" },
+                                { label: "If False", value: "print('Not Leap Year')", tagClass: "tag-false", valClass: "text-rose-700", icon: "fa-times" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Leap Year (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> year = <span style="color: #fbbf24;">2024</span>;\n\n<span style="color: #64748b;">// Leap year condition</span>\n<span style="color: #c084fc;">if</span> ((year % <span style="color: #fbbf24;">4</span> == <span style="color: #fbbf24;">0</span> &amp;&amp; year % <span style="color: #fbbf24;">100</span> != <span style="color: #fbbf24;">0</span>) || (year % <span style="color: #fbbf24;">400</span> == <span style="color: #fbbf24;">0</span>)) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"Leap Year"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Not Leap Year"</span>);\n}`
+                        }
+                    },
+                    "problem19": {
+                        problemTitle: "Maximum of Two Numbers",
+                        logic: {
+                            explanation: "Compare two numbers a and b to determine which one is greater.",
+                            ruleTitle: "Binary Maximum Comparison Rule",
+                            ruleText: "If <strong class=\"text-slate-900 font-bold\">a &gt; b</strong>, then a is the maximum. Otherwise, b is the maximum.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">If a &gt; b:</strong> Output a <span class="font-mono opacity-80">(e.g., a=25, b=12 -&gt; 25)</span></div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">Else:</strong> Output b <span class="font-mono opacity-80">(e.g., a=10, b=30 -&gt; 30)</span></div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Maximum of Two Steps",
+                            steps: [
+                                "Read two integer numbers a and b from the user.",
+                                "Check whether a is strictly greater than b.",
+                                "If true, display a as the maximum number.",
+                                "Otherwise, display b as the maximum number."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Maximum of Two Components",
+                            items: [
+                                { label: "Variables", value: "a = 25, b = 12", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Condition", value: "a > b", tagClass: "tag-cond", icon: "fa-code-branch" },
+                                { label: "If True", value: "print(a)", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-check" },
+                                { label: "If False", value: "print(b)", tagClass: "tag-false", valClass: "text-blue-700", icon: "fa-arrow-right" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Maximum of Two Numbers (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable Declarations</span>\n<span style="color: #f472b6;">var</span> a = <span style="color: #fbbf24;">25</span>;\n<span style="color: #f472b6;">var</span> b = <span style="color: #fbbf24;">12</span>;\n\n<span style="color: #64748b;">// Compare values</span>\n<span style="color: #c084fc;">if</span> (a &gt; b) {\n    <span style="color: #38bdf8;">print</span>(a);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(b);\n}`
+                        }
+                    },
+                    "problem20": {
+                        problemTitle: "Vowel or Consonant",
+                        logic: {
+                            explanation: "Check whether an entered alphabet character belongs to the English vowel set (a, e, i, o, u).",
+                            ruleTitle: "Vowel Character Set Rule",
+                            ruleText: "If the character matches <strong class=\"text-slate-900 font-bold\">'a', 'e', 'i', 'o', or 'u'</strong>, it is a Vowel. Otherwise, it is a Consonant.",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">If character in [a,e,i,o,u]:</strong> Vowel <span class="font-mono opacity-80">(e.g., 'e')</span></div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">Else:</strong> Consonant <span class="font-mono opacity-80">(e.g., 'b')</span></div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "Vowel or Consonant Steps",
+                            steps: [
+                                "Read an alphabet character ch from the user.",
+                                "Check if ch equals 'a', 'e', 'i', 'o', or 'u'.",
+                                "If true, display 'Vowel'.",
+                                "Otherwise, display 'Consonant'."
+                            ]
+                        },
+                        ingredients: {
+                            context: "Vowel or Consonant Components",
+                            items: [
+                                { label: "Variable", value: "ch = 'e'", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Condition", value: "ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u'", tagClass: "tag-cond", icon: "fa-code-branch" },
+                                { label: "If True", value: "print('Vowel')", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-check" },
+                                { label: "If False", value: "print('Consonant')", tagClass: "tag-false", valClass: "text-rose-700", icon: "fa-times" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "Vowel or Consonant (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> ch = <span style="color: #34d399;">"e"</span>;\n\n<span style="color: #64748b;">// Check vowel membership</span>\n<span style="color: #c084fc;">if</span> (ch == <span style="color: #34d399;">"a"</span> || ch == <span style="color: #34d399;">"e"</span> || ch == <span style="color: #34d399;">"i"</span> || ch == <span style="color: #34d399;">"o"</span> || ch == <span style="color: #34d399;">"u"</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"Vowel"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Consonant"</span>);\n}`
+                        }
+                    }
+                };
+
+                // Helper to determine whether problem's primary construct is for_loop or if_condition
+                function getProblemConceptType(probId, problemData) {
+                    const rawId = (probId || '').toLowerCase().trim();
+                    const norm = rawId.replace(/[^a-z0-9]/g, '');
+                    const title = ((problemData && problemData.title) || '').toLowerCase();
+                    const concept = ((problemData && problemData.concept) || '').toLowerCase();
+                    const desc = ((problemData && problemData.description) || '').toLowerCase();
+                    const allText = `${norm} ${title} ${concept} ${desc}`;
+
+                    // Loop-based problem identifiers
+                    const loopKeys = [
+                        'problem02', 'problem2', 'problem002', 'sumnaturalnumbers', 'sumnumbers',
+                        'problem03', 'problem3', 'problem003', 'factorial',
+                        'problem04', 'problem4', 'problem004', 'divisorofanumber', 'divisors',
+                        'problem05', 'problem5', 'problem005', 'multiplicationtable',
+                        'problem06', 'problem6', 'problem006', 'primenumber', 'primechecker',
+                        'problem07', 'problem7', 'problem007', 'nextprimenumber',
+                        'problem08', 'problem8', 'problem008', 'primebetweenrange', 'primerange',
+                        'problem09', 'problem9', 'problem009', 'sexyprime', 'sexyprimenumbers',
+                        'problem21', 'problem021'
+                    ];
+                    if (loopKeys.includes(norm)) return 'for_loop';
+
+                    // Loop keywords
+                    const loopKeywords = [
+                        'sum of n', 'natural number', 'sum of natural', 'factorial', 'divisor',
+                        'multiplication table', 'times table', 'prime number', 'next prime',
+                        'prime range', 'sexy prime', 'loop', 'for loop', 'while loop',
+                        'iteration', 'accumulator', 'series', 'multiplier', 'consecutive sum'
+                    ];
+                    if (loopKeywords.some(kw => allText.includes(kw))) {
+                        return 'for_loop';
+                    }
+
+                    // All condition-based problems default to if_condition:
+                    // e.g. problem01 (odd-even), problem10 (positive-negative), problem11 (three-digit),
+                    // problem12 (voting-eligibility), problem13 (pass-fail), problem14 (greater-than-100),
+                    // problem15 (profit-loss), problem16 (leap-year), problem17 (adult-minor),
+                    // problem18 (divisible-by-5), problem19 (max-of-two), problem20 (vowel-consonant)
+                    return 'if_condition';
+                }
+
+                function getBeginnerGuideData(probId, problemData) {
+                    const conceptType = getProblemConceptType(probId, problemData);
+                    if (conceptType === 'for_loop') {
+                        const loopGuide = BEGINNER_CTC_GUIDES["problem02"];
+                        return {
+                            ...loopGuide,
+                            conceptType: 'for_loop',
+                            pillTitle: 'Problem: Sum of N Natural Numbers'
+                        };
+                    } else {
+                        const ifGuide = BEGINNER_CTC_GUIDES["problem12"];
+                        return {
+                            ...ifGuide,
+                            conceptType: 'if_condition',
+                            pillTitle: 'Problem: Voting Eligibility'
+                        };
+                    }
+                }
+
+                // Render Beginner Guides dynamically for ANY problem
+                window.renderBeginnerGuides = function (probId, problemData) {
+                    const activeId = probId || (typeof problemID !== 'undefined' ? problemID : 'problem01');
+                    const guide = getBeginnerGuideData(activeId, problemData);
+                    if (!guide) return;
+
+                    // Update reference pill titles
+                    const pillTitleText = guide.pillTitle || `Problem: ${guide.problemTitle}`;
+                    const pillLogic = document.getElementById('guide-pill-text-logic');
+                    if (pillLogic) pillLogic.textContent = pillTitleText;
+                    const pillRecipe = document.getElementById('guide-pill-text-recipe');
+                    if (pillRecipe) pillRecipe.textContent = pillTitleText;
+                    const pillIng = document.getElementById('guide-pill-text-ingredients');
+                    if (pillIng) pillIng.textContent = pillTitleText;
+                    const pillSample = document.getElementById('guide-pill-text-samplecode');
+                    if (pillSample) pillSample.textContent = pillTitleText;
+
+                    // 1. Logic Guide Body
+                    const bodyLogic = document.getElementById('example-guide-body-logic');
+                    if (bodyLogic && guide.logic) {
+                        bodyLogic.innerHTML = `
+                            <div class="ctc-stage-row">
+                                <div class="ctc-stage-icon-box">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div>
+                                    <div class="ctc-example-title">What is Logic? (How to write Logic)</div>
+                                    <div class="ctc-example-desc">
+                                        ${guide.logic.explanation}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ctc-example-ref-header">
+                                <span class="ctc-example-ref-tag">
+                                    <i class="fas fa-check-circle text-emerald-500"></i> Sample Walkthrough
+                                </span>
+                                <span class="ctc-example-ref-context">${guide.logic.ruleTitle}</span>
+                            </div>
+                            <div class="ctc-logic-card">
+                                <div>${guide.logic.ruleText}</div>
+                                <div class="ctc-logic-conditions">
+                                    ${guide.logic.conditionsHtml}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    // 2. Recipe Guide Body
+                    const bodyRecipe = document.getElementById('example-guide-body-recipe');
+                    if (bodyRecipe && guide.recipe) {
+                        bodyRecipe.innerHTML = `
+                            <div class="ctc-stage-row">
+                                <div class="ctc-stage-icon-box purple">
+                                    <i class="fas fa-list-ol"></i>
+                                </div>
+                                <div>
+                                    <div class="ctc-example-title">What is Recipe? (How to write Recipe)</div>
+                                    <div class="ctc-example-desc">
+                                        Like a cooking recipe, write step-by-step instructions (<strong class="text-slate-800">Step 1, Step 2, ...</strong>) in plain English describing what the program should do without code words.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ctc-example-ref-header">
+                                <span class="ctc-example-ref-tag">
+                                    <i class="fas fa-check-circle text-emerald-500"></i> Step-by-Step Recipe
+                                </span>
+                                <span class="ctc-example-ref-context">${guide.recipe.recipeTitle}</span>
+                            </div>
+                            <div class="ctc-recipe-steps">
+                                ${guide.recipe.steps.map((st, i) => `
+                                    <div class="ctc-recipe-step-item">
+                                        <span class="ctc-step-badge">${i + 1}</span>
+                                        <span>${st}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    // 3. Ingredients Guide Body
+                    const bodyIngredients = document.getElementById('example-guide-body-ingredients');
+                    if (bodyIngredients && guide.ingredients) {
+                        bodyIngredients.innerHTML = `
+                            <div class="ctc-stage-row">
+                                <div class="ctc-stage-icon-box amber">
+                                    <i class="fas fa-mortar-pestle"></i>
+                                </div>
+                                <div>
+                                    <div class="ctc-example-title">What is Ingredients? (How to write Ingredients)</div>
+                                    <div class="ctc-example-desc">
+                                        Identify the programming components needed: <strong class="text-slate-800">Variables</strong>, <strong class="text-slate-800">Loops / Conditions</strong>, and <strong class="text-slate-800">Output statements</strong>.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ctc-example-ref-header">
+                                <span class="ctc-example-ref-tag">
+                                    <i class="fas fa-check-circle text-emerald-500"></i> Ingredients Breakdown
+                                </span>
+                                <span class="ctc-example-ref-context">${guide.ingredients.context}</span>
+                            </div>
+                            <div class="ctc-ingredients-grid">
+                                ${guide.ingredients.items.map(ing => `
+                                    <div class="ctc-ingredient-card">
+                                        <span class="ctc-ing-tag ${ing.tagClass || 'tag-var'}"><i class="fas ${ing.icon || 'fa-cube'} mr-1"></i> ${ing.label}</span>
+                                        <div class="ctc-ing-val ${ing.valClass || ''}">${ing.value}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    // 4. Sample Code Guide Body
+                    const bodySample = document.getElementById('example-guide-body-samplecode');
+                    if (bodySample && guide.samplecode) {
+                        bodySample.innerHTML = `
+                            <div class="ctc-stage-row">
+                                <div class="ctc-stage-icon-box emerald">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div>
+                                    <div class="ctc-example-title">What is Taste the Sample? (How to write Sample Code)</div>
+                                    <div class="ctc-example-desc">
+                                        Assemble all ingredients into complete, working code. This example uses universal syntax easily adaptable into any programming language (Python, C, Java, JS)!
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ctc-example-ref-header">
+                                <span class="ctc-example-ref-tag">
+                                    <i class="fas fa-check-circle text-emerald-500"></i> Universal Code Implementation
+                                </span>
+                                <span class="ctc-example-ref-context">${guide.samplecode.context}</span>
+                            </div>
+                            <div class="ctc-ide-card">
+                                <div class="ctc-ide-header">
+                                    <div class="ctc-ide-dots">
+                                        <span class="ctc-ide-dot dot-red"></span>
+                                        <span class="ctc-ide-dot dot-yellow"></span>
+                                        <span class="ctc-ide-dot dot-green"></span>
+                                    </div>
+                                    <span class="ctc-ide-filename">sample_solution.ctc</span>
+                                    <span class="text-[10px] text-slate-400 font-mono uppercase font-bold tracking-wider">Universal Syntax</span>
+                                </div>
+                                <pre class="ctc-ide-code"><code>${guide.samplecode.code}</code></pre>
+                            </div>
+                        `;
+                    }
+                };
+
+                // Dynamic Program-Specific Step Tracker Blueprints
+                window.getSectionDefaultSteps = function (section, pId) {
                     const norm = (section === 'sample' || section === 'samplecode') ? 'samplecode' : section;
+                    const currentPid = (pId || (typeof problemID !== 'undefined' ? problemID : 'problem01')).toLowerCase().trim();
+                    const key = resolveProblemKey(currentPid);
+
+                    if (key === 'problem02') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Input limit N", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Sequential addition rule", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Running total accumulation", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Final sum logic", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Read input number n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Start sum = 0 and number = 1", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Repeat from 1 to n", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Add current number to sum", completed: false, current: false },
+                                { stepNumber: 5, title: "5. Display final total sum", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Input variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Accumulator sum = 0", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Loop counter i = 1", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Loop & addition operator", completed: false, current: false },
+                                { stepNumber: 5, title: "5. Output print statement", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare n and sum = 0", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop from 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Accumulate sum += i", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print final total sum", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem03') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Understand factorial N!", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Sequential product rule", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Trace multiplications", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Factorial calculation logic", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Read input number n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Start fact = 1 and number = 1", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Repeat from 1 to n", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Multiply fact by current", completed: false, current: false },
+                                { stepNumber: 5, title: "5. Display final factorial", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Input variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Accumulator fact = 1", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Loop counter i = 1", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Loop & multiplication operator", completed: false, current: false },
+                                { stepNumber: 5, title: "5. Output print statement", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare n and fact = 1", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop from 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Multiply fact *= i", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print final factorial", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem04') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Divisors definition", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Divisibility check (1 to n)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Remainder 0 condition", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Divisor collection logic", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Read input number n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop i from 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Check if n % i == 0", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Display matching divisor i", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Input variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop counter i = 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Modulo condition (n % i == 0)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Output print statement", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. For loop from 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. If condition (n % i == 0)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print divisor i", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem05' || key === 'problem21') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Table base number", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Multipliers from 1 to 10", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Product calculation (n * i)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Table format output", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Read input number n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop multiplier i from 1 to 10", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Calculate product n * i", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Display table line", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Input variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop counter i = 1 to 10", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Multiplication operator (n * i)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print table row statement", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop from 1 to 10", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Calculate n * i", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print table multiple", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem06') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Prime definition", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Count factors from 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Boundary factors check", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Prime vs Not Prime decision", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Read input number n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Count divisors from 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Check if factor count == 2", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print Prime if 2, else Not Prime", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Variable n and count = 0", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop i from 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. If condition (n % i == 0)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Decision condition (count == 2)", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare n and count = 0", completed: false, current: true },
+                                { stepNumber: 2, title: "2. For loop from 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. If (n % i == 0) count++", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Output Prime or Not Prime", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem10') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Compare input n to 0", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Positive rule (n > 0)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Negative rule (n < 0)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Zero boundary condition", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Read input number n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If n > 0 display Positive", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Else if n < 0 display Negative", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Else display Zero", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If condition (n > 0)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Else if (n < 0)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print statements", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If (n > 0) branch", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Else if (n < 0) branch", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Else zero branch", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem12') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Read person's age", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Voting threshold rule (age >= 18)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Eligible verification", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Not Eligible verification", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Take person's age", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check if age >= 18", completed: false, current: false },
+                                { stepNumber: 3, title: "3. If yes announce Eligible", completed: false, current: false },
+                                { stepNumber: 4, title: "4. If no announce Not Eligible", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Variable age", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Condition (age >= 18)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. True print('Eligible')", completed: false, current: false },
+                                { stepNumber: 4, title: "4. False print('Not Eligible')", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare age variable", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If (age >= 18) condition", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Else branch statement", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Test with sample ages", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem16') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Input calendar year", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Modulo 4 check (year % 4 == 0)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Century check (% 100 & % 400)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Leap Year decision", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Take year input from user", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check if year divisible by 4 and not 100", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Or check if year divisible by 400", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Display Leap Year or Not Leap Year", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Variable year", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Modulo conditions (% 4, % 100, % 400)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Logical operators (&&, ||)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print output statements", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare year variable", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If leap year condition check", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print 'Leap Year'", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Else print 'Not Leap Year'", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem19') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Read two numbers a and b", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Comparison condition (a > b)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. True branch: a is maximum", completed: false, current: false },
+                                { stepNumber: 4, title: "4. False branch: b is maximum", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Read two numbers a and b", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check whether a > b", completed: false, current: false },
+                                { stepNumber: 3, title: "3. If true display a as maximum", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Otherwise display b as maximum", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Variables a and b", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Comparison condition (a > b)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. True print(a)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. False print(b)", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare variables a and b", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If (a > b) check", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print variable a", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Else print variable b", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem20') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Read character input ch", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check vowel set (a, e, i, o, u)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Match found: Vowel", completed: false, current: false },
+                                { stepNumber: 4, title: "4. No match: Consonant", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Read alphabet character ch", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check if ch is a vowel (a, e, i, o, u)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. If true display 'Vowel'", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Otherwise display 'Consonant'", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Variable ch", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Equality condition (ch == 'a' || ...)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. True print('Vowel')", completed: false, current: false },
+                                { stepNumber: 4, title: "4. False print('Consonant')", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare character variable ch", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If vowel membership condition", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print 'Vowel'", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Else print 'Consonant'", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    // Blueprint for Problem 01 (Odd or Even)
+                    if (key === 'problem01') {
+                        if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Take input number", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Modulo divide by 2", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Check remainder value", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Even if 0, else odd", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Declare variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If condition (n % 2 == 0)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print 'Even' in if block", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Else fallback block", completed: false, current: false },
+                                { stepNumber: 5, title: "5. Print 'Odd' in else block", completed: false, current: false }
+                            ];
+                        } else if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Understand problem & input", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Parity rule (divisible by 2)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Sample test verification", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Decision output logic", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare input variable", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If (n % 2 == 0) check", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Else branch statement", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Test with sample input", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    // Smart Dynamic Fallback for Any Other Program
+                    const titleEl = document.getElementById('problemTitle');
+                    const programTitle = (titleEl ? titleEl.innerText : '').replace(/^Challenge:\s*/i, '').trim() || key;
                     if (norm === 'recipe') {
                         return [
-                            { stepNumber: 1, title: "1. Take input number", completed: false, current: true },
-                            { stepNumber: 2, title: "2. Modulo divide by 2", completed: false, current: false },
-                            { stepNumber: 3, title: "3. Check remainder value", completed: false, current: false },
-                            { stepNumber: 4, title: "4. Even if 0, else odd", completed: false, current: false }
+                            { stepNumber: 1, title: `1. Read input for ${programTitle}`, completed: false, current: true },
+                            { stepNumber: 2, title: "2. Set up condition or loop process", completed: false, current: false },
+                            { stepNumber: 3, title: "3. Compute expected challenge result", completed: false, current: false },
+                            { stepNumber: 4, title: "4. Display calculated output", completed: false, current: false }
                         ];
                     } else if (norm === 'ingredients') {
                         return [
-                            { stepNumber: 1, title: "1. Declare variable n", completed: false, current: true },
-                            { stepNumber: 2, title: "2. If condition (n % 2 == 0)", completed: false, current: false },
-                            { stepNumber: 3, title: "3. Print 'Even' in if block", completed: false, current: false },
-                            { stepNumber: 4, title: "4. Else fallback block", completed: false, current: false },
-                            { stepNumber: 5, title: "5. Print 'Odd' in else block", completed: false, current: false }
+                            { stepNumber: 1, title: "1. Input variable(s)", completed: false, current: true },
+                            { stepNumber: 2, title: "2. Core logic / condition / loop", completed: false, current: false },
+                            { stepNumber: 3, title: "3. State update or accumulation", completed: false, current: false },
+                            { stepNumber: 4, title: "4. Print result statement", completed: false, current: false }
                         ];
                     } else if (norm === 'logic') {
                         return [
-                            { stepNumber: 1, title: "1. Understand problem & input", completed: false, current: true },
-                            { stepNumber: 2, title: "2. Parity rule (divisible by 2)", completed: false, current: false },
-                            { stepNumber: 3, title: "3. Sample test verification", completed: false, current: false },
-                            { stepNumber: 4, title: "4. Decision output logic", completed: false, current: false }
+                            { stepNumber: 1, title: "1. Identify problem inputs & goal", completed: false, current: true },
+                            { stepNumber: 2, title: "2. Apply core algorithm rule", completed: false, current: false },
+                            { stepNumber: 3, title: "3. Trace sample test cases", completed: false, current: false },
+                            { stepNumber: 4, title: "4. Validate decision outcomes", completed: false, current: false }
                         ];
                     } else {
                         return [
-                            { stepNumber: 1, title: "1. Declare input variable", completed: false, current: true },
-                            { stepNumber: 2, title: "2. If (n % 2 == 0) check", completed: false, current: false },
-                            { stepNumber: 3, title: "3. Else branch statement", completed: false, current: false },
-                            { stepNumber: 4, title: "4. Test with sample input", completed: false, current: false }
+                            { stepNumber: 1, title: "1. Declare variables & setup", completed: false, current: true },
+                            { stepNumber: 2, title: "2. Implement solution logic", completed: false, current: false },
+                            { stepNumber: 3, title: "3. Print calculated result", completed: false, current: false },
+                            { stepNumber: 4, title: "4. Run against test cases", completed: false, current: false }
                         ];
                     }
                 };
 
+                // Dynamic Step Tracker: Adapts automatically to user written steps or program blueprint
                 window.renderStepTracker = function (section, customSteps) {
                     const norm = (section === 'sample' || section === 'samplecode') ? 'samplecode' : section;
                     const trackerContainer = document.getElementById(`tracker-${norm}`);
@@ -3560,9 +4559,41 @@
                                         (norm === 'ingredients' && state.isIngredientsCompleted) ||
                                         (norm === 'samplecode' && state.isSampleCompleted);
 
+                    const inputId = norm === 'samplecode' ? 'sampleInput' : norm + 'Input';
+                    const inputEl = document.getElementById(inputId);
+                    const userText = inputEl ? inputEl.value.trim() : '';
+
+                    // Check if user has written numbered steps in their worksheet (newlines or inline)
+                    const rawLines = userText.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
+                    let userStepLines = rawLines.filter(l => /^(?:step\s*\d+|\d+[\.\:\)\-]|ingredient\s*\d+)/i.test(l));
+                    if (userStepLines.length < 2 && userText.length > 0) {
+                        const inline = userText.split(/(?=(?:step\s*\d+|\b\d+[\.\:\)\-]|ingredient\s*\d+))/i).map(l => l.trim()).filter(Boolean);
+                        const inlineNumbered = inline.filter(l => /^(?:step\s*\d+|\d+[\.\:\)\-]|ingredient\s*\d+)/i.test(l));
+                        if (inlineNumbered.length >= 2) {
+                            userStepLines = inlineNumbered;
+                        }
+                    }
+
                     let steps = customSteps;
-                    if (!steps || !Array.isArray(steps) || steps.length === 0) {
-                        steps = window.getSectionDefaultSteps(norm);
+
+                    // If user has written dynamic steps (e.g. 2, 3, 4, 5 steps):
+                    if (userStepLines.length >= 2) {
+                        const allCustomCompleted = steps && Array.isArray(steps) && steps.length > 0 && steps.every(s => s.completed);
+                        const stageVerified = isStageDone || allCustomCompleted;
+
+                        steps = userStepLines.map((line, idx) => {
+                            const cleanTitle = line.replace(/^(?:step\s*\d+[:.]?|\d+[\.\:\)\-]?|ingredient\s*\d+[:.]?)\s*/i, '').trim();
+                            const stepNum = idx + 1;
+                            const isCompleted = stageVerified || (customSteps && customSteps[idx] ? customSteps[idx].completed : false);
+                            return {
+                                stepNumber: stepNum,
+                                title: `${stepNum}. ${cleanTitle || `Step ${stepNum}`}`,
+                                completed: isCompleted,
+                                current: !stageVerified && !isCompleted && (idx === 0 || (customSteps && customSteps[idx - 1] && customSteps[idx - 1].completed))
+                            };
+                        });
+                    } else if (!steps || !Array.isArray(steps) || steps.length === 0) {
+                        steps = window.getSectionDefaultSteps(norm, typeof problemID !== 'undefined' ? problemID : 'problem01');
                     }
 
                     if (isStageDone) {
@@ -3642,7 +4673,7 @@
                                             ${stepNum}. ${titleText}
                                         </div>
                                         <div style="font-size: 10px; font-weight: 600; color: #94a3b8; margin-top: 1px;">
-                                            <span>Locked</span>
+                                            <span>Pending</span>
                                         </div>
                                     </div>
                                 </div>
@@ -3663,7 +4694,9 @@
                                     </div>
                                     <div>
                                         <div style="font-weight: 800; font-size: 13.5px; color: #0f172a; letter-spacing: -0.01em;">${trackerTitle}</div>
-                                        <div style="font-size: 11px; color: #64748b; font-weight: 500;">Follow each step sequentially to complete this stage</div>
+                                        <div style="font-size: 11px; color: #64748b; font-weight: 500;">
+                                            ${userStepLines.length >= 2 ? `Tracking your ${userStepLines.length} written steps dynamically` : 'Follow each step sequentially to complete this stage'}
+                                        </div>
                                     </div>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -4438,6 +5471,12 @@
                         window.openSection('recipe');
                     }
 
+                    ['logic', 'recipe', 'ingredients', 'samplecode'].forEach(sec => {
+                        if (typeof window.renderStepTracker === 'function') {
+                            window.renderStepTracker(sec);
+                        }
+                    });
+
                     // Only show "Saved progress restored!" toast if there is genuinely any saved work or completed stages
                     const hasAnySavedData = (savedLogic && savedLogic.trim() !== '') ||
                                             (savedRecipe && savedRecipe.trim() !== '') ||
@@ -4511,8 +5550,13 @@
                     ['logicInput', 'recipeInput', 'ingredientsInput', 'sampleInput'].forEach(id => {
                         const el = document.getElementById(id);
                         if (el) {
+                            const sec = id.replace('Input', '').toLowerCase();
+                            const normSec = sec === 'sample' ? 'samplecode' : sec;
                             el.addEventListener('input', () => {
                                 scheduleAutoSave();
+                                if (typeof window.renderStepTracker === 'function') {
+                                    window.renderStepTracker(normSec);
+                                }
                             });
                             el.addEventListener('blur', () => {
                                 if (saveTimeout) {
@@ -4562,7 +5606,7 @@
                         objEl.innerHTML = rawObjective;
                     }
 
-                    // 2. Program Specifications (Input, Task, Output)
+                    // 2. Program Specifications (Input, Task, Output) - Clean Flow Layout
                     const specsListEl = document.getElementById('programSpecsList');
                     const specsCountBadge = document.getElementById('specsCountBadge');
                     const specs = data.specifications || [];
@@ -4578,55 +5622,35 @@
                             const lower = rawLabel.toLowerCase();
                             const desc = sp.desc || '';
                             
-                            let iconTypeClass = 'icon-input';
-                            let labelTypeClass = 'label-input';
-                            let cardTypeClass = 'card-input';
-                            let iconGlyph = 'fa-right-to-bracket';
-                            let categoryTag = 'Parameter';
+                            let pillClass = 'pill-input';
+                            let iconGlyph = 'fa-arrow-right-to-bracket';
 
                             if (lower.includes('input')) {
-                                iconTypeClass = 'icon-input';
-                                labelTypeClass = 'label-input';
-                                cardTypeClass = 'card-input';
-                                iconGlyph = 'fa-right-to-bracket';
-                                categoryTag = 'Input Data';
+                                pillClass = 'pill-input';
+                                iconGlyph = 'fa-arrow-right-to-bracket';
                             } else if (lower.includes('task') || lower.includes('logic')) {
-                                iconTypeClass = 'icon-task';
-                                labelTypeClass = 'label-task';
-                                cardTypeClass = 'card-task';
+                                pillClass = 'pill-task';
                                 iconGlyph = 'fa-bullseye';
-                                categoryTag = 'Program Task';
                             } else if (lower.includes('output') || lower.includes('result')) {
-                                iconTypeClass = 'icon-output';
-                                labelTypeClass = 'label-output';
-                                cardTypeClass = 'card-output';
-                                iconGlyph = 'fa-display';
-                                categoryTag = 'Expected Result';
+                                pillClass = 'pill-output';
+                                iconGlyph = 'fa-arrow-right-from-bracket';
                             } else if (sp.icon) {
                                 iconGlyph = sp.icon.replace(/^fa[srb]?\s+/, '').replace(/^fa-/, '');
                             }
 
                             specsHtml += `
-                                <div class="program-spec-card ${cardTypeClass}">
-                                    <div class="program-spec-icon ${iconTypeClass}">
-                                        <i class="fas ${iconGlyph.startsWith('fa-') ? iconGlyph : 'fa-' + iconGlyph}"></i>
-                                    </div>
-                                    <div class="program-spec-body">
-                                        <div class="program-spec-header-row">
-                                            <span class="program-spec-label ${labelTypeClass}">
-                                                ${escapeHtml(rawLabel)}
-                                            </span>
-                                            <span style="font-size: 10.5px; font-weight: 750; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; padding: 2.5px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em;">${categoryTag}</span>
-                                        </div>
-                                        <p class="program-spec-desc">${desc}</p>
-                                    </div>
+                                <div class="spec-flow-row">
+                                    <span class="spec-flow-pill ${pillClass}">
+                                        <i class="fas ${iconGlyph.startsWith('fa-') ? iconGlyph : 'fa-' + iconGlyph}"></i> ${escapeHtml(rawLabel)}
+                                    </span>
+                                    <p class="spec-flow-desc">${desc}</p>
                                 </div>
                             `;
                         });
                         specsListEl.innerHTML = specsHtml;
                     }
 
-                    // 3. Sample Test Cases
+                    // 3. Sample Test Cases - Clean Example Boxes
                     const exContainer = document.getElementById('problemExamplesContainer');
                     const exList = document.getElementById('problemExamplesList');
                     const examples = (data.examples && Array.isArray(data.examples) && data.examples.length > 0)
@@ -4639,26 +5663,22 @@
                             let examplesHtml = '';
                             examples.forEach((ex, idx) => {
                                 examplesHtml += `
-                                    <div class="problem-testcase-card">
-                                        <div class="testcase-header">
-                                            <span class="testcase-badge">
-                                                <i class="fas fa-terminal"></i> Sample ${idx + 1}
+                                    <div class="example-box">
+                                        <div class="example-box-header">
+                                            <span class="example-box-title">
+                                                <i class="fas fa-terminal text-blue-500"></i> Sample ${idx + 1}
                                             </span>
-                                            <span class="testcase-status-indicator">
-                                                <i class="fas fa-circle text-[6px] text-emerald-500"></i> Verified
+                                            <span class="example-box-status">
+                                                <i class="fas fa-check-circle text-emerald-500"></i> Verified
                                             </span>
                                         </div>
-                                        <div class="testcase-row">
-                                            <span class="testcase-label label-in">
-                                                <i class="fas fa-right-to-bracket"></i> In
-                                            </span>
-                                            <span class="testcase-val" title="${escapeHtml(String(ex.input ?? ''))}">${escapeHtml(String(ex.input ?? ''))}</span>
+                                        <div class="example-box-row">
+                                            <span class="example-row-label">Input</span>
+                                            <code class="example-row-code" title="${escapeHtml(String(ex.input ?? ''))}">${escapeHtml(String(ex.input ?? ''))}</code>
                                         </div>
-                                        <div class="testcase-row">
-                                            <span class="testcase-label label-out">
-                                                <i class="fas fa-check"></i> Out
-                                            </span>
-                                            <span class="testcase-val val-out" title="${escapeHtml(String(ex.output ?? ''))}">${escapeHtml(String(ex.output ?? ''))}</span>
+                                        <div class="example-box-row">
+                                            <span class="example-row-label">Output</span>
+                                            <code class="example-row-code code-out" title="${escapeHtml(String(ex.output ?? ''))}">${escapeHtml(String(ex.output ?? ''))}</code>
                                         </div>
                                     </div>
                                 `;
@@ -5136,6 +6156,14 @@
                             if (pProblem && data.problemBadge) pProblem.innerText = data.problemBadge;
 
                             renderProblemDefinition(data);
+                            if (typeof window.renderBeginnerGuides === 'function') {
+                                window.renderBeginnerGuides(problemID, data);
+                            }
+                            ['logic', 'recipe', 'ingredients', 'samplecode'].forEach(sec => {
+                                if (typeof window.renderStepTracker === 'function') {
+                                    window.renderStepTracker(sec);
+                                }
+                            });
                         }
                     } catch (err) {
                         console.error("Failed to load problem details:", err);
@@ -5215,12 +6243,14 @@
                     }
                 });
 
-                // Display beginner CTC guide examples ONLY for Problem 01
-                const isProblem01 = problemID === "problem01";
+                // Display beginner CTC guide examples for ALL problems
+                if (typeof window.renderBeginnerGuides === 'function') {
+                    window.renderBeginnerGuides(problemID);
+                }
                 ['logic', 'recipe', 'ingredients', 'samplecode'].forEach(sec => {
                     const guide = document.getElementById(`example-guide-${sec}`);
                     if (guide) {
-                        guide.style.display = isProblem01 ? 'block' : 'none';
+                        guide.style.display = 'block';
                     }
                 });
 

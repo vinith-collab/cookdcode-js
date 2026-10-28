@@ -555,24 +555,18 @@ function validateSumOfNRecipe(text) {
   }
 
   let hasStep2 = false;
+  const hasSumZeroInit = (norm.includes("sum") || norm.includes("total")) && (norm.includes("0") || norm.includes("zero") || norm.includes("initial") || norm.includes("start"));
   if (hasNumberedSteps) {
-    hasStep2 = Boolean(stepMap[2] && (stepMap[2].includes("sum") || stepMap[2].includes("total") || stepMap[2].includes("0") || stepMap[2].includes("zero") || stepMap[2].includes("1")));
+    hasStep2 = Boolean(stepMap[2] && (stepMap[2].includes("sum") || stepMap[2].includes("total") || stepMap[2].includes("0") || stepMap[2].includes("zero") || stepMap[2].includes("1"))) || hasSumZeroInit;
   } else {
     hasStep2 = lines.some((l) => {
       const s = l.toLowerCase();
       if (/^step\s*4\b/i.test(s)) return false;
       return (s.includes("sum") || s.includes("total")) && (s.includes("0") || s.includes("zero")) && (s.includes("1") || s.includes("one") || s.includes("start") || s.includes("first") || s.includes("counter") || s.includes("number"));
-    }) || (!hasNumberedSteps && (norm.includes("sum") || norm.includes("total")) && (norm.includes("0") || norm.includes("zero")) && (norm.includes("1") || norm.includes("one") || norm.includes("start") || norm.includes("first") || norm.includes("counter")));
+    }) || (!hasNumberedSteps && (norm.includes("sum") || norm.includes("total")) && (norm.includes("0") || norm.includes("zero")) && (norm.includes("1") || norm.includes("one") || norm.includes("start") || norm.includes("first") || norm.includes("counter"))) || hasSumZeroInit;
   }
 
-  let hasCombinedStep3 = false;
-  if (step3Line && (step3Line.includes("add") || step3Line.includes("sum")) && (step3Line.includes("loop") || step3Line.includes("repeat") || step3Line.includes("1 to n") || step3Line.includes("until")) || step4Line && (step4Line.includes("add") || step4Line.includes("sum")) && (step4Line.includes("loop") || step4Line.includes("repeat") || step4Line.includes("1 to n") || step4Line.includes("until"))) {
-    if (!step5Line && (step4Line.includes("print") || step4Line.includes("display") || step4Line.includes("output") || step4Line.includes("show"))) {
-      hasCombinedStep3 = true;
-    }
-  }
-
-  const hasRepeat = hasNumberedSteps ? Boolean(stepMap[3] && (stepMap[3].includes("repeat") || stepMap[3].includes("next") || stepMap[3].includes("loop") || stepMap[3].includes("until") || stepMap[3].includes("count"))) : (norm.includes("repeat") || norm.includes("next number") || norm.includes("advance") || norm.includes("increment") || norm.includes("until n") || norm.includes("repeat") && norm.includes("n"));
+  const hasRepeat = (norm.includes("repeat") || norm.includes("loop") || norm.includes("next number") || norm.includes("advance") || norm.includes("increment") || norm.includes("until n") || norm.includes("1 to n") || norm.includes("from 1") || norm.includes("each number"));
 
   const hasWrongAddInRecipe = (
     /\badd\s+(?:the\s+)?(?:input|n\b|a\b|limit)\s+(?:to|into)\s+(?:the\s+)?(?:total\s+)?sum\b/i.test(norm) ||
@@ -580,29 +574,50 @@ function validateSumOfNRecipe(text) {
   );
   const hasAdd = (norm.includes("add") || norm.includes("accumulate") || norm.includes("plus")) && (norm.includes("sum") || norm.includes("total")) && !hasWrongAddInRecipe;
 
-  let hasStep3 = false;
-  let hasStep4 = false;
-  let hasStep5 = false;
+  let hasStep3 = hasRepeat;
+  let hasStep4 = hasAdd;
+  let hasStep5 = !isPrintingInputInsteadOfSum && (norm.includes("print") || norm.includes("display") || norm.includes("output") || norm.includes("show") || norm.includes("return")) && (norm.includes("sum") || norm.includes("total") || norm.includes("result"));
 
-  if (hasCombinedStep3) {
-    hasStep3 = true;
-    hasStep4 = false;
-    hasStep5 = !isPrintingInputInsteadOfSum && /\b(?:print|display|output|show|return)\b.*\b(?:sum|total)\b/i.test(norm);
-  } else {
-    hasStep3 = hasRepeat;
-    hasStep4 = hasAdd;
-    hasStep5 = !isPrintingInputInsteadOfSum && (norm.includes("print") || norm.includes("display") || norm.includes("output") || norm.includes("show") || norm.includes("return")) && (norm.includes("sum") || norm.includes("total") || norm.includes("result"));
+  const hasCombinedStep3 = (hasStep3 && hasStep4);
+
+  const allStepsDone = hasStep1 && hasStep2 && hasStep3 && hasStep4 && hasStep5 && !prog.hasProgrammingWords && !hasWrongAddInRecipe && !isPrintingInputInsteadOfSum;
+
+  let userLines = (text || "").split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
+  if (userLines.length === 1 && /(?:step\s*\d+|\d+[\.\:\)\-])/i.test(userLines[0])) {
+    const inlineMatches = userLines[0].split(/(?=(?:step\s*\d+|\b\d+[\.\:\)\-]))/i).map(l => l.trim()).filter(Boolean);
+    if (inlineMatches.length > 1) {
+      userLines = inlineMatches;
+    }
   }
+  const numberedLines = userLines.filter(l => /^(?:step\s*\d+|\d+[\.\:\)\-])/i.test(l));
 
-  const recipeStepProgress = [
-    { stepNumber: 1, title: "Read input number n", completed: hasStep1, current: !hasStep1 },
-    { stepNumber: 2, title: "Start total sum = 0 and number = 1", completed: hasStep2, current: hasStep1 && !hasStep2 },
-    { stepNumber: 3, title: "Move to next number & repeat until n", completed: hasStep3, current: hasStep1 && hasStep2 && !hasStep3 },
-    { stepNumber: 4, title: "Add current number to total sum", completed: hasStep4, current: hasStep1 && hasStep2 && hasStep3 && !hasStep4 },
-    { stepNumber: 5, title: "Display the final total sum", completed: hasStep5, current: hasStep1 && hasStep2 && hasStep3 && hasStep4 && !hasStep5 }
-  ];
-
-  const allStepsDone = hasStep1 && hasStep2 && hasStep3 && hasStep4 && hasStep5 && !prog.hasProgrammingWords && !hasCombinedStep3 && !hasWrongAddInRecipe && !isPrintingInputInsteadOfSum;
+  let recipeStepProgress;
+  if (allStepsDone && numberedLines.length >= 2) {
+    recipeStepProgress = numberedLines.map((line, idx) => {
+      const cleanTitle = line.replace(/^(?:step\s*\d+[:.]?|\d+[\.\:\)\-]?)\s*/i, '').slice(0, 45);
+      return {
+        stepNumber: idx + 1,
+        title: cleanTitle || `Step ${idx + 1}`,
+        completed: true,
+        current: false
+      };
+    });
+  } else if (hasCombinedStep3 || numberedLines.length === 4) {
+    recipeStepProgress = [
+      { stepNumber: 1, title: "Read input number n", completed: hasStep1, current: !hasStep1 },
+      { stepNumber: 2, title: "Start total sum = 0 and number = 1", completed: hasStep2, current: hasStep1 && !hasStep2 },
+      { stepNumber: 3, title: "Repeat until n & add current number to sum", completed: hasStep3 && hasStep4, current: hasStep1 && hasStep2 && !(hasStep3 && hasStep4) },
+      { stepNumber: 4, title: "Display the final total sum", completed: hasStep5, current: hasStep1 && hasStep2 && hasStep3 && hasStep4 && !hasStep5 }
+    ];
+  } else {
+    recipeStepProgress = [
+      { stepNumber: 1, title: "Read input number n", completed: hasStep1, current: !hasStep1 },
+      { stepNumber: 2, title: "Start total sum = 0 and number = 1", completed: hasStep2, current: hasStep1 && !hasStep2 },
+      { stepNumber: 3, title: "Move to next number & repeat until n", completed: hasStep3, current: hasStep1 && hasStep2 && !hasStep3 },
+      { stepNumber: 4, title: "Add current number to total sum", completed: hasStep4, current: hasStep1 && hasStep2 && hasStep3 && !hasStep4 },
+      { stepNumber: 5, title: "Display the final total sum", completed: hasStep5, current: hasStep1 && hasStep2 && hasStep3 && hasStep4 && !hasStep5 }
+    ];
+  }
 
   const nextMissingStep = !hasStep1 ? "Step 1: Get the input number n from the user" :
     !hasStep2 ? "Step 2: Start total sum = 0 and number = 1" :

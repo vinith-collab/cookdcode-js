@@ -4113,17 +4113,17 @@ Evaluate now according to Coach Maara's rules. Return JSON matching the schema.`
                 parsed.feedback = `In the Recipe stage, please avoid programming tools and code words (detected: ${wordsList}). The Recipe should be written in plain, human-readable English without programming keywords or code syntax! For example, use 'repeat until reaching n' instead of 'loop', and 'starting number 1' instead of 'counter i = 1'.`;
                 parsed.correction = "Replace programming words with everyday language (use 'repeat', 'current number', 'next number').";
                 parsed.suggestedInput = rec.suggestedInput || (!rec.hasStep1 ? "Step 1: Get the input number n" : !rec.hasStep2 ? "Step 2: Start with total sum as 0 and current number as 1" : !rec.hasStep3 ? "Step 3: Move to the next number and repeat until reaching n" : !rec.hasStep4 ? "Step 4: Add the current number to the total sum" : "Step 5: Display the final total sum");
-              } else if (rec.hasCombinedStep3) {
-                parsed.correct = false;
-                parsed.feedback = "You've combined adding to the sum and repeating until n into one single step! In our algorithm recipe, each action must be an atomic step. Please split into 2 distinct steps: Step 3 for moving to the next number and repeat until reaching n, and Step 4 for adding the current number to the total sum.";
-                parsed.correction = "Split into: Step 3: Move to next number and repeat until n, and Step 4: Add current number to total sum.";
-                parsed.suggestedInput = "Step 3: Move to the next number and repeat until reaching n";
               } else if (rec.allStepsDone) {
                 parsed.correct = true;
-                const donePair = matchedFirebase?.allPairs?.find((p) => p.input.toLowerCase().includes("step 5")) || matchedFirebase?.bestPair;
-                parsed.feedback = donePair?.hint || "Kudos. You've sequenced all 5 steps of the algorithm in plain English. Proceed to ingredients.";
+                const donePair = matchedFirebase?.allPairs?.find((p) => p.input.toLowerCase().includes("step 5") || p.input.toLowerCase().includes("step 4")) || matchedFirebase?.bestPair;
+                parsed.feedback = donePair?.hint || "Kudos! You've sequenced all essential steps of the algorithm in plain English. Proceed to ingredients.";
                 parsed.correction = "Proceed to Ingredients to identify variables and loops.";
                 parsed.suggestedInput = void 0;
+              } else if (rec.hasCombinedStep3 && (!rec.hasStep1 || !rec.hasStep2 || !rec.hasStep5)) {
+                parsed.correct = false;
+                parsed.feedback = "Good start combining repeating and adding! However, earlier steps or the final output are still missing. Ensure you read input n (Step 1), start sum at 0 (Step 2), and print the final total sum!";
+                parsed.correction = !rec.hasStep1 ? "Add Step 1: Get the input number n from the user." : !rec.hasStep2 ? "Add Step 2: Start total sum = 0 and number = 1." : "Add final step: Display the final total sum.";
+                parsed.suggestedInput = rec.suggestedInput;
               } else {
                 parsed.correct = false;
                 if (rec.isPrintingInputInsteadOfSum || rec.hasWrongAddInRecipe || rec.hasProgrammingWords || rec.hasCombinedStep3 || !parsed.feedback || parsed.feedback.trim().length === 0) {

@@ -144,12 +144,6 @@ function validateOddEvenRecipe(text) {
   const has2 = /(?:by\s*2\b|%\s*2\b)/.test(norm) || /(?:modulo|modulodivide)\s*(?:divide\s*)?(?:the\s*input\s*)?(?:by\s*)?2\b/i.test(norm) || /\b(?:2|two)\b/.test(textWithoutStepLabels);
   const hasModuloBy2 = (hasModulo && has2) || /(?:modulo|modulodivide|%)\s*(?:divide\s*)?(?:the\s*input\s*)?(?:by\s*)?2/i.test(norm) || /divide\s*.*by\s*2/i.test(norm) || /%\s*2/.test(norm);
 
-  // 3. Step 3: Check remainder
-  const hasExplicitStep3 = /(?:step\s*3|3[\.\:\)])/i.test(norm);
-  const hasCheckWord = /\b(?:check|see|test|inspect|verify|find\s*out|determine|look\s*at)\b/i.test(norm);
-  const hasRemainderWord = /(?:remainder|rem\b|remind)/i.test(norm);
-  const hasCheckRemainderStep = (hasExplicitStep3 && hasRemainderWord) || (hasCheckWord && hasRemainderWord) || (hasRemainderWord && /(?:after|division|divide)/i.test(norm));
-
   // 4. Step 4: Decision check for Odd / Even parity
   // Split into individual clauses/statements to evaluate each condition independently without cross-sentence bleed
   const clauses = norm.split(/[\.\n;,]+|\b(?:and|or|otherwise|else)\b/);
@@ -195,19 +189,42 @@ function validateOddEvenRecipe(text) {
     (zeroIsEven && /\bodd\b/.test(norm))
   );
 
+  // 3. Step 3: Check remainder
+  const hasExplicitStep3 = /(?:step\s*3|3[\.\:\)])/i.test(norm);
+  const hasCheckWord = /\b(?:check|see|test|inspect|verify|find\s*out|determine|look\s*at)\b/i.test(norm);
+  const hasRemainderWord = /(?:remainder|rem\b|remind)/i.test(norm);
+  const hasCheckRemainderStep = (hasExplicitStep3 && hasRemainderWord) || (hasCheckWord && hasRemainderWord) || (hasRemainderWord && /(?:after|division|divide)/i.test(norm)) || (hasRemainderWord && step4Correct) || (hasModuloBy2 && step4Correct);
+
   const step1Done = Boolean(hasInputStep);
   const step2Done = Boolean(hasModuloBy2);
-  const step3Done = Boolean(hasCheckRemainderStep);
+  const step3Done = Boolean(hasCheckRemainderStep || (hasModuloBy2 && step4Correct));
   const step4Done = Boolean(step4Correct);
 
-  const recipeStepProgress = [
-    { stepNumber: 1, title: "Get input number", completed: step1Done, current: !step1Done },
-    { stepNumber: 2, title: "Modulo divide by 2", completed: step2Done, current: step1Done && !step2Done },
-    { stepNumber: 3, title: "Check remainder", completed: step3Done, current: step1Done && step2Done && !step3Done },
-    { stepNumber: 4, title: "Remainder 0 even, else odd", completed: step4Done, current: step1Done && step2Done && step3Done && !step4Done }
-  ];
-
   const isFullyVerified = step1Done && step2Done && step3Done && step4Done;
+
+  const userLines = (text || "").split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
+  const numberedLines = userLines.filter(l => /^(?:step\s*\d+|\d+[\.\:\)\-])/i.test(l));
+
+  let recipeStepProgress;
+  if (numberedLines.length === 2 && isFullyVerified) {
+    recipeStepProgress = [
+      { stepNumber: 1, title: numberedLines[0].replace(/^(?:step\s*\d+[:.]?|\d+[\.\:\)\-]?)\s*/i, '').slice(0, 35) || "Input & modulo divide by 2", completed: true, current: false },
+      { stepNumber: 2, title: numberedLines[1].replace(/^(?:step\s*\d+[:.]?|\d+[\.\:\)\-]?)\s*/i, '').slice(0, 35) || "Check remainder & print even/odd", completed: true, current: false }
+    ];
+  } else if (numberedLines.length === 3 && isFullyVerified) {
+    recipeStepProgress = [
+      { stepNumber: 1, title: numberedLines[0].replace(/^(?:step\s*\d+[:.]?|\d+[\.\:\)\-]?)\s*/i, '').slice(0, 35) || "Input number", completed: true, current: false },
+      { stepNumber: 2, title: numberedLines[1].replace(/^(?:step\s*\d+[:.]?|\d+[\.\:\)\-]?)\s*/i, '').slice(0, 35) || "Modulo divide & check", completed: true, current: false },
+      { stepNumber: 3, title: numberedLines[2].replace(/^(?:step\s*\d+[:.]?|\d+[\.\:\)\-]?)\s*/i, '').slice(0, 35) || "Remainder 0 even, else odd", completed: true, current: false }
+    ];
+  } else {
+    recipeStepProgress = [
+      { stepNumber: 1, title: "Get input number", completed: step1Done, current: !step1Done },
+      { stepNumber: 2, title: "Modulo divide by 2", completed: step2Done, current: step1Done && !step2Done },
+      { stepNumber: 3, title: "Check remainder", completed: step3Done, current: step1Done && step2Done && !step3Done },
+      { stepNumber: 4, title: "Remainder 0 even, else odd", completed: step4Done, current: step1Done && step2Done && step3Done && !step4Done }
+    ];
+  }
 
   let feedback = "";
   let correction = "";
