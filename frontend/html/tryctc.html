@@ -2430,7 +2430,7 @@
             //   1. window.setApiUrl("https://your-backend.com")
             //   2. window.setLocalhost(true)
             //   3. Adding ?apiUrl=https://... or ?localhost=true in the URL
-            const ENABLE_LOCALHOST = true; // DEV: always use local backend at localhost:3001
+            const ENABLE_LOCALHOST = false; // Production: use api.cookdcode.com
 
             // Unregister any stale/cached Service Workers that may intercept API calls
             if ('serviceWorker' in navigator) {
