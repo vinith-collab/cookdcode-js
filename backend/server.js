@@ -58,7 +58,7 @@ app.get('*', (req, res, next) => {
   }
 });
 
-function startServer(port, maxAttempts = 10) {
+function startServer(port) {
   const server = app.listen(port, '0.0.0.0', () => {
     console.log(`\n  🚀 CookDcode AI Mentor Server running!`);
     console.log(`  ➜ Local:     http://localhost:${port}/`);
@@ -67,11 +67,14 @@ function startServer(port, maxAttempts = 10) {
   });
 
   server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE' && maxAttempts > 0) {
-      console.warn(`  ⚠️ Port ${port} is in use. Automatically trying port ${port + 1}...`);
-      startServer(port + 1, maxAttempts - 1);
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n  ❌ Port ${port} is already in use!`);
+      console.error(`  Fix: Kill the process using port ${port} and restart the server.`);
+      console.error(`  Run: netstat -ano | findstr :${port}  (to find the PID)`);
+      process.exit(1);
     } else {
       console.error('Server startup error:', err);
+      process.exit(1);
     }
   });
 }
