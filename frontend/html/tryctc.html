@@ -2430,7 +2430,23 @@
             //   1. window.setApiUrl("https://your-backend.com")
             //   2. window.setLocalhost(true)
             //   3. Adding ?apiUrl=https://... or ?localhost=true in the URL
-            const ENABLE_LOCALHOST = false;
+            const ENABLE_LOCALHOST = true; // DEV: always use local backend at localhost:3001
+
+            // Unregister any stale/cached Service Workers that may intercept API calls
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    regs.forEach(reg => {
+                        reg.unregister();
+                        console.info('[SW] Unregistered stale service worker:', reg.scope);
+                    });
+                }).catch(() => {});
+            }
+
+            // Auto-reset circuit breaker when running on localhost (backend is local & available)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                localStorage.removeItem('cookdcode_backend_unreachable');
+                sessionStorage.removeItem('cookdcode_backend_unreachable');
+            }
 
             window.setLocalhost = function (enable = true) {
                 if (enable) {
@@ -6114,14 +6130,20 @@
                         // 1. Primary Attempt: Backend API (if reachable)
                         if (window.__isBackendReachable !== false) {
                             try {
-                                const res = await fetch(`${API_BASE}/api/getProblemDetails?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`);
+                                const ctrl = new AbortController();
+                                const fetchTimer = setTimeout(() => ctrl.abort(), 5000); // 5s timeout
+                                const res = await fetch(
+                                    `${API_BASE}/api/getProblemDetails?category=${encodeURIComponent(category)}&problemID=${encodeURIComponent(problemID)}`,
+                                    { signal: ctrl.signal, cache: "no-cache" }
+                                );
+                                clearTimeout(fetchTimer);
                                 if (res.ok) {
                                     data = await res.json();
                                 } else {
                                     window.markBackendUnreachable(`HTTP ${res.status}`);
                                 }
                             } catch (netErr) {
-                                window.markBackendUnreachable(netErr.message);
+                                window.markBackendUnreachable(netErr.message || "Failed to fetch");
                             }
                         }
 
