@@ -1446,6 +1446,38 @@
             align-items: center !important;
             gap: 4px !important;
         }
+
+        /* ── Mobile: AI Hint Card Font Fix ── */
+        @media (max-width: 768px) {
+            #aiFeedbackContent,
+            #aiFeedbackContent p,
+            #aiFeedbackContent span,
+            #aiFeedbackContent li {
+                font-size: 13px !important;
+                line-height: 1.5 !important;
+                font-weight: 400 !important;
+                letter-spacing: 0 !important;
+            }
+            #aiFeedbackContent strong {
+                font-size: 13px !important;
+                font-weight: 700 !important;
+            }
+            /* Limit hint card height on mobile */
+            .feedback-open .p-4,
+            #aiFeedbackCard .overflow-y-auto {
+                max-height: 280px !important;
+                overflow-y: auto !important;
+            }
+        }
+        @media (max-width: 480px) {
+            #aiFeedbackContent,
+            #aiFeedbackContent p,
+            #aiFeedbackContent span,
+            #aiFeedbackContent li {
+                font-size: 12px !important;
+                line-height: 1.45 !important;
+            }
+        }
     </style>
 </head>
 
