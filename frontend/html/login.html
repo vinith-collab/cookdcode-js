@@ -239,15 +239,18 @@ document.getElementById("backToLoginBtn").addEventListener("click", (e) => {
     resetToLoginView();
 });
 
-// Candidate server endpoints to support running from localhost:3001, 3000, or file://
-const API_BASES = ["", "http://localhost:3001", "http://localhost:3000"];
+// Candidate server endpoints to support running from localhost or production
+const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const API_BASES = isLocal 
+    ? ["", "http://localhost:3001", "http://localhost:3000", "https://api.cookdcode.com"]
+    : ["https://api.cookdcode.com", ""];
 
 async function postToApi(endpoint, body) {
     for (const base of API_BASES) {
         try {
             const url = `${base}${endpoint}`;
             const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 4000);
+            const timer = setTimeout(() => controller.abort(), 8000);
             const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -255,12 +258,13 @@ async function postToApi(endpoint, body) {
                 signal: controller.signal
             });
             clearTimeout(timer);
-            if (res.ok) {
-                return await res.json();
-            }
-            if (res.status === 401 || res.status === 400) {
-                // Legitimate error from server (e.g. wrong password or user not found)
-                return await res.json();
+            if (res.ok || res.status === 401 || res.status === 400) {
+                const text = await res.text();
+                try {
+                    return JSON.parse(text);
+                } catch (_) {
+                    continue;
+                }
             }
         } catch (_) {
             // Try next base
@@ -499,19 +503,14 @@ btnSubmit.addEventListener("click", async () => {
             activeEmailForOtp = userMatch.val.email || email;
 
             // Call backend API to send OTP via email
-            const res = await fetch("/api/sendOtp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: activeEmailForOtp,
-                    userName: targetUserData.name || "Coder"
-                })
+            const data = await postToApi("/api/sendOtp", {
+                email: activeEmailForOtp,
+                userName: targetUserData.name || "Coder"
             });
 
-            const data = await res.json();
             btnSubmit.disabled = false;
 
-            if (res.ok && data.success) {
+            if (data && data.success) {
                 otpGroup.style.display = "block";
                 btnSubmit.innerHTML = 'Verify OTP <i class="fas fa-check-circle" style="margin-left: 6px;"></i>';
                 mode = "forgot-otp";
@@ -519,7 +518,7 @@ btnSubmit.addEventListener("click", async () => {
                 setTimeout(() => otpInput.focus(), 200);
             } else {
                 btnSubmit.innerHTML = 'Send OTP <i class="fas fa-paper-plane" style="margin-left: 6px;"></i>';
-                showModal(data.error || "Failed to send OTP. Please try again.", "error");
+                showModal((data && data.error) || "Failed to send OTP. Please check your backend connection.", "error");
             }
         }
 
@@ -535,19 +534,14 @@ btnSubmit.addEventListener("click", async () => {
             btnSubmit.disabled = true;
             btnSubmit.innerHTML = 'Verifying OTP... <i class="fas fa-spinner fa-spin"></i>';
 
-            const res = await fetch("/api/verifyOtp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: activeEmailForOtp,
-                    otp: enteredOtp
-                })
+            const data = await postToApi("/api/verifyOtp", {
+                email: activeEmailForOtp,
+                otp: enteredOtp
             });
 
-            const data = await res.json();
             btnSubmit.disabled = false;
 
-            if (res.ok && data.valid) {
+            if (data && data.valid) {
                 otpGroup.style.display = "none";
                 newPassGroup.style.display = "block";
                 btnSubmit.innerHTML = 'Update Password <i class="fas fa-save" style="margin-left: 6px;"></i>';
@@ -556,7 +550,7 @@ btnSubmit.addEventListener("click", async () => {
                 setTimeout(() => newPassInput.focus(), 200);
             } else {
                 btnSubmit.innerHTML = 'Verify OTP <i class="fas fa-check-circle" style="margin-left: 6px;"></i>';
-                showNotify(data.error || "Invalid or expired OTP. Please try again.", "error");
+                showNotify((data && data.error) || "Invalid or expired OTP. Please try again.", "error");
             }
         }
 
@@ -573,11 +567,7 @@ btnSubmit.addEventListener("click", async () => {
             btnSubmit.innerHTML = 'Updating Password... <i class="fas fa-spinner fa-spin"></i>';
 
             try {
-                await fetch("/api/updatePassword", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userKey: targetUserKey, newPassword: newPass })
-                });
+                await postToApi("/api/updatePassword", { userKey: targetUserKey, newPassword: newPass });
             } catch(e) {}
 
             try {
