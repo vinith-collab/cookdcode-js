@@ -454,6 +454,83 @@ button,
     font-size: 0.8rem !important;
   }
 }
+
+/* ── Mobile Responsive for tryctc page ── */
+@media (max-width: 768px) {
+  /* Navbar compact */
+  .navbar {
+    height: clamp(56px, 8vh, 70px);
+    padding: 0 0.75rem;
+  }
+
+  .brand img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .brand span {
+    font-size: 1.1rem !important;
+  }
+
+  /* AI Hint card - smaller font on mobile */
+  #aiFeedbackContent {
+    font-size: 0.875rem !important;
+    line-height: 1.6 !important;
+  }
+
+  #aiFeedbackContent p {
+    margin-bottom: 0.85rem;
+  }
+
+  /* Hint card max height reduced on mobile */
+  .p-4.md\:p-5.overflow-y-auto.max-h-\[560px\] {
+    max-height: 320px !important;
+  }
+
+  /* Sections padding */
+  .p-4, .p-4.md\:p-6 {
+    padding: 0.75rem !important;
+  }
+
+  /* Buttons smaller on mobile */
+  .btn-check, .btn-reveal, .btn-help, .btn-write {
+    padding: 5px 10px !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Problem title area */
+  .sidebar-left {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #aiFeedbackContent {
+    font-size: 0.82rem !important;
+    line-height: 1.55 !important;
+  }
+
+  .ai-feedback-header {
+    padding: 8px 12px !important;
+  }
+
+  [style*="font-size: 14px"] {
+    font-size: 12px !important;
+  }
+}
+
+/* ── Hide Netlify Attribution Badge (all pages) ── */
+[data-netlify-deploy-badge],
+.netlify-badge,
+#netlify-widget,
+a[href*="netlify.com"][style*="position"],
+div[style*="z-index: 99999"] a[href*="netlify"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 :root {
   --primary: rgb(58, 134, 204);
   --primary-hover: rgb(44, 107, 166);

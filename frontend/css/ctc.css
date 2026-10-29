@@ -482,3 +482,100 @@ h2 {
     opacity: 1;
   }
 }
+
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  .navbar {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .brand img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .brand span {
+    font-size: 1.1rem !important;
+  }
+
+  .container {
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+    min-height: auto;
+  }
+
+  .category-name {
+    font-size: 1.6rem;
+  }
+
+  .category-title {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  .cards-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-title {
+    font-size: 1.75rem;
+    position: static;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.75rem 1rem;
+  }
+
+  .brand img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand span {
+    font-size: 1rem !important;
+  }
+
+  .category-name {
+    font-size: 1.35rem;
+  }
+
+  .nav-title {
+    font-size: 1.4rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+}
+
+/* ── Hide Netlify Attribution Badge ── */
+[data-netlify-deploy-badge],
+.netlify-badge,
+#netlify-widget,
+a[href*="netlify.com"][style*="position"],
+div[style*="z-index: 99999"] a[href*="netlify"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

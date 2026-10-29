@@ -661,3 +661,118 @@ body {
   background: #e2e8f0;
   color: #0f172a;
 }
+
+
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  .compiler-navbar {
+    padding: 0 1rem;
+    min-height: 56px;
+    height: 56px;
+  }
+
+  .compiler-brand-title {
+    font-size: 1.1rem !important;
+  }
+
+  .compiler-brand-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .compiler-badge-pill {
+    display: none;
+  }
+
+  .lang-label {
+    display: none;
+  }
+
+  .compiler-workspace {
+    grid-template-columns: 1fr;
+    padding: 0.75rem;
+    gap: 1rem;
+  }
+
+  .compiler-subheader {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .problem-main-title {
+    font-size: 1.1rem;
+  }
+
+  .subheader-right {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .editor-body-wrapper {
+    min-height: 300px;
+    max-height: 380px;
+  }
+
+  .terminal-card {
+    min-height: 300px;
+  }
+
+  .compiler-modal-content {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .compiler-navbar {
+    padding: 0 0.75rem;
+  }
+
+  .compiler-brand-title {
+    font-size: 1rem !important;
+  }
+
+  .btn-back-ctc span {
+    display: none;
+  }
+
+  .btn-run-code {
+    padding: 0.45rem 1rem;
+    font-size: 0.78rem;
+  }
+
+  .lang-selector-group {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .lang-select {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .compiler-navbar-right {
+    gap: 0.5rem;
+  }
+
+  .compiler-navbar-left {
+    gap: 0.75rem;
+  }
+}
+
+/* ── Hide Netlify Attribution Badge ── */
+[data-netlify-deploy-badge],
+.netlify-badge,
+#netlify-widget,
+a[href*="netlify.com"][style*="position"],
+div[style*="z-index: 99999"] a[href*="netlify"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
