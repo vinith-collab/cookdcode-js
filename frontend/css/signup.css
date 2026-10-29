@@ -510,10 +510,12 @@ body {
 
   .signup-page-wrapper {
     flex-direction: column;
+    width: 100%;
   }
 
   /* Compact blue left panel on mobile */
   .signup-left {
+    width: 100%;
     padding: 2rem 1.5rem 1.5rem;
     align-items: center;
     text-align: center;
@@ -576,6 +578,7 @@ body {
 
   /* Form section */
   .signup-right {
+    width: 100%;
     padding: 2rem 1.25rem 3rem;
     align-items: center;
   }
@@ -846,4 +849,15 @@ body {
 .form-input.is-invalid {
   border-color: #ef4444 !important;
   background-color: rgba(239, 68, 68, 0.03) !important;
+}
+
+/* ── Hide Netlify Attribution Badge ── */
+[data-netlify-deploy-badge],
+.netlify-badge,
+a[href*="netlify.com"][style*="position: fixed"],
+div[style*="position: fixed"][style*="z-index: 99999"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
