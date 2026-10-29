@@ -152,8 +152,29 @@ required>
             <div class="password-match-hint" id="passwordMatchHint" style="display: none;"></div>
           </div>
 
+          <!-- OTP Verification Group (shown after Sign Up is clicked) -->
+          <div class="form-group" id="otpGroup" style="display: none;">
+            <div style="background: #f0f7ff; border: 1.5px solid #3a86cc; border-radius: 12px; padding: 14px 16px; margin-bottom: 8px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <span style="font-weight: 700; font-size: 0.88rem; color: #1e3a8a; display: flex; align-items: center; gap: 6px;">
+                  <i class="fas fa-shield-alt" style="color: #3a86cc;"></i> Email Verification Code
+                </span>
+                <button type="button" id="resendOtpBtn" style="background: none; border: none; color: #3a86cc; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                  Resend OTP
+                </button>
+              </div>
+              <p style="font-size: 0.8rem; color: #475569; margin: 0 0 10px 0; line-height: 1.4;">
+                A 6-digit verification code has been sent to <strong id="otpEmailTarget" style="color: #1e40af;"></strong> from <strong>cookdcode@gmail.com</strong>.
+              </p>
+              <div class="input-container">
+                <input type="text" id="signupOtp" name="signupOtp" class="form-input" placeholder="Enter 6-digit OTP" maxlength="6" style="letter-spacing: 4px; font-weight: 700; font-size: 1.1rem; text-align: center;">
+                <i class="fas fa-key input-icon"></i>
+              </div>
+            </div>
+          </div>
+
           <!-- Submit Button -->
-          <button type="submit" class="btn-submit">
+          <button type="submit" id="btnSubmitSignup" class="btn-submit">
             Sign Up <i class="fas fa-arrow-right"></i>
           </button>
 
@@ -329,6 +350,41 @@ required>
     const API_BASE = isLocal ? "http://localhost:3001" : "https://api.cookdcode.com";
 
     const form = document.getElementById("signupForm");
+    let otpSent = false;
+    let verifiedEmail = "";
+
+    // Resend OTP button handler
+    const resendBtn = document.getElementById("resendOtpBtn");
+    if (resendBtn) {
+      resendBtn.addEventListener("click", async () => {
+        const targetEmail = verifiedEmail || document.getElementById("email")?.value.trim();
+        const targetName = document.getElementById("firstname")?.value.trim() || "Coder";
+        if (!targetEmail) return;
+
+        const origText = resendBtn.textContent;
+        resendBtn.disabled = true;
+        resendBtn.textContent = "Sending...";
+
+        try {
+          const res = await fetch(`${API_BASE}/api/sendOtp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: targetEmail, type: "signup", userName: targetName })
+          });
+          const data = await res.json();
+          if (data && data.success) {
+            showModal("A new 6-digit OTP has been sent to " + targetEmail + " from cookdcode@gmail.com", "success");
+          } else {
+            showModal(data?.error || "Failed to resend OTP. Please try again.", "error");
+          }
+        } catch (err) {
+          showModal("Could not connect to server to resend OTP.", "error");
+        } finally {
+          resendBtn.disabled = false;
+          resendBtn.textContent = origText;
+        }
+      });
+    }
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -354,78 +410,186 @@ required>
         return;
       }
 
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const origBtnHtml = submitBtn ? submitBtn.innerHTML : "Sign Up";
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Verifying Email... <i class="fas fa-spinner fa-spin"></i>';
-      }
+      const submitBtn = document.getElementById("btnSubmitSignup") || form.querySelector('button[type="submit"]');
+      const origBtnHtml = 'Sign Up <i class="fas fa-arrow-right"></i>';
 
-      // 3. Email Existence & Domain Validation via Backend
-      try {
-        const valRes = await fetch(`${API_BASE}/api/validateEmail`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
-        if (valRes.ok) {
-          const valData = await valRes.json();
-          if (valData && valData.valid === false) {
+      // -------------------------------------------------------------
+      // STAGE 1: Send OTP to verify email exists and user owns it
+      // -------------------------------------------------------------
+      if (!otpSent) {
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = 'Verifying Email... <i class="fas fa-spinner fa-spin"></i>';
+        }
+
+        // 3. Email Existence & Domain Validation via Backend
+        try {
+          const valRes = await fetch(`${API_BASE}/api/validateEmail`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+          });
+          if (valRes.ok) {
+            const valData = await valRes.json();
+            if (valData && valData.valid === false) {
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origBtnHtml;
+              }
+              showModal(valData.error || "This email address does not exist. Please enter a valid email.", "error");
+              document.getElementById("email")?.focus();
+              return;
+            }
+          }
+        } catch (valErr) {
+          console.warn("Email validation check warning:", valErr);
+        }
+
+        // 4. Check if email is already registered in Firebase
+        try {
+          const emailQuery = query(ref(db, "users"), orderByChild("email"), equalTo(email));
+          const emailSnap = await get(emailQuery);
+          if (emailSnap.exists()) {
             if (submitBtn) {
               submitBtn.disabled = false;
               submitBtn.innerHTML = origBtnHtml;
             }
-            showModal(valData.error || "This email address does not exist. Please enter a valid email.", "error");
+            showModal("An account with this email is already registered. Please log in.", "error");
             document.getElementById("email")?.focus();
             return;
           }
+        } catch (err) {
+          console.warn("Email duplicate check:", err);
         }
-      } catch (valErr) {
-        console.warn("Email validation check warning:", valErr);
-      }
 
-      // 4. Check if email is already registered in Firebase
-      try {
-        const emailQuery = query(ref(db, "users"), orderByChild("email"), equalTo(email));
-        const emailSnap = await get(emailQuery);
-        if (emailSnap.exists()) {
+        // 5. Check if phone number is already registered
+        try {
+          const phoneQuery = query(ref(db, "users"), orderByChild("phone"), equalTo(phone));
+          const phoneSnap = await get(phoneQuery);
+          if (phoneSnap.exists()) {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = origBtnHtml;
+            }
+            showModal("This phone number is already registered. Please log in.", "error");
+            document.getElementById("phone").focus();
+            return;
+          }
+        } catch (err) {
+          console.warn("Phone duplicate check:", err);
+        }
+
+        // 6. Send 6-digit OTP from cookdcode@gmail.com
+        if (submitBtn) {
+          submitBtn.innerHTML = 'Sending OTP... <i class="fas fa-spinner fa-spin"></i>';
+        }
+
+        try {
+          const otpRes = await fetch(`${API_BASE}/api/sendOtp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, type: "signup", userName: firstname })
+          });
+          const otpData = await otpRes.json();
+
+          if (otpRes.ok && otpData && otpData.success) {
+            otpSent = true;
+            verifiedEmail = email;
+
+            // Show OTP input UI
+            const otpGroup = document.getElementById("otpGroup");
+            const targetSpan = document.getElementById("otpEmailTarget");
+            if (targetSpan) targetSpan.textContent = email;
+            if (otpGroup) otpGroup.style.display = "block";
+
+            // Lock input fields so they cannot be altered after OTP dispatch
+            document.getElementById("email").readOnly = true;
+            document.getElementById("phone").readOnly = true;
+
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = 'Verify & Complete Signup <i class="fas fa-check-circle" style="margin-left: 6px;"></i>';
+            }
+
+            const otpInput = document.getElementById("signupOtp");
+            if (otpInput) {
+              setTimeout(() => otpInput.focus(), 250);
+            }
+
+            showModal("A 6-digit verification code has been sent to " + email + " from cookdcode@gmail.com. Please enter it below to complete signup.", "success");
+            return;
+          } else {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = origBtnHtml;
+            }
+            showModal(otpData?.error || "Could not send verification code to this email address. Please make sure the email exists and try again.", "error");
+            return;
+          }
+        } catch (sendErr) {
           if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = origBtnHtml;
           }
-          showModal("An account with this email is already registered. Please log in.", "error");
-          document.getElementById("email")?.focus();
+          showModal("Failed to contact email service. Please check your network connection.", "error");
           return;
         }
-      } catch (err) {
-        console.warn("Email duplicate check:", err);
       }
 
-      // 5. Check if phone number is already registered
+      // -------------------------------------------------------------
+      // STAGE 2: Verify OTP code & Create Account
+      // -------------------------------------------------------------
+      const enteredOtp = document.getElementById("signupOtp") ? document.getElementById("signupOtp").value.trim() : "";
+      if (!enteredOtp || enteredOtp.length !== 6) {
+        showModal("Please enter the 6-digit OTP code sent to " + verifiedEmail, "error");
+        document.getElementById("signupOtp")?.focus();
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Verifying Code... <i class="fas fa-spinner fa-spin"></i>';
+      }
+
       try {
-        const phoneQuery = query(ref(db, "users"), orderByChild("phone"), equalTo(phone));
-        const phoneSnap = await get(phoneQuery);
-        if (phoneSnap.exists()) {
+        const verifyRes = await fetch(`${API_BASE}/api/verifyOtp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: verifiedEmail, otp: enteredOtp })
+        });
+        const verifyData = await verifyRes.json();
+
+        if (!verifyRes.ok || !verifyData || !verifyData.valid) {
           if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = origBtnHtml;
+            submitBtn.innerHTML = 'Verify & Complete Signup <i class="fas fa-check-circle" style="margin-left: 6px;"></i>';
           }
-          showModal("This phone number is already registered. Please log in.", "error");
-          document.getElementById("phone").focus();
+          showModal(verifyData?.error || "Invalid or expired OTP. Please enter the correct code from cookdcode@gmail.com.", "error");
+          document.getElementById("signupOtp")?.focus();
           return;
         }
-      } catch (err) {
-        console.warn("Phone duplicate check:", err);
+      } catch (verifyErr) {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Verify & Complete Signup <i class="fas fa-check-circle" style="margin-left: 6px;"></i>';
+        }
+        showModal("Failed to verify code. Please check your network connection.", "error");
+        return;
       }
 
+      // OTP Verified! Proceed to create user in Firebase
       try {
+        if (submitBtn) {
+          submitBtn.innerHTML = 'Creating Account... <i class="fas fa-spinner fa-spin"></i>';
+        }
+
         // Clear any previous session leftovers from other accounts
         localStorage.removeItem("cookdcode_progress");
 
         const userData = {
           firstname,
           lastname,
-          email,
+          email: verifiedEmail,
           phone,
           password,
           tokens: 10,
@@ -448,10 +612,10 @@ required>
         
         localStorage.setItem("userId", newUser.key);
         localStorage.setItem("userPhone", phone);
-        localStorage.setItem("userEmail", email);
+        localStorage.setItem("userEmail", verifiedEmail);
         localStorage.setItem("userName", firstname + (lastname ? (" " + lastname) : ""));
 
-        showModal("Signup Successful!", "success");
+        showModal("Account Verified & Created Successfully! Welcome to CookDCode.", "success");
 
         setTimeout(() => {
           window.location.href = "ctc.html";
@@ -459,9 +623,9 @@ required>
       } catch (error) {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.innerHTML = origBtnHtml;
+          submitBtn.innerHTML = 'Verify & Complete Signup <i class="fas fa-check-circle" style="margin-left: 6px;"></i>';
         }
-        showModal("Error: " + error.message, "error");
+        showModal("Error creating account: " + error.message, "error");
       }
     });
 

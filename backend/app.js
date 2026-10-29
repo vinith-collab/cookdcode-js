@@ -39,7 +39,7 @@ app.post("/api/validateEmail", async (req, res) => {
 
 app.post("/api/sendOtp", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, type = "signup", userName = "Coder" } = req.body;
     if (!email || !email.includes("@")) {
       return res.status(400).json({ error: "A valid email address is required." });
     }
@@ -50,7 +50,7 @@ app.post("/api/sendOtp", async (req, res) => {
 
     activeOtps.set(cleanEmail, { otp, expiresAt });
 
-    const result = await sendOtpEmail(cleanEmail, otp);
+    const result = await sendOtpEmail(cleanEmail, otp, type, userName);
     return res.json({
       success: true,
       message: `OTP sent successfully to ${cleanEmail}`,

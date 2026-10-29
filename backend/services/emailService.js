@@ -39,13 +39,25 @@ function createTransporter() {
 }
 
 /**
- * Sends a password reset OTP to the specified email address.
+ * Sends a verification OTP to the specified email address.
  * @param {string} toEmail 
  * @param {string|number} otp 
+ * @param {string} type - 'signup' | 'reset'
+ * @param {string} userName
  * @returns {Promise<{success: boolean, previewUrl?: string, mode: string}>}
  */
-export async function sendOtpEmail(toEmail, otp) {
+export async function sendOtpEmail(toEmail, otp, type = 'signup', userName = 'Coder') {
   const transporter = createTransporter();
+
+  const isSignup = type === 'signup';
+  const headingText = isSignup ? 'Verify Your Email Address' : 'Password Reset Verification';
+  const greeting = userName ? `Hello ${userName},` : 'Hello,';
+  const messageText = isSignup 
+    ? 'Thank you for signing up with CookDCode! Please use the 6-digit verification code below to verify your email address and activate your account:'
+    : 'We received a request to reset your password for your CookDCode account. Use the verification code below to complete the reset process:';
+  const subjectText = isSignup 
+    ? `[CookDCode] Your Account Verification Code is ${otp}`
+    : `[CookDCode] Your Password Reset OTP is ${otp}`;
 
   const attachments = [];
   if (fs.existsSync(logoPath)) {
@@ -88,16 +100,16 @@ export async function sendOtpEmail(toEmail, otp) {
             </tr>
           </table>
         </div>
-        <h2>Password Reset Verification</h2>
-        <p>Hello,</p>
-        <p>We received a request to reset your password for your CookDCode account. Use the verification code below to complete the reset process:</p>
+        <h2>${headingText}</h2>
+        <p>${greeting}</p>
+        <p>${messageText}</p>
         
         <div class="otp-box">
           <div class="otp-code">${otp}</div>
           <div class="note">Valid for 10 minutes. Do not share this code with anyone.</div>
         </div>
 
-        <p>If you didn't request a password reset, you can safely ignore this email.</p>
+        <p>${isSignup ? "If you didn't attempt to sign up for CookDCode, you can safely ignore this email." : "If you didn't request a password reset, you can safely ignore this email."}</p>
 
         <div class="footer">
           &copy; ${new Date().getFullYear()} CookDCode Inc. All rights reserved.
@@ -109,12 +121,12 @@ export async function sendOtpEmail(toEmail, otp) {
 
   if (transporter) {
     try {
-      const fromAddr = process.env.SMTP_FROM || process.env.SMTP_USER || process.env.GMAIL_USER || 'no-reply@cookdcode.com';
+      const fromAddr = process.env.SMTP_FROM || process.env.SMTP_USER || process.env.GMAIL_USER || 'cookdcode@gmail.com';
       const info = await transporter.sendMail({
         from: `"CookDCode" <${fromAddr}>`,
         to: toEmail,
-        subject: `[CookDCode] Your Password Reset OTP is ${otp}`,
-        text: `Your CookDCode password reset verification code is: ${otp}. It will expire in 10 minutes.`,
+        subject: subjectText,
+        text: `${messageText} Code: ${otp}. Valid for 10 minutes.`,
         html: htmlContent,
         attachments
       });
