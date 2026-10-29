@@ -475,3 +475,12 @@ button {
 .modal-btn:active {
   transform: translateY(0);
 }
+
+/* Hide Netlify Attribution Badge */
+[data-netlify-deploy-badge],
+.netlify-badge,
+#netlify-widget {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}

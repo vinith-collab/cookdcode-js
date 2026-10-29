@@ -434,4 +434,12 @@ body {
   0% { opacity: 1; }
   50% { opacity: 0.5; }
   100% { opacity: 1; }
-}
+}
+/* Hide Netlify Attribution Badge */
+[data-netlify-deploy-badge],
+.netlify-badge,
+#netlify-widget {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}

@@ -579,3 +579,12 @@ div[style*="z-index: 99999"] a[href*="netlify"] {
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+/* Hide Netlify Attribution Badge */
+[data-netlify-deploy-badge],
+.netlify-badge,
+#netlify-widget {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
