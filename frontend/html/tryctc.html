@@ -3520,7 +3520,7 @@
                         }
 
                         let cardStyle = `background: ${palette.cardBg}; border: ${palette.cardBorder}; color: ${palette.textColor}; box-shadow: ${palette.cardShadow};`;
-                        let iconMarkup = `<div style="width: 44px; height: 44px; border-radius: 12px; background: ${palette.iconBg}; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: ${palette.iconShadow};">${palette.iconHtml}</div>`;
+                        let iconMarkup = `<div style="width: 36px; height: 36px; border-radius: 10px; background: ${palette.iconBg}; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: ${palette.iconShadow};">${palette.iconHtml}</div>`;
                         let badgeText = hintData.isCorrect ? "Solution Verified" : "Coach Maara";
                         let subTag = hintData.isCorrect ? "SUCCESS" : `AI MENTOR • HINT #${window.currentHintIndex + 1}`;
                         let subTagBg = palette.subTagBg;
@@ -3559,18 +3559,16 @@
 
                         if (feedbackContent) {
                             feedbackContent.innerHTML = `
-                                <div style="${cardStyle} padding: 12px 14px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
-                                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                <div style="${cardStyle} padding: 14px 16px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                                         ${iconMarkup}
-                                        <div style="flex: 1;">
-                                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px; flex-wrap: wrap;">
-                                                <span class="hint-badge-name" style="font-size: 20px; font-weight: 800; color: ${badgeColor}; letter-spacing: -0.015em;">${badgeText}</span>
-                                                <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 9999px; background: ${subTagBg}; color: ${subTagColor}; border: 1px solid rgba(0,0,0,0.08);">${subTag}</span>
-                                            </div>
-                                            <div class="hint-body-text" style="color: #1e293b; white-space: normal; word-break: break-word; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 0;">
-                                                ${formattedHint}
-                                            </div>
+                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <span class="hint-badge-name" style="font-size: 18px; font-weight: 800; color: ${badgeColor}; letter-spacing: -0.015em;">${badgeText}</span>
+                                            <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 9999px; background: ${subTagBg}; color: ${subTagColor}; border: 1px solid rgba(0,0,0,0.08);">${subTag}</span>
                                         </div>
+                                    </div>
+                                    <div class="hint-body-text" style="color: #1e293b; white-space: normal; word-break: break-word; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 0; width: 100%;">
+                                        ${formattedHint}
                                     </div>
                                 </div>
                             `;
