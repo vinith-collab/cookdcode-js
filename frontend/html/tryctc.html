@@ -1452,6 +1452,8 @@
             font-size: 16px;
             font-weight: 500;
             line-height: 1.7;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
         }
         .hint-body-text br {
             display: block;
@@ -3547,15 +3549,15 @@
 
                         if (feedbackContent) {
                             feedbackContent.innerHTML = `
-                                <div style="${cardStyle} padding: 14px 16px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
-                                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                <div style="${cardStyle} padding: 12px 14px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+                                    <div style="display: flex; align-items: flex-start; gap: 10px;">
                                         ${iconMarkup}
                                         <div style="flex: 1;">
-                                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px; flex-wrap: wrap;">
                                                 <span class="hint-badge-name" style="font-size: 20px; font-weight: 800; color: ${badgeColor}; letter-spacing: -0.015em;">${badgeText}</span>
                                                 <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 9999px; background: ${subTagBg}; color: ${subTagColor}; border: 1px solid rgba(0,0,0,0.08);">${subTag}</span>
                                             </div>
-                                            <div class="hint-body-text" style="color: #1e293b; white-space: normal; word-break: break-word; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
+                                            <div class="hint-body-text" style="color: #1e293b; white-space: normal; word-break: break-word; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: 0;">
                                                 ${formattedHint}
                                             </div>
                                         </div>
