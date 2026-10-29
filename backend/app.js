@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import { aiMentorRouter } from "./routes/aiMentorRoutes.js";
 import { sendOtpEmail } from "./services/emailService.js";
 import { authenticateUser, findUserByEmail, updateUserPassword } from "./services/authService.js";
+import { validateEmailAddress } from "./services/emailValidatorService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +25,17 @@ app.use("/api", aiMentorRouter);
 
 // In-memory OTP storage with expiration
 const activeOtps = new Map();
+
+app.post("/api/validateEmail", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await validateEmailAddress(email);
+    return res.json(result);
+  } catch (err) {
+    console.error("validateEmail route error:", err);
+    return res.status(500).json({ valid: false, error: "Validation service error: " + err.message });
+  }
+});
 
 app.post("/api/sendOtp", async (req, res) => {
   try {

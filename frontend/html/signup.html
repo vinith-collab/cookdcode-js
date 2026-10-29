@@ -325,6 +325,9 @@ required>
     const db = getDatabase(app);
     const auth = getAuth(app);
 
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const API_BASE = isLocal ? "http://localhost:3001" : "https://api.cookdcode.com";
+
     const form = document.getElementById("signupForm");
 
     form.addEventListener("submit", async (e) => {
@@ -351,11 +354,62 @@ required>
         return;
       }
 
-      // 3. Check if phone number is already registered
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const origBtnHtml = submitBtn ? submitBtn.innerHTML : "Sign Up";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Verifying Email... <i class="fas fa-spinner fa-spin"></i>';
+      }
+
+      // 3. Email Existence & Domain Validation via Backend
+      try {
+        const valRes = await fetch(`${API_BASE}/api/validateEmail`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        if (valRes.ok) {
+          const valData = await valRes.json();
+          if (valData && valData.valid === false) {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = origBtnHtml;
+            }
+            showModal(valData.error || "This email address does not exist. Please enter a valid email.", "error");
+            document.getElementById("email")?.focus();
+            return;
+          }
+        }
+      } catch (valErr) {
+        console.warn("Email validation check warning:", valErr);
+      }
+
+      // 4. Check if email is already registered in Firebase
+      try {
+        const emailQuery = query(ref(db, "users"), orderByChild("email"), equalTo(email));
+        const emailSnap = await get(emailQuery);
+        if (emailSnap.exists()) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origBtnHtml;
+          }
+          showModal("An account with this email is already registered. Please log in.", "error");
+          document.getElementById("email")?.focus();
+          return;
+        }
+      } catch (err) {
+        console.warn("Email duplicate check:", err);
+      }
+
+      // 5. Check if phone number is already registered
       try {
         const phoneQuery = query(ref(db, "users"), orderByChild("phone"), equalTo(phone));
         const phoneSnap = await get(phoneQuery);
         if (phoneSnap.exists()) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origBtnHtml;
+          }
           showModal("This phone number is already registered. Please log in.", "error");
           document.getElementById("phone").focus();
           return;
@@ -403,6 +457,10 @@ required>
           window.location.href = "ctc.html";
         }, 1500);
       } catch (error) {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = origBtnHtml;
+        }
         showModal("Error: " + error.message, "error");
       }
     });
