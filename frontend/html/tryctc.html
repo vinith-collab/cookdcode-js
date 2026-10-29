@@ -3260,10 +3260,20 @@
                 };
 
                 const isCompExec = localStorage.getItem(`ctc_compiler_executed_${problemID}`) === 'true' || 
-                                   (window._firebaseSavedProgress && window._firebaseSavedProgress.compilerExecuted === true);
+                                   (currentUid && localStorage.getItem(`ctc_compiler_executed_${currentUid}_${problemID}`) === 'true') ||
+                                   (window._firebaseSavedProgress && (window._firebaseSavedProgress.compilerExecuted === true || window._firebaseSavedProgress.progress === 100 || window._firebaseSavedProgress.status === 'completed'));
                 if (isCompExec) {
                     payload.compilerExecuted = true;
+                    payload.progress = 100;
+                    payload.status = 'completed';
+                    payload.completedStages = {
+                        logic: true,
+                        recipe: true,
+                        ingredients: true,
+                        samplecode: true
+                    };
                     const compCode = localStorage.getItem(`ctc_completed_code_${problemID}`) || 
+                                     (currentUid && localStorage.getItem(`ctc_completed_code_${currentUid}_${problemID}`)) ||
                                      (window._firebaseSavedProgress && window._firebaseSavedProgress.compilerCode) || "";
                     if (compCode) {
                         payload.compilerCode = compCode;
