@@ -1455,7 +1455,12 @@
         }
         .hint-body-text br {
             display: block;
-            margin: 2px 0;
+            margin: 0;
+            content: '';
+        }
+        .hint-body-text p {
+            margin: 0 0 4px 0;
+            padding: 0;
         }
         .hint-badge-name {
             font-size: 20px;
@@ -3529,8 +3534,12 @@
 
                         // Convert remaining newlines to <br>:
                         formattedHint = formattedHint
-                            .replace(/\r\n/g, '<br>')
-                            .replace(/\n/g, '<br>');
+                            .replace(/\r\n/g, '\n')
+                            .replace(/\n/g, '<br>')
+                            // Remove multiple consecutive <br> → single <br>
+                            .replace(/(<br>\s*){2,}/g, '<br>')
+                            // Remove <br> at the very start
+                            .replace(/^(<br>\s*)+/, '');
 
                         if (feedbackContent) {
                             feedbackContent.innerHTML = `
