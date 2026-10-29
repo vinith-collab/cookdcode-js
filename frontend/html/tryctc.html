@@ -1449,9 +1449,9 @@
 
         /* ── Hint Body Text: Desktop default ── */
         .hint-body-text {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 500;
-            line-height: 1.65;
+            line-height: 1.7;
         }
         .hint-body-text br {
             display: block;
@@ -1464,9 +1464,44 @@
         /* ── Mobile: AI Hint Card Font Fix ── */
         @media (max-width: 768px) {
             .hint-body-text {
-                font-size: 13px !important;
+                font-size: 15px !important;
                 font-weight: 400 !important;
-                line-height: 1.5 !important;
+                line-height: 1.6 !important;
+            }
+            .hint-badge-name {
+                font-size: 17px !important;
+            }
+            #aiFeedbackContent,
+            #aiFeedbackContent p,
+            #aiFeedbackContent span,
+            #aiFeedbackContent li,
+            #aiFeedbackContent div {
+                font-size: 15px !important;
+                line-height: 1.6 !important;
+                font-weight: 400 !important;
+                letter-spacing: 0 !important;
+            }
+            #aiFeedbackContent strong,
+            .hint-body-text strong {
+                font-size: 15px !important;
+                font-weight: 700 !important;
+            }
+            /* Badge name (Coach Maara) */
+            #aiFeedbackContent span[style*="font-size: 20px"],
+            #aiFeedbackContent span[style*="font-size:20px"] {
+                font-size: 17px !important;
+            }
+            /* Limit hint card height on mobile */
+            .feedback-open .p-4,
+            #aiFeedbackCard .overflow-y-auto {
+                max-height: 320px !important;
+                overflow-y: auto !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .hint-body-text {
+                font-size: 14px !important;
+                line-height: 1.55 !important;
             }
             .hint-badge-name {
                 font-size: 15px !important;
@@ -1476,47 +1511,12 @@
             #aiFeedbackContent span,
             #aiFeedbackContent li,
             #aiFeedbackContent div {
-                font-size: 13px !important;
-                line-height: 1.5 !important;
-                font-weight: 400 !important;
-                letter-spacing: 0 !important;
-            }
-            #aiFeedbackContent strong,
-            .hint-body-text strong {
-                font-size: 13px !important;
-                font-weight: 700 !important;
-            }
-            /* Badge name (Coach Maara) */
-            #aiFeedbackContent span[style*="font-size: 20px"],
-            #aiFeedbackContent span[style*="font-size:20px"] {
-                font-size: 16px !important;
-            }
-            /* Limit hint card height on mobile */
-            .feedback-open .p-4,
-            #aiFeedbackCard .overflow-y-auto {
-                max-height: 280px !important;
-                overflow-y: auto !important;
-            }
-        }
-        @media (max-width: 480px) {
-            .hint-body-text {
-                font-size: 12px !important;
-                line-height: 1.4 !important;
-            }
-            .hint-badge-name {
                 font-size: 14px !important;
-            }
-            #aiFeedbackContent,
-            #aiFeedbackContent p,
-            #aiFeedbackContent span,
-            #aiFeedbackContent li,
-            #aiFeedbackContent div {
-                font-size: 12px !important;
-                line-height: 1.4 !important;
+                line-height: 1.55 !important;
             }
             #aiFeedbackContent span[style*="font-size: 20px"],
             #aiFeedbackContent span[style*="font-size:20px"] {
-                font-size: 14px !important;
+                font-size: 15px !important;
             }
         }
     </style>
