@@ -110,21 +110,6 @@
             </div>
           </div>
 
-          <!-- Phone Number -->
-          <div class="form-group">
-            <label for="phone" class="form-label">Phone Number</label>
-            <div class="input-container">
-             <input type="tel" id="phone" name="phone"
-class="form-input"
-placeholder="Enter your phone number"
-autocomplete="off"
-required>
-              <i class="fas fa-phone input-icon"></i>
-            </div>
-          </div>
-
-
-
           <!-- Password -->
           <div class="form-group">
             <label for="password" class="form-label">Password</label>
@@ -392,7 +377,6 @@ required>
       const firstname = document.getElementById("firstname").value.trim();
       const lastname = document.getElementById("lastname").value.trim();
       const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "user@example.com";
-      const phone = document.getElementById("phone").value.trim();
       const password = document.getElementById("password").value;
       const confirm = document.getElementById("confirm_password").value;
 
@@ -462,24 +446,7 @@ required>
           console.warn("Email duplicate check:", err);
         }
 
-        // 5. Check if phone number is already registered
-        try {
-          const phoneQuery = query(ref(db, "users"), orderByChild("phone"), equalTo(phone));
-          const phoneSnap = await get(phoneQuery);
-          if (phoneSnap.exists()) {
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = origBtnHtml;
-            }
-            showModal("This phone number is already registered. Please log in.", "error");
-            document.getElementById("phone").focus();
-            return;
-          }
-        } catch (err) {
-          console.warn("Phone duplicate check:", err);
-        }
-
-        // 6. Send 6-digit OTP from cookdcode@gmail.com
+        // 5. Send 6-digit OTP from cookdcode@gmail.com
         if (submitBtn) {
           submitBtn.innerHTML = 'Sending OTP... <i class="fas fa-spinner fa-spin"></i>';
         }
@@ -504,7 +471,6 @@ required>
 
             // Lock input fields so they cannot be altered after OTP dispatch
             document.getElementById("email").readOnly = true;
-            document.getElementById("phone").readOnly = true;
 
             if (submitBtn) {
               submitBtn.disabled = false;
@@ -590,7 +556,6 @@ required>
           firstname,
           lastname,
           email: verifiedEmail,
-          phone,
           password,
           tokens: 10,
           createdAt: new Date().toISOString()
@@ -611,7 +576,6 @@ required>
         });
         
         localStorage.setItem("userId", newUser.key);
-        localStorage.setItem("userPhone", phone);
         localStorage.setItem("userEmail", verifiedEmail);
         localStorage.setItem("userName", firstname + (lastname ? (" " + lastname) : ""));
 
