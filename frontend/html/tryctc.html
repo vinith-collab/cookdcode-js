@@ -1447,20 +1447,49 @@
             gap: 4px !important;
         }
 
+        /* ── Hint Body Text: Desktop default ── */
+        .hint-body-text {
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.65;
+        }
+        .hint-body-text br {
+            display: block;
+            margin: 2px 0;
+        }
+        .hint-badge-name {
+            font-size: 20px;
+        }
+
         /* ── Mobile: AI Hint Card Font Fix ── */
         @media (max-width: 768px) {
+            .hint-body-text {
+                font-size: 13px !important;
+                font-weight: 400 !important;
+                line-height: 1.5 !important;
+            }
+            .hint-badge-name {
+                font-size: 15px !important;
+            }
             #aiFeedbackContent,
             #aiFeedbackContent p,
             #aiFeedbackContent span,
-            #aiFeedbackContent li {
+            #aiFeedbackContent li,
+            #aiFeedbackContent div {
                 font-size: 13px !important;
                 line-height: 1.5 !important;
                 font-weight: 400 !important;
                 letter-spacing: 0 !important;
             }
-            #aiFeedbackContent strong {
+            #aiFeedbackContent strong,
+            .hint-body-text strong {
                 font-size: 13px !important;
                 font-weight: 700 !important;
+            }
+            /* Badge name (Coach Maara) */
+            #aiFeedbackContent span[style*="font-size: 20px"],
+            #aiFeedbackContent span[style*="font-size:20px"] {
+                font-size: 16px !important;
             }
             /* Limit hint card height on mobile */
             .feedback-open .p-4,
@@ -1470,12 +1499,24 @@
             }
         }
         @media (max-width: 480px) {
+            .hint-body-text {
+                font-size: 12px !important;
+                line-height: 1.4 !important;
+            }
+            .hint-badge-name {
+                font-size: 14px !important;
+            }
             #aiFeedbackContent,
             #aiFeedbackContent p,
             #aiFeedbackContent span,
-            #aiFeedbackContent li {
+            #aiFeedbackContent li,
+            #aiFeedbackContent div {
                 font-size: 12px !important;
-                line-height: 1.45 !important;
+                line-height: 1.4 !important;
+            }
+            #aiFeedbackContent span[style*="font-size: 20px"],
+            #aiFeedbackContent span[style*="font-size:20px"] {
+                font-size: 14px !important;
             }
         }
     </style>
@@ -3498,10 +3539,10 @@
                                         ${iconMarkup}
                                         <div style="flex: 1;">
                                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                                                <span style="font-size: 20px; font-weight: 800; color: ${badgeColor}; letter-spacing: -0.015em;">${badgeText}</span>
+                                                <span class="hint-badge-name" style="font-size: 20px; font-weight: 800; color: ${badgeColor}; letter-spacing: -0.015em;">${badgeText}</span>
                                                 <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 9999px; background: ${subTagBg}; color: ${subTagColor}; border: 1px solid rgba(0,0,0,0.08);">${subTag}</span>
                                             </div>
-                                            <div style="font-size: 16.5px; font-weight: 500; line-height: 1.75; color: #1e293b; white-space: normal; word-break: break-word; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
+                                            <div class="hint-body-text" style="color: #1e293b; white-space: normal; word-break: break-word; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
                                                 ${formattedHint}
                                             </div>
                                         </div>
