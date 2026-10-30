@@ -402,8 +402,9 @@
                   }
 
                   // Strict Sequential Rule: Problem 1 is always unlocked.
+                  // Problem 21 is also unlocked directly.
                   // Subsequent problems unlock ONLY IF the sequential chain is unbroken (all prior problems completed).
-                  let isUnlocked = (idx === 0) || canUnlockNext;
+                  let isUnlocked = (idx === 0) || canUnlockNext || (problemID === 'problem21' || rawNum === 21);
 
                   // If this problem is not completed, break the sequential chain for all subsequent problems
                   if (!isCompleted) {
@@ -488,9 +489,8 @@
                   prevProbTitle = prevP.title;
                 }
 
-                // Strict Sequential Rule: Problem 1 is always unlocked.
-                // Subsequent problems unlock ONLY IF the sequential chain is unbroken (all prior problems completed).
-                let isUnlocked = (idx === 0) || canUnlockNext;
+                // Strict Sequential Rule: Problem 1 is always unlocked. Problem 21 is also unlocked directly.
+                let isUnlocked = (idx === 0) || canUnlockNext || (p.id === 'problem21' || p.num == 21);
 
                 if (!isCompleted) {
                   canUnlockNext = false;
@@ -572,7 +572,8 @@
                 { id: "problem17", num: "17", title: "Adult or Minor", category: "fundamentals" },
                 { id: "problem18", num: "18", title: "Divisible by 5 or Not", category: "fundamentals" },
                 { id: "problem19", num: "19", title: "Maximum of Two Numbers", category: "fundamentals" },
-                { id: "problem20", num: "20", title: "Vowel or Consonant", category: "fundamentals" }
+                { id: "problem20", num: "20", title: "Vowel or Consonant", category: "fundamentals" },
+                { id: "problem21", num: "21", title: "Print Even Numbers from 1 to 50", category: "fundamentals" }
               ];
               let canUnlockNext = true;
               FALLBACK_PROGRAMS.forEach((p, idx) => {
@@ -584,7 +585,7 @@
                   progress = 100;
                 }
                 const isCompleted = progress === 100 || (userProgress && userProgress[p.category] && userProgress[p.category][p.id] && (userProgress[p.category][p.id].progress === 100 || userProgress[p.category][p.id].status === 'completed'));
-                const isUnlocked = (idx === 0) || canUnlockNext;
+                const isUnlocked = (idx === 0) || canUnlockNext || (p.id === 'problem21' || p.num == 21);
                 if (!isCompleted) canUnlockNext = false;
                 const prevTitle = idx === 0 ? "" : FALLBACK_PROGRAMS[idx-1].title;
                 const pNum = parseInt(p.num, 10) < 10 ? '0' + parseInt(p.num, 10) : p.num;

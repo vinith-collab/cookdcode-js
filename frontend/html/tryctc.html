@@ -2666,7 +2666,7 @@
 
             async function checkSequentialAccess() {
                 const rawNum = parseInt(problemID.replace(/\D/g, ""), 10);
-                if (isNaN(rawNum) || rawNum <= 1) {
+                if (isNaN(rawNum) || rawNum <= 1 || rawNum === 21) {
                     return true;
                 }
 
