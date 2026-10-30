@@ -189,246 +189,7 @@ function detectTasteSampleSyntaxHelp(text) {
 }
 
 function generateTasteSampleSyntaxResponse(syntaxInfo, problemTitle = "", problemType = "") {
-  // Problem-specific contextual snippets
-  let varExampleJs = "var n = 10;";
-  let varExamplePy = "n = 10";
-  let ifExampleJs = `if (n % 2 === 0) {
-  console.log("Even");
-} else {
-  console.log("Odd");
-}`;
-  let ifExamplePy = `if n % 2 == 0:
-    print("Even")
-else:
-    print("Odd")`;
-  let loopExampleJs = `for (let i = 1; i <= n; i++) {
-  // your repeated code here
-}`;
-  let loopExamplePy = `for i in range(1, n + 1):
-    # your repeated code here`;
-
-  if (problemType === "sum-natural-numbers") {
-    varExampleJs = "var n = 5;\nvar sum = 0;";
-    varExamplePy = "n = 5\nsum = 0";
-    loopExampleJs = `for (let i = 1; i <= n; i++) {
-  sum = sum + i;
-}`;
-    loopExamplePy = `for i in range(1, n + 1):
-    sum = sum + i`;
-  } else if (problemType === "factorial") {
-    varExampleJs = "var n = 5;\nvar fact = 1;";
-    varExamplePy = "n = 5\nfact = 1";
-    loopExampleJs = `for (let i = 1; i <= n; i++) {
-  fact = fact * i;
-}`;
-    loopExamplePy = `for i in range(1, n + 1):
-    fact = fact * i`;
-  } else if (problemType === "maximum-of-two") {
-    varExampleJs = "var a = 10, b = 25;";
-    varExamplePy = "a = 10\nb = 25";
-    ifExampleJs = `if (a > b) {
-  console.log("a is greater");
-} else {
-  console.log("b is greater");
-}`;
-    ifExamplePy = `if a > b:
-    print("a is greater")
-else:
-    print("b is greater")`;
-  } else if (problemType === "positive-negative") {
-    varExampleJs = "var num = -5;";
-    varExamplePy = "num = -5";
-    ifExampleJs = `if (num > 0) {
-  console.log("Positive");
-} else {
-  console.log("Negative");
-}`;
-    ifExamplePy = `if num > 0:
-    print("Positive")
-else:
-    print("Negative")`;
-  } else if (problemType === "multiplication-table") {
-    varExampleJs = "var n = 5;";
-    varExamplePy = "n = 5";
-    loopExampleJs = `for (let i = 1; i <= 10; i++) {
-  console.log(n + " x " + i + " = " + (n * i));
-}`;
-    loopExamplePy = `for i in range(1, 11):
-    print(f"{n} x {i} = {n * i}")`;
-  } else if (problemType === "even-numbers-1-to-50") {
-    varExampleJs = "// Loop counter i serves as our number";
-    varExamplePy = "# Loop counter i serves as our number";
-    loopExampleJs = `for (let i = 1; i <= 50; i++) {
-  if (i % 2 === 0) {
-    console.log(i);
-  }
-}`;
-    loopExamplePy = `for i in range(1, 51):
-    if i % 2 == 0:
-        print(i)`;
-    ifExampleJs = `if (i % 2 === 0) {
-  console.log(i);
-}`;
-    ifExamplePy = `if i % 2 == 0:
-    print(i)`;
-  } else if (problemType === "vowel-consonant") {
-    varExampleJs = "var ch = 'e';";
-    varExamplePy = "ch = 'e'";
-    ifExampleJs = `if (ch === 'a' || ch === 'e' || ch === 'i' || ch === 'o' || ch === 'u') {
-  console.log("Vowel");
-} else {
-  console.log("Consonant");
-}`;
-    ifExamplePy = `if ch in ['a', 'e', 'i', 'o', 'u']:
-    print("Vowel")
-else:
-    print("Consonant")`;
-  }
-
-  // Check which sections to build
-  if (syntaxInfo.isGeneralOrAll || (syntaxInfo.mentionsVar && syntaxInfo.mentionsIf && syntaxInfo.mentionsLoop)) {
-    return `🌟 Coach Maara here! Don't worry at all—getting comfortable with programming syntax is a completely natural step for every coder! Let's break down how variables, if-conditions, and for-loops work with simple syntax examples:
-
-📌 **1. Variables (Data Containers)**
-A variable stores a value in computer memory (like an input number or running total) so your code can use it and update it.
-💻 **JavaScript:**
-\`\`\`javascript
-${varExampleJs}
-\`\`\`
-🐍 **Python:**
-\`\`\`python
-${varExamplePy}
-\`\`\`
-
-📌 **2. If Condition (Decision Making)**
-An \`if\` statement tests whether an expression inside \`( )\` is true. If true, the code inside \`{ }\` runs; otherwise, the optional \`else\` block executes.
-💻 **JavaScript:**
-\`\`\`javascript
-${ifExampleJs}
-\`\`\`
-🐍 **Python:**
-\`\`\`python
-${ifExamplePy}
-\`\`\`
-
-📌 **3. For Loop (Repeating Steps)**
-A \`for\` loop repeats code across a range with 3 parts: start value, stop condition, and step increment.
-💻 **JavaScript:**
-\`\`\`javascript
-${loopExampleJs}
-\`\`\`
-🐍 **Python:**
-\`\`\`python
-${loopExamplePy}
-\`\`\`
-
-👉 **Next Step:** Start by typing your first variable declaration in the editor above. What variable name and starting value would you like to begin with?`;
-  }
-
-  // Only Variable requested
-  if (syntaxInfo.mentionsVar && !syntaxInfo.mentionsIf && !syntaxInfo.mentionsLoop) {
-    return `🌟 Coach Maara here! Happy to help you with variable syntax!
-
-A **variable** is a named storage container in memory that holds a value (such as an input number, boundary, or counter) so your program can read or update it.
-
-💻 **JavaScript:**
-\`\`\`javascript
-${varExampleJs}
-\`\`\`
-
-🐍 **Python:**
-\`\`\`python
-${varExamplePy}
-\`\`\`
-
-👉 **Next Step:** Try typing your variable declaration in the editor above (for example: \`${varExampleJs.split("\n")[0]}\`). What variable name did you choose in your ingredients?`;
-  }
-
-  // Only If Condition requested
-  if (syntaxInfo.mentionsIf && !syntaxInfo.mentionsVar && !syntaxInfo.mentionsLoop) {
-    return `🌟 Coach Maara here! Happy to help you with if-condition syntax!
-
-An **if condition** allows your program to make decisions. It evaluates whether an expression inside parentheses \`( )\` is true. If it is true, the code inside the curly braces \`{ }\` executes. You can also add an \`else\` block to run when the condition is false.
-
-💻 **JavaScript:**
-\`\`\`javascript
-${ifExampleJs}
-\`\`\`
-
-🐍 **Python:**
-\`\`\`python
-${ifExamplePy}
-\`\`\`
-
-👉 **Next Step:** Try writing your \`if\` condition with the comparison you planned in your ingredients!`;
-  }
-
-  // Only Loop requested
-  if (syntaxInfo.mentionsLoop && !syntaxInfo.mentionsVar && !syntaxInfo.mentionsIf) {
-    return `🌟 Coach Maara here! Happy to help you with for-loop syntax!
-
-A **for loop** repeats instructions across a range of numbers. It controls iteration using 3 parts:
-1. **Start**: Initializing the loop counter (e.g. \`let i = 1\`)
-2. **Stop / Condition**: How long to keep repeating (e.g. \`i <= n\`)
-3. **Next Step**: Updating the counter each time (e.g. \`i++\` to advance by 1)
-
-💻 **JavaScript:**
-\`\`\`javascript
-${loopExampleJs}
-\`\`\`
-
-🐍 **Python:**
-\`\`\`python
-${loopExamplePy}
-\`\`\`
-
-👉 **Next Step:** Try writing your for-loop header with the start, end, and next step you defined in your ingredients!`;
-  }
-
-  // Combinations (e.g. variable + if)
-  let parts = [];
-  if (syntaxInfo.mentionsVar) {
-    parts.push(`📌 **Variables:**
-A variable stores data in memory.
-💻 **JavaScript:**
-\`\`\`javascript
-${varExampleJs}
-\`\`\`
-🐍 **Python:**
-\`\`\`python
-${varExamplePy}
-\`\`\``);
-  }
-  if (syntaxInfo.mentionsIf) {
-    parts.push(`📌 **If Condition:**
-Tests a condition and executes the block if true.
-💻 **JavaScript:**
-\`\`\`javascript
-${ifExampleJs}
-\`\`\`
-🐍 **Python:**
-\`\`\`python
-${ifExamplePy}
-\`\`\``);
-  }
-  if (syntaxInfo.mentionsLoop) {
-    parts.push(`📌 **For Loop:**
-Repeats actions with start, condition, and step increment.
-💻 **JavaScript:**
-\`\`\`javascript
-${loopExampleJs}
-\`\`\`
-🐍 **Python:**
-\`\`\`python
-${loopExamplePy}
-\`\`\``);
-  }
-
-  return `🌟 Coach Maara here! Happy to help you with the syntax! Let's review the syntax structures you asked about:
-
-${parts.join("\n\n")}
-
-👉 **Next Step:** Try typing the first line in your code editor above!`;
+  return "🌟 Coach Maara here! Let's build our code prototype step by step using your verified ingredients! Start by writing the first statement in your code editor.";
 }
 
 function isTasteSampleStructurallyComplete(code, problemType) {
@@ -922,10 +683,7 @@ class InputCheckerService {
     let dynamicFb = "";
 
     if (section === "samplecode") {
-      const syntaxQuery = detectTasteSampleSyntaxHelp(evalInput) || detectTasteSampleSyntaxHelp(latestInput);
-      if (syntaxQuery) {
-        dynamicFb = generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType);
-      } else if (isTasteSampleStructurallyComplete(evalInput, problemType)) {
+      if (isTasteSampleStructurallyComplete(evalInput, problemType)) {
         return sanitizePrematurePraise({
           correct: true,
           feedback: `🌟 Coach Maara here! Outstanding! Your code prototype for "${problemTitle}" is structurally verified across all components! Proceed to the Compiler to compile and run your code!`,
@@ -2492,18 +2250,13 @@ ${problemSpecificDirectives}
      * If a student tries to define Left Side, Right Side, or Operator for 'else', gently clarify:
        "'if' requires a condition (Left Side, Operator, Right Side), but 'else' is a catch-all branch that does NOT need any condition\u2014it automatically runs when 'if' is false! For 'else', you ONLY need to define the action inside it (e.g. Step 4: Inside 'else' block: print('...'))!"
 
-5. UNIVERSAL STAGE 4 (TASTE THE SAMPLE / SAMPLE CODE) SYNTAX GUIDANCE MANDATE (CRITICAL USER DIRECTIVE ACROSS ALL PROGRAMS):
-   - When the student in Stage 4 (Taste the Sample) asks or mentions that they don't know the syntax, or asks how to write / declare / use:
-     * Variables (e.g. declaring variables, initializing values)
-     * If condition / If-else (e.g. if conditions, comparisons, branching)
-     * Loops (e.g. for loop, while loop, iteration)
-     * General syntax (e.g. "syntax therila", "syntax epdi eluthanum", "varable,if condition,for loop lam synatx epdi eluthanum nu therila", "how to write syntax", "how to code"):
-   - YOU MUST:
-     1. Explain the requested concept(s) clearly, simply, and warmly in Coach Maara mentor style.
-     2. ALWAYS provide small, clean syntax examples in JavaScript and Python (or their requested programming language).
-     3. Scaffold gently: provide ONLY a small syntax example for what they asked (e.g. var n = 10; or if (n % 2 === 0) { ... } or for (let i = 1; i <= n; i++) { ... }), NEVER dump the entire completed program!
-     4. Set 'correct': false!
-     5. Guide them with an encouraging next step to try typing the first line in their editor!
+5. UNIVERSAL STAGE 4 (TASTE THE SAMPLE / SAMPLE CODE) PEDAGOGICAL GUIDANCE (ABSOLUTE PROHIBITION ON BOILERPLATE DUMPS):
+   - When the student in Stage 4 (Taste the Sample) asks questions, indicates confusion, or needs guidance on writing code:
+     1. Explain the concept warmly and Socratically as Coach Maara in conversational English / natural guidance.
+     2. YOU ARE STRICTLY FORBIDDEN from dumping giant boilerplate syntax tutorial cards (NO "💻 JavaScript" / "🐍 Python" multi-language template dumps)!
+     3. YOU MUST NEVER dump completed code solutions or pre-written code blocks that give away the answer!
+     4. Guide the student on what logical step to take next (e.g. what variable to initialize, or how to set up the loop start and stop) so THEY learn to write the code themselves!
+     5. Set 'correct': false until their code prototype is structurally complete.
 
 6. UNIVERSAL STAGE 4 (TASTE THE SAMPLE) MULTI-LANGUAGE FREEDOM & STRUCTURAL COMPLETION MANDATE (CRITICAL USER DIRECTIVE):
    - The student can write their code prototype in ANY programming language (Python, JavaScript, C, C++, Java, etc.) or pseudocode!
@@ -6411,18 +6164,6 @@ for (int i = 1; i <= ${varName}; i++) {
           // Universal Taste the Sample Syntax Query Enforcement:
           if (syntaxQuery) {
             parsed.correct = false;
-            const hasCodeExample = typeof sanitizedFeedback === "string" && (
-              sanitizedFeedback.includes("```") ||
-              sanitizedFeedback.includes("`var") ||
-              sanitizedFeedback.includes("`let") ||
-              sanitizedFeedback.includes("`if") ||
-              sanitizedFeedback.includes("`for") ||
-              sanitizedFeedback.includes("for (") ||
-              sanitizedFeedback.includes("for i in")
-            );
-            if (!hasCodeExample || !hasRichGemini || isPrematureApproval) {
-              sanitizedFeedback = generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType);
-            }
           }
 
           let sanitizedCorrection = typeof parsed.correction === "string" ? parsed.correction : void 0;
@@ -6492,11 +6233,11 @@ for (int i = 1; i <= ${varName}; i++) {
       if (syntaxQuery) {
         return {
           correct: false,
-          feedback: generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType),
-          correction: void 0,
+          feedback: "🌟 Coach Maara here! Take your verified ingredients and let's assemble them step by step into your code editor! Start with your first ingredient statement.",
+          correction: "Write the first step of your code prototype.",
           suggestedInput: void 0,
           sampleCodeStepProgress: [
-            { stepNumber: 1, title: "Input Variable", completed: false, current: true }
+            { stepNumber: 1, title: "Code Prototype", completed: false, current: true }
           ]
         };
       }

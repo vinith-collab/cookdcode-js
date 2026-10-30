@@ -735,11 +735,11 @@ function validateMultiplicationSampleCode(code, attemptCount = 1) {
     };
   }
   if (!hasLoop) {
-    let loopFb = "\u{1F31F} Coach Maara here! No worries at all if you are unsure how to write the loop! Here is an example of how to write the loop from 1 to 10:\n\n\u{1F4BB} **JavaScript / C / Java:**\n```javascript\nfor (let i = 1; i <= 10; i++) {\n}\n```\n\n\u{1F40D} **Python:**\n```python\nfor i in range(1, 11):\n```\n\nTry adding this for loop right after your variable declaration!";
+    let loopFb = "🌟 Coach Maara here! Let's set up your loop to count multipliers from 1 to 10 (e.g. from i = 1 up to i <= 10). Try writing your loop statement!";
     if (attemptCount >= 3) {
-      loopFb = "\u{1F31F} Coach Maara here! Let's get your table iterating! Here is the full structure for declaring the input and running the loop from 1 to 10:\n\n```javascript\nvar n = 5;\nfor (var i = 1; i <= 10; i++) {\n  var product = n * i;\n}\n```\n\n\u{1F449} Add the loop and calculate the product inside!";
+      loopFb = "🌟 Coach Maara here! We have our table number `n = 5`. Now set up your loop to run from 1 to 10 and calculate the product inside!";
     } else if (attemptCount === 2) {
-      loopFb = "\u{1F31F} Coach Maara checking in! We have our table number `n = 5`. Now write the `for` loop that counts `i` from 1 up to 10 (`i <= 10`).\n\n\u{1F449} Template: `for (let i = 1; i <= 10; i++)`";
+      loopFb = "🌟 Coach Maara checking in! We have our table number `n = 5`. Now write the `for` loop that counts `i` from 1 up to 10 (`i <= 10`).";
     }
     return {
       hasInput: true,

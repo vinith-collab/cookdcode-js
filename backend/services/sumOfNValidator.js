@@ -871,24 +871,6 @@ function validateSumOfNSampleCode(text, attemptCount = 1) {
 
   const isSyntaxQuery = norm.includes("syntax") || norm.includes("syntax theriyala") || norm.includes("syntax theriyathunu") || norm.includes("syntax enna") || norm.includes("how to write for loop") || norm.includes("how to write loop") || norm.includes("for loop syntax") || norm.includes("loop syntax") || norm.includes("syntax help") || norm.includes("don't know syntax") || norm.includes("dont know syntax") || norm.includes("loop theriyala") || norm.includes("did not know how to write loop") || norm.includes("don't know how to write loop") || norm.includes("dont know how to write loop") || norm.includes("loop example");
   if (isSyntaxQuery) {
-    const loopExamples = `
-
-🐍 **Python:**
-\`\`\`python
-for i in range(1, ${declaredInputVar || 'n'} + 1):
-\`\`\`
-
-💻 **JavaScript:**
-\`\`\`javascript
-for (let i = 1; i <= ${declaredInputVar || 'n'}; i++) {
-}
-\`\`\`
-
-☕ **Java / C:**
-\`\`\`java
-for (int i = 1; i <= ${declaredInputVar || 'n'}; i++) {
-}
-\`\`\``;
     if (hasInput && hasAccumulator) {
       return {
         hasInput: true,
@@ -903,16 +885,13 @@ for (int i = 1; i <= ${declaredInputVar || 'n'}; i++) {
           { stepNumber: 1, title: `Input Variable (${declaredInputVar || 'n'})`, completed: true, current: false },
           { stepNumber: 2, title: "Accumulator (sum = 0)", completed: true, current: false },
           { stepNumber: 3, title: `Loop Construct (1 to ${declaredInputVar || 'n'})`, completed: false, current: true },
-          { stepNumber: 4, title: "Accumulate Sum (sum += i)", completed: false, current: false },
-          { stepNumber: 5, title: "Display Sum (print / output)", completed: false, current: false }
+          { stepNumber: 4, title: "Accumulation (sum = sum + i)", completed: false, current: false },
+          { stepNumber: 5, title: "Output (print(sum))", completed: false, current: false }
         ],
-        feedback: `🌟 Coach Maara here! Happy to help you with the loop! It is completely normal for loop syntax to feel tricky at first.
-
-Since you have already set up your input \`${declaredInputVar || 'n'}\` and accumulator \`sum = 0\`, here are clear examples of how to write the loop:${loopExamples}
-
-👉 **Next Step:** Try adding the loop to your code! You can also click **Insert Prototype Example** below.`,
-        correction: `Step 3: Add your for loop iterating from 1 to ${declaredInputVar || 'n'}.`,
-        suggestedInput: `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`
+        feedback: `🌟 Coach Maara here! In Taste the Sample, we write our loop to count from 1 up to \`${declaredInputVar || 'n'}\`. Start with counter \`i = 1\`, continue while \`i <= ${declaredInputVar || 'n'}\`, and increment with \`i++\`. Try writing this loop in your editor!`,
+        correction: `Step 3: Write a for loop iterating from 1 to ${declaredInputVar || 'n'}.`,
+        suggestedInput: `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`,
+        matchedFirebaseInput: "how to write for loop syntax"
       };
     }
     return {
@@ -925,116 +904,17 @@ Since you have already set up your input \`${declaredInputVar || 'n'}\` and accu
       allVerified: false,
       isSyntaxQuery: true,
       sampleCodeStepProgress: [
-        { stepNumber: 1, title: "Input Variable (n)", completed: false, current: true },
+        { stepNumber: 1, title: `Input Variable (${declaredInputVar || 'n'})`, completed: false, current: true },
         { stepNumber: 2, title: "Accumulator (sum = 0)", completed: false, current: false },
-        { stepNumber: 3, title: "Loop Construct (1 to n)", completed: false, current: false },
-        { stepNumber: 4, title: "Accumulate Sum (sum += i)", completed: false, current: false },
-        { stepNumber: 5, title: "Display Sum (print / output)", completed: false, current: false }
+        { stepNumber: 3, title: `Loop Construct (1 to ${declaredInputVar || 'n'})`, completed: false, current: false },
+        { stepNumber: 4, title: "Accumulation (sum = sum + i)", completed: false, current: false },
+        { stepNumber: 5, title: "Output (print(sum))", completed: false, current: false }
       ],
-      feedback: `🌟 Coach Maara here! Happy to help with the loop syntax! Here is how to write the loop:${loopExamples}
-
-Now try assembling your prototype step by step: start with declaring \`${declaredInputVar || 'n'}\` and \`sum = 0\`!`,
-      correction: "Start with Step 1 & 2: declare input n and accumulator sum = 0.",
-      suggestedInput: "for i in range(1, n + 1):"
+      feedback: "🌟 Coach Maara here! Start by declaring your input variable and setting up your accumulator `sum = 0` in your code editor!",
+      correction: "Step 1: Declare input variable n and sum = 0.",
+      suggestedInput: "var n = 5;\nvar sum = 0;",
+      matchedFirebaseInput: "how to write syntax"
     };
-  }
-
-  // Extract loop details from JS/Java style loops
-  const jsLoopMatch = text.match(/for\s*\(\s*(?:(?:let|var|const|int)\s+)?([a-zA-Z_]\w*)\s*=\s*(?:0|1)\s*;\s*([a-zA-Z_]\w*)\s*(<=|<|>=|>|==)\s*([a-zA-Z_]\w*|\d+)\s*;\s*([^)]*)\)/i);
-  let loopIterVar = "i";
-  let loopOp = null;
-  let loopLimitVar = null;
-  if (jsLoopMatch) {
-    loopIterVar = jsLoopMatch[1];
-    loopOp = jsLoopMatch[3];
-    loopLimitVar = jsLoopMatch[4];
-  } else {
-    const pyMatch = text.match(/for\s+([a-zA-Z_]\w*)\s+in\s+range\s*\(\s*(?:0\s*,\s*)?(?:1\s*,\s*)?([^)]+)\)/i);
-    if (pyMatch) {
-      loopIterVar = pyMatch[1];
-      loopLimitVar = pyMatch[2].trim();
-    }
-  }
-
-  // Check 1: Variable mismatch between declared input variable (e.g. 'a') and loop condition variable (e.g. 'n')
-  const hasVarMismatch = Boolean(
-    declaredInputVar &&
-    loopLimitVar &&
-    isNaN(Number(loopLimitVar)) &&
-    declaredInputVar.toLowerCase() !== loopLimitVar.toLowerCase() &&
-    !loopLimitVar.toLowerCase().includes(declaredInputVar.toLowerCase())
-  );
-
-  // Check 2: Strict less than (<) condition in loop
-  const hasStrictLessThan = loopOp === "<";
-
-  const validJsJavaLoop = /for\s*\(\s*(?:(?:let|var|const|int)\s+)?[a-zA-Z_]\w*\s*=\s*(?:0|1)\s*;\s*[a-zA-Z_]\w*\s*<=\s*(?:n|[0-9]+|\w+)\s*;\s*(?:[a-zA-Z_]\w*\+\+|\+\+[a-zA-Z_]\w*|[a-zA-Z_]\w*\s*\+=\s*1|[a-zA-Z_]\w*\s*=\s*[a-zA-Z_]\w*\s*\+\s*1)\s*\)/i.test(text);
-  const validPythonRange = /for\s+[a-zA-Z_]\w*\s+in\s+range\s*\(\s*(?:0\s*,\s*)?(?:1\s*,\s*)?(?:n\s*\+\s*1|[a-zA-Z_]\w*\s*\+\s*1|[0-9]+)\s*\)/i.test(text);
-  const pythonRangeWithoutPlusOne = /for\s+[a-zA-Z_]\w*\s+in\s+range\s*\(\s*(?:0\s*,\s*)?1\s*,\s*(?:n|[a-zA-Z_]\w*)\s*\)/i.test(text);
-  const validWhileLoop = /while\s*\(?\s*[a-zA-Z_]\w*\s*<=\s*(?:n|[0-9]+|\w+)\s*\)?/i.test(text);
-  const hasColonInFor = /for\s*\([^)]*:[^)]*\)/i.test(text);
-  const hasIncrementInCondition = /for\s*\([^;:]*[:;]\s*(?:[a-zA-Z_]\w*\+\+|\+\+[a-zA-Z_]\w*|[a-zA-Z_]\w*\s*\+=\s*1)\s*[:;]/i.test(text);
-  const hasInvertedCondition = /for\s*\([^)]*(?:>=|>)\s*(?:5|n|[0-9]+)[^)]*\)|while\s*\(?[^)]*(?:>=|>)\s*(?:5|n|[0-9]+)\)?/i.test(text);
-  const pythonRangeZero = /for\s+[a-zA-Z_]\w*\s+in\s+range\s*\(\s*(?:n|[0-9]+)\s*\)/i.test(text);
-  const hasDecrement = /for\s*\([^)]*--[^)]*\)/i.test(text);
-
-  let loopErrorFeedback = "";
-  let loopErrorCorrection = "";
-  let loopSuggested = `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-
-  if (hasVarMismatch && hasStrictLessThan) {
-    loopErrorFeedback = `⚠️ Coach Maara here! Look closely at your \`for\` loop condition \`i < ${loopLimitVar}\`:
-
-1. 🔍 **Undeclared Variable:** You declared your input variable as \`${declaredInputVar} = 5\`, but in your loop condition you wrote \`i < ${loopLimitVar}\`. Variable \`${loopLimitVar}\` was never declared and does not exist (throws ReferenceError: ${loopLimitVar} is not defined)!
-2. 🔢 **Stopping Too Early (<):** You wrote \`i < ${loopLimitVar}\`. The strictly-less-than operator (\`<\`) stops at 4, excluding your input number (${declaredInputVar} = 5) from the sum, which calculates 10 instead of 15!
-
-👉 **Solution:** Change \`i < ${loopLimitVar}\` to \`i <= ${declaredInputVar}\` to use your declared variable and include the final number!`;
-    loopErrorCorrection = `Fix loop condition: change "i < ${loopLimitVar}" to "i <= ${declaredInputVar}".`;
-    loopSuggested = `for (int i = 1; i <= ${declaredInputVar}; i++) {\n  sum = sum + i;\n}`;
-  } else if (hasVarMismatch) {
-    loopErrorFeedback = `⚠️ Coach Maara here! In your loop condition, you wrote \`i ${loopOp || "<="} ${loopLimitVar}\`.
-
-Notice that you declared your input variable as \`${declaredInputVar} = 5\`, not \`${loopLimitVar}\`! Variable \`${loopLimitVar}\` was never declared and is undefined in your program.
-
-👉 **Solution:** Change \`${loopLimitVar}\` to your declared input variable \`${declaredInputVar}\`: \`i <= ${declaredInputVar}\`.`;
-    loopErrorCorrection = `In loop condition, change "${loopLimitVar}" to your declared variable "${declaredInputVar}": "i <= ${declaredInputVar}".`;
-    loopSuggested = `for (int i = 1; i <= ${declaredInputVar}; i++)`;
-  } else if (hasStrictLessThan) {
-    loopErrorFeedback = `⚠️ Coach Maara here! In your loop condition, you wrote \`i < ${loopLimitVar}\`.
-
-The strictly-less-than operator (\`<\`) stops one number before \`${loopLimitVar}\` (e.g. for 5, it only counts 1, 2, 3, 4 and stops before 5). This excludes \`${loopLimitVar}\` and calculates 10 instead of 15!
-
-👉 **Solution:** Use \`<=\` so the loop includes \`${loopLimitVar}\`: \`i <= ${loopLimitVar}\`.`;
-    loopErrorCorrection = `Change "<" to "<=" in your loop condition: "i <= ${loopLimitVar}".`;
-    loopSuggested = `for (int i = 1; i <= ${declaredInputVar || loopLimitVar}; i++)`;
-  } else if (hasColonInFor && hasIncrementInCondition) {
-    loopErrorFeedback = "⚠️ In Step 3, your `for` loop has two syntax issues:\n1. In JavaScript/Java, the 3 parts of a `for` loop must be separated by semicolons (`;`), not colons (`:`).\n2. The standard order is `for (initialization; condition; update)`. You placed the increment (`i++`) in the middle position instead of the end!\n3. Also, your condition `i >= 5` is inverted (it should be `i <= n` or `i <= 5`).\n\nCorrect syntax structure:\n`for (let i = 1; i <= n; i++)`";
-    loopErrorCorrection = `Fix for loop syntax: for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-    loopSuggested = `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-  } else if (hasColonInFor) {
-    loopErrorFeedback = "⚠️ In JavaScript/Java, the three parts of a `for` loop must be separated by semicolons (`;`), not colons (`:`).\n\nStructure:\n`for (let i = 1; i <= n; i++)`";
-    loopErrorCorrection = `Use semicolons (;) in for loop: for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-    loopSuggested = `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-  } else if (hasIncrementInCondition) {
-    loopErrorFeedback = "⚠️ In a `for` loop, the structure is:\n`for (initialization; condition; update)`\n\nYou placed the increment (`i++`) in the middle (condition) position! Place the condition (`i <= n`) second and the increment (`i++`) third:\n`for (let i = 1; i <= n; i++)`";
-    loopErrorCorrection = `Place condition second and increment last: for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-    loopSuggested = `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-  } else if (hasInvertedCondition) {
-    loopErrorFeedback = "⚠️ In your loop condition, you wrote `i >= 5` (or `i >= n`). Since `i` starts at 1, the condition `1 >= 5` is immediately false, so the loop will never execute even once! To count from 1 up to n, use `i <= n` (or `i <= 5`):\n`for (let i = 1; i <= n; i++)`";
-    loopErrorCorrection = `Change loop condition from >= to <= (e.g. i <= ${declaredInputVar || 'n'}).`;
-    loopSuggested = `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-  } else if (hasDecrement) {
-    loopErrorFeedback = "⚠️ To count up from 1 to n, you need to increment with `i++` (or `i += 1`) instead of decrementing (`i--`).";
-    loopErrorCorrection = "Use i++ instead of i--.";
-    loopSuggested = `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
-  } else if (pythonRangeWithoutPlusOne && !validPythonRange) {
-    loopErrorFeedback = `⚠️ In Python, \`range(1, ${loopLimitVar || 'n'})\` stops at \`${loopLimitVar || 'n'} - 1\` (for example, \`range(1, 5)\` only reaches 4). To include \`${declaredInputVar || loopLimitVar || 'n'}\` in the sum, use \`range(1, ${declaredInputVar || loopLimitVar || 'n'} + 1)\`:\n\`for i in range(1, ${declaredInputVar || loopLimitVar || 'n'} + 1):\``;
-    loopErrorCorrection = `Use range(1, ${declaredInputVar || loopLimitVar || 'n'} + 1) in Python to include the final number.`;
-    loopSuggested = `for i in range(1, ${declaredInputVar || loopLimitVar || 'n'} + 1):`;
-  } else if (pythonRangeZero && !validPythonRange) {
-    loopErrorFeedback = "⚠️ In Python, `range(n)` starts at 0 and stops at `n - 1`. To sum numbers starting from 1 up to `n`, specify start 1: `range(1, n + 1)`:\n`for i in range(1, n + 1):`";
-    loopErrorCorrection = `Use range(1, ${declaredInputVar || 'n'} + 1) to iterate from 1 to n.`;
-    loopSuggested = `for i in range(1, ${declaredInputVar || 'n'} + 1):`;
   }
 
   const hasLoop = (validJsJavaLoop || validPythonRange || validWhileLoop) &&
@@ -1132,24 +1012,9 @@ The strictly-less-than operator (\`<\`) stops one number before \`${loopLimitVar
       correction = loopErrorCorrection;
       suggestedInput = loopSuggested;
     } else if (attemptCount >= 3) {
-      feedback = `🌟 Coach Maara here! Let's get this loop written together so you can move forward! Here is the exact template you can place after your input and \`sum = 0\`:
-
-💻 **JavaScript:**
-\`\`\`javascript
-for (let i = 1; i <= ${declaredInputVar || 'n'}; i++) {
-  sum += i;
-}
-\`\`\`
-
-🐍 **Python:**
-\`\`\`python
-for i in range(1, ${declaredInputVar || 'n'} + 1):
-    sum += i
-\`\`\`
-
-👉 **Next Action:** Add this loop right below \`sum = 0\`!`;
-      correction = `Step 3: Add your for loop iterating from 1 to ${declaredInputVar || 'n'}.`;
-      suggestedInput = `for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)`;
+      feedback = "🌟 Coach Maara here! You have your input and sum = 0 ready. Now write your for loop to repeat from 1 up to your input number, and add each number to sum inside the loop!";
+      correction = "Step 3: Add your for loop iterating from 1 to " + (declaredInputVar || 'n') + ".";
+      suggestedInput = "for (let i = 1; i <= " + (declaredInputVar || 'n') + "; i++)";
     } else {
       feedback = `🌟 Great job declaring your input and \`sum = 0\`!\n\n👉 **Step 3:** Now write your \`for\` loop to repeat from 1 to \`${declaredInputVar || 'n'}\`:\n\`for (let i = 1; i <= ${declaredInputVar || 'n'}; i++)\``;
       correction = `Step 3: Add your for loop iterating from 1 to ${declaredInputVar || 'n'}.`;
