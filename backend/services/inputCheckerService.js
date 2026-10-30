@@ -42,11 +42,10 @@ function getGenAI() {
 }
 const CANDIDATE_MODELS = [
   "gemini-3.1-flash-lite",
-  "gemini-3-flash-preview",
-  "gemini-flash-latest",
-  "gemini-flash-lite-latest",
   "gemini-2.5-flash",
-  "gemini-3.5-flash-lite"
+  "gemini-flash-latest",
+  "gemini-2.5-flash-lite",
+  "gemini-3-flash-preview"
 ];
 const modelCooldownMap = /* @__PURE__ */ new Map();
 let globalQuotaCooldownUntil = 0;
@@ -139,22 +138,27 @@ function sanitizePrematurePraise(result, section, problemTitle = "") {
   if (!result || typeof result !== "object") return result;
   if (result.correct === true) return result;
 
-  const feedbackText = String(result.feedback || "");
-  const prematurePraiseRegex = /\b(?:hurray|hurrah|kudos|congratulations|congrats|you got it|all \d+ ingredients are verified|all \d+ steps (?:are )?verified|verified!|brilliant work! you've identified all|proceed to (?:ingredients|recipe|taste the sample|sample code)|ready to (?:move on|proceed)|move on to the next|mastered the logic|fantastic work|solution verified)\b/i;
+  let feedbackText = String(result.feedback || "").trim();
+  
+  // Strip premature celebratory phrases when status is not yet correct
+  feedbackText = feedbackText
+    .replace(/(?:🎉|🌟)?\s*\*\*(?:Logic|Recipe|Ingredients|Sample Code|Code)?\s*Approved.*?\*\*\s*🏆?/gi, "")
+    .replace(/(?:🎉|🌟)?\s*(?:Hurray|Hurrah|Kudos|Congratulations|Congrats)[^!.\n]*[!.]\s*/gi, "")
+    .replace(/\b(?:Proceed to (?:the )?(?:stage \d|recipe|ingredients|taste the sample|sample code|compiler)[^!.\n]*[!.]?)/gi, "")
+    .replace(/\b(?:Ready to (?:move on|proceed|run)[^!.\n]*[!.]?)/gi, "")
+    .replace(/\b(?:All \d+ (?:ingredients|steps) (?:are )?verified[^!.\n]*[!.]?)/gi, "")
+    .replace(/\b(?:Solution verified[^!.\n]*[!.]?)/gi, "")
+    .trim();
 
-  if (prematurePraiseRegex.test(feedbackText)) {
-    let cleaned = feedbackText
-      .replace(/🌟 Coach Maara here!\s*(?:Hurray|Hurrah|Kudos|Congrats|Congratulations)[^!.]*[!.]\s*/gi, "🌟 Coach Maara here! Let's examine your current step carefully.\n\n")
-      .replace(/\b(?:Hurray|Hurrah|Kudos|Congrats|Congratulations)\s*(?:you got it)?[!.]\s*/gi, "Let's check your current step carefully: ")
-      .replace(/Brilliant work! You've identified all \d+ essential programming ingredients[^!.]*[!.]\s*/gi, "Good effort! Let's check your ingredients carefully.\n\n")
-      .replace(/Kudos!? You've sequenced all \d+ steps[^!.]*[!.]\s*/gi, "Good progress! Let's refine your sequence.\n\n")
-      .replace(/Proceed to (?:ingredients|recipe|taste the sample|sample code)[^!.]*[!.]?/gi, "Review your current step and update your worksheet.");
-
-    if (cleaned.trim().length < 15 || prematurePraiseRegex.test(cleaned)) {
-      cleaned = `🌟 Coach Maara here! Take a close look at your ${section} thinking for "${problemTitle || "this problem"}". Ensure your variables, formulas, and logic steps are fully defined and accumulating accurately.`;
-    }
-    result.feedback = cleaned.trim();
+  // If the remaining text is substantive, preserve Gemini's rich explanation!
+  if (feedbackText.length >= 20) {
+    feedbackText = feedbackText.replace(/^(?:🌟\s*)?Coach Maara (?:here)?[:!]?\s*/i, "").trim();
+    feedbackText = `🌟 Coach Maara here! ${feedbackText}`;
+    result.feedback = feedbackText;
+    return result;
   }
+
+  result.feedback = `🌟 Coach Maara here! Let's examine your ${section} thinking for "${problemTitle || "this challenge"}". Review the required components in your worksheet and refine your response.`;
   return result;
 }
 
@@ -3776,12 +3780,19 @@ Evaluate now according to Coach Maara's rules. Return JSON matching the schema.`
     if (globalQuotaCooldownUntil > Date.now()) {
       return null;
     }
-    for (const model of CANDIDATE_MODELS) {
+    const startIdx = Math.max(0, (attemptCount - 1)) % CANDIDATE_MODELS.length;
+    const orderedModels = [
+      ...CANDIDATE_MODELS.slice(startIdx),
+      ...CANDIDATE_MODELS.slice(0, startIdx)
+    ];
+    for (const model of orderedModels) {
       const cooldownUntil = modelCooldownMap.get(model) || 0;
       if (cooldownUntil > Date.now()) {
+        console.info(`[InputCheckerService] Model ${model} is in cooldown, skipping to next model...`);
         continue;
       }
       try {
+        console.info(`[InputCheckerService] Attempt ${attemptCount}: Evaluating using candidate model: ${model}`);
         const reqConfig = {
           systemInstruction,
           temperature: attemptCount > 1 ? 0.6 : 0.25,
@@ -6258,9 +6269,11 @@ for (int i = 1; i <= ${varName}; i++) {
         } else if (isBusy) {
           modelCooldownMap.set(model, Date.now() + 15e3);
           console.info(`[InputCheckerService] Model ${model} temporarily busy (503/high demand), falling back to next candidate model...`);
+          continue;
         } else {
           modelCooldownMap.set(model, Date.now() + 3e4);
-          console.warn(`[InputCheckerService] Gemini model ${model} error:`, errMsg);
+          console.warn(`[InputCheckerService] Gemini model ${model} error:`, errMsg, "- trying next candidate model in list...");
+          continue;
         }
       }
     }
