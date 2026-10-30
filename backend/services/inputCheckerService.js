@@ -4528,60 +4528,80 @@ for (int i = 1; i <= ${varName}; i++) {
           }
           if (problemType === "even-numbers-1-to-50") {
             if (section === "logic") {
-              const evenLog = validateEvenNumbers1To50Logic(userInput);
+              const evenLog = validateEvenNumbers1To50Logic(userInput, attemptCount);
               if (evenLog.isFullyVerified && parsed.correct) {
                 parsed.correct = true;
                 parsed.proofType = "mathematical";
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput) : evenLog.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount) : evenLog.feedback;
                 parsed.correction = "Proceed to the Recipe stage to write the step-by-step algorithm.";
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
-                parsed.feedback = synthesizeHumanTouch(evenLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput);
+                const isPremature = /proceed to (?:recipe|ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(evenLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
+                }
                 parsed.correction = evenLog.correction || parsed.correction;
                 parsed.suggestedInput = evenLog.suggestedInput || parsed.suggestedInput;
               }
             }
             if (section === "recipe") {
-              const evenRec = validateEvenNumbers1To50Recipe(userInput);
+              const evenRec = validateEvenNumbers1To50Recipe(userInput, attemptCount);
               parsed.recipeStepProgress = evenRec.recipeStepProgress;
               if (evenRec.isFullyVerified) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput) : evenRec.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : evenRec.feedback;
                 parsed.correction = "Proceed to Ingredients stage!";
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
-                parsed.feedback = synthesizeHumanTouch(evenRec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput);
+                const isPremature = /proceed to (?:ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(evenRec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput, attemptCount);
+                }
                 parsed.correction = evenRec.correction || parsed.correction;
                 parsed.suggestedInput = evenRec.suggestedInput || parsed.suggestedInput;
               }
             }
             if (section === "ingredients") {
-              const evenIng = validateEvenNumbers1To50Ingredients(userInput);
+              const evenIng = validateEvenNumbers1To50Ingredients(userInput, attemptCount);
               parsed.ingredientsStepProgress = evenIng.ingredientsStepProgress;
               if (evenIng.isFullyVerified) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput) : evenIng.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount) : evenIng.feedback;
                 parsed.correction = "Proceed to Taste the Sample stage to assemble your code!";
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
-                parsed.feedback = synthesizeHumanTouch(evenIng.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput);
+                const isPremature = /proceed to (?:taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(evenIng.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput, attemptCount);
+                }
                 parsed.correction = evenIng.correction || parsed.correction;
                 parsed.suggestedInput = evenIng.suggestedInput || parsed.suggestedInput;
               }
             }
             if (section === "samplecode") {
-              const evenSample = validateEvenNumbers1To50SampleCode(userInput);
+              const evenSample = validateEvenNumbers1To50SampleCode(userInput, attemptCount);
               if (evenSample.isFullyVerified) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput) : evenSample.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount) : evenSample.feedback;
                 parsed.correction = "All done! Run the code and submit.";
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
-                parsed.feedback = synthesizeHumanTouch(evenSample.feedback, "samplecode", latestInput);
+                const isPremature = /proceed to compiler|all \d+ steps completed|ready to run/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate") && !evenSample.feedback.includes("Missing `if` keyword") && !evenSample.feedback.includes("Wrong print target")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(evenSample.feedback, "samplecode", latestInput, attemptCount);
+                }
                 parsed.correction = evenSample.correction || parsed.correction;
               }
             }
@@ -6545,7 +6565,7 @@ for (int i = 1; i <= ${varName}; i++) {
     }
     if (problemType === "even-numbers-1-to-50") {
       if (section === "logic") {
-        const evenLog = validateEvenNumbers1To50Logic(userInput);
+        const evenLog = validateEvenNumbers1To50Logic(userInput, attemptCount);
         return {
           correct: evenLog.isFullyVerified,
           feedback: synthesizeHumanTouch(evenLog.feedback, "logic", userInput, attemptCount),
@@ -6554,7 +6574,7 @@ for (int i = 1; i <= ${varName}; i++) {
         };
       }
       if (section === "recipe") {
-        const evenRec = validateEvenNumbers1To50Recipe(userInput);
+        const evenRec = validateEvenNumbers1To50Recipe(userInput, attemptCount);
         return {
           correct: evenRec.isFullyVerified,
           feedback: synthesizeHumanTouch(evenRec.feedback, "recipe", userInput, attemptCount),
@@ -6564,7 +6584,7 @@ for (int i = 1; i <= ${varName}; i++) {
         };
       }
       if (section === "ingredients") {
-        const evenIng = validateEvenNumbers1To50Ingredients(userInput);
+        const evenIng = validateEvenNumbers1To50Ingredients(userInput, attemptCount);
         return {
           correct: evenIng.isFullyVerified,
           feedback: synthesizeHumanTouch(evenIng.feedback, "ingredients", userInput, attemptCount),
@@ -6574,7 +6594,7 @@ for (int i = 1; i <= ${varName}; i++) {
         };
       }
       if (section === "samplecode") {
-        const evenSample = validateEvenNumbers1To50SampleCode(userInput);
+        const evenSample = validateEvenNumbers1To50SampleCode(userInput, attemptCount);
         return {
           correct: evenSample.isFullyVerified,
           feedback: synthesizeHumanTouch(evenSample.feedback, "samplecode", userInput, attemptCount),

@@ -3,13 +3,31 @@
  * Focuses on loop iteration from 1 to 50 combined with modulo divisibility by 2 or step of 2.
  */
 
-export function validateEvenNumbers1To50Logic(text) {
+export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/]/g, " ").replace(/\s+/g, " ").trim();
 
   const isQuestion = norm.endsWith("?") ||
     /\b(?:how|what|why|help|puriyala|theriyala|doubt|know|rule|explain|start|where)\b/i.test(norm);
 
   if (isQuestion || norm.length < 5) {
+    if (attemptCount >= 3) {
+      return {
+        isFullyVerified: false,
+        feedback: "🌟 Coach Maara here! Let's write the logic together into your worksheet: 'An even number is divisible by 2 with remainder 0 (number % 2 == 0). From 1 to 50, we check each number and keep those where remainder is 0 (2, 4, 6... 50).' Try typing this statement!",
+        correction: "Write: An even number leaves remainder 0 when divided by 2 (number % 2 == 0). From 1 to 50, even numbers are 2, 4, 6 ... up to 50.",
+        suggestedInput: "An even number is completely divisible by 2 with remainder 0 (number % 2 == 0). From 1 to 50, the even numbers are 2, 4, 6, 8 ... up to 50.",
+        matchedFirebaseInput: "what are even numbers from 1 to 50"
+      };
+    }
+    if (attemptCount === 2) {
+      return {
+        isFullyVerified: false,
+        feedback: "🌟 Coach Maara checking back! To find even numbers between 1 and 50, we test each number by dividing by 2. If remainder is 0 (`number % 2 == 0`), it is an even number (like 2, 4, 6...). What rule can you write in your worksheet to describe this?",
+        correction: "Explain using modulo 2: 'number % 2 == 0'.",
+        suggestedInput: "An even number leaves remainder 0 when divided by 2 (number % 2 == 0). Between 1 and 50, numbers like 2, 4, 6 ... 50 are even numbers.",
+        matchedFirebaseInput: "how to identify even numbers"
+      };
+    }
     return {
       isFullyVerified: false,
       feedback: "🌟 Coach Maara here! Even numbers are numbers exactly divisible by 2 (leaving a remainder of 0: `number % 2 == 0`). Between 1 and 50, the even numbers are 2, 4, 6, 8, ... up to 50!\n\n👉 Explain in simple words: How do we identify even numbers from 1 to 50?",
@@ -30,6 +48,15 @@ export function validateEvenNumbers1To50Logic(text) {
     (mentionsEven && (mentions2 || mentionsRemainderOrMod));
 
   if (!hasEvenMathFact) {
+    if (attemptCount >= 2) {
+      return {
+        isFullyVerified: false,
+        feedback: "🌟 Coach Maara with a fresh clue! Remember the core mathematical test: dividing by 2 leaves remainder 0 (`number % 2 == 0`). State this formula and mention the range 1 to 50 in your worksheet!",
+        correction: "State the mathematical formula: number % 2 == 0 for range 1 to 50.",
+        suggestedInput: "An even number leaves remainder 0 when divided by 2 (number % 2 == 0). From 1 to 50, numbers like 2, 4, 6 ... 50 are even.",
+        matchedFirebaseInput: "how to identify even numbers"
+      };
+    }
     return {
       isFullyVerified: false,
       feedback: "🌟 Coach Maara note: Remember, a number is even if dividing by 2 leaves a remainder of 0 (`number % 2 == 0`). How do we apply this rule to numbers from 1 to 50?",
@@ -48,7 +75,7 @@ export function validateEvenNumbers1To50Logic(text) {
   };
 }
 
-export function validateEvenNumbers1To50Recipe(text) {
+export function validateEvenNumbers1To50Recipe(text, attemptCount = 1) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/]/g, " ").replace(/\s+/g, " ").trim();
 
   // Recipe steps:
@@ -82,21 +109,26 @@ export function validateEvenNumbers1To50Recipe(text) {
     };
   }
 
+  let feedback;
+  if (attemptCount >= 3) {
+    feedback = `🌟 Coach Maara here! Let's complete the recipe together! Copy or adapt these 4 clear steps:\n\nStep 1: Start counting numbers from 1 up to 50.\nStep 2: Check if the number is divisible by 2 (remainder is 0).\nStep 3: If divisible by 2, display the number.\nStep 4: Repeat until reaching 50.`;
+  } else if (attemptCount === 2) {
+    feedback = `🌟 Coach Maara checking back! You have completed ${completedCount} of 4 recipe steps. To finish this stage, make sure you describe how we start at 1, check divisibility by 2 for each number, display it if it's even, and repeat up to 50.`;
+  } else {
+    feedback = `🌟 Coach Maara here! You have completed ${completedCount} of 4 recipe steps. Make sure to describe:\n1. Start counting numbers from 1 to 50.\n2. Check if the current number is divisible by 2.\n3. Display the number if it is even.\n4. Repeat for all numbers up to 50.`;
+  }
+
   return {
     isFullyVerified: false,
     recipeStepProgress,
-    feedback: `🌟 Coach Maara here! You have completed ${completedCount} of 4 recipe steps. Make sure to describe:
-1. Start counting numbers from 1 to 50.
-2. Check if the current number is divisible by 2.
-3. Display the number if it is even.
-4. Repeat for all numbers up to 50.`,
+    feedback,
     correction: "Outline all 4 steps: 1) Start at 1, 2) Check if divisible by 2, 3) Display if even, 4) Repeat up to 50.",
     suggestedInput: "Step 1: Start counting from 1 up to 50\nStep 2: Check if current number is divisible by 2 (remainder 0)\nStep 3: If divisible by 2, display the number\nStep 4: Repeat until reaching 50",
     matchedFirebaseInput: "how to write recipe for even numbers 1 to 50"
   };
 }
 
-export function validateEvenNumbers1To50Ingredients(text) {
+export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
   const norm = (text || "").toLowerCase();
 
   // Strip worksheet step labels ("Step 1:", "Step 2:", etc.) at line starts so they are not confused with loop steps
@@ -146,6 +178,32 @@ export function validateEvenNumbers1To50Ingredients(text) {
 
   // If user only wrote "for loop" or didn't provide complete loop controls:
   if (!hasCompleteLoop) {
+    if (attemptCount >= 3) {
+      return {
+        isFullyVerified: false,
+        hasLoop: false,
+        hasEvenCheck,
+        hasPrint,
+        ingredientsStepProgress,
+        feedback: "🌟 Coach Maara here! Let's write the complete ingredients list together:\n• Step 1: For loop with Start: 1, Stop: 50, Step: +1\n• Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\n• Step 3: Inside if block: print(i)",
+        correction: "Define all 3 ingredients: Loop (Start 1, Stop 50, Step +1), If condition (i % 2 == 0), and print(i).",
+        suggestedInput: "Step 1: For loop with Start: 1 (i = 1), Stop: 50 (i <= 50), Step: +1 (i++)\nStep 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
+        matchedFirebaseInput: "step 1 : for loop start 1 stop 50 step 1"
+      };
+    }
+    if (attemptCount === 2) {
+      return {
+        isFullyVerified: false,
+        hasLoop: false,
+        hasEvenCheck,
+        hasPrint,
+        ingredientsStepProgress,
+        feedback: "🌟 Coach Maara checking back! To step through numbers 1 to 50, define the 3 loop controls clearly in your worksheet:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)",
+        correction: "Define loop controls: 'Step 1: For loop with Start: 1, Stop: 50, Step: +1'.",
+        suggestedInput: "Step 1: For loop with Start: 1 (i = 1), Stop: 50 (i <= 50), Step: +1 (i++)\nStep 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
+        matchedFirebaseInput: "for loop without start stop step"
+      };
+    }
     if (hasLoopKeyword) {
       return {
         isFullyVerified: false,
@@ -173,6 +231,19 @@ export function validateEvenNumbers1To50Ingredients(text) {
   }
 
   if (!hasEvenCheck && !hasStepBy2Shortcut) {
+    if (attemptCount >= 2) {
+      return {
+        isFullyVerified: false,
+        hasLoop: true,
+        hasEvenCheck: false,
+        hasPrint,
+        ingredientsStepProgress,
+        feedback: "🌟 Coach Maara checking back! Inside the loop, test if number is even: Left Side: `i % 2`, Operator: `==`, Right Side: `0`.",
+        correction: "Add if condition: 'Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0'.",
+        suggestedInput: "Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
+        matchedFirebaseInput: "step 2 : if condition for even numbers"
+      };
+    }
     return {
       isFullyVerified: false,
       hasLoop: true,
@@ -187,6 +258,19 @@ export function validateEvenNumbers1To50Ingredients(text) {
   }
 
   if (!hasPrint) {
+    if (attemptCount >= 2) {
+      return {
+        isFullyVerified: false,
+        hasLoop: true,
+        hasEvenCheck: true,
+        hasPrint: false,
+        ingredientsStepProgress,
+        feedback: "🌟 Coach Maara checking back! Don't forget to output the number: `Step 3: print(i)` inside the if block.",
+        correction: "Add print statement: 'Step 3: Inside if block: print(i)'.",
+        suggestedInput: "Step 3: Inside if block: print(i)",
+        matchedFirebaseInput: "step 3 : print the even number"
+      };
+    }
     return {
       isFullyVerified: false,
       hasLoop: true,
@@ -213,7 +297,7 @@ export function validateEvenNumbers1To50Ingredients(text) {
   };
 }
 
-export function validateEvenNumbers1To50SampleCode(code) {
+export function validateEvenNumbers1To50SampleCode(code, attemptCount = 1) {
   if (!code || typeof code !== "string" || code.trim().length < 5) {
     return {
       isFullyVerified: false,
@@ -272,7 +356,15 @@ export function validateEvenNumbers1To50SampleCode(code) {
   }
 
   if (issues.length > 0) {
-    const feedback = `🌟 Coach Maara here! Good effort! You have the loop and you've used the \`==\` comparison operator, but there are a few adjustments needed:\n\n${issues.join("\n\n")}\n\n👉 Fix these lines in your code editor and try again!`;
+    let header;
+    if (attemptCount >= 3) {
+      header = "🌟 Coach Maara here! We are so close! Let's solve the remaining issues together:";
+    } else if (attemptCount === 2) {
+      header = "🌟 Coach Maara checking back! Good progress on your code. Please address these adjustments:";
+    } else {
+      header = "🌟 Coach Maara here! Good effort! You have the loop and you've used the `==` comparison operator, but there are a few adjustments needed:";
+    }
+    const feedback = `${header}\n\n${issues.join("\n\n")}\n\n👉 Fix these lines in your code editor and try again!`;
     return {
       isFullyVerified: false,
       feedback,
