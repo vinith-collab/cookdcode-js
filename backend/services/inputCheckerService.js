@@ -6156,9 +6156,13 @@ for (int i = 1; i <= ${varName}; i++) {
           const isPrematureApproval = !parsed.correct && /proceed to (?:ingredients|recipe|taste the sample|sample code|compiler)|stage completed|congratulations|hurray|kudos|logic approved|recipe approved|recipe successful|ingredients verified|sample code verified|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(originalGeminiFeedback || "");
           const hasRichGemini = typeof originalGeminiFeedback === "string" && originalGeminiFeedback.trim().length >= 20 && !originalGeminiFeedback.includes("Before we evaluate");
 
-          let sanitizedFeedback = (hasRichGemini && !isPrematureApproval)
-            ? synthesizeHumanTouch(originalGeminiFeedback, section, latestInput, attemptCount)
-            : (typeof parsed.feedback === "string" ? parsed.feedback : "Let's review this step together in the worksheet.");
+          const hasValidatorFeedback = typeof parsed.feedback === "string" && parsed.feedback.trim().length >= 20 && parsed.feedback !== originalGeminiFeedback;
+
+          let sanitizedFeedback = hasValidatorFeedback
+            ? parsed.feedback
+            : ((hasRichGemini && !isPrematureApproval)
+              ? synthesizeHumanTouch(originalGeminiFeedback, section, latestInput, attemptCount)
+              : (typeof parsed.feedback === "string" ? parsed.feedback : "Let's review this step together in the worksheet."));
 
           if (section === "samplecode" && !syntaxQuery && parsed.correct === true) {
             if (!sanitizedFeedback || sanitizedFeedback.trim().length < 20 || sanitizedFeedback.includes("assemble the prototype") || sanitizedFeedback.includes("Check your worksheet")) {
