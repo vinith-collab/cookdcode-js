@@ -4542,6 +4542,18 @@ for (int i = 1; i <= ${varName}; i++) {
                 const isPremature = /proceed to (?:recipe|ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
                 if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount);
+                } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate")) {
+                  let cleaned = parsed.feedback
+                    .replace(/🎉\s*\*\*Logic Approved.*?\*\*\s*🏆/gi, "")
+                    .replace(/proceed to (?:the )?recipe stage.*$/gi, "")
+                    .replace(/proceed to stage 2: recipe.*$/gi, "")
+                    .replace(/congratulations.*$/gi, "")
+                    .trim();
+                  if (cleaned.length > 20) {
+                    parsed.feedback = synthesizeHumanTouch(cleaned, "logic", latestInput, attemptCount);
+                  } else {
+                    parsed.feedback = synthesizeHumanTouch(evenLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
+                  }
                 } else {
                   parsed.feedback = synthesizeHumanTouch(evenLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
                 }

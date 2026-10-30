@@ -680,6 +680,7 @@ const handleCheckInput = async (req, res) => {
     recipeContent,
     logicContent,
     attemptCount,
+    hintLevel,
     isStuck
   } = req.body;
 
@@ -687,6 +688,7 @@ const handleCheckInput = async (req, res) => {
   const meta = resolveProblemMetadata(rawId);
   const effectiveId = meta.canonicalId || meta.id || rawId;
   const effectiveInput = (userInput || userContent || "").toString();
+  const effectiveAttemptCount = Math.max(1, parseInt(attemptCount || hintLevel || 1, 10) || 1);
 
   const result = await inputCheckerService.check(
     category || "fundamentals",
@@ -694,7 +696,8 @@ const handleCheckInput = async (req, res) => {
     section || "logic",
     effectiveInput,
     {
-      attemptCount,
+      attemptCount: effectiveAttemptCount,
+      hintLevel: effectiveAttemptCount,
       isStuck,
       problemTitle: problemTitle || meta.title,
       problemDescription: problemDescription || meta.description,

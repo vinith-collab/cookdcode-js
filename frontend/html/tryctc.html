@@ -5297,7 +5297,16 @@
                                 const localCheckResponse = await fetch(`${API_BASE}/api/checkInput`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ category, problemID, section, userInput: userContent, recipeContent, logicContent })
+                                    body: JSON.stringify({ 
+                                        category, 
+                                        problemID, 
+                                        section, 
+                                        userInput: userContent, 
+                                        recipeContent, 
+                                        logicContent,
+                                        attemptCount: window.hintLevels[section] || 1,
+                                        hintLevel: window.hintLevels[section] || 1
+                                    })
                                 });
                                 if (localCheckResponse.ok) {
                                     localCheckData = await localCheckResponse.json();
@@ -5419,7 +5428,14 @@
                                 const localCheckResponse = await fetch(`${API_BASE}/api/checkInput`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ category, problemID, section: 'samplecode', userInput: code })
+                                    body: JSON.stringify({ 
+                                        category, 
+                                        problemID, 
+                                        section: 'samplecode', 
+                                        userInput: code,
+                                        attemptCount: window.hintLevels['samplecode'] || 1,
+                                        hintLevel: window.hintLevels['samplecode'] || 1
+                                    })
                                 });
                                 if (localCheckResponse.ok) {
                                     localCheckData = await localCheckResponse.json();
