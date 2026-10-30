@@ -6,10 +6,6 @@
 export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/]/g, " ").replace(/\s+/g, " ").trim();
 
-  // 1. Detect if student is asking a conversational question
-  const isQuestion = norm.endsWith("?") ||
-    /\b(?:how|what|why|help|puriyala|theriyala|doubt|know|rule|explain|start|where)\b/i.test(norm);
-
   // Step 1: Range limits (1 to 50)
   const hasStep1Range = (/\b1\b/.test(norm) && /\b50\b/.test(norm)) ||
     /\b1\s*(?:to|-|till|through)\s*50\b/.test(norm) ||
@@ -17,19 +13,23 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
     /\bbetween\s*1\s*and\s*50\b/.test(norm);
 
   // Step 2: Divisibility by 2 rule
-  const hasStep2Divisibility = /\b(?:divisible\s*by\s*2|divided\s*by\s*2|divide\s*(?:it\s*)?by\s*2|multiple\s*of\s*2|dividing\s*by\s*2)\b/.test(norm) ||
+  const hasStep2Divisibility = /\bdivisib(?:le|ility)\s*by\s*2\b/.test(norm) ||
+    /\b(?:modulo\s*)?divid(?:e|ed|ing)\b.*?\bby\s*2\b/.test(norm) ||
+    /\bby\s*2\b.*?\bdivid(?:e|ed|ing)\b/.test(norm) ||
+    /\bmultiple\s*of\s*2\b/.test(norm) ||
+    /\b2\s*(?:multiplication\s*)?table\b/.test(norm) ||
     /%\s*2\b/.test(norm) ||
-    (/\beven\b/.test(norm) && /\b2\b/.test(norm) && (/\bdivide\b|\bdivisible\b|\bmodulo\b|\bremainder\b|\bmultiple\b/.test(norm)));
+    (/\b2\b/.test(norm) && (/\bdivide\b|\bdivisible\b|\bmodulo\b|\bmultiplication\b/.test(norm)));
 
-  // Step 3: Modulo remainder test (remainder is 0 or % 2 == 0)
+  // Step 3: Modulo remainder / leftover test (remainder is 0 or % 2 == 0 or leftover is 0 / no leftover)
   const hasStep3Remainder = /%\s*2\s*==?\s*0\b/.test(norm) ||
-    /\bremainder\s*(?:is\s*|equals?\s*|==?\s*)?0\b/.test(norm) ||
-    /\brem\s*0\b/.test(norm) ||
-    /\bzero\s*remainder\b/.test(norm) ||
-    (/\bremainder\b/.test(norm) && (/\b0\b|\bzero\b/.test(norm)));
+    /\b(?:remainder|leftover|left\s*over|balance)\s*(?:is\s*|equals?\s*|==?\s*)?(?:0|zero)\b/.test(norm) ||
+    /\b(?:no|zero|0)\s*(?:remainder|leftover|left\s*over|balance)\b/.test(norm) ||
+    /\brem\s*(?:0|zero)\b/.test(norm) ||
+    ((/\bremainder\b|\bleftover\b|\bleft\s*over\b|\bbalance\b/.test(norm)) && (/\b0\b|\bzero\b|\bno\b/.test(norm)));
 
   // Step 4: Filter even sequence / examples
-  const hasStep4Filter = /\b(?:filter|select|collect|print|display|show|pick|keep|output|identify|find)\b/.test(norm) ||
+  const hasStep4Filter = /\b(?:filter|select|collect|print|display|show|pick|keep|output|identify|find|spot)\b/.test(norm) ||
     /\b(?:2,\s*4,\s*6|2\s+4\s+6|2\s*4\s*6\s*8)\b/.test(norm) ||
     (/\beven\b/.test(norm) && /\bnumbers?\b/.test(norm));
 
@@ -41,7 +41,7 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
   ];
 
   const completedStepsCount = [hasStep1Range, hasStep2Divisibility, hasStep3Remainder, hasStep4Filter].filter(Boolean).length;
-  const isFullyVerified = !isQuestion && hasStep1Range && hasStep2Divisibility && hasStep3Remainder;
+  const isFullyVerified = hasStep1Range && hasStep2Divisibility && hasStep3Remainder;
 
   if (isFullyVerified) {
     return {
@@ -53,6 +53,10 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
       matchedFirebaseInput: "even numbers leave remainder 0 when divided by 2"
     };
   }
+
+  // 1. Detect if student is asking an unresolved conversational question
+  const isQuestion = norm.endsWith("?") ||
+    /\b(?:how|what|why|help|puriyala|theriyala|doubt|explain|start|where)\b/i.test(norm);
 
   // If question or incomplete input
   if (isQuestion || norm.length < 5) {

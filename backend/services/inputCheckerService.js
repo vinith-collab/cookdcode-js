@@ -4542,7 +4542,7 @@ for (int i = 1; i <= ${varName}; i++) {
               const evenLog = validateEvenNumbers1To50Logic(userInput, attemptCount);
               parsed.logicStepProgress = evenLog.logicStepProgress;
               parsed.stepProgress = evenLog.logicStepProgress;
-              if (evenLog.isFullyVerified && parsed.correct) {
+              if (evenLog.isFullyVerified) {
                 parsed.correct = true;
                 parsed.proofType = "mathematical";
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount) : evenLog.feedback;
