@@ -1,7 +1,10 @@
 function detectProblemType(problemId, problemTitle) {
   const normId = (problemId || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   const normTitle = (problemTitle || "").toLowerCase();
-  if (normId.includes("multiplication") || normId.includes("table") || normId === "problem05" || normId === "problem5" || normId === "problem21" || normId === "problem021" || normTitle.includes("multiplication") || normTitle.includes("table")) {
+  if (normId.includes("even1to50") || normId.includes("even50") || normId === "problem21" || normId === "problem021" || (normTitle.includes("even") && (normTitle.includes("50") || normTitle.includes("1 to 50")))) {
+    return "even-numbers-1-to-50";
+  }
+  if (normId.includes("multiplication") || normId.includes("table") || normId === "problem05" || normId === "problem5" || normTitle.includes("multiplication") || normTitle.includes("table")) {
     return "multiplication-table";
   }
   if (normId.includes("vowel") || normId.includes("consonant") || normId === "problem20" || normId === "problem020" || normTitle.includes("vowel") || normTitle.includes("consonant")) {

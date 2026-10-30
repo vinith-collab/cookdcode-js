@@ -547,20 +547,20 @@ const PROBLEM_METADATA_MAP = {
   },
   "problem21": {
     id: "problem21",
-    canonicalId: "multiplication-table",
-    title: "Challenge: Multiplication Table",
-    description: "Write a program to generate and display the multiplication table of a given number.",
+    canonicalId: "even-numbers-1-to-50",
+    title: "Challenge: Print Even Numbers from 1 to 50",
+    description: "Write a program to print all even numbers from 1 to 50.",
     phase: "Phase 1",
     problemBadge: "Problem 21",
-    concept: "Multiplication Loops",
-    objective: "Write a program to generate and display the multiplication table of a given number.",
+    concept: "Looping & Parity Filtering",
+    objective: "Iterate from 1 to 50 and print each number that is divisible by 2.",
     specifications: [
-      { label: "Input", desc: "A single positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
-      { label: "Task", desc: "Generate the multiplication multiples up to 10 for <code>n</code>.", icon: "fa-bullseye", color: "#7c3aed" },
-      { label: "Output", desc: "Display the multiplication table.", icon: "fa-display", color: "#059669" }
+      { label: "Range", desc: "Numbers from <code>1</code> to <code>50</code>.", icon: "fa-arrow-right-arrow-left", color: "#2563eb" },
+      { label: "Condition", desc: "Check if <code>i % 2 == 0</code> for each number.", icon: "fa-bullseye", color: "#7c3aed" },
+      { label: "Output", desc: "Print all even numbers from 2 to 50.", icon: "fa-display", color: "#059669" }
     ],
     examples: [
-      { input: "5", output: "Table of 5" }
+      { input: "Range 1 to 50", output: "2 4 6 8 ... 50" }
     ]
   },
   "senior-citizen": {

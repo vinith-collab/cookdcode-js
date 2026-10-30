@@ -1583,56 +1583,49 @@ public class Main {
 
   "problem21": {
     id: "problem21",
-    canonicalId: "multiplication-table",
-    title: "Multiplication Table",
-    stdin: "5",
+    canonicalId: "even-numbers-1-to-50",
+    title: "Print Even Numbers from 1 to 50",
+    stdin: "",
     templates: {
-      javascript: `// Problem 21: Multiplication Table
-let n = 5;
-
-for (let i = 1; i <= 10; i++) {
-    console.log(n + " x " + i + " = " + (n * i));
+      javascript: `// Problem 21: Print Even Numbers from 1 to 50
+for (let i = 1; i <= 50; i++) {
+    if (i % 2 === 0) {
+        console.log(i);
+    }
 }`,
-      python: `# Problem 21: Multiplication Table
-n = int(input())
-
-for i in range(1, 11):
-    print(f"{n} x {i} = {n * i}")`,
-      cpp: `// Problem 21: Multiplication Table
+      python: `# Problem 21: Print Even Numbers from 1 to 50
+for i in range(1, 51):
+    if i % 2 == 0:
+        print(i)`,
+      cpp: `// Problem 21: Print Even Numbers from 1 to 50
 #include <iostream>
 using namespace std;
 
 int main() {
-    int n;
-    if (cin >> n) {
-        for (int i = 1; i <= 10; i++) {
-            cout << n << " x " << i << " = " << (n * i) << endl;
+    for (int i = 1; i <= 50; i++) {
+        if (i % 2 == 0) {
+            cout << i << endl;
         }
     }
     return 0;
 }`,
-      c: `// Problem 21: Multiplication Table
+      c: `// Problem 21: Print Even Numbers from 1 to 50
 #include <stdio.h>
 
 int main() {
-    int n;
-    if (scanf("%d", &n) == 1) {
-        for (int i = 1; i <= 10; i++) {
-            printf("%d x %d = %d\\n", n, i, n * i);
+    for (int i = 1; i <= 50; i++) {
+        if (i % 2 == 0) {
+            printf("%d\\n", i);
         }
     }
     return 0;
 }`,
-      java: `// Problem 21: Multiplication Table
-import java.util.Scanner;
-
+      java: `// Problem 21: Print Even Numbers from 1 to 50
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        if (scanner.hasNextInt()) {
-            int n = scanner.nextInt();
-            for (int i = 1; i <= 10; i++) {
-                System.out.println(n + " x " + i + " = " + (n * i));
+        for (int i = 1; i <= 50; i++) {
+            if (i % 2 == 0) {
+                System.out.println(i);
             }
         }
     }
