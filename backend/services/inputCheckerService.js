@@ -23,6 +23,7 @@ import { validateDivisibleBy5Logic, validateDivisibleBy5Recipe, validateDivisibl
 import { validateMaximumOfTwoLogic, validateMaximumOfTwoRecipe, validateMaximumOfTwoIngredients, validateMaximumOfTwoSampleCode } from "./maximumOfTwoValidator.js";
 import { validateVowelConsonantLogic, validateVowelConsonantRecipe, validateVowelConsonantIngredients, validateVowelConsonantSampleCode } from "./vowelConsonantValidator.js";
 import { validateSeniorCitizenLogic, validateSeniorCitizenRecipe, validateSeniorCitizenIngredients, validateSeniorCitizenSampleCode } from "./seniorCitizenValidator.js";
+import { validateEvenNumbers1To50Logic, validateEvenNumbers1To50Recipe, validateEvenNumbers1To50Ingredients, validateEvenNumbers1To50SampleCode } from "./evenNumbers1To50Validator.js";
 import { getConditionalSpec, generateUniversalIfDirectives } from "./conditionalEngine.js";
 import { detectCrossProblemMismatch } from "./crossProblemDetector.js";
 let genAIClient = null;
@@ -254,6 +255,22 @@ else:
 }`;
     loopExamplePy = `for i in range(1, 11):
     print(f"{n} x {i} = {n * i}")`;
+  } else if (problemType === "even-numbers-1-to-50") {
+    varExampleJs = "// Loop counter i serves as our number";
+    varExamplePy = "# Loop counter i serves as our number";
+    loopExampleJs = `for (let i = 1; i <= 50; i++) {
+  if (i % 2 === 0) {
+    console.log(i);
+  }
+}`;
+    loopExamplePy = `for i in range(1, 51):
+    if i % 2 == 0:
+        print(i)`;
+    ifExampleJs = `if (i % 2 === 0) {
+  console.log(i);
+}`;
+    ifExamplePy = `if i % 2 == 0:
+    print(i)`;
   } else if (problemType === "vowel-consonant") {
     varExampleJs = "var ch = 'e';";
     varExamplePy = "ch = 'e'";
@@ -505,6 +522,14 @@ function isTasteSampleStructurallyComplete(code, problemType) {
     const hasLoop = /\b(?:for|while)\b/i.test(norm);
     const hasMult = /\*/.test(norm);
     return hasLoop && hasMult;
+  }
+
+  if (problemType === "even-numbers-1-to-50") {
+    const hasLoop = /\b(?:for|while)\b/i.test(norm);
+    const has50 = /50\b/.test(norm);
+    const hasMod2 = /%\s*2\b/.test(norm);
+    const hasStep2 = /\+=\s*2\b/.test(norm) || /,\s*2\s*\)/.test(norm);
+    return hasLoop && has50 && hasPrint && (hasMod2 || hasStep2);
   }
 
   if (problemType === "divisors" || problemType === "divisor-of-a-number") {
@@ -1461,7 +1486,81 @@ Concept: Sequential Multiplication & Repetition (Product = Given Number \xD7 Mul
      * Break in loop: "Loop termination bug: break stops the loop immediately after the 1st line. Remove break so the table runs up to 10."
    - Populate 'sampleCodeStepProgress' with all 4 steps.
 `;
-    } else if (problemType === "prime-number") {
+    } else if (problemType === "even-numbers-1-to-50") {
+      problemSpecificDirectives = `
+PROBLEM FOCUS: "Print Even Numbers from 1 to 50" (CTC Pedagogy Matrix)
+Concept: Loop iteration (1 to 50) and modulo divisibility (i % 2 == 0) or step of 2
+
+1. STAGE 1 (LOGIC):
+   - Definition: Even numbers are numbers divisible by 2 with remainder 0 (number % 2 == 0).
+   - Range: Between 1 and 50, the even numbers are 2, 4, 6, 8, ... up to 50.
+   - When student describes divisibility by 2 with remainder 0 or shows even numbers in range 1 to 50, mark correct: true!
+
+2. STAGE 2 (RECIPE):
+   - 4-STEP ALGORITHM (Natural English without programming keywords):
+     Step 1: Start counting numbers from 1 up to 50
+     Step 2: Check if current number is divisible by 2 with remainder 0
+     Step 3: If it is divisible by 2, display that number
+     Step 4: Repeat until reaching 50
+   - Populate 'recipeStepProgress' with all 4 steps.
+
+3. STAGE 3 (INGREDIENTS):
+   - CRITICAL MANDATORY REQUIREMENT: A LOOP FROM 1 TO 50 IS MANDATORY!
+   - If the student only writes "variable a" and an if condition WITHOUT defining a loop from 1 to 50, IT IS STRICTLY INCOMPLETE. You MUST set correct: false and guide them:
+     "🌟 Coach Maara note: You have set up the even check nicely! But remember, our challenge is to print even numbers from 1 to 50, so we need a Loop to iterate through all numbers.
+     Let's define a For loop with Start: 1 (or 2), Stop: 50 (i <= 50), Step: +1 (or +2)!"
+   - ATOMIC INGREDIENTS:
+     Step 1: For loop with Start: 1 (or 2), Stop: 50 (i <= 50), Step: +1 (or +2)
+     Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0
+     Step 3: Print statement inside loop: print(i)
+   - Populate 'ingredientsStepProgress' with all 3 steps.
+
+4. STAGE 4 (TASTE THE SAMPLE / SAMPLE CODE):
+   - Prototype code:
+     for (let i = 1; i <= 50; i++) {
+       if (i % 2 === 0) {
+         console.log(i);
+       }
+     }
+   - Must have loop up to 50, modulo 2 check (or step of 2), and print statement.
+`;
+    } else if (problemType === "even-numbers-1-to-50") {
+        if (section === "logic") {
+          const evenLog = validateEvenNumbers1To50Logic(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (EVEN NUMBERS 1 TO 50 - LOGIC):
+- Student Intent: "${evenLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Fully Verified Status: ${evenLog.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Even numbers leave remainder 0 when divided by 2 (number % 2 == 0) from 1 to 50.
+`;
+        } else if (section === "recipe") {
+          const evenRec = validateEvenNumbers1To50Recipe(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (EVEN NUMBERS 1 TO 50 - RECIPE):
+- Student Intent: "${evenRec.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Step 1 (Count 1..50): ${evenRec.hasStep1}, Step 2 (Divisible by 2): ${evenRec.hasStep2}, Step 3 (Display even): ${evenRec.hasStep3}, Step 4 (Repeat): ${evenRec.hasStep4}
+- INSTRUCTION FOR COACH MAARA: Deliver in plain everyday English without code keywords.
+`;
+        } else if (section === "ingredients") {
+          const evenIng = validateEvenNumbers1To50Ingredients(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (EVEN NUMBERS 1 TO 50 - INGREDIENTS):
+- Student Intent: "${evenIng.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Loop: ${evenIng.hasLoop}, Even Check: ${evenIng.hasEvenCheck}, Print: ${evenIng.hasPrint}
+- INSTRUCTION FOR COACH MAARA:
+1. CRITICAL: A loop from 1 to 50 is MANDATORY! If student does not have a loop, set correct: false and guide them to define the For loop!
+2. Even condition: Left Side: i % 2, Operator: ==, Right Side: 0.
+3. Print statement inside loop: print(i).
+`;
+        } else if (section === "samplecode") {
+          const evenSample = validateEvenNumbers1To50SampleCode(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (EVEN NUMBERS 1 TO 50 - SAMPLE CODE):
+- Verified: ${evenSample.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Ensure student writes loop from 1 to 50 with if (i % 2 == 0) and print(i).
+`;
+        }
+      } else if (problemType === "prime-number") {
       problemSpecificDirectives = `
 PROBLEM FOCUS: "Prime Number Checker"
 Concept: Divisibility & Factor Counting
@@ -4669,6 +4768,66 @@ for (int i = 1; i <= ${varName}; i++) {
               }
             }
           }
+          if (problemType === "even-numbers-1-to-50") {
+            if (section === "logic") {
+              const evenLog = validateEvenNumbers1To50Logic(userInput);
+              if (evenLog.isFullyVerified && parsed.correct) {
+                parsed.correct = true;
+                parsed.proofType = "mathematical";
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput) : evenLog.feedback;
+                parsed.correction = "Proceed to the Recipe stage to write the step-by-step algorithm.";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                parsed.feedback = synthesizeHumanTouch(evenLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput);
+                parsed.correction = evenLog.correction || parsed.correction;
+                parsed.suggestedInput = evenLog.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "recipe") {
+              const evenRec = validateEvenNumbers1To50Recipe(userInput);
+              parsed.recipeStepProgress = evenRec.recipeStepProgress;
+              if (evenRec.isFullyVerified) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput) : evenRec.feedback;
+                parsed.correction = "Proceed to Ingredients stage!";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                parsed.feedback = synthesizeHumanTouch(evenRec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput);
+                parsed.correction = evenRec.correction || parsed.correction;
+                parsed.suggestedInput = evenRec.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "ingredients") {
+              const evenIng = validateEvenNumbers1To50Ingredients(userInput);
+              parsed.ingredientsStepProgress = evenIng.ingredientsStepProgress;
+              if (evenIng.isFullyVerified) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput) : evenIng.feedback;
+                parsed.correction = "Proceed to Taste the Sample stage to assemble your code!";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                parsed.feedback = synthesizeHumanTouch(evenIng.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput);
+                parsed.correction = evenIng.correction || parsed.correction;
+                parsed.suggestedInput = evenIng.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "samplecode") {
+              const evenSample = validateEvenNumbers1To50SampleCode(userInput);
+              if (evenSample.isFullyVerified) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput) : evenSample.feedback;
+                parsed.correction = "All done! Run the code and submit.";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                parsed.feedback = synthesizeHumanTouch(evenSample.feedback, "samplecode", latestInput);
+                parsed.correction = evenSample.correction || parsed.correction;
+              }
+            }
+          }
           if (problemType === "prime-number") {
             if (section === "logic") {
               const primeLog = validatePrimeLogic(userInput, attemptCount);
@@ -6631,6 +6790,46 @@ for (int i = 1; i <= ${varName}; i++) {
           correction: mulSample.correction,
           suggestedInput: mulSample.suggestedInput || void 0,
           sampleCodeStepProgress: mulSample.sampleCodeStepProgress
+        };
+      }
+    }
+    if (problemType === "even-numbers-1-to-50") {
+      if (section === "logic") {
+        const evenLog = validateEvenNumbers1To50Logic(userInput);
+        return {
+          correct: evenLog.isFullyVerified,
+          feedback: synthesizeHumanTouch(evenLog.feedback, "logic", userInput, attemptCount),
+          correction: evenLog.correction,
+          suggestedInput: evenLog.suggestedInput
+        };
+      }
+      if (section === "recipe") {
+        const evenRec = validateEvenNumbers1To50Recipe(userInput);
+        return {
+          correct: evenRec.isFullyVerified,
+          feedback: synthesizeHumanTouch(evenRec.feedback, "recipe", userInput, attemptCount),
+          correction: evenRec.correction,
+          suggestedInput: evenRec.suggestedInput,
+          recipeStepProgress: evenRec.recipeStepProgress
+        };
+      }
+      if (section === "ingredients") {
+        const evenIng = validateEvenNumbers1To50Ingredients(userInput);
+        return {
+          correct: evenIng.isFullyVerified,
+          feedback: synthesizeHumanTouch(evenIng.feedback, "ingredients", userInput, attemptCount),
+          correction: evenIng.correction,
+          suggestedInput: evenIng.suggestedInput,
+          ingredientsStepProgress: evenIng.ingredientsStepProgress
+        };
+      }
+      if (section === "samplecode") {
+        const evenSample = validateEvenNumbers1To50SampleCode(userInput);
+        return {
+          correct: evenSample.isFullyVerified,
+          feedback: synthesizeHumanTouch(evenSample.feedback, "samplecode", userInput, attemptCount),
+          correction: evenSample.correction,
+          suggestedInput: void 0
         };
       }
     }
