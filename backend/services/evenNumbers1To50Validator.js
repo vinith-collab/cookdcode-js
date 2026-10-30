@@ -188,16 +188,26 @@ export function validateEvenNumbers1To50Recipe(text, attemptCount = 1) {
   // 2. Check if number is divisible by 2 (or count by 2s)
   // 3. Print / Display the even number
   // 4. Repeat until reaching 50
-  const hasStep1 = norm.includes("1") && (norm.includes("50") || norm.includes("start") || norm.includes("count") || norm.includes("from 1"));
-  const hasStep2 = norm.includes("divisible by 2") || norm.includes("divide by 2") || norm.includes("remainder 0") || norm.includes("% 2") || norm.includes("even") || norm.includes("step of 2") || norm.includes("add 2");
-  const hasStep3 = norm.includes("display") || norm.includes("print") || norm.includes("show") || norm.includes("output");
-  const hasStep4 = norm.includes("repeat") || norm.includes("next") || norm.includes("continue") || norm.includes("until 50") || norm.includes("50");
+  const hasStep1 = (norm.includes("1") && (norm.includes("50") || norm.includes("start") || norm.includes("count") || norm.includes("from 1"))) ||
+    /\b(?:start|count|range)\b.*?\b(?:1\s*(?:to|-)\s*50|50)\b/.test(norm);
+  const hasStep2 = /\bdivisib(?:le|ility)\s*by\s*2\b/.test(norm) ||
+    /\bdivid(?:e|ed|ing)\b.*?\bby\s*2\b/.test(norm) ||
+    /\bby\s*2\b.*?\bdivid(?:e|ed|ing)\b/.test(norm) ||
+    /\bremainder\s*(?:is\s*|equals?\s*|==?\s*)?(?:0|zero)\b/.test(norm) ||
+    /\bleftover\s*(?:is\s*|equals?\s*|==?\s*)?(?:0|zero)\b/.test(norm) ||
+    /\b(?:no|zero)\s*(?:remainder|leftover)\b/.test(norm) ||
+    /%\s*2\b/.test(norm) ||
+    norm.includes("step of 2") ||
+    norm.includes("add 2") ||
+    (norm.includes("check") && (norm.includes("even") || norm.includes("2")));
+  const hasStep3 = norm.includes("display") || norm.includes("print") || norm.includes("show") || norm.includes("output") || norm.includes("announce");
+  const hasStep4 = norm.includes("repeat") || norm.includes("next") || norm.includes("continue") || norm.includes("until 50") || norm.includes("till 50");
 
   const recipeStepProgress = [
-    { stepNumber: 1, title: "1. Start counting from 1 up to 50", completed: hasStep1, current: !hasStep1 },
-    { stepNumber: 2, title: "2. Check if current number is divisible by 2", completed: hasStep2, current: hasStep1 && !hasStep2 },
-    { stepNumber: 3, title: "3. Display the number if it is even", completed: hasStep3, current: hasStep1 && hasStep2 && !hasStep3 },
-    { stepNumber: 4, title: "4. Repeat until reaching 50", completed: hasStep4, current: hasStep1 && hasStep2 && hasStep3 && !hasStep4 }
+    { stepNumber: 1, title: "1. Start counting from 1 up to 50", completed: Boolean(hasStep1), current: !hasStep1 },
+    { stepNumber: 2, title: "2. Check if current number is divisible by 2", completed: Boolean(hasStep2), current: hasStep1 && !hasStep2 },
+    { stepNumber: 3, title: "3. Display the number if it is even", completed: Boolean(hasStep3), current: hasStep1 && hasStep2 && !hasStep3 },
+    { stepNumber: 4, title: "4. Repeat until reaching 50", completed: Boolean(hasStep4), current: hasStep1 && hasStep2 && hasStep3 && !hasStep4 }
   ];
 
   const completedCount = [hasStep1, hasStep2, hasStep3, hasStep4].filter(Boolean).length;
@@ -214,21 +224,35 @@ export function validateEvenNumbers1To50Recipe(text, attemptCount = 1) {
     };
   }
 
-  let feedback;
-  if (attemptCount >= 3) {
-    feedback = `🌟 Coach Maara here! Let's complete the recipe together! Copy or adapt these 4 clear steps:\n\nStep 1: Start counting numbers from 1 up to 50.\nStep 2: Check if the number is divisible by 2 (remainder is 0).\nStep 3: If divisible by 2, display the number.\nStep 4: Repeat until reaching 50.`;
-  } else if (attemptCount === 2) {
-    feedback = `🌟 Coach Maara checking back! You have completed ${completedCount} of 4 recipe steps. To finish this stage, make sure you describe how we start at 1, check divisibility by 2 for each number, display it if it's even, and repeat up to 50.`;
+  // Socratic Step-by-Step Guidance: Guide ONLY the immediate next step without spoiling all steps!
+  let feedback = "";
+  let correction = "";
+  let suggestedInput = "";
+
+  if (!hasStep1) {
+    feedback = "🌟 Coach Maara here! Let's start our recipe with Step 1: How do we begin our counting sequence? (e.g. Start counting numbers from 1 up to 50).";
+    correction = "Write Step 1: Start counting numbers from 1 up to 50.";
+    suggestedInput = "Step 1: Start counting numbers from 1 up to 50";
+  } else if (!hasStep2) {
+    feedback = "🌟 Coach Maara here! Step 1 looks solid! 👏 Now for Step 2: For each number, what condition checks if the number is an even number? (e.g. Check if the number is divisible by 2 with remainder 0).";
+    correction = "Write Step 2: Check if current number is divisible by 2 (remainder 0).";
+    suggestedInput = "Step 2: Check if current number is divisible by 2 (remainder 0)";
+  } else if (!hasStep3) {
+    feedback = "🌟 Coach Maara here! Great progress on Step 1 and Step 2! 👏 Now for Step 3: When a number is divisible by 2, what action should our recipe take to announce or show it?";
+    correction = "Write Step 3: If divisible by 2, display or print the number.";
+    suggestedInput = "Step 3: If divisible by 2, display the number";
   } else {
-    feedback = `🌟 Coach Maara here! You have completed ${completedCount} of 4 recipe steps. Make sure to describe:\n1. Start counting numbers from 1 to 50.\n2. Check if the current number is divisible by 2.\n3. Display the number if it is even.\n4. Repeat for all numbers up to 50.`;
+    feedback = "🌟 Coach Maara here! Almost done! 👏 For Step 4: After checking and displaying the current number, what instruction repeats this process for the next numbers until we reach 50?";
+    correction = "Write Step 4: Repeat for all numbers until reaching 50.";
+    suggestedInput = "Step 4: Repeat until reaching 50";
   }
 
   return {
     isFullyVerified: false,
     recipeStepProgress,
     feedback,
-    correction: "Outline all 4 steps: 1) Start at 1, 2) Check if divisible by 2, 3) Display if even, 4) Repeat up to 50.",
-    suggestedInput: "Step 1: Start counting from 1 up to 50\nStep 2: Check if current number is divisible by 2 (remainder 0)\nStep 3: If divisible by 2, display the number\nStep 4: Repeat until reaching 50",
+    correction,
+    suggestedInput,
     matchedFirebaseInput: "how to write recipe for even numbers 1 to 50"
   };
 }
@@ -283,42 +307,16 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
 
   // If user only wrote "for loop" or didn't provide complete loop controls:
   if (!hasCompleteLoop) {
-    if (attemptCount >= 3) {
+    if (attemptCount >= 2) {
       return {
         isFullyVerified: false,
         hasLoop: false,
         hasEvenCheck,
         hasPrint,
         ingredientsStepProgress,
-        feedback: "🌟 Coach Maara here! Let's write the complete ingredients list together:\n• Step 1: For loop with Start: 1, Stop: 50, Step: +1\n• Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\n• Step 3: Inside if block: print(i)",
-        correction: "Define all 3 ingredients: Loop (Start 1, Stop 50, Step +1), If condition (i % 2 == 0), and print(i).",
-        suggestedInput: "Step 1: For loop with Start: 1 (i = 1), Stop: 50 (i <= 50), Step: +1 (i++)\nStep 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
-        matchedFirebaseInput: "step 1 : for loop start 1 stop 50 step 1"
-      };
-    }
-    if (attemptCount === 2) {
-      return {
-        isFullyVerified: false,
-        hasLoop: false,
-        hasEvenCheck,
-        hasPrint,
-        ingredientsStepProgress,
-        feedback: "🌟 Coach Maara checking back! To step through numbers 1 to 50, define the 3 loop controls clearly in your worksheet:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)",
+        feedback: "🌟 Coach Maara checking back! For Ingredient 1, define the 3 loop controls clearly in your worksheet:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop with Start: 1, Stop: 50, Step: +1`",
         correction: "Define loop controls: 'Step 1: For loop with Start: 1, Stop: 50, Step: +1'.",
-        suggestedInput: "Step 1: For loop with Start: 1 (i = 1), Stop: 50 (i <= 50), Step: +1 (i++)\nStep 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
-        matchedFirebaseInput: "for loop without start stop step"
-      };
-    }
-    if (hasLoopKeyword) {
-      return {
-        isFullyVerified: false,
-        hasLoop: false,
-        hasEvenCheck,
-        hasPrint,
-        ingredientsStepProgress,
-        feedback: "🌟 Coach Maara note: You have chosen the right tool—a **For loop**! 👏\n\nNow, define the 3 essential loop controls for counting from 1 to 50:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop with Start: 1, Stop: 50, Step: +1`",
-        correction: "Define loop controls: 'Step 1: For loop with Start: 1, Stop: 50, Step: +1'.",
-        suggestedInput: "Step 1: For loop with Start: 1 (i = 1), Stop: 50 (i <= 50), Step: +1 (i++)\nStep 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
+        suggestedInput: "Step 1: For loop with Start: 1, Stop: 50, Step: +1",
         matchedFirebaseInput: "for loop without start stop step"
       };
     }
@@ -328,9 +326,9 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
       hasEvenCheck,
       hasPrint,
       ingredientsStepProgress,
-      feedback: "🌟 Coach Maara note: To print even numbers from **1 to 50**, we need a **Loop** to iterate through all numbers from 1 to 50.\n\nDefine a **For loop** with:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)",
+      feedback: "🌟 Coach Maara note: To print even numbers from **1 to 50**, we need a **Loop** to iterate through the numbers.\n\nDefine a **For loop** with:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)",
       correction: "Add the loop ingredient: 'Step 1: For loop with Start: 1, Stop: 50, Step: +1'.",
-      suggestedInput: "Step 1: For loop with Start: 1 (i = 1), Stop: 50 (i <= 50), Step: +1 (i++)\nStep 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
+      suggestedInput: "Step 1: For loop with Start: 1, Stop: 50, Step: +1",
       matchedFirebaseInput: "step 1 : variable a step 2 : if condition without loop"
     };
   }
