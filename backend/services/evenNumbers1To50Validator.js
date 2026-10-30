@@ -263,41 +263,45 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
   // Strip worksheet step labels ("Step 1:", "Step 2:", etc.) at line starts so they are not confused with loop steps
   const withoutStepHeaders = norm.replace(/(?:^|\n)\s*step\s*\d+\s*[:\-]/gi, "\n");
 
-  const hasLoopKeyword = /\b(?:for\s+loop|while\s+loop|for\s*\(|while\s*\(|for\s+\w+\s+in|\bloop\b)/i.test(norm);
+  const hasLoopKeyword = /\b(?:for\s*loop|while\s*loop|for\s*\(|while\s*\(|for\s+\w+\s+in|\bloop\b)/i.test(norm);
 
-  // Check Start: must specifically define start value (1 or 2)
+  // Check Start: must define start value (1 or 2) or range starting at 1
   const hasLoopStart = /\bstart\s*[:=\s]\s*\(?\s*[12]\b/i.test(withoutStepHeaders) ||
     /\b(?:start\s*at|starts?\s*at|starts?\s*with|starting\s*from|from)\s*[12]\b/i.test(withoutStepHeaders) ||
     /\bi\s*=\s*[12]\b/i.test(withoutStepHeaders) ||
-    /\brange\s*\(\s*[12]\s*,/i.test(withoutStepHeaders);
+    /\brange\s*\(\s*[12]\s*,/i.test(withoutStepHeaders) ||
+    /\b[12]\s*(?:to|-)\s*50\b/i.test(withoutStepHeaders);
 
-  // Check Stop: must specifically define limit up to 50
+  // Check Stop: must define limit up to 50
   const hasLoopStop = /\bstop\s*[:=\s]\s*\(?\s*(?:i\s*<=?\s*)?50\b/i.test(withoutStepHeaders) ||
-    /\b(?:up\s*to|to|till|until|limit)\s*50\b/i.test(withoutStepHeaders) ||
+    /\b(?:up\s*to|to|till|until|limit|end\s*(?:at|:|\s))\s*50\b/i.test(withoutStepHeaders) ||
     /\bi\s*<=?\s*50\b/i.test(withoutStepHeaders) ||
-    /\brange\s*\(\s*[12]\s*,\s*5[01]\b/i.test(withoutStepHeaders);
+    /\brange\s*\(\s*[12]\s*,\s*5[01]\b/i.test(withoutStepHeaders) ||
+    /\b[12]\s*(?:to|-)\s*50\b/i.test(withoutStepHeaders);
 
-  // Check Step: must define increment (+1 or +2 or i++ or i+=2)
-  const hasLoopStep = /\b(?:next\s*step|step)\s*[:=\s]\s*\(?\s*\+?[12]\b/i.test(withoutStepHeaders) ||
+  // Check Step: must define increment (+1 or +2 or i++ or i+=2), or default +1 when loop covers range 1 to 50
+  const hasExplicitLoopStep = /\b(?:next\s*step|step)\s*[:=\s]\s*\(?\s*\+?[12]\b/i.test(withoutStepHeaders) ||
     /\bi\+\+/i.test(withoutStepHeaders) ||
     /\bi\s*\+=\s*[12]\b/i.test(withoutStepHeaders) ||
     /\bstep\s*\(\s*\+?[12]\s*\)/i.test(withoutStepHeaders) ||
     /\bincrement\s*by\s*[12]\b/i.test(withoutStepHeaders) ||
     /\brange\s*\(\s*[12]\s*,\s*5[01]\s*,\s*[12]\s*\)/i.test(withoutStepHeaders);
 
-  const hasCompleteLoop = hasLoopKeyword && hasLoopStart && hasLoopStop && hasLoopStep;
+  const hasRange1To50 = /\b[12]\s*(?:to|-)\s*50\b/i.test(norm) || (hasLoopStart && hasLoopStop);
+  const hasLoopStep = hasExplicitLoopStep || hasRange1To50;
+  const hasCompleteLoop = hasLoopKeyword && hasRange1To50;
 
   // Check if condition (left side: i % 2, op: ==, right side: 0)
-  const hasIfCondition = /\bif\b/i.test(norm);
-  const hasMod2 = /%\s*2\b/i.test(norm) || /divide\s*by\s*2/i.test(norm) || /remainder/i.test(norm);
-  const hasEqualsZero = /==\s*0\b/i.test(norm) || /right\s*side\s*[:=]?\s*0\b/i.test(norm) || /remainder\s*is\s*0\b/i.test(norm);
+  const hasIfCondition = /\bif\b/i.test(norm) || /\bcondition\b/i.test(norm) || /\bcheck\b/i.test(norm);
+  const hasMod2 = /%\s*2\b/i.test(norm) || /divide\s*by\s*2/i.test(norm) || /divisible\s*by\s*2/i.test(norm) || /remainder/i.test(norm) || /leftover/i.test(norm);
+  const hasEqualsZero = /==\s*0\b/i.test(norm) || /=\s*0\b/i.test(norm) || /right\s*side\s*[:=]?\s*0\b/i.test(norm) || /remainder\s*(?:is|==|=)?\s*0\b/i.test(norm) || /leftover\s*(?:is|==|=)?\s*0\b/i.test(norm) || /zero/i.test(norm);
 
-  const hasStepBy2Shortcut = hasLoopStep && (/step\s*[:=\s]\s*\(?\s*\+?2\b/i.test(withoutStepHeaders) || /\bi\s*\+=\s*2\b/i.test(withoutStepHeaders) || /step\s*\(\s*\+?2\s*\)/i.test(withoutStepHeaders));
+  const hasStepBy2Shortcut = hasExplicitLoopStep && (/step\s*[:=\s]\s*\(?\s*\+?2\b/i.test(withoutStepHeaders) || /\bi\s*\+=\s*2\b/i.test(withoutStepHeaders) || /step\s*\(\s*\+?2\s*\)/i.test(withoutStepHeaders));
 
   // Print statement
-  const hasPrint = /\b(?:print|display|console\.log)\b/i.test(norm);
+  const hasPrint = /\b(?:print|display|console\.log|show|output|write)\b/i.test(norm);
 
-  const hasEvenCheck = (hasIfCondition && (hasMod2 || hasEqualsZero)) || hasStepBy2Shortcut;
+  const hasEvenCheck = (hasIfCondition && (hasMod2 || hasEqualsZero)) || (hasMod2 && hasEqualsZero) || hasStepBy2Shortcut || /i\s*%\s*2\s*==\s*0/i.test(norm);
 
   const ingredientsStepProgress = [
     { stepNumber: 1, title: "1. For loop with Start: 1 (or 2), Stop: 50 (i <= 50), Step: +1 (or +2)", completed: hasCompleteLoop, current: !hasCompleteLoop },
@@ -307,53 +311,41 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
 
   // If user only wrote "for loop" or didn't provide complete loop controls:
   if (!hasCompleteLoop) {
-    if (attemptCount >= 2) {
-      return {
-        isFullyVerified: false,
-        hasLoop: false,
-        hasEvenCheck,
-        hasPrint,
-        ingredientsStepProgress,
-        feedback: "🌟 Coach Maara checking back! For Ingredient 1, define the 3 loop controls clearly in your worksheet:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop with Start: 1, Stop: 50, Step: +1`",
-        correction: "Define loop controls: 'Step 1: For loop with Start: 1, Stop: 50, Step: +1'.",
-        suggestedInput: "Step 1: For loop with Start: 1, Stop: 50, Step: +1",
-        matchedFirebaseInput: "for loop without start stop step"
-      };
-    }
+    const loopHints = [
+      "🌟 Coach Maara note: To find even numbers between 1 and 50, our first ingredient must be a **Loop** to iterate through all numbers from 1 to 50.\n\nDefine a **For loop** in your worksheet:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop from 1 to 50 (Start: 1, Stop: 50, Step: +1)`",
+      "🌟 Coach Maara checking back! For Ingredient 1, define the 3 loop controls clearly in your worksheet:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop with Start: 1, Stop: 50, Step: +1`",
+      "🌟 Coach Maara with a fresh tip! Think of a loop like a counter that runs from 1 to 50. In your worksheet, you can write: `Step 1: For loop starting at 1 up to 50 with step +1`.",
+      "🌟 Coach Maara encouraging you! We need a counting loop covering our range. Try writing: `Step 1: For loop from 1 to 50` in your worksheet!"
+    ];
+    const loopIndex = Math.max(0, attemptCount - 1) % loopHints.length;
     return {
       isFullyVerified: false,
       hasLoop: false,
       hasEvenCheck,
       hasPrint,
       ingredientsStepProgress,
-      feedback: "🌟 Coach Maara note: To print even numbers from **1 to 50**, we need a **Loop** to iterate through the numbers.\n\nDefine a **For loop** with:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)",
-      correction: "Add the loop ingredient: 'Step 1: For loop with Start: 1, Stop: 50, Step: +1'.",
+      feedback: loopHints[loopIndex],
+      correction: "Define loop controls: 'Step 1: For loop with Start: 1, Stop: 50, Step: +1'.",
       suggestedInput: "Step 1: For loop with Start: 1, Stop: 50, Step: +1",
-      matchedFirebaseInput: "step 1 : variable a step 2 : if condition without loop"
+      matchedFirebaseInput: "for loop without start stop step"
     };
   }
 
   if (!hasEvenCheck && !hasStepBy2Shortcut) {
-    if (attemptCount >= 2) {
-      return {
-        isFullyVerified: false,
-        hasLoop: true,
-        hasEvenCheck: false,
-        hasPrint,
-        ingredientsStepProgress,
-        feedback: "🌟 Coach Maara checking back! Inside the loop, test if number is even: Left Side: `i % 2`, Operator: `==`, Right Side: `0`.",
-        correction: "Add if condition: 'Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0'.",
-        suggestedInput: "Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
-        matchedFirebaseInput: "step 2 : if condition for even numbers"
-      };
-    }
+    const evenHints = [
+      "🌟 Coach Maara note: Loop is ready! Now we need Ingredient 2: How do we test if the current number `i` is even inside the loop?\n\nAdd an **If condition**:\n• **Left Side:** `i % 2`\n• **Operator:** `==`\n• **Right Side:** `0`",
+      "🌟 Coach Maara checking back! Inside the loop, test if number is even: Left Side: `i % 2`, Operator: `==`, Right Side: `0`.\n\n👉 Example: `Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0`",
+      "🌟 Coach Maara with a fresh tip! Remember that an even number divided by 2 leaves remainder 0! In your worksheet, write: `Step 2: If condition (i % 2 == 0)`.",
+      "🌟 Coach Maara encouraging you! To filter even numbers, compare the remainder: `Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0`."
+    ];
+    const evenIndex = Math.max(0, attemptCount - 1) % evenHints.length;
     return {
       isFullyVerified: false,
       hasLoop: true,
       hasEvenCheck: false,
       hasPrint,
       ingredientsStepProgress,
-      feedback: "🌟 Coach Maara note: Great job setting up the loop from 1 to 50! Now, inside the loop, how do we test if the current number `i` is even?\n\nAdd an **If condition**:\n• **Left Side:** `i % 2`\n• **Operator:** `==`\n• **Right Side:** `0`",
+      feedback: evenHints[evenIndex],
       correction: "Add if condition: 'Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0'.",
       suggestedInput: "Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
       matchedFirebaseInput: "step 2 : if condition for even numbers"
@@ -361,26 +353,20 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
   }
 
   if (!hasPrint) {
-    if (attemptCount >= 2) {
-      return {
-        isFullyVerified: false,
-        hasLoop: true,
-        hasEvenCheck: true,
-        hasPrint: false,
-        ingredientsStepProgress,
-        feedback: "🌟 Coach Maara checking back! Don't forget to output the number: `Step 3: print(i)` inside the if block.",
-        correction: "Add print statement: 'Step 3: Inside if block: print(i)'.",
-        suggestedInput: "Step 3: Inside if block: print(i)",
-        matchedFirebaseInput: "step 3 : print the even number"
-      };
-    }
+    const printHints = [
+      "🌟 Coach Maara note: Loop and even check are in place! Now, what action do we take when the number is even?\n\nAdd a **Print statement** inside the if condition to display the number: `print(i)`.",
+      "🌟 Coach Maara checking back! Don't forget to output the number: `Step 3: print(i)` inside the if block.",
+      "🌟 Coach Maara with a fresh tip! When the check passes, we want to see the number on screen. Add: `Step 3: display i`.",
+      "🌟 Coach Maara encouraging you! Wrap up Ingredient 3 by outputting the verified even number: `Step 3: Inside if block: print(i)`."
+    ];
+    const printIndex = Math.max(0, attemptCount - 1) % printHints.length;
     return {
       isFullyVerified: false,
       hasLoop: true,
       hasEvenCheck: true,
       hasPrint: false,
       ingredientsStepProgress,
-      feedback: "🌟 Coach Maara note: Loop and even check are in place! Now, what action do we take when the number is even?\n\nAdd a **Print statement** inside the if condition to display the number: `print(i)`.",
+      feedback: printHints[printIndex],
       correction: "Add print statement: 'Step 3: Inside if block: print(i)'.",
       suggestedInput: "Step 3: Inside if block: print(i)",
       matchedFirebaseInput: "step 3 : print the even number"
@@ -392,7 +378,11 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
     hasLoop: true,
     hasEvenCheck: true,
     hasPrint: true,
-    ingredientsStepProgress,
+    ingredientsStepProgress: [
+      { stepNumber: 1, title: "1. For loop with Start: 1 (or 2), Stop: 50 (i <= 50), Step: +1 (or +2)", completed: true, current: false },
+      { stepNumber: 2, title: "2. If condition (Left Side: i % 2, Operator: ==, Right Side: 0)", completed: true, current: false },
+      { stepNumber: 3, title: "3. Print statement inside loop to print the even number", completed: true, current: false }
+    ],
     feedback: "🎉 **Ingredients Verified!** 🏆 Brilliant work! You have gathered all necessary ingredients: the loop from 1 to 50, the even divisibility check (`i % 2 == 0`), and the print statement inside the loop. Proceed to Stage 4: Taste the Sample!",
     correction: "Proceed to Stage 4: Taste the Sample to assemble your verified ingredients into working code.",
     suggestedInput: void 0,

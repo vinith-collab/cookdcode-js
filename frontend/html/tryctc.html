@@ -5328,7 +5328,8 @@
                             window.renderStepTracker(section, trackerSteps);
                         }
 
-                        const localCompletionMatch = Boolean(localCheckData.correct) || (localCheckData.correct !== false && /ready to (?:move on|proceed)|taste the sample|everything is (?:perfectly )?in place|all \d+ ingredients (?:are )?verified|ingredients verified|solution verified/i.test(localCheckData.feedback || ""));
+                        const feedbackHasCompletion = /ready to (?:start cooking|move on|proceed|advance)|gathered all (?:the )?necessary ingredients|taste the sample|everything is (?:perfectly )?in place|all \d+ ingredients (?:are )?verified|ingredients verified|solution verified/i.test(localCheckData.feedback || "");
+                        const localCompletionMatch = Boolean(localCheckData.correct) || feedbackHasCompletion;
                         if (localCompletionMatch) {
                             window.addHintToHistory({ 
                                 section, 
@@ -5457,7 +5458,7 @@
                             window.renderStepTracker('samplecode', sampleStepData);
                         }
 
-                        const isServerVerified = localCheckData.correct === true;
+                        const isServerVerified = localCheckData.correct === true || /all 4 ctc stages (?:are )?completed|proceed to (?:the )?compiler|sample code (?:logic and structure are )?verified/i.test(localCheckData.feedback || "");
 
                         if (!isServerVerified) {
                             if (checkBtn) {

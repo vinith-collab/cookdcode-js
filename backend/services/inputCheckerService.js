@@ -85,17 +85,20 @@ function synthesizeHumanTouch(rawHint, section, studentInput, attemptCount = 1) 
     return "\u{1F31F} Coach Maara here! You are making great strides. Let's think through this step together in your worksheet\u2014what do you think comes next?";
   }
   let clean = rawHint.trim();
-  clean = clean.replace(/^🌟\s*Coach Maara note:\s*/i, "");
-  if (/^(🌟|coach maara|hey there|awesome|spot on|great work|you're doing|you are doing)/i.test(clean)) {
-    return clean;
+  clean = clean.replace(/^(?:🌟\s*)?Coach Maara\s+(?:here|checking back|checking in|with a fresh tip|encouraging you|note)?[:!]?\s*/i, "").trim();
+  clean = clean.replace(/^(?:🌟\s*)?Coach Maara[:!]?\s*/i, "").trim();
+  clean = clean.replace(/^(?:checking back|checking in)[!:]?\s*/i, "").trim();
+
+  if (/^(hey there|awesome|spot on|great work|you're doing|you are doing)/i.test(clean)) {
+    return `🌟 Coach Maara here! ${clean}`;
   }
   const greetings = [
-    "\u{1F31F} Coach Maara here! ",
-    "\u{1F31F} Coach Maara checking back! ",
-    "\u{1F31F} Coach Maara with a fresh tip! ",
-    "\u{1F31F} Coach Maara encouraging you! "
+    "🌟 Coach Maara here! ",
+    "🌟 Coach Maara checking back! ",
+    "🌟 Coach Maara with a fresh tip! ",
+    "🌟 Coach Maara encouraging you! "
   ];
-  const greeting = greetings[Math.max(0, attemptCount - 1) % greetings.length] || "\u{1F31F} Coach Maara here! ";
+  const greeting = greetings[Math.max(0, attemptCount - 1) % greetings.length] || "🌟 Coach Maara here! ";
   return `${greeting}${clean.charAt(0).toUpperCase() + clean.slice(1)}`;
 }
 function extractLatestInput(text) {
@@ -152,7 +155,9 @@ function sanitizePrematurePraise(result, section, problemTitle = "") {
 
   // If the remaining text is substantive, preserve Gemini's rich explanation!
   if (feedbackText.length >= 20) {
-    feedbackText = feedbackText.replace(/^(?:🌟\s*)?Coach Maara (?:here)?[:!]?\s*/i, "").trim();
+    feedbackText = feedbackText.replace(/^(?:🌟\s*)?Coach Maara\s+(?:here|checking back|checking in|with a fresh tip|encouraging you|note)?[:!]?\s*/i, "").trim();
+    feedbackText = feedbackText.replace(/^(?:🌟\s*)?Coach Maara[:!]?\s*/i, "").trim();
+    feedbackText = feedbackText.replace(/^(?:checking back|checking in)[!:]?\s*/i, "").trim();
     feedbackText = `🌟 Coach Maara here! ${feedbackText}`;
     result.feedback = feedbackText;
     return result;
@@ -551,7 +556,9 @@ class InputCheckerService {
     const problemTitle = options?.problemTitle || seedProblem?.programName || problemID.replace(/-/g, " ");
     const problemDescription = options?.problemDescription || seedProblem?.description || `Problem: ${problemTitle}`;
     const concept = options?.concept || seedProblem?.concept || "Programming logic and algorithmic problem solving";
-    const attemptCount = typeof options?.attemptCount === "number" && options.attemptCount > 0 ? options.attemptCount : 1;
+    const attemptCount = (typeof options?.attemptCount === "number" && options.attemptCount > 0)
+      ? options.attemptCount
+      : ((typeof options?.hintLevel === "number" && options.hintLevel > 0) ? options.hintLevel : 1);
 
     const evalInput = (text && text.length >= 2) ? text : "what should we do";
 
@@ -4575,11 +4582,17 @@ for (int i = 1; i <= ${varName}; i++) {
             if (section === "recipe") {
               const evenRec = validateEvenNumbers1To50Recipe(userInput, attemptCount);
               parsed.recipeStepProgress = evenRec.recipeStepProgress;
-              if (evenRec.isFullyVerified) {
+              const geminiDeclaredRecipeComplete = parsed.correct === true || 
+                /ready to (?:gather ingredients|proceed|move on|advance)|recipe (?:is )?verified|all \d+ steps (?:are )?verified|completed all \d+ recipe steps/i.test(parsed.feedback || "");
+
+              if (evenRec.isFullyVerified || geminiDeclaredRecipeComplete) {
                 parsed.correct = true;
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : evenRec.feedback;
                 parsed.correction = "Proceed to Ingredients stage!";
                 parsed.suggestedInput = void 0;
+                if (parsed.recipeStepProgress) {
+                  parsed.recipeStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
               } else {
                 parsed.correct = false;
                 const isPremature = /proceed to (?:ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
@@ -4595,14 +4608,20 @@ for (int i = 1; i <= ${varName}; i++) {
             if (section === "ingredients") {
               const evenIng = validateEvenNumbers1To50Ingredients(userInput, attemptCount);
               parsed.ingredientsStepProgress = evenIng.ingredientsStepProgress;
-              if (evenIng.isFullyVerified) {
+              const geminiDeclaredIngComplete = parsed.correct === true || 
+                /ready to (?:start cooking|proceed|move on|advance)|gathered all (?:the )?necessary ingredients|all \d+ ingredients (?:are )?verified|officially ready to|ingredients verified/i.test(parsed.feedback || "");
+
+              if (evenIng.isFullyVerified || geminiDeclaredIngComplete) {
                 parsed.correct = true;
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount) : evenIng.feedback;
                 parsed.correction = "Proceed to Taste the Sample stage to assemble your code!";
                 parsed.suggestedInput = void 0;
+                if (parsed.ingredientsStepProgress) {
+                  parsed.ingredientsStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
               } else {
                 parsed.correct = false;
-                const isPremature = /proceed to (?:taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
+                const isPremature = /proceed to (?:taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on|start cooking)/i.test(parsed.feedback || "");
                 if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount);
                 } else {
