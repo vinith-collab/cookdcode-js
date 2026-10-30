@@ -4529,6 +4529,8 @@ for (int i = 1; i <= ${varName}; i++) {
           if (problemType === "even-numbers-1-to-50") {
             if (section === "logic") {
               const evenLog = validateEvenNumbers1To50Logic(userInput, attemptCount);
+              parsed.logicStepProgress = evenLog.logicStepProgress;
+              parsed.stepProgress = evenLog.logicStepProgress;
               if (evenLog.isFullyVerified && parsed.correct) {
                 parsed.correct = true;
                 parsed.proofType = "mathematical";
@@ -6570,7 +6572,9 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: evenLog.isFullyVerified,
           feedback: synthesizeHumanTouch(evenLog.feedback, "logic", userInput, attemptCount),
           correction: evenLog.correction,
-          suggestedInput: evenLog.suggestedInput
+          suggestedInput: evenLog.suggestedInput,
+          logicStepProgress: evenLog.logicStepProgress,
+          stepProgress: evenLog.logicStepProgress
         };
       }
       if (section === "recipe") {

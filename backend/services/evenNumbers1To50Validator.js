@@ -6,13 +6,60 @@
 export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*×/]/g, " ").replace(/\s+/g, " ").trim();
 
+  // 1. Detect if student is asking a conversational question
   const isQuestion = norm.endsWith("?") ||
     /\b(?:how|what|why|help|puriyala|theriyala|doubt|know|rule|explain|start|where)\b/i.test(norm);
 
+  // Step 1: Range limits (1 to 50)
+  const hasStep1Range = (/\b1\b/.test(norm) && /\b50\b/.test(norm)) ||
+    /\b1\s*(?:to|-|till|through)\s*50\b/.test(norm) ||
+    /\b(?:up\s*to|until|till|limit)\s*50\b/.test(norm) ||
+    /\bbetween\s*1\s*and\s*50\b/.test(norm);
+
+  // Step 2: Divisibility by 2 rule
+  const hasStep2Divisibility = /\b(?:divisible\s*by\s*2|divided\s*by\s*2|divide\s*(?:it\s*)?by\s*2|multiple\s*of\s*2|dividing\s*by\s*2)\b/.test(norm) ||
+    /%\s*2\b/.test(norm) ||
+    (/\beven\b/.test(norm) && /\b2\b/.test(norm) && (/\bdivide\b|\bdivisible\b|\bmodulo\b|\bremainder\b|\bmultiple\b/.test(norm)));
+
+  // Step 3: Modulo remainder test (remainder is 0 or % 2 == 0)
+  const hasStep3Remainder = /%\s*2\s*==?\s*0\b/.test(norm) ||
+    /\bremainder\s*(?:is\s*|equals?\s*|==?\s*)?0\b/.test(norm) ||
+    /\brem\s*0\b/.test(norm) ||
+    /\bzero\s*remainder\b/.test(norm) ||
+    (/\bremainder\b/.test(norm) && (/\b0\b|\bzero\b/.test(norm)));
+
+  // Step 4: Filter even sequence / examples
+  const hasStep4Filter = /\b(?:filter|select|collect|print|display|show|pick|keep|output|identify|find)\b/.test(norm) ||
+    /\b(?:2,\s*4,\s*6|2\s+4\s+6|2\s*4\s*6\s*8)\b/.test(norm) ||
+    (/\beven\b/.test(norm) && /\bnumbers?\b/.test(norm));
+
+  const logicStepProgress = [
+    { stepNumber: 1, title: "1. Range limits (1 to 50)", completed: hasStep1Range, current: !hasStep1Range },
+    { stepNumber: 2, title: "2. Divisibility by 2 rule", completed: hasStep2Divisibility, current: hasStep1Range && !hasStep2Divisibility },
+    { stepNumber: 3, title: "3. Modulo remainder test", completed: hasStep3Remainder, current: hasStep1Range && hasStep2Divisibility && !hasStep3Remainder },
+    { stepNumber: 4, title: "4. Filter even sequence", completed: hasStep4Filter, current: hasStep1Range && hasStep2Divisibility && hasStep3Remainder && !hasStep4Filter }
+  ];
+
+  const completedStepsCount = [hasStep1Range, hasStep2Divisibility, hasStep3Remainder, hasStep4Filter].filter(Boolean).length;
+  const isFullyVerified = !isQuestion && hasStep1Range && hasStep2Divisibility && hasStep3Remainder;
+
+  if (isFullyVerified) {
+    return {
+      isFullyVerified: true,
+      logicStepProgress,
+      feedback: "🎉 **Logic Approved by Coach Maara!** 🏆\nExcellent understanding! Even numbers leave remainder 0 when divided by 2 (`number % 2 == 0`). You have correctly identified the rule and the target range 1 to 50.\n\nProceed to Stage 2: Recipe!",
+      correction: "Proceed to Stage 2: Recipe to sequence the algorithm step by step.",
+      suggestedInput: void 0,
+      matchedFirebaseInput: "even numbers leave remainder 0 when divided by 2"
+    };
+  }
+
+  // If question or incomplete input
   if (isQuestion || norm.length < 5) {
     if (attemptCount >= 3) {
       return {
         isFullyVerified: false,
+        logicStepProgress,
         feedback: "🌟 Coach Maara here! Let's write the logic together into your worksheet: 'An even number is divisible by 2 with remainder 0 (number % 2 == 0). From 1 to 50, we check each number and keep those where remainder is 0 (2, 4, 6... 50).' Try typing this statement!",
         correction: "Write: An even number leaves remainder 0 when divided by 2 (number % 2 == 0). From 1 to 50, even numbers are 2, 4, 6 ... up to 50.",
         suggestedInput: "An even number is completely divisible by 2 with remainder 0 (number % 2 == 0). From 1 to 50, the even numbers are 2, 4, 6, 8 ... up to 50.",
@@ -22,6 +69,7 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
     if (attemptCount === 2) {
       return {
         isFullyVerified: false,
+        logicStepProgress,
         feedback: "🌟 Coach Maara checking back! To find even numbers between 1 and 50, we test each number by dividing by 2. If remainder is 0 (`number % 2 == 0`), it is an even number (like 2, 4, 6...). What rule can you write in your worksheet to describe this?",
         correction: "Explain using modulo 2: 'number % 2 == 0'.",
         suggestedInput: "An even number leaves remainder 0 when divided by 2 (number % 2 == 0). Between 1 and 50, numbers like 2, 4, 6 ... 50 are even numbers.",
@@ -30,6 +78,7 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
     }
     return {
       isFullyVerified: false,
+      logicStepProgress,
       feedback: "🌟 Coach Maara here! Even numbers are numbers exactly divisible by 2 (leaving a remainder of 0: `number % 2 == 0`). Between 1 and 50, the even numbers are 2, 4, 6, 8, ... up to 50!\n\n👉 Explain in simple words: How do we identify even numbers from 1 to 50?",
       correction: "Even numbers leave remainder 0 when divided by 2 (n % 2 == 0). From 1 to 50, we check each number and print if remainder is 0.",
       suggestedInput: "An even number is completely divisible by 2 with remainder 0 (number % 2 == 0). From 1 to 50, the even numbers are 2, 4, 6, 8 ... up to 50.",
@@ -37,20 +86,45 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
     };
   }
 
-  const mentionsEven = /\beven\b/i.test(norm);
-  const mentions2 = /\b2\b|two/i.test(norm);
-  const mentions50 = /\b50\b|fifty/i.test(norm);
-  const mentionsRemainderOrMod = /remainder|rem\b|modulo|%|divide|divisible/i.test(norm);
-  const mentionsLoopOrRange = /1\s*(?:to|-)\s*50|range|each|every|all\s*numbers|loop|repeat/i.test(norm);
-
-  const hasEvenMathFact = /%\s*2\s*(=|==)\s*0/i.test(norm) ||
-    /2,\s*4,\s*6/i.test(norm) ||
-    (mentionsEven && (mentions2 || mentionsRemainderOrMod));
-
-  if (!hasEvenMathFact) {
+  // If student only provided sample numbers (e.g. "2,4,6,8 are even numbers")
+  if (!hasStep1Range && hasStep4Filter && !hasStep3Remainder) {
     if (attemptCount >= 2) {
       return {
         isFullyVerified: false,
+        logicStepProgress,
+        feedback: "🌟 Coach Maara checking back! Listing examples like `2, 4, 6, 8` is a great observation, but the computer needs the general mathematical rule for all numbers from **1 to 50**!\n\nState in your worksheet: A number is even if dividing by 2 leaves remainder 0 (`number % 2 == 0`) for the range 1 to 50.",
+        correction: "State the mathematical formula: number % 2 == 0 for range 1 to 50.",
+        suggestedInput: "An even number leaves remainder 0 when divided by 2 (number % 2 == 0). From 1 to 50, numbers like 2, 4, 6 ... 50 are even.",
+        matchedFirebaseInput: "2 4 6 8 are even numbers without range or formula"
+      };
+    }
+    return {
+      isFullyVerified: false,
+      logicStepProgress,
+      feedback: "🌟 Coach Maara note: You've correctly spotted even numbers like `2, 4, 6, 8`! 👏\n\nHowever, our challenge is to identify all even numbers from **1 to 50** using computer logic. To complete Stage 1:\n1. State our range: **1 to 50**.\n2. State the mathematical test: A number is even if dividing by 2 leaves a remainder of 0 (`number % 2 == 0`).",
+      correction: "Add range 1 to 50 and remainder rule: 'number % 2 == 0'.",
+      suggestedInput: "An even number is divisible by 2 with remainder 0 (number % 2 == 0). From 1 to 50, the even numbers are 2, 4, 6, 8 ... up to 50.",
+      matchedFirebaseInput: "2 4 6 8 are even numbers without range or formula"
+    };
+  }
+
+  // If missing range or remainder rule
+  if (!hasStep1Range) {
+    return {
+      isFullyVerified: false,
+      logicStepProgress,
+      feedback: "🌟 Coach Maara note: Great formula! Now, make sure to specify our target range: we need to test numbers from **1 to 50**.",
+      correction: "Mention the range 1 to 50 in your worksheet.",
+      suggestedInput: "From 1 to 50, a number is even if number % 2 == 0.",
+      matchedFirebaseInput: "even number formula without range 1 to 50"
+    };
+  }
+
+  if (!hasStep2Divisibility || !hasStep3Remainder) {
+    if (attemptCount >= 2) {
+      return {
+        isFullyVerified: false,
+        logicStepProgress,
         feedback: "🌟 Coach Maara with a fresh clue! Remember the core mathematical test: dividing by 2 leaves remainder 0 (`number % 2 == 0`). State this formula and mention the range 1 to 50 in your worksheet!",
         correction: "State the mathematical formula: number % 2 == 0 for range 1 to 50.",
         suggestedInput: "An even number leaves remainder 0 when divided by 2 (number % 2 == 0). From 1 to 50, numbers like 2, 4, 6 ... 50 are even.",
@@ -59,6 +133,7 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
     }
     return {
       isFullyVerified: false,
+      logicStepProgress,
       feedback: "🌟 Coach Maara note: Remember, a number is even if dividing by 2 leaves a remainder of 0 (`number % 2 == 0`). How do we apply this rule to numbers from 1 to 50?",
       correction: "Define even numbers using remainder 0 with 2: 'number % 2 == 0'.",
       suggestedInput: "A number is even if number % 2 == 0. From 1 to 50, numbers like 2, 4, 6 ... 50 are even numbers.",
@@ -67,11 +142,11 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
   }
 
   return {
-    isFullyVerified: true,
-    feedback: "🎉 **Logic Approved by Coach Maara!** 🏆\nExcellent understanding! Even numbers leave remainder 0 when divided by 2 (`number % 2 == 0`). You have correctly identified the rule and the target range 1 to 50.\n\nProceed to Stage 2: Recipe!",
-    correction: "Proceed to Stage 2: Recipe to sequence the algorithm step by step.",
-    suggestedInput: void 0,
-    matchedFirebaseInput: "even numbers leave remainder 0 when divided by 2"
+    isFullyVerified: false,
+    logicStepProgress,
+    feedback: `🌟 Coach Maara here! You have completed ${completedStepsCount} of 4 logic steps. Make sure to define: 1) Range 1 to 50, 2) Divisible by 2, 3) Remainder equals 0 (number % 2 == 0).`,
+    correction: "Explain the range 1 to 50 and the even condition number % 2 == 0.",
+    suggestedInput: "From 1 to 50, a number is even if dividing by 2 leaves remainder 0 (number % 2 == 0)."
   };
 }
 
