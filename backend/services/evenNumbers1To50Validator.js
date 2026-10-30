@@ -214,7 +214,7 @@ export function validateEvenNumbers1To50Ingredients(text) {
 }
 
 export function validateEvenNumbers1To50SampleCode(code) {
-  if (!code || typeof code !== "string") {
+  if (!code || typeof code !== "string" || code.trim().length < 5) {
     return {
       isFullyVerified: false,
       feedback: "🌟 Coach Maara here! Let's assemble our verified ingredients into working code. Start by writing the loop from 1 to 50!",
@@ -222,43 +222,92 @@ export function validateEvenNumbers1To50SampleCode(code) {
     };
   }
 
-  const norm = code.toLowerCase();
-  const hasLoop = /\b(?:for|while)\b/.test(norm);
-  const has50 = /50\b/.test(norm);
-  const hasPrint = /\b(?:print|println|printf|console\.log|system\.out\.print|cout\s*<<)\b/.test(norm);
-  const hasMod2 = /%\s*2\b/.test(norm);
-  const hasStep2 = /\+=\s*2\b/.test(norm) || /,\s*2\s*\)/.test(norm);
+  const norm = code.toLowerCase().trim();
 
-  const isComplete = hasLoop && has50 && hasPrint && (hasMod2 || hasStep2);
+  // 1. Detect conversational questions mixed into code editor
+  const hasQuestion = /\b(?:how\s*to|what\s*is|how\s*do|why|help|puriyala|theriyala)\b/i.test(norm) ||
+    /^(?:how|what|why|can\s*i)\b/i.test(norm) ||
+    norm.includes("?");
+
+  if (hasQuestion) {
+    return {
+      isFullyVerified: false,
+      feedback: "🌟 Coach Maara here! I see you asked a question in the code editor. To write the loop for even numbers from 1 to 50, start with:\n`for (var i = 1; i <= 50; i++) {`\nand inside it check `if (i % 2 == 0)` and print `i`! Remove the question from the editor and try writing the code.",
+      correction: "Remove question text from the code editor and write the code prototype."
+    };
+  }
+
+  // 2. Loop detection
+  const hasLoop = /\b(?:for|while)\b/i.test(norm);
+  const has50 = /\b50\b/.test(norm) || /\b51\b/.test(norm);
 
   if (!hasLoop || !has50) {
     return {
       isFullyVerified: false,
-      feedback: "🌟 Coach Maara note: To print even numbers from 1 to 50, you need a loop that iterates up to 50 (e.g. `for (let i = 1; i <= 50; i++)` in JS or `for i in range(1, 51):` in Python).",
-      correction: "Include a loop from 1 to 50."
+      feedback: "🌟 Coach Maara note: To print even numbers from 1 to 50, you need a loop that iterates up to 50 (e.g. `for (var i = 1; i <= 50; i++)` in JS or `for i in range(1, 51):` in Python).",
+      correction: "Include a loop that counts from 1 up to 50."
     };
   }
 
-  if (!hasMod2 && !hasStep2) {
+  // Detect loop variable (e.g. "for (var i = 1" -> "i", "for i in range" -> "i", "for (let num = 1" -> "num")
+  const loopVarMatch = code.match(/for\s*(?:\(\s*(?:var|let|const|int)\s+)?([a-zA-Z_]\w*)\s*(?:=|in|<=)/i) ||
+    code.match(/while\s*\(\s*([a-zA-Z_]\w*)/i);
+  const loopVar = loopVarMatch ? loopVarMatch[1] : "i";
+
+  // Check if stepping by 2 directly (e.g. i += 2 or range(2, 51, 2))
+  const hasStep2 = /\+=\s*2\b/.test(norm) || /,\s*2\s*\)/.test(norm);
+
+  // 3. If condition check (when not stepping by 2)
+  const hasIfKeyword = /\bif\b/i.test(norm);
+  const hasMod2 = /%\s*2\b/.test(norm);
+
+  // Check specific mistake: wrote "i % 2 == 0 {" WITHOUT "if" keyword!
+  const hasConditionWithoutIf = !hasIfKeyword && (/% 2\s*==\s*0/.test(norm) || /%\s*2\s*==/.test(norm));
+  if (hasConditionWithoutIf) {
     return {
       isFullyVerified: false,
-      feedback: "🌟 Coach Maara note: Inside the loop, check if the number is even using `if (i % 2 == 0)` before printing!",
-      correction: "Add `if (i % 2 == 0)` check inside the loop."
+      feedback: `🌟 Coach Maara note: Look at \`${loopVar} % 2 == 0 {\`! In programming, condition checks must start with the \`if\` keyword: \`if (${loopVar} % 2 == 0) {\`. Add \`if\` before your condition!`,
+      correction: `Add the 'if' keyword before your condition: if (${loopVar} % 2 == 0) {`
     };
   }
 
+  if (!hasStep2 && (!hasIfKeyword || !hasMod2)) {
+    return {
+      isFullyVerified: false,
+      feedback: `🌟 Coach Maara note: Inside the loop, check if the current number is even using an if condition: \`if (${loopVar} % 2 == 0)\`!`,
+      correction: `Add 'if (${loopVar} % 2 == 0)' check inside the loop.`
+    };
+  }
+
+  // 4. Print check
+  const hasPrint = /\b(?:print|println|printf|console\.log|system\.out\.print|cout\s*<<)\b/i.test(norm);
   if (!hasPrint) {
     return {
       isFullyVerified: false,
-      feedback: "🌟 Coach Maara note: Don't forget to print the even number `i` inside your loop!",
-      correction: "Add print statement inside the loop (e.g. `print(i)` or `console.log(i)`)."
+      feedback: `🌟 Coach Maara note: Don't forget to display the even number! Add \`print(${loopVar})\` or \`console.log(${loopVar})\` inside your if condition.`,
+      correction: `Add print statement inside the loop: print(${loopVar})`
+    };
+  }
+
+  // Check specific mistake: printing text/string like print(even number) or print("even number") instead of loop counter variable!
+  const printsStringOrText = new RegExp(`(?:print|println|printf|console\\.log)\\s*\\(\\s*["']?(?:even(?:\\s*number)?|odd|number)["']?\\s*\\)`, "i").test(norm) ||
+    new RegExp(`cout\\s*<<\\s*["']?(?:even(?:\\s*number)?|odd|number)["']?`, "i").test(norm);
+
+  const printsLoopVar = new RegExp(`(?:print|println|printf|console\\.log)\\s*\\(\\s*${loopVar}\\s*\\)`, "i").test(norm) ||
+    new RegExp(`cout\\s*<<\\s*${loopVar}\\b`, "i").test(norm);
+
+  if (printsStringOrText && !printsLoopVar) {
+    return {
+      isFullyVerified: false,
+      feedback: `🌟 Coach Maara note: You are printing the text 'even number' instead of the actual number! The challenge is to print each even number (2, 4, 6... up to 50). Update your print statement to print the loop variable: \`print(${loopVar})\` (or \`console.log(${loopVar})\`)!`,
+      correction: `Print the loop counter variable: print(${loopVar})`
     };
   }
 
   return {
     isFullyVerified: true,
-    feedback: "🎉 **Congratulations! Code Verified!** 🏆\nYour program correctly loops through numbers from 1 to 50 and prints every even number! Fantastic job mastering this challenge!",
-    correction: "All done! Run the code and submit."
+    feedback: "🎉 **Congratulations! Code Verified!** 🏆\nYour program correctly loops from 1 to 50, checks for even numbers, and prints each even number! Fantastic job mastering this challenge! Proceed to the Compiler to compile and run your code!",
+    correction: "All done! Run the code in the compiler."
   };
 }
 

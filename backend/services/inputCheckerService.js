@@ -286,11 +286,16 @@ function isTasteSampleStructurallyComplete(code, problemType) {
   }
 
   if (problemType === "even-numbers-1-to-50") {
+    const hasQuestion = /\?|how\s*to|what\s*is/i.test(norm);
+    if (hasQuestion) return false;
     const hasLoop = /\b(?:for|while)\b/i.test(norm);
-    const has50 = /50\b/.test(norm);
-    const hasMod2 = /%\s*2\b/.test(norm);
+    const has50 = /50\b/.test(norm) || /51\b/.test(norm);
     const hasStep2 = /\+=\s*2\b/.test(norm) || /,\s*2\s*\)/.test(norm);
-    return hasLoop && has50 && hasPrint && (hasMod2 || hasStep2);
+    const hasIf = /\bif\b/i.test(norm);
+    const hasMod2 = /%\s*2\b/.test(norm);
+    const printsText = /(?:print|println|printf|console\.log)\s*\(\s*["']?(?:even|odd|number)["']?\s*\)/i.test(norm);
+    const printsLoopVar = /(?:print|println|printf|console\.log)\s*\(\s*[a-zA-Z_]\w*\s*\)/i.test(norm) && !printsText;
+    return hasLoop && has50 && (hasStep2 || (hasIf && hasMod2)) && printsLoopVar;
   }
 
   if (problemType === "divisors" || problemType === "divisor-of-a-number") {

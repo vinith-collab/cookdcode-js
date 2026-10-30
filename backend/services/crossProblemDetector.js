@@ -253,6 +253,19 @@ export const PROBLEM_DEFINITIONS = {
       /age\s*>=\s*60/i
     ],
     goalSummary: "checking if age is greater than or equal to 60"
+  },
+  "even-numbers-1-to-50": {
+    id: "even-numbers-1-to-50",
+    problemNo: 21,
+    title: "Print Even Numbers from 1 to 50",
+    patterns: [
+      /\b50\b/,
+      /1\s*(?:to|-)\s*50/i,
+      /even\s*numbers?/i,
+      /%\s*2\b/,
+      /divisible\s+by\s+2\b/i
+    ],
+    goalSummary: "iterating numbers from 1 to 50 and printing even numbers divisible by 2"
   }
 };
 
@@ -278,6 +291,12 @@ export function detectCrossProblemMismatch(currentProblemId, section, text) {
   // Check against all other problem signatures
   for (const [probKey, probDef] of Object.entries(PROBLEM_DEFINITIONS)) {
     if (probKey === cleanCurrentId) continue;
+
+    // Special exclusion: 'odd-even' vs 'even-numbers-1-to-50' (both talk about even and % 2)
+    if ((cleanCurrentId === "even-numbers-1-to-50" && probKey === "odd-even") ||
+        (cleanCurrentId === "odd-even" && probKey === "even-numbers-1-to-50")) {
+      continue;
+    }
 
     // Special exclusion: 'prime-number' vs 'next-prime-number' / 'prime-between-range' / 'sexy-prime-number'
     if (cleanCurrentId.includes("prime") && probKey.includes("prime")) continue;
