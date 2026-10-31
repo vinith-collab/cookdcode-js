@@ -4073,17 +4073,17 @@
                     "problem23": {
                         problemTitle: "ATM PIN Verification",
                         logic: {
-                            explanation: "Compare the entered PIN with the secret registered PIN 1234 using an equality check (==).",
+                            explanation: "Compare the entered PIN with the secret registered PIN (1234) using plain natural logic.",
                             ruleTitle: "PIN Verification Security Rule",
                             ruleText: "If the entered PIN equals <strong class=\"text-slate-900 font-bold\">1234</strong>, access is approved (PIN Verified). Otherwise, access is rejected (Incorrect PIN).",
                             conditionsHtml: `
                                 <div class="ctc-cond-pill true-cond">
                                     <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
-                                    <div><strong class="font-bold">If entered_pin == 1234:</strong> PIN Verified <span class="font-mono opacity-80">(Access Granted)</span></div>
+                                    <div><strong class="font-bold">If entered PIN matches 1234:</strong> PIN Verified <span class="font-mono opacity-80">(Access Granted)</span></div>
                                 </div>
                                 <div class="ctc-cond-pill false-cond">
                                     <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
-                                    <div><strong class="font-bold">Else:</strong> Incorrect PIN <span class="font-mono opacity-80">(Access Denied)</span></div>
+                                    <div><strong class="font-bold">If PIN does not match 1234:</strong> Incorrect PIN <span class="font-mono opacity-80">(Access Denied)</span></div>
                                 </div>
                             `
                         },
@@ -4528,7 +4528,7 @@
                         if (norm === 'logic') {
                             return [
                                 { stepNumber: 1, title: "1. Registered PIN reference (1234)", completed: false, current: true },
-                                { stepNumber: 2, title: "2. Equality comparison rule (==)", completed: false, current: false },
+                                { stepNumber: 2, title: "2. Comparison rule (matches 1234)", completed: false, current: false },
                                 { stepNumber: 3, title: "3. Approved outcome (PIN Verified)", completed: false, current: false },
                                 { stepNumber: 4, title: "4. Rejected outcome (Incorrect PIN)", completed: false, current: false }
                             ];

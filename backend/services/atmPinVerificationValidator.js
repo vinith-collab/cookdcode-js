@@ -9,9 +9,9 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
   // Step 1: Registered PIN / 1234 reference
   const hasStep1Pin = /\b(?:1234|pin|secret|stored\s*pin|registered\s*pin|bank\s*pin|actual\s*pin|saved\s*pin)\b/.test(norm);
 
-  // Step 2: Equality comparison rule (==, equals, match, identical, same)
+  // Step 2: Equality comparison rule (equals, match, identical, same, ==)
   const hasStep2Comparison = /==\s*1234\b/.test(norm) ||
-    /\b(?:equal|equals|match|matches|matching|identical|same\s*as|check\s*if\s*same)\b/.test(norm) ||
+    /\b(?:equal|equals|match|matches|matching|identical|same\s*as|check\s*if\s*same|is\s*1234)\b/.test(norm) ||
     /==/.test(norm);
 
   // Step 3: Approved outcome (PIN Verified / Access Granted)
@@ -22,7 +22,7 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
 
   const logicStepProgress = [
     { stepNumber: 1, title: "1. Registered PIN reference (1234)", completed: hasStep1Pin, current: !hasStep1Pin },
-    { stepNumber: 2, title: "2. Equality comparison rule (==)", completed: hasStep2Comparison, current: hasStep1Pin && !hasStep2Comparison },
+    { stepNumber: 2, title: "2. Comparison rule (matches 1234)", completed: hasStep2Comparison, current: hasStep1Pin && !hasStep2Comparison },
     { stepNumber: 3, title: "3. Approved outcome (PIN Verified)", completed: hasStep3Approved, current: hasStep1Pin && hasStep2Comparison && !hasStep3Approved },
     { stepNumber: 4, title: "4. Rejected outcome (Incorrect PIN)", completed: hasStep4Rejected, current: hasStep1Pin && hasStep2Comparison && hasStep3Approved && !hasStep4Rejected }
   ];
@@ -34,14 +34,14 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
       isFullyVerified: true,
       logicStepProgress: [
         { stepNumber: 1, title: "1. Registered PIN reference (1234)", completed: true, current: false },
-        { stepNumber: 2, title: "2. Equality comparison rule (==)", completed: true, current: false },
+        { stepNumber: 2, title: "2. Comparison rule (matches 1234)", completed: true, current: false },
         { stepNumber: 3, title: "3. Approved outcome (PIN Verified)", completed: true, current: false },
         { stepNumber: 4, title: "4. Rejected outcome (Incorrect PIN)", completed: true, current: false }
       ],
-      feedback: "🎉 **Logic Approved by Coach Maara!** 🏆\nExcellent understanding! You have clearly identified the equality comparison (`entered_pin == 1234`) and covered both the verified and incorrect PIN outcomes.\n\nProceed to Stage 2: Recipe!",
+      feedback: "🎉 **Logic Approved by Coach Maara!** 🏆\nExcellent understanding! You have clearly identified that the entered PIN must match 1234, and you covered both the verified and incorrect PIN outcomes.\n\nProceed to Stage 2: Recipe!",
       correction: "Proceed to Stage 2: Recipe to sequence the algorithm step by step.",
       suggestedInput: void 0,
-      matchedFirebaseInput: "We compare entered_pin with 1234. If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN."
+      matchedFirebaseInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN."
     };
   }
 
@@ -52,8 +52,8 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
   if (isQuestion || norm.length < 5) {
     if (attemptCount >= 4) {
       const advancedHints = [
-        "🌟 Coach Maara here! You are making steady progress building your logic.\nTo verify an ATM PIN, we compare the entered digits with our stored PIN 1234.\nIf `entered_pin == 1234`, grant access ('PIN Verified'); otherwise, reject access ('Incorrect PIN').\nDescribe both the matching and non-matching outcomes in your worksheet!",
-        "🌟 Coach Maara cheering you on! Let's think through our core security logic together.\nAn ATM machine performs an equality check using the `==` operator.\nWhen the PIN matches 1234, access is approved; when it does not match, access is denied.\nHow would you combine both cases into a clear statement in your worksheet?",
+        "🌟 Coach Maara here! You are making steady progress building your logic.\nTo verify an ATM PIN, we check whether the digits entered by the user match our registered PIN 1234.\nIf the entered PIN equals 1234, grant access ('PIN Verified'); otherwise, reject access ('Incorrect PIN').\nDescribe both the matching and non-matching outcomes in your worksheet!",
+        "🌟 Coach Maara cheering you on! Let's think through our core security logic together.\nAn ATM machine compares the user's input with the secret PIN 1234.\nWhen the PIN matches 1234, access is approved; when it does not match, access is denied.\nHow would you combine both cases into a clear statement in your worksheet?",
         "🌟 Coach Maara with a fresh perspective! Security checks always have two paths.\nPath 1: The user enters 1234 correctly, leading to 'PIN Verified'.\nPath 2: The user enters wrong digits, leading to 'Incorrect PIN'.\nCan you state this two-way comparison in your worksheet to finish the stage?"
       ];
       const hintIndex = (attemptCount - 4) % advancedHints.length;
@@ -61,8 +61,8 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
         isFullyVerified: false,
         logicStepProgress,
         feedback: advancedHints[hintIndex],
-        correction: "State: If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
-        suggestedInput: "If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+        correction: "State: If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+        suggestedInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
         matchedFirebaseInput: "how to verify atm pin in logic?"
       };
     }
@@ -70,10 +70,10 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
       return {
         isFullyVerified: false,
         logicStepProgress,
-        feedback: "🌟 Coach Maara with a direct hint! In programming logic, we compare values using `==`.\nWe test if the user's entered PIN is equal to our registered PIN 1234.\nIf true, display 'PIN Verified'; if false, display 'Incorrect PIN'.\nWrite down this complete rule in your worksheet!",
-        correction: "Compare entered_pin == 1234 with both success and failure outcomes.",
-        suggestedInput: "If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
-        matchedFirebaseInput: "what operator compares the pin?"
+        feedback: "🌟 Coach Maara with a direct hint! In problem logic, we test if two values match.\nWe check if the entered PIN is equal to our registered PIN 1234.\nIf it matches, display 'PIN Verified'; if not, display 'Incorrect PIN'.\nWrite down this complete rule in your worksheet!",
+        correction: "Compare entered PIN with 1234 with both success and failure outcomes.",
+        suggestedInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+        matchedFirebaseInput: "what rule compares the pin?"
       };
     }
     if (attemptCount === 2) {
@@ -81,17 +81,17 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
         isFullyVerified: false,
         logicStepProgress,
         feedback: "🌟 Coach Maara checking back! Think about real-world ATM security.\nWhen a customer types their PIN, the system checks whether it matches 1234.\nWhat should the screen display if it matches, and what if it doesn't?\nDescribe both outcomes in your worksheet to move forward!",
-        correction: "Define both outcomes for entered_pin == 1234.",
-        suggestedInput: "If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+        correction: "Define both outcomes when the entered PIN matches 1234.",
+        suggestedInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
         matchedFirebaseInput: "what happens if user enters wrong pin?"
       };
     }
     return {
       isFullyVerified: false,
       logicStepProgress,
-      feedback: "🌟 Coach Maara here! Welcome to ATM PIN Verification!\nThink of inserting your ATM card into the machine: it compares your entered PIN with the registered PIN (e.g. 1234).\nIf both match using an equality test (`entered_pin == 1234`), access is granted; otherwise, it is denied.\nHow would you formulate this check in simple words in your worksheet?",
-      correction: "Define: If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
-      suggestedInput: "If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+      feedback: "🌟 Coach Maara here! Welcome to ATM PIN Verification!\nThink of inserting your ATM card into the machine: it compares the entered PIN with the registered PIN (1234).\nIf they match, access is granted ('PIN Verified'); otherwise, it is denied ('Incorrect PIN').\nHow would you formulate this check in simple words in your worksheet?",
+      correction: "Define: If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+      suggestedInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
       matchedFirebaseInput: "how to verify atm pin in logic?"
     };
   }
@@ -103,7 +103,7 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
       logicStepProgress,
       feedback: "🌟 Coach Maara checking back! You nailed the success outcome nicely! 👏\nHowever, real-world security logic must handle both valid and invalid attempts.\nWhat should the ATM screen display if someone types the wrong PIN (like 9999)?\nAdd the rejection outcome: what happens when the PIN does not match 1234?",
       correction: "Add the rejected outcome: 'otherwise, display Incorrect PIN'.",
-      suggestedInput: "If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+      suggestedInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
       matchedFirebaseInput: "what happens if user enters wrong pin?"
     };
   }
@@ -113,9 +113,9 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
     return {
       isFullyVerified: false,
       logicStepProgress,
-      feedback: "🌟 Coach Maara note: You have identified the rejection case for wrong digits! 👏\nNow we must also specify the approved case when the PIN is entered correctly.\nWhen `entered_pin == 1234`, what should the machine display to the user?\nAdd the success outcome ('PIN Verified') to your worksheet!",
-      correction: "Add the approved outcome: 'If entered_pin == 1234, display PIN Verified'.",
-      suggestedInput: "If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+      feedback: "🌟 Coach Maara note: You have identified the rejection case for wrong digits! 👏\nNow we must also specify the approved case when the PIN is entered correctly.\nWhen the entered PIN matches 1234, what should the machine display to the user?\nAdd the success outcome ('PIN Verified') to your worksheet!",
+      correction: "Add the approved outcome: 'If the entered PIN equals 1234, display PIN Verified'.",
+      suggestedInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
       matchedFirebaseInput: "how to verify atm pin in logic?"
     };
   }
@@ -125,10 +125,10 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
     return {
       isFullyVerified: false,
       logicStepProgress,
-      feedback: "🌟 Coach Maara note: You have the outcomes, but we need the exact comparison rule.\nIn computer logic, we test if the entered PIN is equal to 1234 using equality (`==`).\nSpecify that we check if `entered_pin == 1234`.\nInclude this comparison rule in your worksheet to complete this stage!",
-      correction: "Specify the equality comparison: 'entered_pin == 1234'.",
-      suggestedInput: "If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
-      matchedFirebaseInput: "what operator compares the pin?"
+      feedback: "🌟 Coach Maara note: You have the outcomes, but we need the exact comparison rule.\nIn problem logic, describe the condition that checks whether the entered PIN matches 1234.\nState that we verify if the entered PIN is equal to 1234.\nInclude this comparison rule in your worksheet to complete this stage!",
+      correction: "Specify the comparison: 'If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN'.",
+      suggestedInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+      matchedFirebaseInput: "what rule compares the pin?"
     };
   }
 
@@ -136,8 +136,8 @@ export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
     isFullyVerified: false,
     logicStepProgress,
     feedback: "🌟 Coach Maara note: You are very close to completing your logic!\nEnsure you clearly state: 1) Comparing entered PIN with 1234, 2) Display 'PIN Verified' on match, and 3) Display 'Incorrect PIN' on mismatch.\nCombine these elements into your worksheet to proceed!",
-    correction: "State: If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
-    suggestedInput: "If entered_pin == 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+    correction: "State: If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
+    suggestedInput: "If the entered PIN equals 1234, display PIN Verified; otherwise, display Incorrect PIN.",
     matchedFirebaseInput: "how to verify atm pin in logic?"
   };
 }

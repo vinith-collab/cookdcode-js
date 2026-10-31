@@ -1344,8 +1344,9 @@ PROBLEM FOCUS: "ATM PIN Verification" (CTC Pedagogy Matrix)
 Concept: Variable comparison (==) and two-way conditional branching (if-else)
 
 1. STAGE 1 (LOGIC):
-   - Definition: Compare entered PIN with stored PIN (1234).
-   - If entered_pin == 1234, output "PIN Verified"; otherwise, output "Incorrect PIN".
+   - Definition: Compare the entered PIN with the registered PIN (1234).
+   - If the entered PIN equals 1234 (matches 1234), output "PIN Verified"; otherwise, output "Incorrect PIN".
+   - CRITICAL CTC RULE: STRICTLY NO PROGRAMMING TOOLS OR CODE SYNTAX IN LOGIC! Do NOT use '==', variable names like 'entered_pin', or code keywords. Use plain everyday English.
    - Both success ("PIN Verified") and rejection ("Incorrect PIN") outcomes must be stated.
 
 2. STAGE 2 (RECIPE):
@@ -1455,7 +1456,7 @@ CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - SAMPLE CODE):
 CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - LOGIC):
 - Student Intent: "${atmLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
 - Fully Verified Status: ${atmLog.isFullyVerified}
-- INSTRUCTION FOR COACH MAARA: Compare entered_pin with 1234 using ==. Display "PIN Verified" if match, "Incorrect PIN" otherwise.
+- INSTRUCTION FOR COACH MAARA: Use 100% natural English. Check if the entered PIN matches 1234 (is equal to 1234). Display "PIN Verified" if match, "Incorrect PIN" otherwise. STRICTLY NO programming tools or code syntax like '==' or 'entered_pin' in Logic!
 `;
         } else if (section === "recipe") {
           const atmRec = validateAtmPinVerificationRecipe(userInput);
