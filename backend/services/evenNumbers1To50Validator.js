@@ -62,9 +62,9 @@ export function validateEvenNumbers1To50Logic(text, attemptCount = 1) {
   if (isQuestion || norm.length < 5) {
     if (attemptCount >= 4) {
       const advancedHints = [
-        "🌟 Coach Maara here to guide you across the finish line! Here is the complete logic statement for your worksheet:\n\n👉 `An even number is divisible by 2 with remainder 0 (number % 2 == 0). From 1 to 50, the even numbers are 2, 4, 6, 8 ... up to 50.`\n\nTry typing this statement into your worksheet!",
-        "🌟 Coach Maara cheering you on! Remember our 2 core logic ingredients:\n1. **Range:** Test all numbers from 1 up to 50.\n2. **Even Test:** Check if `number % 2 == 0` (dividing by 2 leaves remainder 0).\n\nCombine these into a simple statement in your worksheet!",
-        "🌟 Coach Maara with a fresh perspective! Think of this as filtering numbers from 1 to 50: for each number, if `number % 2 == 0`, it is an even number! State this in simple words in your worksheet."
+        "🌟 Coach Maara here! You are making steady progress building your logic.\nTo identify even numbers between 1 and 50, remember the remainder rule when dividing by 2.\nWhen any even number is divided by 2, what remainder is left over? (Think about number % 2).\nDescribe this remainder check for numbers from 1 to 50 in your worksheet!",
+        "🌟 Coach Maara cheering you on! Let's think through our 2 key logic ingredients together.\nFirst, we need to inspect all numbers across our range from 1 up to 50.\nSecond, an even number leaves remainder 0 whenever it is divided by 2 (`number % 2 == 0`).\nHow would you combine the range and remainder test into a clear sentence in your worksheet?",
+        "🌟 Coach Maara with a fresh perspective! Think of this as filtering numbers from 1 to 50.\nEvery number between 1 and 50 that divides evenly by 2 is an even number.\nIn programming logic, we test this using the modulo operation: `number % 2 == 0`.\nCan you write down this rule in your worksheet to complete this stage?"
       ];
       const hintIndex = (attemptCount - 4) % advancedHints.length;
       return {

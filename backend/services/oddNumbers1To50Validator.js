@@ -67,9 +67,9 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
   if (isQuestion || norm.length < 5) {
     if (attemptCount >= 4) {
       const advancedHints = [
-        "🌟 Coach Maara here to guide you across the finish line! Here is the complete logic statement for your worksheet:\n\n👉 `An odd number leaves a remainder of 1 when divided by 2 (number % 2 == 1). From 1 to 50, the odd numbers are 1, 3, 5, 7 ... up to 49.`\n\nTry typing this statement into your worksheet!",
-        "🌟 Coach Maara cheering you on! Remember our 2 core logic ingredients:\n1. **Range:** Test all numbers from 1 up to 50.\n2. **Odd Test:** Check if `number % 2 == 1` (or dividing by 2 leaves remainder 1).\n\nCombine these into a simple statement in your worksheet!",
-        "🌟 Coach Maara with a fresh perspective! Think of this as filtering numbers from 1 to 50: for each number, if `number % 2 == 1` (remainder is 1), it is an odd number! State this in simple words in your worksheet."
+        "🌟 Coach Maara here! You are making steady progress building your logic.\nTo identify odd numbers between 1 and 50, remember the remainder rule when dividing by 2.\nWhen any odd number is divided by 2, what remainder is left over? (Think about number % 2).\nDescribe this remainder check for numbers from 1 to 50 in your worksheet!",
+        "🌟 Coach Maara cheering you on! Let's think through our 2 key logic ingredients together.\nFirst, we need to inspect all numbers across our range from 1 up to 50.\nSecond, an odd number leaves a remainder of 1 whenever it is divided by 2 (`number % 2 == 1`).\nHow would you combine the range and remainder test into a clear sentence in your worksheet?",
+        "🌟 Coach Maara with a fresh perspective! Think of this as filtering numbers from 1 to 50.\nEvery number between 1 and 50 that does not divide evenly by 2 is an odd number.\nIn programming logic, we test this using the modulo operation: `number % 2 == 1`.\nCan you write down this rule in your worksheet to complete this stage?"
       ];
       const hintIndex = (attemptCount - 4) % advancedHints.length;
       return {
@@ -85,7 +85,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
       return {
         isFullyVerified: false,
         logicStepProgress,
-        feedback: "🌟 Coach Maara with a direct hint! In programming, we test divisibility using the modulo operator `%`. For odd numbers, dividing by 2 leaves remainder 1 (`number % 2 == 1`). Write down this rule for numbers from 1 to 50 in your worksheet!",
+        feedback: "🌟 Coach Maara with a direct hint! You are very close to nailing the logic.\nIn programming, we test divisibility using the modulo operator `%`.\nWhen you divide any odd number by 2, the leftover remainder is always 1 (`number % 2 == 1`).\nWrite down this rule for our target range 1 to 50 in your worksheet!",
         correction: "Explain using modulo 2: 'number % 2 == 1' for range 1 to 50.",
         suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). From 1 to 50, the odd numbers are 1, 3, 5, 7 ... up to 49.",
         matchedFirebaseInput: "what are odd numbers from 1 to 50"
@@ -95,7 +95,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
       return {
         isFullyVerified: false,
         logicStepProgress,
-        feedback: "🌟 Coach Maara checking back! To find odd numbers between 1 and 50, we test each number by dividing by 2. If remainder is 1 (`number % 2 == 1`), it is an odd number (like 1, 3, 5...). What rule can you write in your worksheet to describe this?",
+        feedback: "🌟 Coach Maara checking back! Let's examine how we spot odd numbers.\nTo find odd numbers between 1 and 50, we test each number by dividing it by 2.\nIf dividing by 2 leaves a remainder of 1 (`number % 2 == 1`), that number is odd (like 1, 3, 5...).\nWhat rule can you write in your worksheet to describe this test for numbers up to 50?",
         correction: "Explain using modulo 2: 'number % 2 == 1'.",
         suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). Between 1 and 50, numbers like 1, 3, 5 ... 49 are odd numbers.",
         matchedFirebaseInput: "how to identify odd numbers"
@@ -104,7 +104,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
     return {
       isFullyVerified: false,
       logicStepProgress,
-      feedback: "🌟 Coach Maara here! Odd numbers are numbers that leave a remainder of 1 when divided by 2 (`number % 2 == 1` or `number % 2 != 0`). Between 1 and 50, the odd numbers are 1, 3, 5, 7, ... up to 49!\n\n👉 Explain in simple words: How do we identify odd numbers from 1 to 50?",
+      feedback: "🌟 Coach Maara here! Let's explore odd numbers together.\nOdd numbers are numbers that leave a remainder of 1 when divided by 2 (`number % 2 == 1`).\nBetween 1 and 50, the odd numbers follow the sequence 1, 3, 5, 7, ... up to 49.\nExplain in simple words: How do we identify odd numbers from 1 to 50?",
       correction: "Odd numbers leave remainder 1 when divided by 2 (n % 2 == 1). From 1 to 50, we check each number and print if remainder is 1.",
       suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). From 1 to 50, the odd numbers are 1, 3, 5, 7 ... up to 49.",
       matchedFirebaseInput: "what are odd numbers from 1 to 50"
@@ -117,7 +117,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
       return {
         isFullyVerified: false,
         logicStepProgress,
-        feedback: "🌟 Coach Maara here! You've listed examples (`1, 3, 5, 7`), now add the general rule: 'From 1 to 50, a number is odd if dividing by 2 leaves remainder 1 (number % 2 == 1).' Type this to complete the stage!",
+        feedback: "🌟 Coach Maara here! You've listed great examples like `1, 3, 5, 7`.\nNow we need to provide the general mathematical rule that covers all numbers up to 50.\nRemember, dividing by 2 leaves a remainder of 1 for every odd number (`number % 2 == 1`).\nAdd this general rule with our range 1 to 50 into your worksheet!",
         correction: "State the mathematical formula: number % 2 == 1 for range 1 to 50.",
         suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). From 1 to 50, numbers like 1, 3, 5 ... 49 are odd.",
         matchedFirebaseInput: "1 3 5 7 are odd numbers without range or formula"
@@ -127,7 +127,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
       return {
         isFullyVerified: false,
         logicStepProgress,
-        feedback: "🌟 Coach Maara checking back! Listing examples like `1, 3, 5, 7` is a great observation, but the computer needs the general mathematical rule for all numbers from **1 to 50**!\n\nState in your worksheet: A number is odd if dividing by 2 leaves remainder 1 (`number % 2 == 1`) for the range 1 to 50.",
+        feedback: "🌟 Coach Maara checking back! Listing examples like `1, 3, 5, 7` is a great start.\nHowever, computer logic needs the general mathematical rule for all numbers from **1 to 50**.\nWhen any number in this range is divided by 2, it is odd if the remainder is 1 (`number % 2 == 1`).\nCan you state this rule in your worksheet to complete this step?",
         correction: "State the mathematical formula: number % 2 == 1 for range 1 to 50.",
         suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). From 1 to 50, numbers like 1, 3, 5 ... 49 are odd.",
         matchedFirebaseInput: "1 3 5 7 are odd numbers without range or formula"
@@ -136,7 +136,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
     return {
       isFullyVerified: false,
       logicStepProgress,
-      feedback: "🌟 Coach Maara note: You've correctly spotted odd numbers like `1, 3, 5, 7`! 👏\n\nHowever, our challenge is to identify all odd numbers from **1 to 50** using computer logic. To complete Stage 1:\n1. State our range: **1 to 50**.\n2. State the mathematical test: A number is odd if dividing by 2 leaves a remainder of 1 (`number % 2 == 1`).",
+      feedback: "🌟 Coach Maara note: You've correctly spotted odd numbers like `1, 3, 5, 7`! 👏\nOur challenge is to identify all odd numbers from **1 to 50** using computer logic.\nTo complete Stage 1, state our target range (1 to 50) and the remainder test (`number % 2 == 1`).\nHow would you describe this in a sentence in your worksheet?",
       correction: "Add range 1 to 50 and remainder rule: 'number % 2 == 1'.",
       suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). From 1 to 50, the odd numbers are 1, 3, 5, 7 ... up to 49.",
       matchedFirebaseInput: "1 3 5 7 are odd numbers without range or formula"
@@ -149,7 +149,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
       return {
         isFullyVerified: false,
         logicStepProgress,
-        feedback: "🌟 Coach Maara checking back! What remainder does an odd number leave when divided by 2? An odd number divided by 2 leaves a remainder of 1 (`number % 2 == 1`). Add this rule to your worksheet!",
+        feedback: "🌟 Coach Maara checking back! You're making solid progress on your logic.\nWhat remainder does an odd number leave when divided by 2?\nIn mathematics and programming, dividing by 2 leaves a remainder of 1 (`number % 2 == 1`).\nAdd this remainder test for our range 1 to 50 in your worksheet!",
         correction: "Add the remainder test: 'number % 2 == 1' (remainder is 1).",
         suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). From 1 to 50, odd numbers are 1, 3, 5 ... up to 49.",
         matchedFirebaseInput: "odd numbers range 1 to 50 missing remainder test"
@@ -158,7 +158,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
     return {
       isFullyVerified: false,
       logicStepProgress,
-      feedback: "🌟 Coach Maara note: You have the range! Now specify the exact mathematical remainder test. In programming, how does the computer know a number is odd? When divided by 2, the remainder is 1 (`number % 2 == 1`).",
+      feedback: "🌟 Coach Maara note: You have the range identified nicely!\nNow let's specify the exact mathematical remainder test.\nWhen any number is divided by 2, how does the computer know it's odd? The remainder is 1 (`number % 2 == 1`).\nInclude this remainder rule in your worksheet to move forward!",
       correction: "Add remainder test: 'number % 2 == 1'.",
       suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). From 1 to 50, odd numbers are 1, 3, 5 ... up to 49.",
       matchedFirebaseInput: "odd numbers range 1 to 50 missing remainder test"
@@ -170,7 +170,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
     return {
       isFullyVerified: false,
       logicStepProgress,
-      feedback: "🌟 Coach Maara note: Your odd divisibility test (`number % 2 == 1`) is spot on! Now add our target range: state that we are checking numbers from **1 to 50**.",
+      feedback: "🌟 Coach Maara note: Your odd divisibility test (`number % 2 == 1`) is spot on!\nNow we need to specify our target boundary for the algorithm.\nRemember, our program needs to test and identify numbers from **1 to 50**.\nAdd this target range into your worksheet to complete Stage 1!",
       correction: "Add the range '1 to 50' to your worksheet.",
       suggestedInput: "Check numbers from 1 to 50: an odd number leaves remainder 1 when divided by 2 (number % 2 == 1).",
       matchedFirebaseInput: "number % 2 == 1 missing range 1 to 50"
@@ -180,7 +180,7 @@ export function validateOddNumbers1To50Logic(text, attemptCount = 1) {
   return {
     isFullyVerified: false,
     logicStepProgress,
-    feedback: "🌟 Coach Maara note: You are very close! Define the range (1 to 50) and state that numbers leaving remainder 1 when divided by 2 (`number % 2 == 1`) are odd numbers.",
+    feedback: "🌟 Coach Maara note: You are making good progress on your logic!\nTo complete this stage, make sure both essential elements are defined:\n1. The counting range from 1 to 50.\n2. The remainder test: a number is odd if dividing by 2 leaves remainder 1 (`number % 2 == 1`).",
     correction: "Combine range 1 to 50 and remainder rule: 'number % 2 == 1'.",
     suggestedInput: "An odd number leaves remainder 1 when divided by 2 (number % 2 == 1). From 1 to 50, the odd numbers are 1, 3, 5, 7 ... up to 49.",
     matchedFirebaseInput: "odd numbers 1 to 50 logic"
@@ -238,9 +238,9 @@ export function validateOddNumbers1To50Recipe(text, attemptCount = 1) {
 
   if (!hasStep1) {
     const step1Hints = [
-      "🌟 Coach Maara here! Let's think like a chef writing a recipe. What is the very first step to inspect numbers from 1 to 50? (Hint: Start counting from 1 up to 50).",
-      "🌟 Coach Maara checking back! What is our starting point for the recipe? Write: 'Step 1: Start counting numbers from 1 up to 50.'",
-      "🌟 Coach Maara with a fresh tip! Every recipe starts with a starting action. In your worksheet, write: `Step 1: Start counting from 1 up to 50`."
+      "🌟 Coach Maara here! Let's think like a chef preparing our recipe steps.\nEvery algorithm starts with a clear starting boundary for our sequence.\nTo inspect every number from 1 to 50, how would you state our starting count?\nTry writing your very first action as `Step 1: Start counting numbers from 1 up to 50` in your worksheet!",
+      "🌟 Coach Maara checking back! You are on the right track setting up the recipe.\nBefore we can test each number, we must establish our counting range.\nState our starting and ending limits in simple everyday English.\nIn your worksheet, write: `Step 1: Start counting numbers from 1 up to 50`.",
+      "🌟 Coach Maara with a fresh tip! Let's take this one step at a time.\nOur goal is to examine all numbers beginning at 1 and finishing at 50.\nWhat clear instruction tells the computer where to begin counting?\nWrite down your initial action: `Step 1: Start counting from 1 up to 50`."
     ];
     const idx = Math.max(0, attemptCount - 1) % step1Hints.length;
     feedback = step1Hints[idx];
@@ -248,9 +248,9 @@ export function validateOddNumbers1To50Recipe(text, attemptCount = 1) {
     suggestedInput = "Step 1: Start counting numbers from 1 up to 50.";
   } else if (!hasStep2) {
     const step2Hints = [
-      "🌟 Coach Maara here! Step 1 looks great! 👏 Now for Step 2: For each number, how do we check if it is odd? (Hint: Check if dividing by 2 leaves a remainder of 1).",
-      "🌟 Coach Maara checking back! In Step 2, test the current number: 'Step 2: Check if dividing the number by 2 leaves remainder 1 (or is not divisible by 2).'",
-      "🌟 Coach Maara with a fresh tip! To filter odd numbers, check the remainder: `Step 2: Check if dividing by 2 leaves remainder 1`."
+      "🌟 Coach Maara here! Step 1 looks fantastic! 👏\nNow we need our second recipe action to check each counting number.\nRemember our math rule: when an odd number is divided by 2, it leaves a remainder of 1.\nHow would you describe this remainder check in everyday English for Step 2?",
+      "🌟 Coach Maara checking back! Great job setting up the counting range in Step 1.\nFor Step 2, describe how to test if the current number is an odd number.\nFocus on checking whether dividing by 2 leaves a remainder of 1 (or is not divisible by 2).\nIn your worksheet, add: `Step 2: Check if dividing the number by 2 leaves a remainder of 1`.",
+      "🌟 Coach Maara encouraging you! You are halfway through the recipe!\nNow we need the decision step that filters the odd numbers.\nCheck if dividing by 2 leaves a leftover of 1 before displaying it.\nTry writing `Step 2: Check if dividing by 2 leaves remainder 1` in your worksheet!"
     ];
     const idx = Math.max(0, attemptCount - 1) % step2Hints.length;
     feedback = step2Hints[idx];
@@ -258,9 +258,9 @@ export function validateOddNumbers1To50Recipe(text, attemptCount = 1) {
     suggestedInput = "Step 2: Check if dividing the number by 2 leaves a remainder of 1.";
   } else if (!hasStep3) {
     const step3Hints = [
-      "🌟 Coach Maara here! Steps 1 & 2 are ready! 👏 Now for Step 3: If the number leaves remainder 1, what action should we take? (Hint: Display the number).",
-      "🌟 Coach Maara checking back! What do we do when our odd condition is met? Write: 'Step 3: If remainder is 1, display the number.'",
-      "🌟 Coach Maara encouraging you! Now display the result: `Step 3: If remainder is 1, display the number`."
+      "🌟 Coach Maara here! Steps 1 and 2 are clearly established! 👏\nNow we need the action step that takes place when our condition is met.\nWhen a number leaves a remainder of 1, what should we do with that odd number?\nDescribe displaying or printing the number for Step 3 in your worksheet!",
+      "🌟 Coach Maara checking back! Your recipe logic is coming together nicely.\nOnce we identify that a number is odd, we need to show it to the user.\nWhat simple instruction shows or displays that specific number?\nIn your worksheet, write: `Step 3: If remainder is 1, display the number`.",
+      "🌟 Coach Maara with a fresh tip! Now let's handle the output action.\nWhen the odd test succeeds, we display that number on the screen.\nHow would you state this action in a clean recipe step?\nAdd `Step 3: If remainder is 1, display the number` to your worksheet!"
     ];
     const idx = Math.max(0, attemptCount - 1) % step3Hints.length;
     feedback = step3Hints[idx];
@@ -268,9 +268,9 @@ export function validateOddNumbers1To50Recipe(text, attemptCount = 1) {
     suggestedInput = "Step 3: If remainder is 1, display the number.";
   } else if (!hasStep4) {
     const step4Hints = [
-      "🌟 Coach Maara here! Almost done with the recipe! 👏 What is the final step to keep checking subsequent numbers until we finish? (Hint: Repeat until reaching 50).",
-      "🌟 Coach Maara checking back! To finish the recipe, add: 'Step 4: Repeat for all numbers until reaching 50.'",
-      "🌟 Coach Maara with a fresh tip! Add the loop repeat step: `Step 4: Repeat until reaching 50` to complete your recipe!"
+      "🌟 Coach Maara here! You are almost at the finish line for your recipe! 👏\nAfter displaying an odd number, we must continue checking the remaining numbers.\nWhat final instruction tells the recipe to keep repeating until reaching 50?\nWrite your final repeat action as Step 4 in your worksheet!",
+      "🌟 Coach Maara checking back! Three steps are ready, now for the grand finale.\nWe need an instruction to repeat the process for all subsequent numbers up to 50.\nHow would you phrase this repetition step in simple everyday words?\nIn your worksheet, write: `Step 4: Repeat until reaching 50` to complete the stage!",
+      "🌟 Coach Maara with a fresh tip! Every loop recipe needs a completion rule.\nState that the counting and checking should repeat until 50 is reached.\nAdd this final action to wrap up your 4-step recipe.\nTry writing `Step 4: Repeat until reaching 50` in your worksheet!"
     ];
     const idx = Math.max(0, attemptCount - 1) % step4Hints.length;
     feedback = step4Hints[idx];
@@ -501,10 +501,10 @@ export function validateOddNumbers1To50SampleCode(code, attemptCount = 1) {
   // STEP 1 GUIDANCE: If loop is missing or incomplete
   if (!step1Done) {
     const loopHints = [
-      "🌟 Coach Maara note: Let's begin with Step 1! What loop construct will count through all numbers starting from 1 up to 50?",
-      "🌟 Coach Maara checking back! Set up your `for` loop with: Start: 1, Stop: 50 (`i <= 50`), Step: `i++`. Write your loop header to start!",
-      "🌟 Coach Maara with a fresh tip! In your code editor, write a counting loop header: `for (var i = 1; i <= 50; i++) {`. That gives us our range 1 to 50!",
-      "🌟 Coach Maara encouraging you! Every journey starts with the first step. Write your loop from 1 up to 50 to complete Step 1!"
+      "🌟 Coach Maara note: Let's begin with Step 1 for our code prototype!\nTo print odd numbers from 1 to 50, we first need a counting structure.\nWhat loop construct will iterate through all counting numbers starting from 1 up to 50?\nWrite your `for` loop header in the editor to start Step 1!",
+      "🌟 Coach Maara checking back! You are on the right track setting up the program.\nRemember our loop needs 3 controls: Start: 1, Stop: 50 (`i <= 50`), and Step: `i++`.\nIn your code editor, set up the loop: `for (var i = 1; i <= 50; i++) {`.\nGive this loop header a try to complete Step 1!",
+      "🌟 Coach Maara with a fresh tip! Every loop starts with establishing the range.\nWe want our counter variable `i` to begin at 1 and run until it reaches 50.\nIn universal syntax, this is written: `for (var i = 1; i <= 50; i++) {`.\nType your loop header in your code editor to move forward!",
+      "🌟 Coach Maara encouraging you! Let's build our code step by step.\nStart by writing a loop that counts through our target numbers 1 to 50.\nWhat initial statement begins this counting journey?\nWrite your for loop header in the code editor to complete this step!"
     ];
     const hintIdx = Math.max(0, attemptCount - 1) % loopHints.length;
     return {
@@ -521,7 +521,7 @@ export function validateOddNumbers1To50SampleCode(code, attemptCount = 1) {
       return {
         isFullyVerified: false,
         sampleCodeStepProgress,
-        feedback: `🌟 Coach Maara note: Look closely at your condition! You wrote \`${loopVar} % 2 == 0\`, which checks for **EVEN** numbers! For **ODD** numbers, test if the remainder is 1: \`if (${loopVar} % 2 == 1) {\` (or \`if (${loopVar} % 2 != 0) {\`).`,
+        feedback: `🌟 Coach Maara note: Look closely at your condition!\nYou wrote \`${loopVar} % 2 == 0\`, which checks for **EVEN** numbers.\nFor **ODD** numbers, we test if dividing by 2 leaves remainder 1 (or is not 0).\nUpdate your condition to: \`if (${loopVar} % 2 == 1) {\` in your editor!`,
         correction: `Change '${loopVar} % 2 == 0' to 'if (${loopVar} % 2 == 1) {'.`
       };
     }
@@ -529,7 +529,7 @@ export function validateOddNumbers1To50SampleCode(code, attemptCount = 1) {
       return {
         isFullyVerified: false,
         sampleCodeStepProgress,
-        feedback: `🌟 Coach Maara note: You wrote \`${loopVar} % 2 == 1 {\` with the \`==\` operator, which is great thinking! But in programming, a conditional decision requires the \`if\` keyword. Wrap your condition in \`if (...)\`: \`if (${loopVar} % 2 == 1) {\`.`,
+        feedback: `🌟 Coach Maara note: You wrote \`${loopVar} % 2 == 1 {\` with the \`==\` operator, which is great thinking!\nIn programming, a conditional decision always requires the \`if\` keyword.\nWrap your comparison inside \`if (...)\`: \`if (${loopVar} % 2 == 1) {\`.\nAdd the \`if\` keyword to fix your condition!`,
         correction: `Change '${loopVar} % 2 == 1 {' to 'if (${loopVar} % 2 == 1) {'.`
       };
     }
@@ -537,15 +537,15 @@ export function validateOddNumbers1To50SampleCode(code, attemptCount = 1) {
       return {
         isFullyVerified: false,
         sampleCodeStepProgress,
-        feedback: `🌟 Coach Maara note: Look closely at your comparison! You wrote a single \`=\` (\`${loopVar} % 2 = 1\`). In programming, \`=\` is for assignment, while \`==\` compares values. Update to: \`if (${loopVar} % 2 == 1) {\`.`,
+        feedback: `🌟 Coach Maara note: Look closely at your comparison operator!\nYou wrote a single \`=\` (\`${loopVar} % 2 = 1\`), which assigns rather than compares.\nIn programming conditions, always use \`==\` (or \`!==\`) to compare values.\nUpdate to: \`if (${loopVar} % 2 == 1) {\` in your editor!`,
         correction: `Use '==' instead of '=': 'if (${loopVar} % 2 == 1) {'.`
       };
     }
     const condHints = [
-      `🌟 Coach Maara note: Loop from 1 to 50 is set! Now for Step 2: Inside the loop, how do we test if \`${loopVar}\` is an odd number using the modulo operator \`%\`?`,
-      `🌟 Coach Maara checking back! Inside your loop, check if dividing by 2 leaves remainder 1: write an \`if\` condition with \`${loopVar} % 2 == 1\` (or \`${loopVar} % 2 != 0\`).`,
-      `🌟 Coach Maara with a fresh tip! Add your decision block inside the loop: \`if (${loopVar} % 2 == 1) {\`. What action should run when this condition is true?`,
-      `🌟 Coach Maara encouraging you! We need to filter only odd numbers. Write: \`if (${loopVar} % 2 == 1) {\` inside your loop body.`
+      `🌟 Coach Maara note: Your loop from 1 to 50 is set up nicely! 👏\nNow for Step 2: we must check each number before displaying it.\nHow do we test if \`${loopVar}\` is an odd number using the modulo operator \`%\`?\nAdd your condition: \`if (${loopVar} % 2 == 1) {\` inside your loop body!`,
+      `🌟 Coach Maara checking back! Inside the loop, we filter only odd numbers.\nIn programming, checking if dividing by 2 leaves remainder 1 tests for oddness.\nWrite an \`if\` decision block with \`${loopVar} % 2 == 1\` (or \`${loopVar} % 2 != 0\`).\nTry adding this if condition inside your loop!`,
+      `🌟 Coach Maara with a fresh tip! Let's inspect the remainder of each number.\nWhen \`${loopVar} % 2\` produces 1, that number is odd and should be printed.\nAdd your decision statement: \`if (${loopVar} % 2 == 1) {\` inside the loop.\nWhat action will you put inside this condition?`,
+      `🌟 Coach Maara encouraging you! You are halfway through the prototype!\nFilter only the odd numbers by testing if the remainder with 2 is 1.\nWrite: \`if (${loopVar} % 2 == 1) {\` inside your loop body.\nGive it a try in your code editor!`
     ];
     const condIdx = Math.max(0, attemptCount - 1) % condHints.length;
     return {
@@ -562,15 +562,15 @@ export function validateOddNumbers1To50SampleCode(code, attemptCount = 1) {
       return {
         isFullyVerified: false,
         sampleCodeStepProgress,
-        feedback: `🌟 Coach Maara note: In your print statement, you wrote text ('odd number') instead of the number itself! Print the loop variable \`${loopVar}\` so the program actually outputs 1, 3, 5...: \`print(${loopVar});\`.`,
+        feedback: `🌟 Coach Maara note: Look at your print target!\nYou wrote text ('odd number') instead of the actual number itself.\nPrint the loop variable \`${loopVar}\` so the program actually outputs 1, 3, 5...: \`print(${loopVar});\`.\nUpdate the print statement in your code editor!`,
         correction: `Change print target to the loop variable: 'print(${loopVar})'.`
       };
     }
     const printHints = [
-      `🌟 Coach Maara note: Loop and odd check are both in place! Now for Step 3: What action displays the number when the odd check passes? Add a print statement inside your \`if\` block!`,
-      `🌟 Coach Maara checking back! Inside your \`if\` condition, display the current odd number: write \`print(${loopVar});\` (or \`console.log(${loopVar});\`).`,
-      `🌟 Coach Maara with a fresh tip! To output the numbers from 1 to 49, put \`print(${loopVar});\` inside the condition block. Give it a try!`,
-      `🌟 Coach Maara encouraging you! You are on the final action! Add \`print(${loopVar})\` inside your if block to complete the prototype.`
+      `🌟 Coach Maara note: Both your loop and odd condition are looking great! 👏\nNow for Step 3: we need to display each odd number that passes our test.\nMake sure to output the loop variable \`${loopVar}\` rather than a fixed text string.\nAdd \`print(${loopVar});\` inside your if condition to see the numbers 1, 3, 5...!`,
+      `🌟 Coach Maara checking back! You are on the very final action of your code!\nInside your \`if\` condition, display the current odd integer.\nIn universal syntax, write: \`print(${loopVar});\` (or \`console.log(${loopVar});\`).\nAdd this print statement to complete your prototype!`,
+      `🌟 Coach Maara with a fresh tip! To display each odd number on the screen:\nPlace \`print(${loopVar});\` directly between the curly braces of your if block.\nThis ensures only numbers passing the odd test get displayed.\nAdd this final line in your code editor now!`,
+      `🌟 Coach Maara encouraging you! You are right at the finish line! 🏆\nAll that remains is printing each approved odd number.\nAdd \`print(${loopVar});\` inside your condition block.\nRun your code to complete this challenge!`
     ];
     const printIdx = Math.max(0, attemptCount - 1) % printHints.length;
     return {
