@@ -392,82 +392,165 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
 
 export function validateEvenNumbers1To50SampleCode(code, attemptCount = 1) {
   if (!code || typeof code !== "string" || code.trim().length < 5) {
+    const emptySteps = [
+      { stepNumber: 1, title: "1. Setup for loop 1 to 50", completed: false, current: true },
+      { stepNumber: 2, title: "2. Check if i % 2 == 0", completed: false, current: false },
+      { stepNumber: 3, title: "3. Print even integer", completed: false, current: false },
+      { stepNumber: 4, title: "4. Verify output 2 to 50", completed: false, current: false }
+    ];
     return {
       isFullyVerified: false,
-      feedback: "🌟 Coach Maara here! Let's assemble our verified ingredients into working code. Start by writing the loop from 1 to 50!",
-      correction: "Write a for loop from 1 to 50 with if (i % 2 == 0) and print(i)."
+      sampleCodeStepProgress: emptySteps,
+      feedback: "🌟 Coach Maara note: Welcome to Taste the Sample! Let's assemble our verified ingredients into working code. Start by writing the counting loop from 1 to 50!",
+      correction: "Write a for loop from 1 to 50 in your editor."
     };
   }
 
   const norm = code.toLowerCase().trim();
-  const issues = [];
 
   // 1. Detect conversational questions mixed into code editor
   const hasQuestion = /\b(?:how\s*to|what\s*is|how\s*do|why|help|puriyala|theriyala)\b/i.test(norm) ||
     /^(?:how|what|why|can\s*i)\b/i.test(norm) ||
     norm.includes("?");
-  if (hasQuestion) {
-    issues.push("• **Question text in editor:** Remove conversational questions (like 'how to define...') from the code editor so only executable code remains.");
-  }
 
   // 2. Loop detection
-  const hasLoop = /\b(?:for|while)\b/i.test(norm);
+  const hasLoop = /\b(?:for\s*\(|while\s*\(|for\s+\w+\s+in|\bfor\b|\bwhile\b)/i.test(norm);
   const has50 = /\b50\b/.test(norm) || /\b51\b/.test(norm);
-  if (!hasLoop || !has50) {
-    issues.push("• **Loop boundary:** Ensure your loop iterates from 1 up to 50 (e.g. `for (var i = 1; i <= 50; i++)`).");
-  }
+  const hasValidLoop = hasLoop && has50;
 
   // Detect loop variable (e.g. "for (var i = 1" -> "i", "for i in range" -> "i", "for (let num = 1" -> "num")
   const loopVarMatch = code.match(/for\s*(?:\(\s*(?:var|let|const|int)\s+)?([a-zA-Z_]\w*)\s*(?:=|in|<=)/i) ||
     code.match(/while\s*\(\s*([a-zA-Z_]\w*)/i);
   const loopVar = loopVarMatch ? loopVarMatch[1] : "i";
 
+  // Step increment shortcut: for (...; i += 2) or range(2, 51, 2)
   const hasStep2 = /\+=\s*2\b/.test(norm) || /,\s*2\s*\)/.test(norm);
+
+  // 3. Condition detection
   const hasIfKeyword = /\bif\b/i.test(norm);
   const hasMod2 = /%\s*2\b/.test(norm);
-  const hasConditionWithoutIf = !hasIfKeyword && (/% 2\s*==\s*0/.test(norm) || /%\s*2\s*==/.test(norm));
+  const hasEqualsZero = /==\s*0\b/.test(norm) || /===\s*0\b/.test(norm) || /=\s*0\b/.test(norm);
+  const hasConditionWithoutIf = !hasIfKeyword && (/% 2\s*==\s*0/.test(norm) || /%\s*2\s*==/.test(norm) || /%\s*2\s*=/.test(norm));
+  const hasSingleEqual = hasIfKeyword && /%\s*2\s*=\s*0\b/.test(norm);
 
-  if (!hasStep2) {
-    if (hasConditionWithoutIf) {
-      issues.push(`• **Missing \`if\` keyword:** You wrote \`${loopVar} % 2 == 0 {\` with the \`==\` operator, but the condition check is missing the \`if\` keyword! Change it to: \`if (${loopVar} % 2 == 0) {\`.`);
-    } else if (!hasIfKeyword || !hasMod2) {
-      issues.push(`• **Even number condition:** Inside the loop, test if the number is even with an if condition: \`if (${loopVar} % 2 == 0)\`.`);
-    }
-  }
+  const hasValidCondition = (hasIfKeyword && hasMod2 && hasEqualsZero) || hasStep2;
 
-  // 3. Print check
+  // 4. Print detection
   const hasPrint = /\b(?:print|println|printf|console\.log|system\.out\.print|cout\s*<<)\b/i.test(norm);
   const printsStringOrText = new RegExp(`(?:print|println|printf|console\\.log)\\s*\\(\\s*["']?(?:even(?:\\s*number)?|odd|number)["']?\\s*\\)`, "i").test(norm) ||
     new RegExp(`cout\\s*<<\\s*["']?(?:even(?:\\s*number)?|odd|number)["']?`, "i").test(norm);
-  const printsLoopVar = new RegExp(`(?:print|println|printf|console\\.log)\\s*\\(\\s*${loopVar}\\s*\\)`, "i").test(norm) ||
-    new RegExp(`cout\\s*<<\\s*${loopVar}\\b`, "i").test(norm);
+  const printsLoopVar = (new RegExp(`(?:print|println|printf|console\\.log)\\s*\\(\\s*${loopVar}\\s*\\)`, "i").test(norm) ||
+    new RegExp(`cout\\s*<<\\s*${loopVar}\\b`, "i").test(norm)) && !printsStringOrText;
 
-  if (!hasPrint) {
-    issues.push(`• **Print output missing:** Add a print statement inside the condition to display the even number: \`print(${loopVar})\`.`);
-  } else if (printsStringOrText && !printsLoopVar) {
-    issues.push(`• **Wrong print target:** In \`print(even number)\`, you are printing the text 'even number' instead of the number itself! Update it to print your loop variable: \`print(${loopVar})\` (or \`console.log(${loopVar})\`).`);
-  }
+  // Track progress
+  const step1Done = hasValidLoop;
+  const step2Done = step1Done && hasValidCondition;
+  const step3Done = step2Done && printsLoopVar;
+  const step4Done = step3Done && !hasQuestion;
 
-  if (issues.length > 0) {
-    let header;
-    if (attemptCount >= 3) {
-      header = "🌟 Coach Maara here! We are so close! Let's solve the remaining issues together:";
-    } else if (attemptCount === 2) {
-      header = "🌟 Coach Maara checking back! Good progress on your code. Please address these adjustments:";
-    } else {
-      header = "🌟 Coach Maara here! Good effort! You have the loop and you've used the `==` comparison operator, but there are a few adjustments needed:";
-    }
-    const feedback = `${header}\n\n${issues.join("\n\n")}\n\n👉 Fix these lines in your code editor and try again!`;
+  const sampleCodeStepProgress = [
+    { stepNumber: 1, title: "1. Setup for loop 1 to 50", completed: step1Done, current: !step1Done },
+    { stepNumber: 2, title: `2. Check if ${loopVar} % 2 == 0`, completed: step2Done, current: step1Done && !step2Done },
+    { stepNumber: 3, title: "3. Print even integer", completed: step3Done, current: step2Done && !step3Done },
+    { stepNumber: 4, title: "4. Verify output 2 to 50", completed: step4Done, current: step3Done && !step4Done }
+  ];
+
+  // STRICT SINGLE-STEP SOCRATIC GUIDANCE:
+  // First, if user has questions in editor:
+  if (hasQuestion) {
     return {
       isFullyVerified: false,
-      feedback,
-      correction: "Fix the identified syntax issues: add 'if', print variable " + loopVar + ", and remove question text."
+      sampleCodeStepProgress,
+      feedback: "🌟 Coach Maara note: In the code editor, only executable program lines belong! Please remove conversational questions (like 'how to define...') from the editor so the compiler can read your clean code.",
+      correction: "Remove question text from the code editor."
     };
   }
 
+  // STEP 1 GUIDANCE: If loop is missing or incomplete
+  if (!step1Done) {
+    const loopHints = [
+      "🌟 Coach Maara note: Let's begin with Step 1! What loop construct will count through all numbers starting from 1 up to 50?",
+      "🌟 Coach Maara checking back! Set up your `for` loop with: Start: 1, Stop: 50 (`i <= 50`), Step: `i++`. Write your loop header to start!",
+      "🌟 Coach Maara with a fresh tip! In your code editor, write a counting loop header: `for (var i = 1; i <= 50; i++) {`. That gives us our range 1 to 50!",
+      "🌟 Coach Maara encouraging you! Every journey starts with the first step. Write your loop from 1 up to 50 to complete Step 1!"
+    ];
+    const hintIdx = Math.max(0, attemptCount - 1) % loopHints.length;
+    return {
+      isFullyVerified: false,
+      sampleCodeStepProgress,
+      feedback: loopHints[hintIdx],
+      correction: "Write the loop header iterating from 1 to 50."
+    };
+  }
+
+  // STEP 2 GUIDANCE: If condition is missing or incorrect
+  if (!step2Done) {
+    if (hasConditionWithoutIf) {
+      return {
+        isFullyVerified: false,
+        sampleCodeStepProgress,
+        feedback: `🌟 Coach Maara note: You wrote \`${loopVar} % 2 == 0 {\` with the \`==\` operator, which is great thinking! But in programming, a conditional decision requires the \`if\` keyword. Wrap your condition in \`if (...)\`: \`if (${loopVar} % 2 == 0) {\`.`,
+        correction: `Change '${loopVar} % 2 == 0 {' to 'if (${loopVar} % 2 == 0) {'.`
+      };
+    }
+    if (hasSingleEqual) {
+      return {
+        isFullyVerified: false,
+        sampleCodeStepProgress,
+        feedback: `🌟 Coach Maara note: Look closely at your comparison! You wrote a single \`=\` (\`${loopVar} % 2 = 0\`). In programming, \`=\` is for assignment, while \`==\` compares values. Update to: \`if (${loopVar} % 2 == 0) {\`.`,
+        correction: `Use '==' instead of '=': 'if (${loopVar} % 2 == 0) {'.`
+      };
+    }
+    const condHints = [
+      `🌟 Coach Maara note: Loop from 1 to 50 is set! Now for Step 2: Inside the loop, how do we test if \`${loopVar}\` is an even number using the modulo operator \`%\`?`,
+      `🌟 Coach Maara checking back! Inside your loop, check if dividing by 2 leaves remainder 0: write an \`if\` condition with \`${loopVar} % 2 == 0\`.`,
+      `🌟 Coach Maara with a fresh tip! Add your decision block inside the loop: \`if (${loopVar} % 2 == 0) {\`. What action should run when this condition is true?`,
+      `🌟 Coach Maara encouraging you! We need to filter only even numbers. Write: \`if (${loopVar} % 2 == 0) {\` inside your loop body.`
+    ];
+    const condIdx = Math.max(0, attemptCount - 1) % condHints.length;
+    return {
+      isFullyVerified: false,
+      sampleCodeStepProgress,
+      feedback: condHints[condIdx],
+      correction: `Add the condition: 'if (${loopVar} % 2 == 0) {'.`
+    };
+  }
+
+  // STEP 3 GUIDANCE: If print is missing or wrong
+  if (!step3Done) {
+    if (printsStringOrText) {
+      return {
+        isFullyVerified: false,
+        sampleCodeStepProgress,
+        feedback: `🌟 Coach Maara note: In your print statement, you wrote text ('even number') instead of the number itself! Print the loop variable \`${loopVar}\` so the program actually outputs 2, 4, 6...: \`print(${loopVar});\`.`,
+        correction: `Change print target to the loop variable: 'print(${loopVar})'.`
+      };
+    }
+    const printHints = [
+      `🌟 Coach Maara note: Loop and even check are both in place! Now for Step 3: What action displays the number when the even check passes? Add a print statement inside your \`if\` block!`,
+      `🌟 Coach Maara checking back! Inside your \`if\` condition, display the current even number: write \`print(${loopVar});\` (or \`console.log(${loopVar});\`).`,
+      `🌟 Coach Maara with a fresh tip! To output the numbers from 2 to 50, put \`print(${loopVar});\` inside the condition block. Give it a try!`,
+      `🌟 Coach Maara encouraging you! You are on the final action! Add \`print(${loopVar})\` inside your if block to complete the prototype.`
+    ];
+    const printIdx = Math.max(0, attemptCount - 1) % printHints.length;
+    return {
+      isFullyVerified: false,
+      sampleCodeStepProgress,
+      feedback: printHints[printIdx],
+      correction: `Add 'print(${loopVar});' inside the if block.`
+    };
+  }
+
+  // STEP 4 / COMPLETION:
   return {
     isFullyVerified: true,
-    feedback: "🎉 **Congratulations! Code Verified!** 🏆\nYour program correctly loops from 1 to 50, checks for even numbers, and prints each even number! Fantastic job mastering this challenge! Proceed to the Compiler to compile and run your code!",
+    sampleCodeStepProgress: [
+      { stepNumber: 1, title: "1. Setup for loop 1 to 50", completed: true, current: false },
+      { stepNumber: 2, title: `2. Check if ${loopVar} % 2 == 0`, completed: true, current: false },
+      { stepNumber: 3, title: "3. Print even integer", completed: true, current: false },
+      { stepNumber: 4, title: "4. Verify output 2 to 50", completed: true, current: false }
+    ],
+    feedback: "🎉 **Congratulations! Code Verified!** 🏆\nYour program correctly loops from 1 to 50, checks for even numbers (`" + loopVar + " % 2 == 0`), and prints each even number! Outstanding job assembling all 4 steps! Proceed to the Compiler to compile and run your code across languages!",
     correction: "All done! Run the code in the compiler."
   };
 }

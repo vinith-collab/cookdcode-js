@@ -4633,6 +4633,8 @@ for (int i = 1; i <= ${varName}; i++) {
             }
             if (section === "samplecode") {
               const evenSample = validateEvenNumbers1To50SampleCode(userInput, attemptCount);
+              parsed.sampleCodeStepProgress = evenSample.sampleCodeStepProgress;
+              parsed.stepProgress = evenSample.sampleCodeStepProgress;
               if (evenSample.isFullyVerified) {
                 parsed.correct = true;
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount) : evenSample.feedback;
@@ -6647,7 +6649,9 @@ for (int i = 1; i <= ${varName}; i++) {
           correct: evenSample.isFullyVerified,
           feedback: synthesizeHumanTouch(evenSample.feedback, "samplecode", userInput, attemptCount),
           correction: evenSample.correction,
-          suggestedInput: void 0
+          suggestedInput: void 0,
+          sampleCodeStepProgress: evenSample.sampleCodeStepProgress,
+          stepProgress: evenSample.sampleCodeStepProgress
         };
       }
     }
