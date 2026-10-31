@@ -6,19 +6,41 @@
 export function validateAtmPinVerificationLogic(text, attemptCount = 1) {
   const norm = (text || "").toLowerCase().replace(/[^a-z0-9\s%+\-=*><!/]/g, " ").replace(/\s+/g, " ").trim();
 
-  // Step 1: Registered PIN / 1234 reference
-  const hasStep1Pin = /\b(?:1234|pin|secret|stored\s*pin|registered\s*pin|bank\s*pin|actual\s*pin|saved\s*pin)\b/.test(norm);
+  // Step 1: Registered PIN reference (1234 or any 4-digit PIN like 2006)
+  const hasStep1Pin = /\b(?:1234|pin|secret|stored\s*pin|registered\s*pin|bank\s*pin|actual\s*pin|saved\s*pin|\d{4})\b/.test(norm);
 
   // Step 2: Equality comparison rule (equals, match, identical, same, ==)
-  const hasStep2Comparison = /==\s*1234\b/.test(norm) ||
-    /\b(?:equal|equals|match|matches|matching|identical|same\s*as|check\s*if\s*same|is\s*1234)\b/.test(norm) ||
+  const hasStep2Comparison = /==\s*\d+\b/.test(norm) ||
+    /\b(?:equal|equals|match|matches|matching|identical|same\s*as|check\s*if\s*same|is\s*\d+)\b/.test(norm) ||
     /==/.test(norm);
 
-  // Step 3: Approved outcome (PIN Verified / Access Granted)
-  const hasStep3Approved = /\b(?:verified|valid|approved|access\s*granted|allow|granted|success|login)\b/.test(norm);
+  // Step 3: Approved outcome (PIN Verified / Access Granted / Valid)
+  const hasStep3Approved = /\b(?<!not\s+|not|in)(?:verified|valid|approved|access\s*granted|allow|granted|success|login)\b/.test(norm);
 
-  // Step 4: Rejected outcome (Incorrect PIN / Access Denied)
-  const hasStep4Rejected = /\b(?:incorrect|invalid|denied|access\s*denied|reject|wrong|fail|error|not\s*match)\b/.test(norm);
+  // Step 4: Rejected outcome (Incorrect PIN / Access Denied / Invalid / Not Valid)
+  const hasStep4Rejected = /\b(?:incorrect|invalid|not\s*valid|notvalid|denied|access\s*denied|reject|wrong|fail|error|not\s*match)\b/.test(norm);
+
+  // CRITICAL SEMANTIC RELATION CHECK: Detect inverted / backwards logic!
+  // e.g. "if match it is notvalid" or "otherwise not match valid"
+  const isDirectMatchInvalid = /(?<!not\s+|does\s*not\s*|doesn't\s*)\b(?:match(?:es|ing)?|equals?|==|identical|same|is\s*\d+|matches\s*with\s*\d+)\b(?:(?!\b(?:otherwise|else|mismatch|not\s*match|different)\b).)*?\b(?:not\s*valid|notvalid|invalid|incorrect|denied|reject(?:ed)?|wrong|fail(?:ure|ed)?)\b/i.test(norm);
+  const isDirectMismatchValid = /\b(?:otherwise|else|not\s*match(?:es|ing)?|mismatch|not\s*equal|different)\b(?:(?!\b(?:when|if\s*(?!not)match|if\s*(?!not)equal)\b).)*?\b(?<!not\s+|not|in)(?:valid|verified|approved|granted|allow(?:ed)?|success)\b/i.test(norm);
+  const isInvertedLogic = isDirectMatchInvalid || isDirectMismatchValid;
+
+  if (isInvertedLogic) {
+    return {
+      isFullyVerified: false,
+      logicStepProgress: [
+        { stepNumber: 1, title: "1. Registered PIN reference (1234)", completed: hasStep1Pin, current: false },
+        { stepNumber: 2, title: "2. Comparison rule (matches 1234)", completed: hasStep2Comparison, current: false },
+        { stepNumber: 3, title: "3. Approved outcome (PIN Verified)", completed: false, current: true },
+        { stepNumber: 4, title: "4. Rejected outcome (Incorrect PIN)", completed: false, current: false }
+      ],
+      feedback: "🌟 Coach Maara note: Check the cause-and-effect relationship in your logic!\nWhen the entered PIN matches the registered PIN, access must be approved ('PIN Verified' / 'Valid').\nWhen it does NOT match, access must be rejected ('Incorrect PIN' / 'Not Valid').\nCurrently, your statement has these reversed (matching leads to invalid). Swap them so matching grants access!",
+      correction: "Swap the outcomes: When the PIN matches, it is Valid (PIN Verified). When it does not match, it is Incorrect (Not Valid).",
+      suggestedInput: "If the entered PIN matches 1234, display 'PIN Verified'; otherwise, display 'Incorrect PIN'.",
+      matchedFirebaseInput: "what if pin matches in logic?"
+    };
+  }
 
   const logicStepProgress = [
     { stepNumber: 1, title: "1. Registered PIN reference (1234)", completed: hasStep1Pin, current: !hasStep1Pin },
@@ -174,7 +196,23 @@ export function validateAtmPinVerificationRecipe(text, attemptCount = 1) {
     { stepNumber: 4, title: "4. Otherwise, display 'Incorrect PIN'", completed: hasStep4, current: hasStep1 && hasStep2 && hasStep3 && !hasStep4 }
   ];
 
-  const isFullyVerified = hasStep1 && hasStep2 && hasStep3 && hasStep4;
+  // CRITICAL SEMANTIC RELATION CHECK: Inverted recipe steps
+  const isDirectMatchInvalid = /(?<!not\s+|does\s*not\s*|doesn't\s*)\b(?:match(?:es|ing)?|equals?|identical|same|is\s*\d+|matches\s*with\s*\d+)\b(?:(?!\b(?:otherwise|else|mismatch|not\s*match|different)\b).)*?\b(?:not\s*valid|notvalid|invalid|incorrect|denied|reject(?:ed)?|wrong|fail(?:ure|ed)?)\b/i.test(norm);
+  const isDirectMismatchValid = /\b(?:otherwise|else|not\s*match(?:es|ing)?|mismatch|not\s*equal|different)\b(?:(?!\b(?:when|if\s*(?!not)match|if\s*(?!not)equal)\b).)*?\b(?<!not\s+|not|in)(?:valid|verified|approved|granted|allow(?:ed)?|success)\b/i.test(norm);
+  const isInvertedLogic = isDirectMatchInvalid || isDirectMismatchValid;
+
+  if (isInvertedLogic) {
+    return {
+      isFullyVerified: false,
+      recipeStepProgress,
+      feedback: "🌟 Coach Maara note: Check your recipe steps carefully!\nStep 3 must display the approved message ('PIN Verified') when the PIN matches.\nStep 4 must display the error message ('Incorrect PIN') when it does not match.\nMake sure matching leads to success and mismatch leads to failure!",
+      correction: "Step 3: If matches, display 'PIN Verified'. Step 4: Otherwise, display 'Incorrect PIN'.",
+      suggestedInput: "Step 3: If matches, display 'PIN Verified'\nStep 4: Otherwise, display 'Incorrect PIN'",
+      matchedFirebaseInput: "what are the steps for atm pin recipe?"
+    };
+  }
+
+  const isFullyVerified = !isInvertedLogic && hasStep1 && hasStep2 && hasStep3 && hasStep4;
 
   if (isFullyVerified) {
     return {

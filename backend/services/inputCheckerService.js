@@ -1344,10 +1344,13 @@ PROBLEM FOCUS: "ATM PIN Verification" (CTC Pedagogy Matrix)
 Concept: Variable comparison (==) and two-way conditional branching (if-else)
 
 1. STAGE 1 (LOGIC):
-   - Definition: Compare the entered PIN with the registered PIN (1234).
-   - If the entered PIN equals 1234 (matches 1234), output "PIN Verified"; otherwise, output "Incorrect PIN".
+   - Definition: Compare the entered PIN with the registered PIN (e.g. 1234 or any assumed PIN like 2006).
+   - If the entered PIN equals the registered PIN (matches), output "PIN Verified" (or Valid).
+   - If the entered PIN does not match (otherwise), output "Incorrect PIN" (or Not Valid).
+   - ABSOLUTE SEMANTIC TRUTH RULE: Matching MUST lead to the positive/verified outcome! Mismatch MUST lead to the negative/rejected outcome!
+   - CRITICAL LOGICAL ERROR CHECK: If the student reverses or inverts this relation (e.g. states that matching leads to 'not valid' or mismatch leads to 'valid'), YOU MUST MARK correct: false! Explain: "When the entered PIN matches, it should be Valid/Verified. When it does not match, it should be Invalid/Incorrect. Your logic currently reverses these outcomes!"
    - CRITICAL CTC RULE: STRICTLY NO PROGRAMMING TOOLS OR CODE SYNTAX IN LOGIC! Do NOT use '==', variable names like 'entered_pin', or code keywords. Use plain everyday English.
-   - Both success ("PIN Verified") and rejection ("Incorrect PIN") outcomes must be stated.
+   - Both success ("PIN Verified") and rejection ("Incorrect PIN") outcomes must be stated in correct cause-and-effect alignment.
 
 2. STAGE 2 (RECIPE):
    - 4-STEP ALGORITHM (Natural English without programming keywords):
@@ -1456,7 +1459,7 @@ CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - SAMPLE CODE):
 CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - LOGIC):
 - Student Intent: "${atmLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
 - Fully Verified Status: ${atmLog.isFullyVerified}
-- INSTRUCTION FOR COACH MAARA: Use 100% natural English. Check if the entered PIN matches 1234 (is equal to 1234). Display "PIN Verified" if match, "Incorrect PIN" otherwise. STRICTLY NO programming tools or code syntax like '==' or 'entered_pin' in Logic!
+- INSTRUCTION FOR COACH MAARA: Verify semantic cause-and-effect: match -> Valid / PIN Verified; mismatch -> Not Valid / Incorrect PIN. If student inverts this (e.g. match -> not valid), REJECT with correct: false and guide them to swap outcomes. STRICTLY NO programming tools or code syntax like '==' or 'entered_pin' in Logic!
 `;
         } else if (section === "recipe") {
           const atmRec = validateAtmPinVerificationRecipe(userInput);
@@ -4922,7 +4925,9 @@ for (int i = 1; i <= ${varName}; i++) {
               } else {
                 parsed.correct = false;
                 const isPremature = /proceed to (?:recipe|ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|logic approved|all \d+ steps completed/i.test(parsed.feedback || "");
-                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                if (atmLog.feedback.includes("cause-and-effect relationship")) {
+                  parsed.feedback = atmLog.feedback;
+                } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount);
                 } else {
                   parsed.feedback = synthesizeHumanTouch(atmLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
@@ -4937,7 +4942,7 @@ for (int i = 1; i <= ${varName}; i++) {
               const geminiDeclaredRecipeComplete = parsed.correct === true || 
                 /ready to (?:gather ingredients|proceed|move on|advance)|recipe (?:is )?verified|all \d+ steps (?:are )?verified|completed all \d+ recipe steps/i.test(parsed.feedback || "");
 
-              if (atmRec.isFullyVerified || geminiDeclaredRecipeComplete) {
+              if (!atmRec.feedback.includes("Check your recipe steps carefully") && (atmRec.isFullyVerified || geminiDeclaredRecipeComplete)) {
                 parsed.correct = true;
                 parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : atmRec.feedback;
                 parsed.correction = "Proceed to Ingredients stage!";
