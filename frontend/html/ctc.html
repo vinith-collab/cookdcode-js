@@ -373,6 +373,18 @@
                   });
                 });
 
+                // Merge any missing programs from FALLBACK_PROGRAMS for this category
+                FALLBACK_PROGRAMS.filter(fp => fp.category.toLowerCase() === category).forEach(fp => {
+                  const alreadyExists = probList.some(p => p.id.toLowerCase() === fp.id.toLowerCase() || p.rawNum === parseInt(fp.num, 10));
+                  if (!alreadyExists) {
+                    probList.push({
+                      id: fp.id,
+                      rawNum: parseInt(fp.num, 10) || 999,
+                      val: { programName: fp.title, title: fp.title, category: fp.category }
+                    });
+                  }
+                });
+
                 probList.sort((a, b) => a.rawNum - b.rawNum);
 
                 // Sequential Unlocking Chain: Problem 1 is always unlocked.
