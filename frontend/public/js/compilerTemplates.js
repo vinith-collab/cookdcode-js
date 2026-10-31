@@ -1631,6 +1631,58 @@ public class Main {
     }
 }`
     }
+  },
+
+  "problem22": {
+    id: "problem22",
+    canonicalId: "odd-numbers-1-to-50",
+    title: "Print Odd Numbers from 1 to 50",
+    stdin: "",
+    templates: {
+      javascript: `// Problem 22: Print Odd Numbers from 1 to 50
+for (let i = 1; i <= 50; i++) {
+    if (i % 2 !== 0) {
+        console.log(i);
+    }
+}`,
+      python: `# Problem 22: Print Odd Numbers from 1 to 50
+for i in range(1, 51):
+    if i % 2 != 0:
+        print(i)`,
+      cpp: `// Problem 22: Print Odd Numbers from 1 to 50
+#include <iostream>
+using namespace std;
+
+int main() {
+    for (int i = 1; i <= 50; i++) {
+        if (i % 2 != 0) {
+            cout << i << endl;
+        }
+    }
+    return 0;
+}`,
+      c: `// Problem 22: Print Odd Numbers from 1 to 50
+#include <stdio.h>
+
+int main() {
+    for (int i = 1; i <= 50; i++) {
+        if (i % 2 != 0) {
+            printf("%d\\n", i);
+        }
+    }
+    return 0;
+}`,
+      java: `// Problem 22: Print Odd Numbers from 1 to 50
+public class Main {
+    public static void main(String[] args) {
+        for (int i = 1; i <= 50; i++) {
+            if (i % 2 != 0) {
+                System.out.println(i);
+            }
+        }
+    }
+}`
+    }
   }
 };
 

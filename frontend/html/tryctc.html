@@ -3609,7 +3609,8 @@
                     if (norm.includes('factorial') || norm === 'problem03' || norm === 'problem3' || t.includes('factorial')) return 'problem03';
                     if (norm.includes('divisor') || norm === 'problem04' || norm === 'problem4' || t.includes('divisor')) return 'problem04';
                     if (norm.includes('multiplication') || norm.includes('table') || norm === 'problem05' || norm === 'problem5' || t.includes('table')) return 'problem05';
-                    if (norm.includes('even1to50') || norm.includes('even50') || norm === 'problem21' || norm === 'problem021' || t.includes('1 to 50') || t.includes('even numbers from 1 to 50')) return 'problem21';
+                    if (norm.includes('even1to50') || norm.includes('even50') || norm === 'problem21' || norm === 'problem021' || t.includes('1 to 50') && t.includes('even') || t.includes('even numbers from 1 to 50')) return 'problem21';
+                    if (norm.includes('odd1to50') || norm.includes('odd50') || norm === 'problem22' || norm === 'problem022' || t.includes('1 to 50') && t.includes('odd') || t.includes('odd numbers from 1 to 50')) return 'problem22';
                     if (norm.includes('nextprime') || norm === 'problem07' || norm === 'problem7' || t.includes('next prime')) return 'problem07';
                     if (norm.includes('prime') && (norm.includes('range') || norm.includes('between')) || norm === 'problem08' || norm === 'problem8' || t.includes('prime numbers in range')) return 'problem08';
                     if (norm.includes('sexy') || norm === 'problem09' || norm === 'problem9' || t.includes('sexy prime')) return 'problem09';
@@ -4089,7 +4090,8 @@
                         'problem07', 'problem7', 'problem007', 'nextprimenumber',
                         'problem08', 'problem8', 'problem008', 'primebetweenrange', 'primerange',
                         'problem09', 'problem9', 'problem009', 'sexyprime', 'sexyprimenumbers',
-                        'problem21', 'problem021'
+                        'problem21', 'problem021',
+                        'problem22', 'problem022'
                     ];
                     if (loopKeys.includes(norm)) return 'for_loop';
 
@@ -4445,6 +4447,37 @@
                                 { stepNumber: 2, title: "2. Check if i % 2 == 0", completed: false, current: false },
                                 { stepNumber: 3, title: "3. Print even integer", completed: false, current: false },
                                 { stepNumber: 4, title: "4. Verify output 2 to 50", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem22') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Range limits (1 to 50)", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Divisibility test by 2", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Modulo remainder test (1 or != 0)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Filter odd sequence (1 to 49)", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Start counting from 1 to 50", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check if dividing by 2 leaves remainder 1", completed: false, current: false },
+                                { stepNumber: 3, title: "3. If remainder is 1, display number", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Repeat until reaching 50", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. For loop from 1 to 50", completed: false, current: true },
+                                { stepNumber: 2, title: "2. If condition (i % 2 == 1)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print statement inside loop", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Setup for loop 1 to 50", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check if i % 2 == 1", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print odd integer", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Verify output 1 to 49", completed: false, current: false }
                             ];
                         }
                     }
@@ -6225,6 +6258,22 @@
                         ],
                         examples: [
                             { input: "Range 1 to 50", output: "2 4 6 8 ... 50" }
+                        ]
+                    },
+                    "problem22": {
+                        title: "Print Odd Numbers from 1 to 50",
+                        description: "Write a program to print all odd numbers from 1 to 50.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 22",
+                        concept: "Looping & Parity Filtering",
+                        objective: "Iterate from 1 to 50 and print each number that leaves remainder 1 when divided by 2 (or is not divisible by 2).",
+                        specifications: [
+                            { label: "Range", desc: "Numbers from <code>1</code> to <code>50</code>.", icon: "fa-arrow-right-arrow-left", color: "#2563eb" },
+                            { label: "Condition", desc: "Check if <code>i % 2 != 0</code> (or <code>i % 2 == 1</code>) for each number.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Print all odd numbers from 1 to 49.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "Range 1 to 50", output: "1 3 5 7 ... 49" }
                         ]
                     }
                 };

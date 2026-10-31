@@ -266,6 +266,19 @@ export const PROBLEM_DEFINITIONS = {
       /divisible\s+by\s+2\b/i
     ],
     goalSummary: "iterating numbers from 1 to 50 and printing even numbers divisible by 2"
+  },
+  "odd-numbers-1-to-50": {
+    id: "odd-numbers-1-to-50",
+    problemNo: 22,
+    title: "Print Odd Numbers from 1 to 50",
+    patterns: [
+      /\b50\b/,
+      /1\s*(?:to|-)\s*50/i,
+      /odd\s*numbers?/i,
+      /%\s*2\b/,
+      /not\s+divisible\s+by\s+2\b/i
+    ],
+    goalSummary: "iterating numbers from 1 to 50 and printing odd numbers leaving remainder 1 when divided by 2"
   }
 };
 

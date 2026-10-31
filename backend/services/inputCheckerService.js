@@ -24,6 +24,7 @@ import { validateMaximumOfTwoLogic, validateMaximumOfTwoRecipe, validateMaximumO
 import { validateVowelConsonantLogic, validateVowelConsonantRecipe, validateVowelConsonantIngredients, validateVowelConsonantSampleCode } from "./vowelConsonantValidator.js";
 import { validateSeniorCitizenLogic, validateSeniorCitizenRecipe, validateSeniorCitizenIngredients, validateSeniorCitizenSampleCode } from "./seniorCitizenValidator.js";
 import { validateEvenNumbers1To50Logic, validateEvenNumbers1To50Recipe, validateEvenNumbers1To50Ingredients, validateEvenNumbers1To50SampleCode } from "./evenNumbers1To50Validator.js";
+import { validateOddNumbers1To50Logic, validateOddNumbers1To50Recipe, validateOddNumbers1To50Ingredients, validateOddNumbers1To50SampleCode } from "./oddNumbers1To50Validator.js";
 import { getConditionalSpec, generateUniversalIfDirectives } from "./conditionalEngine.js";
 import { detectCrossProblemMismatch } from "./crossProblemDetector.js";
 let genAIClient = null;
@@ -1298,6 +1299,41 @@ Concept: Loop iteration (1 to 50) and modulo divisibility (i % 2 == 0) or step o
      }
    - Must have loop up to 50, modulo 2 check (or step of 2), and print statement.
 `;
+    } else if (problemType === "odd-numbers-1-to-50") {
+      problemSpecificDirectives = `
+PROBLEM FOCUS: "Print Odd Numbers from 1 to 50" (CTC Pedagogy Matrix)
+Concept: Loop iteration (1 to 50) and modulo odd divisibility (i % 2 == 1 or i % 2 != 0) or step of 2
+
+1. STAGE 1 (LOGIC):
+   - Definition: Odd numbers leave remainder 1 when divided by 2 (number % 2 == 1 or number % 2 != 0).
+   - Range: Between 1 and 50, the odd numbers are 1, 3, 5, 7, ... up to 49.
+   - When student describes divisibility by 2 with remainder 1 or shows odd numbers in range 1 to 50, mark correct: true!
+
+2. STAGE 2 (RECIPE):
+   - 4-STEP ALGORITHM (Natural English without programming keywords):
+     Step 1: Start counting numbers from 1 up to 50
+     Step 2: Check if current number leaves a remainder of 1 when divided by 2
+     Step 3: If it leaves remainder 1, display that number
+     Step 4: Repeat until reaching 50
+   - Populate 'recipeStepProgress' with all 4 steps.
+
+3. STAGE 3 (INGREDIENTS):
+   - CRITICAL MANDATORY REQUIREMENT: A LOOP FROM 1 TO 50 IS MANDATORY!
+   - ATOMIC INGREDIENTS:
+     Step 1: For loop with Start: 1, Stop: 50 (i <= 50), Step: +1 (or +2)
+     Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1 (or Operator: !=, Right Side: 0)
+     Step 3: Print statement inside loop: print(i)
+   - Populate 'ingredientsStepProgress' with all 3 steps.
+
+4. STAGE 4 (TASTE THE SAMPLE / SAMPLE CODE):
+   - Prototype code:
+     for (let i = 1; i <= 50; i++) {
+       if (i % 2 === 1) {
+         console.log(i);
+       }
+     }
+   - Must have loop up to 50, modulo 2 odd check (or step of 2), and print statement.
+`;
     } else if (problemType === "even-numbers-1-to-50") {
         if (section === "logic") {
           const evenLog = validateEvenNumbers1To50Logic(userInput);
@@ -1332,6 +1368,42 @@ CURRICULUM PEDAGOGY INSIGHT (EVEN NUMBERS 1 TO 50 - INGREDIENTS):
 CURRICULUM PEDAGOGY INSIGHT (EVEN NUMBERS 1 TO 50 - SAMPLE CODE):
 - Verified: ${evenSample.isFullyVerified}
 - INSTRUCTION FOR COACH MAARA: Ensure student writes loop from 1 to 50 with if (i % 2 == 0) and print(i).
+`;
+        }
+      } else if (problemType === "odd-numbers-1-to-50") {
+        if (section === "logic") {
+          const oddLog = validateOddNumbers1To50Logic(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - LOGIC):
+- Student Intent: "${oddLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Fully Verified Status: ${oddLog.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Odd numbers leave remainder 1 when divided by 2 (number % 2 == 1 or number % 2 != 0) from 1 to 50.
+`;
+        } else if (section === "recipe") {
+          const oddRec = validateOddNumbers1To50Recipe(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - RECIPE):
+- Student Intent: "${oddRec.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Step 1 (Count 1..50): ${oddRec.hasStep1}, Step 2 (Leaves remainder 1): ${oddRec.hasStep2}, Step 3 (Display odd): ${oddRec.hasStep3}, Step 4 (Repeat): ${oddRec.hasStep4}
+- INSTRUCTION FOR COACH MAARA: Deliver in plain everyday English without code keywords.
+`;
+        } else if (section === "ingredients") {
+          const oddIng = validateOddNumbers1To50Ingredients(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - INGREDIENTS):
+- Student Intent: "${oddIng.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Loop: ${oddIng.hasLoop}, Odd Check: ${oddIng.hasOddCheck}, Print: ${oddIng.hasPrint}
+- INSTRUCTION FOR COACH MAARA:
+1. CRITICAL: A loop from 1 to 50 is MANDATORY!
+2. Odd condition: Left Side: i % 2, Operator: ==, Right Side: 1 (or != 0).
+3. Print statement inside loop: print(i).
+`;
+        } else if (section === "samplecode") {
+          const oddSample = validateOddNumbers1To50SampleCode(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - SAMPLE CODE):
+- Verified: ${oddSample.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Ensure student writes loop from 1 to 50 with if (i % 2 == 1) and print(i).
 `;
         }
       } else if (problemType === "prime-number") {
@@ -4652,6 +4724,102 @@ for (int i = 1; i <= ${varName}; i++) {
               }
             }
           }
+          if (problemType === "odd-numbers-1-to-50") {
+            if (section === "logic") {
+              const oddLog = validateOddNumbers1To50Logic(userInput, attemptCount);
+              parsed.logicStepProgress = oddLog.logicStepProgress;
+              parsed.stepProgress = oddLog.logicStepProgress;
+              if (oddLog.isFullyVerified) {
+                parsed.correct = true;
+                parsed.proofType = "mathematical";
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate") ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount) : oddLog.feedback;
+                parsed.correction = "Proceed to the Recipe stage to sequence the algorithmic steps.";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:recipe|ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|logic approved|all \d+ steps completed/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(oddLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
+                }
+                parsed.correction = oddLog.correction || parsed.correction;
+                parsed.suggestedInput = oddLog.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "recipe") {
+              const oddRec = validateOddNumbers1To50Recipe(userInput, attemptCount);
+              parsed.recipeStepProgress = oddRec.recipeStepProgress;
+              const geminiDeclaredRecipeComplete = parsed.correct === true || 
+                /ready to (?:gather ingredients|proceed|move on|advance)|recipe (?:is )?verified|all \d+ steps (?:are )?verified|completed all \d+ recipe steps/i.test(parsed.feedback || "");
+
+              if (oddRec.isFullyVerified || geminiDeclaredRecipeComplete) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : oddRec.feedback;
+                parsed.correction = "Proceed to Ingredients stage!";
+                parsed.suggestedInput = void 0;
+                if (parsed.recipeStepProgress) {
+                  parsed.recipeStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(oddRec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput, attemptCount);
+                }
+                parsed.correction = oddRec.correction || parsed.correction;
+                parsed.suggestedInput = oddRec.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "ingredients") {
+              const oddIng = validateOddNumbers1To50Ingredients(userInput, attemptCount);
+              parsed.ingredientsStepProgress = oddIng.ingredientsStepProgress;
+              const geminiDeclaredIngComplete = parsed.correct === true || 
+                /ready to (?:start cooking|proceed|move on|advance)|gathered all (?:the )?necessary ingredients|all \d+ ingredients (?:are )?verified|officially ready to|ingredients verified/i.test(parsed.feedback || "");
+
+              if (oddIng.isFullyVerified || geminiDeclaredIngComplete) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount) : oddIng.feedback;
+                parsed.correction = "Proceed to Taste the Sample stage to assemble your code!";
+                parsed.suggestedInput = void 0;
+                if (parsed.ingredientsStepProgress) {
+                  parsed.ingredientsStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on|start cooking)/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(oddIng.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput, attemptCount);
+                }
+                parsed.correction = oddIng.correction || parsed.correction;
+                parsed.suggestedInput = oddIng.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "samplecode") {
+              const oddSample = validateOddNumbers1To50SampleCode(userInput, attemptCount);
+              parsed.sampleCodeStepProgress = oddSample.sampleCodeStepProgress;
+              parsed.stepProgress = oddSample.sampleCodeStepProgress;
+              if (oddSample.isFullyVerified) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount) : oddSample.feedback;
+                parsed.correction = "All done! Run the code and submit.";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to compiler|all \d+ steps completed|ready to run/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate") && !oddSample.feedback.includes("Missing `if` keyword") && !oddSample.feedback.includes("Wrong print target")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(oddSample.feedback, "samplecode", latestInput, attemptCount);
+                }
+                parsed.correction = oddSample.correction || parsed.correction;
+              }
+            }
+          }
           if (problemType === "prime-number") {
             if (section === "logic") {
               const primeLog = validatePrimeLogic(userInput, attemptCount);
@@ -6652,6 +6820,52 @@ for (int i = 1; i <= ${varName}; i++) {
           suggestedInput: void 0,
           sampleCodeStepProgress: evenSample.sampleCodeStepProgress,
           stepProgress: evenSample.sampleCodeStepProgress
+        };
+      }
+    }
+    if (problemType === "odd-numbers-1-to-50") {
+      if (section === "logic") {
+        const oddLog = validateOddNumbers1To50Logic(userInput, attemptCount);
+        return {
+          correct: oddLog.isFullyVerified,
+          feedback: synthesizeHumanTouch(oddLog.feedback, "logic", userInput, attemptCount),
+          correction: oddLog.correction,
+          suggestedInput: oddLog.suggestedInput,
+          logicStepProgress: oddLog.logicStepProgress,
+          stepProgress: oddLog.logicStepProgress
+        };
+      }
+      if (section === "recipe") {
+        const oddRec = validateOddNumbers1To50Recipe(userInput, attemptCount);
+        return {
+          correct: oddRec.isFullyVerified,
+          feedback: synthesizeHumanTouch(oddRec.feedback, "recipe", userInput, attemptCount),
+          correction: oddRec.correction,
+          suggestedInput: oddRec.suggestedInput,
+          recipeStepProgress: oddRec.recipeStepProgress,
+          stepProgress: oddRec.recipeStepProgress
+        };
+      }
+      if (section === "ingredients") {
+        const oddIng = validateOddNumbers1To50Ingredients(userInput, attemptCount);
+        return {
+          correct: oddIng.isFullyVerified,
+          feedback: synthesizeHumanTouch(oddIng.feedback, "ingredients", userInput, attemptCount),
+          correction: oddIng.correction,
+          suggestedInput: oddIng.suggestedInput,
+          ingredientsStepProgress: oddIng.ingredientsStepProgress,
+          stepProgress: oddIng.ingredientsStepProgress
+        };
+      }
+      if (section === "samplecode") {
+        const oddSample = validateOddNumbers1To50SampleCode(userInput, attemptCount);
+        return {
+          correct: oddSample.isFullyVerified,
+          feedback: synthesizeHumanTouch(oddSample.feedback, "samplecode", userInput, attemptCount),
+          correction: oddSample.correction,
+          suggestedInput: void 0,
+          sampleCodeStepProgress: oddSample.sampleCodeStepProgress,
+          stepProgress: oddSample.sampleCodeStepProgress
         };
       }
     }

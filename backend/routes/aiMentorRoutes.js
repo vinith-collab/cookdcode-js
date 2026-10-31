@@ -563,6 +563,24 @@ const PROBLEM_METADATA_MAP = {
       { input: "Range 1 to 50", output: "2 4 6 8 ... 50" }
     ]
   },
+  "problem22": {
+    id: "problem22",
+    canonicalId: "odd-numbers-1-to-50",
+    title: "Challenge: Print Odd Numbers from 1 to 50",
+    description: "Write a program to print all odd numbers from 1 to 50.",
+    phase: "Phase 1",
+    problemBadge: "Problem 22",
+    concept: "Looping & Parity Filtering",
+    objective: "Iterate from 1 to 50 and print each number that leaves remainder 1 when divided by 2 (or is not divisible by 2).",
+    specifications: [
+      { label: "Range", desc: "Numbers from <code>1</code> to <code>50</code>.", icon: "fa-arrow-right-arrow-left", color: "#2563eb" },
+      { label: "Condition", desc: "Check if <code>i % 2 != 0</code> (or <code>i % 2 == 1</code>) for each number.", icon: "fa-bullseye", color: "#7c3aed" },
+      { label: "Output", desc: "Print all odd numbers from 1 to 49.", icon: "fa-display", color: "#059669" }
+    ],
+    examples: [
+      { input: "Range 1 to 50", output: "1 3 5 7 ... 49" }
+    ]
+  },
   "senior-citizen": {
     id: "senior-citizen",
     canonicalId: "senior-citizen",
