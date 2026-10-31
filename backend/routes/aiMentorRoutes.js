@@ -581,6 +581,44 @@ const PROBLEM_METADATA_MAP = {
       { input: "Range 1 to 50", output: "1 3 5 7 ... 49" }
     ]
   },
+  "problem23": {
+    id: "problem23",
+    canonicalId: "atm-pin-verification",
+    title: "Challenge: ATM PIN Verification",
+    description: "Write a program to check if an entered PIN matches the correct ATM PIN (1234).",
+    phase: "Phase 1",
+    problemBadge: "Problem 23",
+    concept: "Conditional Statements & Equality Comparison",
+    objective: "Compare the entered PIN with 1234. If they match, print 'PIN Verified'; otherwise, print 'Incorrect PIN'.",
+    specifications: [
+      { label: "Input", desc: "An entered 4-digit PIN (e.g. <code>entered_pin = 1234</code>).", icon: "fa-key", color: "#2563eb" },
+      { label: "Condition", desc: "Check if <code>entered_pin == 1234</code> using an if-else statement.", icon: "fa-bullseye", color: "#7c3aed" },
+      { label: "Output", desc: "Display 'PIN Verified' on success, or 'Incorrect PIN' on failure.", icon: "fa-display", color: "#059669" }
+    ],
+    examples: [
+      { input: "entered_pin = 1234", output: "PIN Verified" },
+      { input: "entered_pin = 5678", output: "Incorrect PIN" }
+    ]
+  },
+  "atm-pin-verification": {
+    id: "atm-pin-verification",
+    canonicalId: "atm-pin-verification",
+    title: "Challenge: ATM PIN Verification",
+    description: "Write a program to check if an entered PIN matches the correct ATM PIN (1234).",
+    phase: "Phase 1",
+    problemBadge: "Problem 23",
+    concept: "Conditional Statements & Equality Comparison",
+    objective: "Compare the entered PIN with 1234. If they match, print 'PIN Verified'; otherwise, print 'Incorrect PIN'.",
+    specifications: [
+      { label: "Input", desc: "An entered 4-digit PIN (e.g. <code>entered_pin = 1234</code>).", icon: "fa-key", color: "#2563eb" },
+      { label: "Condition", desc: "Check if <code>entered_pin == 1234</code> using an if-else statement.", icon: "fa-bullseye", color: "#7c3aed" },
+      { label: "Output", desc: "Display 'PIN Verified' on success, or 'Incorrect PIN' on failure.", icon: "fa-display", color: "#059669" }
+    ],
+    examples: [
+      { input: "entered_pin = 1234", output: "PIN Verified" },
+      { input: "entered_pin = 5678", output: "Incorrect PIN" }
+    ]
+  },
   "senior-citizen": {
     id: "senior-citizen",
     canonicalId: "senior-citizen",

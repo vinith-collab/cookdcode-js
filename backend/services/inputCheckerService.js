@@ -25,6 +25,7 @@ import { validateVowelConsonantLogic, validateVowelConsonantRecipe, validateVowe
 import { validateSeniorCitizenLogic, validateSeniorCitizenRecipe, validateSeniorCitizenIngredients, validateSeniorCitizenSampleCode } from "./seniorCitizenValidator.js";
 import { validateEvenNumbers1To50Logic, validateEvenNumbers1To50Recipe, validateEvenNumbers1To50Ingredients, validateEvenNumbers1To50SampleCode } from "./evenNumbers1To50Validator.js";
 import { validateOddNumbers1To50Logic, validateOddNumbers1To50Recipe, validateOddNumbers1To50Ingredients, validateOddNumbers1To50SampleCode } from "./oddNumbers1To50Validator.js";
+import { validateAtmPinVerificationLogic, validateAtmPinVerificationRecipe, validateAtmPinVerificationIngredients, validateAtmPinVerificationSampleCode } from "./atmPinVerificationValidator.js";
 import { getConditionalSpec, generateUniversalIfDirectives } from "./conditionalEngine.js";
 import { detectCrossProblemMismatch } from "./crossProblemDetector.js";
 let genAIClient = null;
@@ -1337,6 +1338,44 @@ Concept: Loop iteration (1 to 50) and modulo odd divisibility (i % 2 == 1 or i %
      }
    - Must have loop up to 50, modulo 2 odd check (or step of 2), and print statement.
 `;
+    } else if (problemType === "atm-pin-verification") {
+      problemSpecificDirectives = `
+PROBLEM FOCUS: "ATM PIN Verification" (CTC Pedagogy Matrix)
+Concept: Variable comparison (==) and two-way conditional branching (if-else)
+
+1. STAGE 1 (LOGIC):
+   - Definition: Compare entered PIN with stored PIN (1234).
+   - If entered_pin == 1234, output "PIN Verified"; otherwise, output "Incorrect PIN".
+   - Both success ("PIN Verified") and rejection ("Incorrect PIN") outcomes must be stated.
+
+2. STAGE 2 (RECIPE):
+   - 4-STEP ALGORITHM (Natural English without programming keywords):
+     Step 1: Get the entered PIN from the user
+     Step 2: Check if the entered PIN equals 1234
+     Step 3: If it equals 1234, display "PIN Verified"
+     Step 4: Otherwise, display "Incorrect PIN"
+   - Populate 'recipeStepProgress' with all 4 steps.
+
+3. STAGE 3 (INGREDIENTS):
+   - EXACT 5 ATOMIC INGREDIENTS:
+     Step 1: Input variable: entered_pin = 1234
+     Step 2: If condition: Left Side: entered_pin, Operator: ==, Right Side: 1234
+     Step 3: Print statement inside if: print("PIN Verified")
+     Step 4: Else block: NO condition, NO left/right side or operator
+     Step 5: Print statement inside else: print("Incorrect PIN")
+   - Populate 'ingredientsStepProgress' with all 5 steps.
+
+4. STAGE 4 (TASTE THE SAMPLE / SAMPLE CODE):
+   - Prototype code:
+     let entered_pin = 1234;
+     if (entered_pin == 1234) {
+       console.log("PIN Verified");
+     } else {
+       console.log("Incorrect PIN");
+     }
+   - Must have variable assignment, if (entered_pin == 1234), console.log("PIN Verified"), and else { console.log("Incorrect PIN"); }.
+   - If user wrote single '=' in if condition (e.g. if (entered_pin = 1234)), gently remind that '=' is assignment and '==' is comparison.
+`;
     } else if (problemType === "even-numbers-1-to-50") {
         if (section === "logic") {
           const evenLog = validateEvenNumbers1To50Logic(userInput);
@@ -1407,6 +1446,41 @@ CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - INGREDIENTS):
 CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - SAMPLE CODE):
 - Verified: ${oddSample.isFullyVerified}
 - INSTRUCTION FOR COACH MAARA: Ensure student writes loop from 1 to 50 with if (i % 2 == 1) and print(i).
+`;
+        }
+      } else if (problemType === "atm-pin-verification") {
+        if (section === "logic") {
+          const atmLog = validateAtmPinVerificationLogic(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - LOGIC):
+- Student Intent: "${atmLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Fully Verified Status: ${atmLog.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Compare entered_pin with 1234 using ==. Display "PIN Verified" if match, "Incorrect PIN" otherwise.
+`;
+        } else if (section === "recipe") {
+          const atmRec = validateAtmPinVerificationRecipe(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - RECIPE):
+- Student Intent: "${atmRec.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Step 1 (Get PIN): ${atmRec.hasStep1}, Step 2 (Check == 1234): ${atmRec.hasStep2}, Step 3 (Display PIN Verified): ${atmRec.hasStep3}, Step 4 (Otherwise Incorrect PIN): ${atmRec.hasStep4}
+- INSTRUCTION FOR COACH MAARA: Deliver in plain everyday English without code keywords.
+`;
+        } else if (section === "ingredients") {
+          const atmIng = validateAtmPinVerificationIngredients(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - INGREDIENTS):
+- Student Intent: "${atmIng.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Variable: ${atmIng.hasVar}, If: ${atmIng.hasIf}, Print Success: ${atmIng.hasPrintSuccess}, Else: ${atmIng.hasElse}, Print Fail: ${atmIng.hasPrintFail}
+- INSTRUCTION FOR COACH MAARA:
+1. 5 atomic ingredients: entered_pin = 1234, if (entered_pin == 1234), print("PIN Verified"), else, print("Incorrect PIN").
+2. Reminder: else block never has condition.
+`;
+        } else if (section === "samplecode") {
+          const atmSample = validateAtmPinVerificationSampleCode(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - SAMPLE CODE):
+- Verified: ${atmSample.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Ensure student writes if (entered_pin == 1234) with print("PIN Verified") and else with print("Incorrect PIN"). Watch for single '=' assignment typo.
 `;
         }
       } else if (problemType === "prime-number") {
@@ -4833,6 +4907,102 @@ for (int i = 1; i <= ${varName}; i++) {
               }
             }
           }
+          if (problemType === "atm-pin-verification") {
+            if (section === "logic") {
+              const atmLog = validateAtmPinVerificationLogic(userInput, attemptCount);
+              parsed.logicStepProgress = atmLog.logicStepProgress;
+              parsed.stepProgress = atmLog.logicStepProgress;
+              if (atmLog.isFullyVerified) {
+                parsed.correct = true;
+                parsed.proofType = "mathematical";
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate") ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount) : atmLog.feedback;
+                parsed.correction = "Proceed to the Recipe stage to sequence the algorithmic steps.";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:recipe|ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|logic approved|all \d+ steps completed/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(atmLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
+                }
+                parsed.correction = atmLog.correction || parsed.correction;
+                parsed.suggestedInput = atmLog.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "recipe") {
+              const atmRec = validateAtmPinVerificationRecipe(userInput, attemptCount);
+              parsed.recipeStepProgress = atmRec.recipeStepProgress;
+              const geminiDeclaredRecipeComplete = parsed.correct === true || 
+                /ready to (?:gather ingredients|proceed|move on|advance)|recipe (?:is )?verified|all \d+ steps (?:are )?verified|completed all \d+ recipe steps/i.test(parsed.feedback || "");
+
+              if (atmRec.isFullyVerified || geminiDeclaredRecipeComplete) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : atmRec.feedback;
+                parsed.correction = "Proceed to Ingredients stage!";
+                parsed.suggestedInput = void 0;
+                if (parsed.recipeStepProgress) {
+                  parsed.recipeStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(atmRec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput, attemptCount);
+                }
+                parsed.correction = atmRec.correction || parsed.correction;
+                parsed.suggestedInput = atmRec.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "ingredients") {
+              const atmIng = validateAtmPinVerificationIngredients(userInput, attemptCount);
+              parsed.ingredientsStepProgress = atmIng.ingredientsStepProgress;
+              const geminiDeclaredIngComplete = parsed.correct === true || 
+                /ready to (?:start cooking|proceed|move on|advance)|gathered all (?:the )?necessary ingredients|all \d+ ingredients (?:are )?verified|officially ready to|ingredients verified/i.test(parsed.feedback || "");
+
+              if (atmIng.isFullyVerified || geminiDeclaredIngComplete) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount) : atmIng.feedback;
+                parsed.correction = "Proceed to Taste the Sample stage to assemble your code!";
+                parsed.suggestedInput = void 0;
+                if (parsed.ingredientsStepProgress) {
+                  parsed.ingredientsStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on|start cooking)/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(atmIng.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput, attemptCount);
+                }
+                parsed.correction = atmIng.correction || parsed.correction;
+                parsed.suggestedInput = atmIng.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "samplecode") {
+              const atmSample = validateAtmPinVerificationSampleCode(userInput, attemptCount);
+              parsed.sampleCodeStepProgress = atmSample.sampleCodeStepProgress;
+              parsed.stepProgress = atmSample.sampleCodeStepProgress;
+              if (atmSample.isFullyVerified) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount) : atmSample.feedback;
+                parsed.correction = "All done! Run the code and submit.";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to compiler|all \d+ steps completed|ready to run/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate") && !atmSample.feedback.includes("single '='") && !atmSample.feedback.includes("Wrong print target")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(atmSample.feedback, "samplecode", latestInput, attemptCount);
+                }
+                parsed.correction = atmSample.correction || parsed.correction;
+              }
+            }
+          }
           if (problemType === "prime-number") {
             if (section === "logic") {
               const primeLog = validatePrimeLogic(userInput, attemptCount);
@@ -6879,6 +7049,52 @@ for (int i = 1; i <= ${varName}; i++) {
           suggestedInput: void 0,
           sampleCodeStepProgress: oddSample.sampleCodeStepProgress,
           stepProgress: oddSample.sampleCodeStepProgress
+        };
+      }
+    }
+    if (problemType === "atm-pin-verification") {
+      if (section === "logic") {
+        const atmLog = validateAtmPinVerificationLogic(userInput, attemptCount);
+        return {
+          correct: atmLog.isFullyVerified,
+          feedback: synthesizeHumanTouch(atmLog.feedback, "logic", userInput, attemptCount),
+          correction: atmLog.correction,
+          suggestedInput: atmLog.suggestedInput,
+          logicStepProgress: atmLog.logicStepProgress,
+          stepProgress: atmLog.logicStepProgress
+        };
+      }
+      if (section === "recipe") {
+        const atmRec = validateAtmPinVerificationRecipe(userInput, attemptCount);
+        return {
+          correct: atmRec.isFullyVerified,
+          feedback: synthesizeHumanTouch(atmRec.feedback, "recipe", userInput, attemptCount),
+          correction: atmRec.correction,
+          suggestedInput: atmRec.suggestedInput,
+          recipeStepProgress: atmRec.recipeStepProgress,
+          stepProgress: atmRec.recipeStepProgress
+        };
+      }
+      if (section === "ingredients") {
+        const atmIng = validateAtmPinVerificationIngredients(userInput, attemptCount);
+        return {
+          correct: atmIng.isFullyVerified,
+          feedback: synthesizeHumanTouch(atmIng.feedback, "ingredients", userInput, attemptCount),
+          correction: atmIng.correction,
+          suggestedInput: atmIng.suggestedInput,
+          ingredientsStepProgress: atmIng.ingredientsStepProgress,
+          stepProgress: atmIng.ingredientsStepProgress
+        };
+      }
+      if (section === "samplecode") {
+        const atmSample = validateAtmPinVerificationSampleCode(userInput, attemptCount);
+        return {
+          correct: atmSample.isFullyVerified,
+          feedback: synthesizeHumanTouch(atmSample.feedback, "samplecode", userInput, attemptCount),
+          correction: atmSample.correction,
+          suggestedInput: void 0,
+          sampleCodeStepProgress: atmSample.sampleCodeStepProgress,
+          stepProgress: atmSample.sampleCodeStepProgress
         };
       }
     }

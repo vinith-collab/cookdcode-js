@@ -3611,6 +3611,7 @@
                     if (norm.includes('multiplication') || norm.includes('table') || norm === 'problem05' || norm === 'problem5' || t.includes('table')) return 'problem05';
                     if (norm.includes('even1to50') || norm.includes('even50') || norm === 'problem21' || norm === 'problem021' || t.includes('1 to 50') && t.includes('even') || t.includes('even numbers from 1 to 50')) return 'problem21';
                     if (norm.includes('odd1to50') || norm.includes('odd50') || norm === 'problem22' || norm === 'problem022' || t.includes('1 to 50') && t.includes('odd') || t.includes('odd numbers from 1 to 50')) return 'problem22';
+                    if (norm.includes('atmpin') || norm.includes('pinverification') || norm.includes('atm') || norm === 'problem23' || norm === 'problem023' || (t.includes('atm') && t.includes('pin'))) return 'problem23';
                     if (norm.includes('nextprime') || norm === 'problem07' || norm === 'problem7' || t.includes('next prime')) return 'problem07';
                     if (norm.includes('prime') && (norm.includes('range') || norm.includes('between')) || norm === 'problem08' || norm === 'problem8' || t.includes('prime numbers in range')) return 'problem08';
                     if (norm.includes('sexy') || norm === 'problem09' || norm === 'problem9' || t.includes('sexy prime')) return 'problem09';
@@ -4068,6 +4069,47 @@
                             context: "Vowel or Consonant (Universal Syntax)",
                             code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> ch = <span style="color: #34d399;">"e"</span>;\n\n<span style="color: #64748b;">// Check vowel membership</span>\n<span style="color: #c084fc;">if</span> (ch == <span style="color: #34d399;">"a"</span> || ch == <span style="color: #34d399;">"e"</span> || ch == <span style="color: #34d399;">"i"</span> || ch == <span style="color: #34d399;">"o"</span> || ch == <span style="color: #34d399;">"u"</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"Vowel"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Consonant"</span>);\n}`
                         }
+                    },
+                    "problem23": {
+                        problemTitle: "ATM PIN Verification",
+                        logic: {
+                            explanation: "Compare the entered PIN with the secret registered PIN 1234 using an equality check (==).",
+                            ruleTitle: "PIN Verification Security Rule",
+                            ruleText: "If the entered PIN equals <strong class=\"text-slate-900 font-bold\">1234</strong>, access is approved (PIN Verified). Otherwise, access is rejected (Incorrect PIN).",
+                            conditionsHtml: `
+                                <div class="ctc-cond-pill true-cond">
+                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                                    <div><strong class="font-bold">If entered_pin == 1234:</strong> PIN Verified <span class="font-mono opacity-80">(Access Granted)</span></div>
+                                </div>
+                                <div class="ctc-cond-pill false-cond">
+                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
+                                    <div><strong class="font-bold">Else:</strong> Incorrect PIN <span class="font-mono opacity-80">(Access Denied)</span></div>
+                                </div>
+                            `
+                        },
+                        recipe: {
+                            recipeTitle: "ATM PIN Verification Steps",
+                            steps: [
+                                "Get the entered PIN from the user.",
+                                "Check if the entered PIN equals 1234.",
+                                "If it equals 1234, display 'PIN Verified'.",
+                                "Otherwise, display 'Incorrect PIN'."
+                            ]
+                        },
+                        ingredients: {
+                            context: "ATM PIN Verification Components",
+                            items: [
+                                { label: "Variable", value: "entered_pin = 1234", tagClass: "tag-var", icon: "fa-cube" },
+                                { label: "Condition", value: "entered_pin == 1234", tagClass: "tag-cond", icon: "fa-code-branch" },
+                                { label: "If True", value: "print('PIN Verified')", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-check" },
+                                { label: "Else", value: "else", tagClass: "tag-else", icon: "fa-arrows-split-up-and-left" },
+                                { label: "If False", value: "print('Incorrect PIN')", tagClass: "tag-false", valClass: "text-rose-700", icon: "fa-times" }
+                            ]
+                        },
+                        samplecode: {
+                            context: "ATM PIN Verification (Universal Syntax)",
+                            code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> entered_pin = <span style="color: #fbbf24;">1234</span>;\n\n<span style="color: #64748b;">// Check PIN equality</span>\n<span style="color: #c084fc;">if</span> (entered_pin == <span style="color: #fbbf24;">1234</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"PIN Verified"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Incorrect PIN"</span>);\n}`
+                        }
                     }
                 };
 
@@ -4478,6 +4520,39 @@
                                 { stepNumber: 2, title: "2. Check if i % 2 == 1", completed: false, current: false },
                                 { stepNumber: 3, title: "3. Print odd integer", completed: false, current: false },
                                 { stepNumber: 4, title: "4. Verify output 1 to 49", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem23') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Registered PIN reference (1234)", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Equality comparison rule (==)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Approved outcome (PIN Verified)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Rejected outcome (Incorrect PIN)", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Get entered PIN from user", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check if entered PIN equals 1234", completed: false, current: false },
+                                { stepNumber: 3, title: "3. If equals 1234, display PIN Verified", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Otherwise display Incorrect PIN", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Variable: entered_pin = 1234", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Condition: if (entered_pin == 1234)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Action: print('PIN Verified')", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Else block (without condition)", completed: false, current: false },
+                                { stepNumber: 5, title: "5. Action: print('Incorrect PIN')", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare entered_pin = 1234", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Check if (entered_pin == 1234)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print PIN Verified", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Else block with print Incorrect PIN", completed: false, current: false }
                             ];
                         }
                     }
@@ -6274,6 +6349,23 @@
                         ],
                         examples: [
                             { input: "Range 1 to 50", output: "1 3 5 7 ... 49" }
+                        ]
+                    },
+                    "problem23": {
+                        title: "ATM PIN Verification",
+                        description: "Write a program to check if an entered PIN matches the correct ATM PIN (1234).",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 23",
+                        concept: "Conditional Statements & Equality Comparison",
+                        objective: "Compare the entered PIN with 1234. If they match, print 'PIN Verified'; otherwise, print 'Incorrect PIN'.",
+                        specifications: [
+                            { label: "Input", desc: "An entered 4-digit PIN (e.g. <code>entered_pin = 1234</code>).", icon: "fa-key", color: "#2563eb" },
+                            { label: "Condition", desc: "Check if <code>entered_pin == 1234</code> using an if-else statement.", icon: "fa-bullseye", color: "#7c3aed" },
+                            { label: "Output", desc: "Display 'PIN Verified' on success, or 'Incorrect PIN' on failure.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "entered_pin = 1234", output: "PIN Verified" },
+                            { input: "entered_pin = 5678", output: "Incorrect PIN" }
                         ]
                     }
                 };

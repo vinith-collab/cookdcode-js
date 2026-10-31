@@ -1,6 +1,9 @@
 function detectProblemType(problemId, problemTitle) {
   const normId = (problemId || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   const normTitle = (problemTitle || "").toLowerCase();
+  if (normId.includes("atmpin") || normId.includes("pinverification") || normId === "problem23" || normId === "problem023" || (normTitle.includes("atm") && normTitle.includes("pin")) || normTitle.includes("pin verification")) {
+    return "atm-pin-verification";
+  }
   if (normId.includes("odd1to50") || normId.includes("odd50") || normId === "problem22" || normId === "problem022" || (normTitle.includes("odd") && (normTitle.includes("50") || normTitle.includes("1 to 50")))) {
     return "odd-numbers-1-to-50";
   }

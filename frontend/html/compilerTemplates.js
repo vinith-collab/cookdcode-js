@@ -1683,6 +1683,69 @@ public class Main {
     }
 }`
     }
+  },
+
+  "problem23": {
+    id: "problem23",
+    canonicalId: "atm-pin-verification",
+    title: "ATM PIN Verification",
+    stdin: "",
+    templates: {
+      javascript: `// Problem 23: ATM PIN Verification
+let entered_pin = 1234;
+
+if (entered_pin == 1234) {
+    console.log("PIN Verified");
+} else {
+    console.log("Incorrect PIN");
+}`,
+      python: `# Problem 23: ATM PIN Verification
+entered_pin = 1234
+
+if entered_pin == 1234:
+    print("PIN Verified")
+else:
+    print("Incorrect PIN")`,
+      cpp: `// Problem 23: ATM PIN Verification
+#include <iostream>
+using namespace std;
+
+int main() {
+    int entered_pin = 1234;
+    
+    if (entered_pin == 1234) {
+        cout << "PIN Verified" << endl;
+    } else {
+        cout << "Incorrect PIN" << endl;
+    }
+    return 0;
+}`,
+      c: `// Problem 23: ATM PIN Verification
+#include <stdio.h>
+
+int main() {
+    int entered_pin = 1234;
+    
+    if (entered_pin == 1234) {
+        printf("PIN Verified\\n");
+    } else {
+        printf("Incorrect PIN\\n");
+    }
+    return 0;
+}`,
+      java: `// Problem 23: ATM PIN Verification
+public class Main {
+    public static void main(String[] args) {
+        int entered_pin = 1234;
+        
+        if (entered_pin == 1234) {
+            System.out.println("PIN Verified");
+        } else {
+            System.out.println("Incorrect PIN");
+        }
+    }
+}`
+    }
   }
 };
 

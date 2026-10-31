@@ -279,6 +279,20 @@ export const PROBLEM_DEFINITIONS = {
       /not\s+divisible\s+by\s+2\b/i
     ],
     goalSummary: "iterating numbers from 1 to 50 and printing odd numbers leaving remainder 1 when divided by 2"
+  },
+  "atm-pin-verification": {
+    id: "atm-pin-verification",
+    problemNo: 23,
+    title: "ATM PIN Verification",
+    patterns: [
+      /\batm\b/i,
+      /\bpin\b/i,
+      /\b1234\b/,
+      /pin\s*(?:==?|equals?)\s*1234/i,
+      /pin\s*verified/i,
+      /incorrect\s*pin/i
+    ],
+    goalSummary: "checking if the entered PIN matches 1234, displaying 'PIN Verified' if correct or 'Incorrect PIN' otherwise"
   }
 };
 
