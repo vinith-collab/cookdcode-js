@@ -301,9 +301,9 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
   const hasLoopKeyword = /\b(?:for\s*loop|while\s*loop|for\s*\(|while\s*\(|for\s+\w+\s+in|\bloop\b)/i.test(norm);
 
   // Check Start: 1 (or 1 to 50)
-  const hasLoopStart = /\bstart\s*[:=\s]\s*\(?\s*1\b/i.test(withoutStepHeaders) ||
-    /\b(?:start\s*at|starts?\s*at|starts?\s*with|starting\s*from|from)\s*1\b/i.test(withoutStepHeaders) ||
-    /\bi\s*=\s*1\b/i.test(withoutStepHeaders) ||
+  const hasLoopStart = /\bstart\s*[:=\s]\s*\(?\s*(?:(?:variable|var|counter|let|int)\s*)?(?:[a-zA-Z_]\w*\s*(?:=|starts?\s*(?:at|from|with)|[:=])\s*)?1\b/i.test(withoutStepHeaders) ||
+    /\b(?:start\s*at|starts?\s*at|starts?\s*with|starting\s*from|from)\s*(?:(?:variable|var|counter|let|int)\s*)?(?:[a-zA-Z_]\w*\s*(?:=|starts?\s*(?:at|from|with)|[:=])\s*)?1\b/i.test(withoutStepHeaders) ||
+    /\b[a-zA-Z_]\w*\s*=\s*1\b/i.test(withoutStepHeaders) ||
     /\brange\s*\(\s*1\s*,/i.test(withoutStepHeaders) ||
     /\b1\s*(?:to|-)\s*50\b/i.test(withoutStepHeaders);
 
@@ -324,7 +324,24 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
 
   const hasRange1To50 = /\b1\s*(?:to|-)\s*50\b/i.test(norm) || (hasLoopStart && hasLoopStop);
   const hasLoopStep = hasExplicitLoopStep || hasRange1To50;
-  const hasCompleteLoop = hasLoopKeyword && hasRange1To50;
+
+  // Extract loop variable name (e.g. i = 1, start: i = 1, variable i starts at 1, for loop(i), for (let i = 1...))
+  const loopVarMatch = withoutStepHeaders.match(/\bstart\s*[:=\s]\s*(?:(?:variable|var|counter|let|int)\s*)?([a-zA-Z_]\w*)\s*(?:=|starts?\s*(?:at|from|with)|[:=])\s*[12]\b/i) ||
+    withoutStepHeaders.match(/\b(?:start\s*at|starts?\s*at|starts?\s*with|starting\s*from|from)\s*(?:(?:variable|var|counter|let|int)\s*)?([a-zA-Z_]\w*)\s*(?:=|starts?\s*(?:at|from|with)|[:=])\s*[12]\b/i) ||
+    withoutStepHeaders.match(/\bfor\s*\(\s*(?:let|var|int)?\s*([a-zA-Z_]\w*)\s*=/i) ||
+    withoutStepHeaders.match(/\bfor\s+([a-zA-Z_]\w*)\s+in\b/i) ||
+    withoutStepHeaders.match(/\bfor\s*loop\s*\(\s*([a-zA-Z_]\w*)\s*\)/i) ||
+    withoutStepHeaders.match(/\b(?:loop\s*)?variable\s*[:=]?\s*([a-zA-Z_]\w*)/i) ||
+    withoutStepHeaders.match(/\bcounter\s*[:=]?\s*([a-zA-Z_]\w*)/i) ||
+    withoutStepHeaders.match(/\b([a-zA-Z_]\w*)\s*=\s*[12]\b/i);
+
+  const reservedWords = ["for", "loop", "start", "stop", "end", "step", "next", "to", "from", "use", "let", "var", "int", "with", "range", "up", "the", "a", "an", "is", "at"];
+  const rawVar = loopVarMatch ? loopVarMatch[1].trim() : null;
+  const loopVar = (rawVar && !reservedWords.includes(rawVar.toLowerCase())) ? rawVar : null;
+  const hasLoopVar = Boolean(loopVar);
+  const varName = loopVar || "i";
+
+  const hasCompleteLoop = hasLoopKeyword && hasRange1To50 && hasLoopVar;
 
   // Check if condition for odd: i % 2 == 1 or i % 2 != 0
   const hasIfCondition = /\bif\b/i.test(norm) || /\bcondition\b/i.test(norm) || /\bcheck\b/i.test(norm);
@@ -335,7 +352,7 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
 
   const hasStepBy2Shortcut = hasExplicitLoopStep && (/step\s*[:=\s]\s*\(?\s*\+?2\b/i.test(withoutStepHeaders) || /\bi\s*\+=\s*2\b/i.test(withoutStepHeaders) || /step\s*\(\s*\+?2\s*\)/i.test(withoutStepHeaders));
 
-  const hasOddCheck = (hasIfCondition && (hasMod2 || hasOddRemainder)) || (hasMod2 && hasOddRemainder) || hasStepBy2Shortcut || /i\s*%\s*2\s*==\s*1/i.test(norm) || /i\s*%\s*2\s*!=\s*0/i.test(norm);
+  const hasOddCheck = (hasIfCondition && (hasMod2 || hasOddRemainder)) || (hasMod2 && hasOddRemainder) || hasStepBy2Shortcut || /i\s*%\s*2\s*==\s*1/i.test(norm) || /i\s*%\s*2\s*!=\s*0/i.test(norm) || new RegExp(`(?:${varName}|[a-zA-Z_]\\w*)\\s*%\\s*2\\s*(?:==|!=)\\s*[01]`, "i").test(norm);
 
   // Print statement
   const hasPrint = /\b(?:print|display|console\.log|show|output|write)\b/i.test(norm);
@@ -346,11 +363,29 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
     { stepNumber: 3, title: "3. Print statement inside loop to print the odd number", completed: Boolean(hasPrint), current: hasCompleteLoop && hasOddCheck && !hasPrint }
   ];
 
+  if (!hasLoopVar && (hasLoopKeyword || hasRange1To50)) {
+    return {
+      isFullyVerified: false,
+      hasLoop: false,
+      hasOddCheck,
+      hasPrint,
+      ingredientsStepProgress: [
+        { stepNumber: 1, title: "1. For loop with counter variable (e.g. start: i = 1)", completed: false, current: true },
+        { stepNumber: 2, title: "2. If condition to check if number is odd", completed: false, current: false },
+        { stepNumber: 3, title: "3. Print statement inside loop to print the odd number", completed: false, current: false }
+      ],
+      feedback: "🌟 Coach Maara here! You've set up your loop range from 1 to 50 with step +1, which is great! 👏\nHowever, every loop needs a **counter variable name** (such as `i`, `num`, or `count`) to hold each number as we count.\nPlease give your starting step a variable name, for example: `start: i = 1` (or `variable i starts at 1`).",
+      correction: "Assign a variable name to your loop counter in Step 1 (e.g. 'start: i = 1' or 'variable i = 1').",
+      suggestedInput: "Step 1: For loop with Start: i = 1, Stop: 50, Step: +1",
+      matchedFirebaseInput: "loop without variable name"
+    };
+  }
+
   if (!hasCompleteLoop) {
     const loopHints = [
-      "🌟 Coach Maara here! To inspect numbers from 1 to 50, our first ingredient is a **Counting Loop**.\nThink about the 3 essential loop controls:\n1. Where does our count begin?\n2. Where does our count stop?\n3. By how much does the counter step each round?\nHow would you describe these controls for a For loop in your worksheet?",
-      "🌟 Coach Maara checking back! For a For loop from 1 to 50, state your loop controls clearly in your worksheet:\n• **Start:** What is our beginning number?\n• **Stop:** What is our upper limit?\n• **Step:** How much do we increase on each iteration?\nTry defining your For loop with these 3 controls!",
-      "🌟 Coach Maara encouraging you! We need a counting loop covering our range.\nIn your worksheet, specify the start (1), stop (50), and step (+1) for your For loop.\nTry writing: `Step 1: For loop from 1 to 50 with Start: 1, Stop: 50, Step: +1`."
+      "🌟 Coach Maara here! To inspect numbers from 1 to 50, our first ingredient is a **Counting Loop**.\nEvery counting loop needs a **counter variable** and 3 essential loop controls:\n1. Variable name and where the count begins (e.g. `start: i = 1`)\n2. Where does our count stop? (e.g. `stop: 50`)\n3. By how much does the counter step each round? (e.g. `step: +1`)\nHow would you describe these controls for a For loop with a variable in your worksheet?",
+      "🌟 Coach Maara checking back! For a For loop from 1 to 50, specify a variable name and the loop controls clearly in your worksheet:\n• **Start:** Assign a variable name starting at 1 (e.g. `start: i = 1` or `variable i = 1`)\n• **Stop:** What is our upper limit? (e.g. `stop: 50`)\n• **Step:** How much do we increase on each iteration? (e.g. `step: +1`)\nTry defining your For loop with a variable name and these controls!",
+      "🌟 Coach Maara encouraging you! We need a counting loop with a variable covering our range.\nIn your worksheet, specify a variable name like `i`, the start (1), stop (50), and step (+1) for your For loop.\nTry writing: `Step 1: For loop from 1 to 50 with Start: i = 1, Stop: 50, Step: +1`."
     ];
     const loopIndex = Math.max(0, attemptCount - 1) % loopHints.length;
     return {
@@ -360,18 +395,18 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
       hasPrint,
       ingredientsStepProgress,
       feedback: loopHints[loopIndex],
-      correction: "Define loop controls: 'Step 1: For loop with Start: 1, Stop: 50, Step: +1'.",
-      suggestedInput: "Step 1: For loop with Start: 1, Stop: 50, Step: +1",
+      correction: "Define loop with a variable name: 'Step 1: For loop with Start: i = 1, Stop: 50, Step: +1'.",
+      suggestedInput: "Step 1: For loop with Start: i = 1, Stop: 50, Step: +1",
       matchedFirebaseInput: "for loop without start stop step"
     };
   }
 
   if (!hasOddCheck && !hasStepBy2Shortcut) {
     const oddHints = [
-      "🌟 Coach Maara here! Your counting loop is ready! 👏 Now we need Ingredient 2: A decision step to filter the odd numbers.\nIn our Logic stage, how did we determine whether a counting number is odd?\nThink about what condition or remainder check we need inside our loop to identify odd numbers!",
-      "🌟 Coach Maara checking back! In programming, we check remainders using the modulo operator (`%`).\nTo test if our counter `i` is an odd number:\n• What mathematical expression calculates the remainder when `i` is divided by 2?\n• What remainder value indicates that a number is odd?\nTry framing an **If condition** with your Left Side, Operator, and Right Side!",
-      "🌟 Coach Maara encouraging you! Every odd number leaves a remainder of 1 when divided by 2.\nSet up your Ingredient 2 structure:\n• **Left Side:** remainder expression of `i` divided by 2\n• **Operator:** comparison operator for equality (`==`)\n• **Right Side:** the expected remainder for an odd number (`1`)\nWhat rule will you write in your worksheet?",
-      "🌟 Coach Maara with a direct tip! To filter odd numbers inside the loop, check if dividing `i` by 2 leaves remainder 1:\n`Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1`."
+      `🌟 Coach Maara here! Your counting loop with variable \`${varName}\` is ready! 👏 Now we need Ingredient 2: A decision step to filter the odd numbers.\nIn our Logic stage, how did we determine whether a counting number is odd?\nThink about what condition or remainder check on \`${varName}\` we need inside our loop to identify odd numbers!`,
+      `🌟 Coach Maara checking back! In programming, we check remainders using the modulo operator (\`%\`).\nTo test if our counter \`${varName}\` is an odd number:\n• What mathematical expression calculates the remainder when \`${varName}\` is divided by 2?\n• What remainder value indicates that a number is odd?\nTry framing an **If condition** with your Left Side, Operator, and Right Side!`,
+      `🌟 Coach Maara encouraging you! Every odd number leaves a remainder of 1 when divided by 2.\nSet up your Ingredient 2 structure:\n• **Left Side:** remainder expression of \`${varName}\` divided by 2\n• **Operator:** comparison operator for equality (\`==\`)\n• **Right Side:** the expected remainder for an odd number (\`1\`)\nWhat rule will you write in your worksheet?`,
+      `🌟 Coach Maara with a direct tip! To filter odd numbers inside the loop, check if dividing \`${varName}\` by 2 leaves remainder 1:\n\`Step 2: If condition with Left Side: ${varName} % 2, Operator: ==, Right Side: 1\`.`
     ];
     const oddIndex = Math.max(0, attemptCount - 1) % oddHints.length;
     return {
@@ -381,17 +416,17 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
       hasPrint,
       ingredientsStepProgress,
       feedback: oddHints[oddIndex],
-      correction: "Add an if condition comparing the remainder of dividing i by 2.",
-      suggestedInput: "Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1",
+      correction: `Add an if condition comparing the remainder of dividing ${varName} by 2.`,
+      suggestedInput: `Step 2: If condition with Left Side: ${varName} % 2, Operator: ==, Right Side: 1`,
       matchedFirebaseInput: "step 2 : if condition for odd numbers"
     };
   }
 
   if (!hasPrint) {
     const printHints = [
-      "🌟 Coach Maara here! Loop and odd check are in place! 👏 Now, what action should happen when a number is found to be odd?\nWhat statement outputs the current number to the screen?",
-      "🌟 Coach Maara checking back! When our odd condition succeeds, we need to show that number.\nIn your worksheet, write an output instruction (like `print`) inside the if block to display `i`!",
-      "🌟 Coach Maara encouraging you! Wrap up Ingredient 3 by outputting the verified odd number: `Step 3: Inside if block: print(i)`."
+      `🌟 Coach Maara here! Loop and odd check are in place! 👏 Now, what action should happen when \`${varName}\` is found to be odd?\nWhat statement outputs the current number \`${varName}\` to the screen?`,
+      `🌟 Coach Maara checking back! When our odd condition succeeds, we need to show that number.\nIn your worksheet, write an output instruction (like \`print\`) inside the if block to display \`${varName}\`!`,
+      `🌟 Coach Maara encouraging you! Wrap up Ingredient 3 by outputting the verified odd number: \`Step 3: Inside if block: print(${varName})\`.`
     ];
     const printIndex = Math.max(0, attemptCount - 1) % printHints.length;
     return {
@@ -401,8 +436,8 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
       hasPrint: false,
       ingredientsStepProgress,
       feedback: printHints[printIndex],
-      correction: "Add print statement: 'Step 3: Inside if block: print(i)'.",
-      suggestedInput: "Step 3: Inside if block: print(i)",
+      correction: `Add print statement: 'Step 3: Inside if block: print(${varName})'.`,
+      suggestedInput: `Step 3: Inside if block: print(${varName})`,
       matchedFirebaseInput: "step 3 : print the odd number"
     };
   }
