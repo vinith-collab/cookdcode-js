@@ -301,13 +301,13 @@ export const PROBLEM_DEFINITIONS = {
  * Returns null if no cross-problem mismatch is detected.
  * Returns a detailed mismatch report if a foreign problem signature is clearly identified.
  */
-export function detectCrossProblemMismatch(currentProblemId, section, text) {
+export function detectCrossProblemMismatch(currentProblemId, section, text, problemTitle = "") {
   if (!text || text.trim().length < 5) return null;
   const trimmed = text.trim();
   const lower = trimmed.toLowerCase();
 
   // Normalize current problem ID using detectProblemType or raw string
-  const resolvedType = detectProblemType(currentProblemId);
+  const resolvedType = detectProblemType(currentProblemId, problemTitle);
   const cleanCurrentId = (resolvedType !== "custom" && resolvedType) 
     ? resolvedType 
     : (currentProblemId || "").toLowerCase().trim();
@@ -319,9 +319,20 @@ export function detectCrossProblemMismatch(currentProblemId, section, text) {
   for (const [probKey, probDef] of Object.entries(PROBLEM_DEFINITIONS)) {
     if (probKey === cleanCurrentId) continue;
 
-    // Special exclusion: 'odd-even' vs 'even-numbers-1-to-50' (both talk about even and % 2)
-    if ((cleanCurrentId === "even-numbers-1-to-50" && probKey === "odd-even") ||
-        (cleanCurrentId === "odd-even" && probKey === "even-numbers-1-to-50")) {
+    // Special exclusion: 'odd-even' vs 'even-numbers-1-to-50' vs 'odd-numbers-1-to-50'
+    // Single number parity testing (% 2) is a fundamental building block of 1-to-50 range problems
+    if ((cleanCurrentId === "odd-numbers-1-to-50" || cleanCurrentId === "even-numbers-1-to-50") && probKey === "odd-even") {
+      continue;
+    }
+    if (cleanCurrentId === "odd-even" && (probKey === "odd-numbers-1-to-50" || probKey === "even-numbers-1-to-50")) {
+      if (!lower.includes("50") && !lower.includes("loop") && !lower.includes("count") && !lower.includes("from 1")) {
+        continue;
+      }
+    }
+    if (cleanCurrentId === "odd-numbers-1-to-50" && probKey === "even-numbers-1-to-50" && !lower.includes("even")) {
+      continue;
+    }
+    if (cleanCurrentId === "even-numbers-1-to-50" && probKey === "odd-numbers-1-to-50" && !lower.includes("odd")) {
       continue;
     }
 

@@ -4,10 +4,10 @@ function detectProblemType(problemId, problemTitle) {
   if (normId.includes("atmpin") || normId.includes("pinverification") || normId === "problem23" || normId === "problem023" || (normTitle.includes("atm") && normTitle.includes("pin")) || normTitle.includes("pin verification")) {
     return "atm-pin-verification";
   }
-  if (normId.includes("odd1to50") || normId.includes("odd50") || normId === "problem22" || normId === "problem022" || (normTitle.includes("odd") && (normTitle.includes("50") || normTitle.includes("1 to 50")))) {
+  if (normId.includes("oddnumbers1to50") || normId.includes("odd1to50") || normId.includes("odd50") || (normId.includes("odd") && normId.includes("50")) || normId === "problem22" || normId === "problem022" || (normTitle.includes("odd") && (normTitle.includes("50") || normTitle.includes("1 to 50")))) {
     return "odd-numbers-1-to-50";
   }
-  if (normId.includes("even1to50") || normId.includes("even50") || normId === "problem21" || normId === "problem021" || (normTitle.includes("even") && (normTitle.includes("50") || normTitle.includes("1 to 50")))) {
+  if (normId.includes("evennumbers1to50") || normId.includes("even1to50") || normId.includes("even50") || (normId.includes("even") && normId.includes("50")) || normId === "problem21" || normId === "problem021" || (normTitle.includes("even") && (normTitle.includes("50") || normTitle.includes("1 to 50")))) {
     return "even-numbers-1-to-50";
   }
   if (normId.includes("multiplication") || normId.includes("table") || normId === "problem05" || normId === "problem5" || normTitle.includes("multiplication") || normTitle.includes("table")) {

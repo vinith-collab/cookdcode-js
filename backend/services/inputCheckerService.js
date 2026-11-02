@@ -569,7 +569,7 @@ class InputCheckerService {
 
     // Strict Cross-Problem Protection: Reject logic/recipe/ingredients/code belonging to any other problem!
     if (text && text.length >= 5) {
-      const crossMismatch = detectCrossProblemMismatch(problemID, section, text);
+      const crossMismatch = detectCrossProblemMismatch(problemID, section, text, problemTitle);
       if (crossMismatch) {
         return {
           correct: false,
@@ -4745,12 +4745,11 @@ for (int i = 1; i <= ${varName}; i++) {
             if (section === "recipe") {
               const evenRec = validateEvenNumbers1To50Recipe(userInput, attemptCount);
               parsed.recipeStepProgress = evenRec.recipeStepProgress;
-              const geminiDeclaredRecipeComplete = parsed.correct === true || 
-                /ready to (?:gather ingredients|proceed|move on|advance)|recipe (?:is )?verified|all \d+ steps (?:are )?verified|completed all \d+ recipe steps/i.test(parsed.feedback || "");
+              parsed.stepProgress = evenRec.recipeStepProgress;
 
-              if (evenRec.isFullyVerified || geminiDeclaredRecipeComplete) {
+              if (evenRec.isFullyVerified) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : evenRec.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate") ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : evenRec.feedback;
                 parsed.correction = "Proceed to Ingredients stage!";
                 parsed.suggestedInput = void 0;
                 if (parsed.recipeStepProgress) {
@@ -4841,12 +4840,11 @@ for (int i = 1; i <= ${varName}; i++) {
             if (section === "recipe") {
               const oddRec = validateOddNumbers1To50Recipe(userInput, attemptCount);
               parsed.recipeStepProgress = oddRec.recipeStepProgress;
-              const geminiDeclaredRecipeComplete = parsed.correct === true || 
-                /ready to (?:gather ingredients|proceed|move on|advance)|recipe (?:is )?verified|all \d+ steps (?:are )?verified|completed all \d+ recipe steps/i.test(parsed.feedback || "");
+              parsed.stepProgress = oddRec.recipeStepProgress;
 
-              if (oddRec.isFullyVerified || geminiDeclaredRecipeComplete) {
+              if (oddRec.isFullyVerified) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : oddRec.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate") ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : oddRec.feedback;
                 parsed.correction = "Proceed to Ingredients stage!";
                 parsed.suggestedInput = void 0;
                 if (parsed.recipeStepProgress) {
