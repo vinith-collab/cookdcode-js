@@ -508,9 +508,11 @@ if (${loopVar} % 2 == 0) {
     // action when number is even
 }
 \`\`\`
-• **Parentheses:** Put the condition inside \`(...)\`.
-• **Comparison:** Use \`==\` to compare remainder with 0.
-• **Braces:** Put the actions inside \`{ ... }\`.`;
+• **Left Side (\`${loopVar} % 2\`):** Computes remainder when dividing by 2.
+• **Operator (\`==\`):** Comparison operator for equality.
+• **Right Side (\`0\`):** Expected remainder for an even number.
+• **Condition Structure:** \`if (Left Side Operator Right Side)\` ➔ \`if (${loopVar} % 2 == 0)\`
+• **Braces (\`{ ... }\`):** Enclose the action to take when the condition is met!`;
     } else if (/print|display|output|show/i.test(norm) || (step2Done && !step3Done)) {
       specificSyntaxExample = `\n\n📝 **Print Output Syntax Example:**
 \`\`\`javascript
@@ -648,6 +650,16 @@ Add the missing closing brace \`}\` to fix your syntax!`,
         sampleCodeStepProgress,
         feedback: `🌟 Coach Maara note: In your print statement, you wrote text ('even number') instead of the number itself! Print the loop variable \`${loopVar}\` so the program actually outputs 2, 4, 6...: \`print(${loopVar});\`.`,
         correction: `Change print target to the loop variable: 'print(${loopVar})'.`
+      };
+    }
+    const printedVarMatch = norm.match(/(?:print|println|printf|console\.log)\s*\(\s*([a-zA-Z_]\w*)\s*\)/i);
+    const printedVar = printedVarMatch ? printedVarMatch[1] : null;
+    if (printedVar && printedVar !== loopVar && !["odd", "even", "number"].includes(printedVar)) {
+      return {
+        isFullyVerified: false,
+        sampleCodeStepProgress,
+        feedback: `🌟 Coach Maara note: Look at your print statement!\nYou wrote \`print(${printedVar})\`, but your loop counter variable is \`${loopVar}\`.\nUpdate your code to print the loop counter: \`print(${loopVar});\` so the numbers 2, 4, 6... actually get displayed!`,
+        correction: `Change 'print(${printedVar})' to 'print(${loopVar})'.`
       };
     }
     const printHints = [

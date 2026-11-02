@@ -176,47 +176,227 @@ function detectTasteSampleSyntaxHelp(text) {
   if (!text || typeof text !== "string") return null;
   const norm = text.toLowerCase().trim();
 
-  // Words expressing not knowing / confusion / how-to:
-  const hasNotKnowing = /(?:therila|theriyala|theriyathunu|theriyathu|puriyala|purila|don'?t\s*know|dont\s*know|not\s*sure|no\s*idea|epdi\s*(?:eluthanum|eluthurathu|podanum|pannanum|create\s*pannanum)?|how\s*to\s*(?:write|declare|use|code|start|create)|how\s*do\s*i|how\s*can\s*i|help|example|explain|doubt)/i.test(norm);
-  const hasSyntaxWord = /\b(?:synatx|syntax|code|coding)\b/i.test(norm);
+  // Separate question lines from code lines
+  const rawLines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  const questionLines = rawLines.filter(l =>
+    /\b(?:syntax|synatx|how\s*to|how\s*do|what\s*is|what\s*to|what\s*do|give|sample|example|puriyala|theriyala|therila|theriyathu|don'?t\s*know|dont\s*know|help|doubt|explain|please|tell\s*me|i\s*didn'?t|need|show\s*me|enna|epdi|sollinga|sollunga)\b/i.test(l) ||
+    l.includes("?")
+  );
 
-  const mentionsVar = /\b(?:varable|variable|variables|declaring|declaration|initialization|var|let|const)\b/i.test(norm);
-  const mentionsIf = /\b(?:if\s*condition|if\s*statement|if\s*else|condition|conditions|\bif\b)\b/i.test(norm);
-  const mentionsLoop = /\b(?:for\s*loop|while\s*loop|\bloop\b|looping|forloop|\bfor\b)\b/i.test(norm);
+  const queryText = questionLines.length > 0 ? questionLines.join(" ").toLowerCase() : norm;
 
-  const isSyntaxQuery = (hasSyntaxWord && hasNotKnowing) ||
-    (hasSyntaxWord && (mentionsVar || mentionsIf || mentionsLoop)) ||
-    (hasNotKnowing && (mentionsVar || mentionsIf || mentionsLoop)) ||
-    /\b(?:syntax help|syntax example|how to write syntax|how to code syntax|how to write for loop|how to write if condition|how to declare variable|how to write variable)\b/i.test(norm);
+  const hasNotKnowing = /(?:therila|theriyala|theriyathunu|theriyathu|puriyala|purila|don'?t\s*know|dont\s*know|not\s*sure|no\s*idea|epdi\s*(?:eluthanum|eluthurathu|podanum|pannanum|create\s*pannanum)?|how\s*to\s*(?:write|declare|use|code|start|create)|how\s*do\s*i|how\s*can\s*i|help|example|explain|doubt|i\s*didn'?t)/i.test(queryText);
+  const hasSyntaxWord = /\b(?:synatx|syntax|code|coding)\b/i.test(queryText);
+
+  const isSyntaxQuery = questionLines.length > 0 ||
+    (hasSyntaxWord && hasNotKnowing) ||
+    /\b(?:syntax help|syntax example|how to write syntax|how to code syntax|sample syntax)\b/i.test(norm) ||
+    ((/(?:therila|theriyala|puriyala|don'?t\s*know|dont\s*know|help|doubt)/i.test(norm)) &&
+     (/\b(?:if|loop|for|while|variable|print|display|condition)\b/i.test(norm)));
 
   if (!isSyntaxQuery) return null;
 
-  const countSpecific = (mentionsVar ? 1 : 0) + (mentionsIf ? 1 : 0) + (mentionsLoop ? 1 : 0);
-  const isGeneralOrAll = countSpecific >= 3 || countSpecific === 0;
+  // Code lines analysis
+  const codeLines = rawLines.filter(l => !questionLines.includes(l));
+  const codeText = codeLines.join("\n");
+  const hasLoopInCode = /\bfor\s*\(|\bwhile\s*\(/i.test(codeText) || (/\bfor\b/i.test(codeText) && /\b50\b/.test(codeText));
+  const hasIfInCode = /\bif\s*\(/i.test(codeText) || /\bif\b\s*\(?[^;{]+\)?\s*\{/i.test(codeText);
+  const hasPrintInCode = /\b(?:print|console\.log|println|printf)\b/i.test(codeText);
+
+  const loopVarMatch = codeText.match(/for\s*(?:\(\s*(?:var|let|const|int)\s+)?([a-zA-Z_]\w*)\s*(?:=|in|<=)/i) ||
+    codeText.match(/while\s*\(\s*([a-zA-Z_]\w*)/i);
+  const loopVar = loopVarMatch ? loopVarMatch[1] : "i";
+
+  // Check what student is specifically asking for in the query
+  const asksIf = /\b(?:if\s*condition|if\s*statement|if\s*syntax|condition\s*syntax|sample\s*if|how\s*to\s*(?:write|add|put|use)\s*if|\bif\b|\bcondition\b|\belse\b)\b/i.test(queryText);
+  const asksPrint = /\b(?:print\s*syntax|display\s*syntax|output\s*syntax|how\s*to\s*(?:print|display|output)|\bprint\b|\bdisplay\b|\boutput\b)\b/i.test(queryText);
+  const asksLoop = (/\b(?:for\s*loop|while\s*loop|loop\s*syntax|for\s*syntax|how\s*to\s*(?:write|code|use)\s*(?:for|loop))\b/i.test(queryText) ||
+    (/\b(?:loop|for)\b/i.test(queryText) && !asksIf && !asksPrint));
+  const asksVar = /\b(?:variable\s*syntax|var\s*syntax|how\s*to\s*(?:declare|create)\s*variable|\bvariable\b|\bvar\b)\b/i.test(queryText) && !asksIf && !asksLoop;
+
+  let target = "all";
+  if (asksIf) {
+    target = "if";
+  } else if (asksPrint) {
+    target = "print";
+  } else if (asksLoop) {
+    target = "loop";
+  } else if (asksVar) {
+    target = "var";
+  } else {
+    // If user asked general syntax question ("give syntax", "help with syntax"):
+    // Check what code they already have in the editor to give the NEXT logical syntax step:
+    if (!hasLoopInCode) target = "loop";
+    else if (!hasIfInCode) target = "if";
+    else if (!hasPrintInCode) target = "print";
+    else target = "all";
+  }
 
   return {
-    mentionsVar,
-    mentionsIf,
-    mentionsLoop,
-    isGeneralOrAll
+    target,
+    hasLoopInCode,
+    hasIfInCode,
+    hasPrintInCode,
+    loopVar,
+    mentionsVar: target === "var" || asksVar,
+    mentionsIf: target === "if" || asksIf,
+    mentionsLoop: target === "loop" || asksLoop,
+    mentionsPrint: target === "print" || asksPrint,
+    isGeneralOrAll: target === "all"
   };
 }
 
 function generateTasteSampleSyntaxResponse(syntaxInfo, problemTitle = "", problemType = "") {
   const normType = (problemType || "").toLowerCase();
+  const loopVar = syntaxInfo?.loopVar || "i";
+  const target = syntaxInfo?.target || (syntaxInfo?.mentionsIf ? "if" : (syntaxInfo?.mentionsLoop ? "loop" : (syntaxInfo?.mentionsPrint ? "print" : "all")));
 
-  if (syntaxInfo?.mentionsLoop) {
-    if (normType.includes("odd") || normType.includes("even") || normType.includes("50")) {
+  if (target === "if") {
+    if (normType.includes("odd") || normType.includes("22")) {
+      const nestedInLoop = syntaxInfo?.hasLoopInCode ? `
+Here is how the if condition fits inside your loop:
+
+\`\`\`javascript
+for (var ${loopVar} = 1; ${loopVar} <= 50; ${loopVar}++) {
+    if (${loopVar} % 2 == 1) {
+        // print statement goes here
+    }
+}
+\`\`\`
+` : "";
+      return `🌟 Coach Maara here! Here is the example syntax for an **If Condition** testing odd numbers:
+
+\`\`\`javascript
+if (${loopVar} % 2 == 1) {
+    // action when number is odd
+}
+\`\`\`
+${nestedInLoop}• **Left Side (\`${loopVar} % 2\`):** Computes the remainder when \`${loopVar}\` is divided by 2.
+• **Operator (\`==\`):** Comparison operator to check for equality.
+• **Right Side (\`1\`):** The expected remainder for an odd number.
+• **Condition Structure:** \`if (Left Side Operator Right Side)\` ➔ \`if (${loopVar} % 2 == 1)\`
+• **Braces (\`{ ... }\`):** Enclose the action to take when the condition is met!
+
+💡 *Tip: Place this if condition inside your loop and remove your question text before running!*`;
+    }
+    if (normType.includes("even") || normType.includes("21")) {
+      const nestedInLoop = syntaxInfo?.hasLoopInCode ? `
+Here is how the if condition fits inside your loop:
+
+\`\`\`javascript
+for (var ${loopVar} = 1; ${loopVar} <= 50; ${loopVar}++) {
+    if (${loopVar} % 2 == 0) {
+        // print statement goes here
+    }
+}
+\`\`\`
+` : "";
+      return `🌟 Coach Maara here! Here is the example syntax for an **If Condition** testing even numbers:
+
+\`\`\`javascript
+if (${loopVar} % 2 == 0) {
+    // action when number is even
+}
+\`\`\`
+${nestedInLoop}• **Left Side (\`${loopVar} % 2\`):** Computes the remainder when \`${loopVar}\` is divided by 2.
+• **Operator (\`==\`):** Comparison operator to check for equality.
+• **Right Side (\`0\`):** The expected remainder for an even number.
+• **Condition Structure:** \`if (Left Side Operator Right Side)\` ➔ \`if (${loopVar} % 2 == 0)\`
+• **Braces (\`{ ... }\`):** Enclose the action to take when the condition is met!
+
+💡 *Tip: Place this if condition inside your loop and remove your question text before running!*`;
+    }
+    if (normType.includes("pin") || normType.includes("atm")) {
+      return `🌟 Coach Maara here! Here is the example syntax for an **If-Else Condition** for ATM PIN:
+
+\`\`\`javascript
+if (entered_pin == 1234) {
+    print("PIN Verified");
+} else {
+    print("Incorrect PIN");
+}
+\`\`\`
+• **Left Side (\`entered_pin\`):** Variable storing the user's entered PIN.
+• **Operator (\`==\`):** Comparison operator checking if both sides match.
+• **Right Side (\`1234\`):** The correct secret PIN to match against.
+• **Condition Structure:** \`if (Left Side Operator Right Side)\` ➔ \`if (entered_pin == 1234)\`
+• **Else:** Fallback executed when the PIN does not match!`;
+    }
+    return `🌟 Coach Maara here! Here is the standard syntax for an **If Decision Block**:
+
+\`\`\`javascript
+if (condition) {
+    // code when true
+} else {
+    // code when false
+}
+\`\`\`
+• **Left Side:** The variable or expression being evaluated (e.g. \`i % 2\`).
+• **Operator:** Comparison operator (\`==\`, \`!=\`, \`>\`, \`<\`, \`>=\`, \`<=\`).
+• **Right Side:** The target value to compare against (e.g. \`1\`).
+• **Condition Structure:** \`if (Left Side Operator Right Side)\` with actions inside \`{ ... }\`.`;
+  }
+
+  if (target === "print") {
+    if (normType.includes("odd") || normType.includes("even") || normType.includes("50") || normType.includes("22") || normType.includes("21")) {
+      const isEven = normType.includes("even") || normType.includes("21");
+      const nested = syntaxInfo?.hasLoopInCode ? `
+Here is how it fits inside your loop and condition:
+
+\`\`\`javascript
+for (var ${loopVar} = 1; ${loopVar} <= 50; ${loopVar}++) {
+    if (${loopVar} % 2 == ${isEven ? 0 : 1}) {
+        print(${loopVar});
+    }
+}
+\`\`\`
+` : "";
+      return `🌟 Coach Maara here! Here is the example syntax for a **Print / Output Statement**:
+
+\`\`\`javascript
+print(${loopVar});
+// or in JavaScript:
+console.log(${loopVar});
+\`\`\`
+${nested}• Put the variable \`${loopVar}\` inside \`print(...)\` to display each number!`;
+    }
+    return `🌟 Coach Maara here! Here is the example syntax for a **Print / Output Statement**:
+
+\`\`\`javascript
+print(i);          // displays the value of variable i (e.g. 1, 3, 5...)
+// or with a text message:
+print("Output message");
+// in standard JavaScript:
+console.log(i);
+\`\`\`
+• To print a variable, put its name inside parentheses: \`print(i);\`
+• To print fixed text, wrap the text in quotes: \`print("Hello");\``;
+  }
+
+  if (target === "var") {
+    return `🌟 Coach Maara here! Here is the example syntax for declaring a **Variable**:
+
+\`\`\`javascript
+var n = 10;
+var entered_pin = 1234;
+var sum = 0;
+\`\`\`
+• \`var\` or \`let\` declares the variable name.
+• \`=\` assigns the initial value.`;
+  }
+
+  if (target === "loop") {
+    if (normType.includes("odd") || normType.includes("even") || normType.includes("50") || normType.includes("22") || normType.includes("21")) {
       return `🌟 Coach Maara here! Here is the example syntax for a counting **For Loop** from 1 to 50:
 
 \`\`\`javascript
-for (var i = 1; i <= 50; i++) {
+for (var ${loopVar} = 1; ${loopVar} <= 50; ${loopVar}++) {
     // statements inside loop
 }
 \`\`\`
-• **Start:** \`var i = 1;\` (initializes counter variable \`i\` to 1)
-• **Stop Condition:** \`i <= 50;\` (runs while \`i\` is less than or equal to 50)
-• **Step Increment:** \`i++\` (increases \`i\` by 1 each round)
+• **Start:** \`var ${loopVar} = 1;\` (initializes counter variable \`${loopVar}\` to 1)
+• **Stop Condition:** \`${loopVar} <= 50;\` (runs while \`${loopVar}\` is less than or equal to 50)
+• **Step Increment:** \`${loopVar}++\` (increases \`${loopVar}\` by 1 each round)
 • **Braces:** \`{ ... }\` enclose everything running inside the loop!
 
 💡 *Tip: Write this syntax in your editor and remove any question text before running!*`;
@@ -235,84 +415,8 @@ for (var i = 1; i <= n; i++) {
 💡 *Tip: Type this loop syntax into your editor!*`;
   }
 
-  if (syntaxInfo?.mentionsIf) {
-    if (normType.includes("odd")) {
-      return `🌟 Coach Maara here! Here is the example syntax for an **If Condition** testing odd numbers:
-
-\`\`\`javascript
-if (i % 2 == 1) {
-    // action when number is odd
-}
-\`\`\`
-• \`i % 2\`: computes the remainder of \`i\` divided by 2.
-• \`== 1\`: checks if the remainder equals 1 (an odd number).
-• **Parentheses & Braces:** Put the condition inside \`(...)\` and the action inside \`{ ... }\`!`;
-    }
-    if (normType.includes("even")) {
-      return `🌟 Coach Maara here! Here is the example syntax for an **If Condition** testing even numbers:
-
-\`\`\`javascript
-if (i % 2 == 0) {
-    // action when number is even
-}
-\`\`\`
-• \`i % 2\`: computes the remainder of \`i\` divided by 2.
-• \`== 0\`: checks if the remainder equals 0 (an even number).
-• **Parentheses & Braces:** Put the condition inside \`(...)\` and the action inside \`{ ... }\`!`;
-    }
-    if (normType.includes("pin") || normType.includes("atm")) {
-      return `🌟 Coach Maara here! Here is the example syntax for an **If-Else Condition** for ATM PIN:
-
-\`\`\`javascript
-if (entered_pin == 1234) {
-    print("PIN Verified");
-} else {
-    print("Incorrect PIN");
-}
-\`\`\`
-• \`==\`: comparison operator to check if entered PIN matches 1234.
-• \`else\`: fallback executed when PIN does not match!`;
-    }
-    return `🌟 Coach Maara here! Here is the standard syntax for an **If Decision Block**:
-
-\`\`\`javascript
-if (condition) {
-    // code when true
-} else {
-    // code when false
-}
-\`\`\`
-• Use comparison operators like \`==\`, \`!=\`, \`>\`, \`<\`, \`>=\`, \`<=\`.`;
-  }
-
-  if (syntaxInfo?.mentionsPrint) {
-    return `🌟 Coach Maara here! Here is the example syntax for a **Print / Output Statement**:
-
-\`\`\`javascript
-print(i);          // displays the value of variable i (e.g. 1, 3, 5...)
-// or with a text message:
-print("Output message");
-// in standard JavaScript:
-console.log(i);
-\`\`\`
-• To print a variable, put its name inside parentheses: \`print(i);\`
-• To print fixed text, wrap the text in quotes: \`print("Hello");\``;
-  }
-
-  if (syntaxInfo?.mentionsVar) {
-    return `🌟 Coach Maara here! Here is the example syntax for declaring a **Variable**:
-
-\`\`\`javascript
-var n = 10;
-var entered_pin = 1234;
-var sum = 0;
-\`\`\`
-• \`var\` or \`let\` declares the variable name.
-• \`=\` assigns the initial value.`;
-  }
-
-  // General or complete code prototype syntax:
-  if (normType.includes("odd") && normType.includes("50")) {
+  // target === "all" / general fallback:
+  if (normType.includes("odd") && (normType.includes("50") || normType.includes("22"))) {
     return `🌟 Coach Maara here! Here is the complete example syntax prototype for **Print Odd Numbers from 1 to 50**:
 
 \`\`\`javascript
@@ -330,7 +434,7 @@ for (var i = 1; i <= 50; i++) {
 💡 *Tip: Write this clean syntax in your editor and run the code!*`;
   }
 
-  if (normType.includes("even") && normType.includes("50")) {
+  if (normType.includes("even") && (normType.includes("50") || normType.includes("21"))) {
     return `🌟 Coach Maara here! Here is the complete example syntax prototype for **Print Even Numbers from 1 to 50**:
 
 \`\`\`javascript
@@ -469,17 +573,12 @@ function isTasteSampleStructurallyComplete(code, problemType) {
     return hasLoop && hasMult;
   }
 
+  if (problemType === "odd-numbers-1-to-50") {
+    return validateOddNumbers1To50SampleCode(code, 1).isFullyVerified;
+  }
+
   if (problemType === "even-numbers-1-to-50") {
-    const hasQuestion = /\?|how\s*to|what\s*is/i.test(norm);
-    if (hasQuestion) return false;
-    const hasLoop = /\b(?:for|while)\b/i.test(norm);
-    const has50 = /50\b/.test(norm) || /51\b/.test(norm);
-    const hasStep2 = /\+=\s*2\b/.test(norm) || /,\s*2\s*\)/.test(norm);
-    const hasIf = /\bif\b/i.test(norm);
-    const hasMod2 = /%\s*2\b/.test(norm);
-    const printsText = /(?:print|println|printf|console\.log)\s*\(\s*["']?(?:even|odd|number)["']?\s*\)/i.test(norm);
-    const printsLoopVar = /(?:print|println|printf|console\.log)\s*\(\s*[a-zA-Z_]\w*\s*\)/i.test(norm) && !printsText;
-    return hasLoop && has50 && (hasStep2 || (hasIf && hasMod2)) && printsLoopVar;
+    return validateEvenNumbers1To50SampleCode(code, 1).isFullyVerified;
   }
 
   if (problemType === "divisors" || problemType === "divisor-of-a-number") {
@@ -776,6 +875,32 @@ class InputCheckerService {
               suggestedInput: null,
               sampleCodeStepProgress: sampleVal.sampleCodeStepProgress,
               stepProgress: sampleVal.stepProgress,
+              source: "ai_human_touch"
+            }, section, problemTitle);
+          }
+        } else if (problemType === "odd-numbers-1-to-50") {
+          const oddSample = validateOddNumbers1To50SampleCode(cand, attemptCount);
+          if (oddSample.isFullyVerified) {
+            return sanitizePrematurePraise({
+              correct: true,
+              feedback: oddSample.feedback,
+              correction: null,
+              suggestedInput: null,
+              sampleCodeStepProgress: oddSample.sampleCodeStepProgress,
+              stepProgress: oddSample.sampleCodeStepProgress,
+              source: "ai_human_touch"
+            }, section, problemTitle);
+          }
+        } else if (problemType === "even-numbers-1-to-50") {
+          const evenSample = validateEvenNumbers1To50SampleCode(cand, attemptCount);
+          if (evenSample.isFullyVerified) {
+            return sanitizePrematurePraise({
+              correct: true,
+              feedback: evenSample.feedback,
+              correction: null,
+              suggestedInput: null,
+              sampleCodeStepProgress: evenSample.sampleCodeStepProgress,
+              stepProgress: evenSample.sampleCodeStepProgress,
               source: "ai_human_touch"
             }, section, problemTitle);
           }
@@ -6719,6 +6844,15 @@ for (int i = 1; i <= ${varName}; i++) {
             parsed.feedback = generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType);
             parsed.correction = "Write your code using the example syntax provided.";
             parsed.suggestedInput = void 0;
+            if (problemType === "odd-numbers-1-to-50") {
+              const oddSample = validateOddNumbers1To50SampleCode(userInput, attemptCount);
+              parsed.sampleCodeStepProgress = oddSample.sampleCodeStepProgress;
+              parsed.stepProgress = oddSample.sampleCodeStepProgress;
+            } else if (problemType === "even-numbers-1-to-50") {
+              const evenSample = validateEvenNumbers1To50SampleCode(userInput, attemptCount);
+              parsed.sampleCodeStepProgress = evenSample.sampleCodeStepProgress;
+              parsed.stepProgress = evenSample.sampleCodeStepProgress;
+            }
           } else if (section === "samplecode" && !syntaxQuery) {
             if (problemType === "odd-even") {
               const sampleVal = validateOddEvenSampleCode(userInput);
@@ -6735,6 +6869,38 @@ for (int i = 1; i <= ${varName}; i++) {
                 parsed.suggestedInput = void 0;
                 parsed.sampleCodeStepProgress = sampleVal.sampleCodeStepProgress;
                 parsed.stepProgress = sampleVal.sampleCodeStepProgress;
+              }
+            } else if (problemType === "odd-numbers-1-to-50") {
+              const oddSample = validateOddNumbers1To50SampleCode(userInput, attemptCount);
+              if (!oddSample.isFullyVerified) {
+                parsed.correct = false;
+                parsed.feedback = oddSample.feedback;
+                parsed.correction = oddSample.correction;
+                parsed.suggestedInput = void 0;
+                parsed.sampleCodeStepProgress = oddSample.sampleCodeStepProgress;
+                parsed.stepProgress = oddSample.sampleCodeStepProgress;
+              } else {
+                parsed.correct = true;
+                parsed.correction = void 0;
+                parsed.suggestedInput = void 0;
+                parsed.sampleCodeStepProgress = oddSample.sampleCodeStepProgress;
+                parsed.stepProgress = oddSample.sampleCodeStepProgress;
+              }
+            } else if (problemType === "even-numbers-1-to-50") {
+              const evenSample = validateEvenNumbers1To50SampleCode(userInput, attemptCount);
+              if (!evenSample.isFullyVerified) {
+                parsed.correct = false;
+                parsed.feedback = evenSample.feedback;
+                parsed.correction = evenSample.correction;
+                parsed.suggestedInput = void 0;
+                parsed.sampleCodeStepProgress = evenSample.sampleCodeStepProgress;
+                parsed.stepProgress = evenSample.sampleCodeStepProgress;
+              } else {
+                parsed.correct = true;
+                parsed.correction = void 0;
+                parsed.suggestedInput = void 0;
+                parsed.sampleCodeStepProgress = evenSample.sampleCodeStepProgress;
+                parsed.stepProgress = evenSample.sampleCodeStepProgress;
               }
             } else {
               const isStructurallyComplete = isTasteSampleStructurallyComplete(userInput, problemType);
@@ -6838,14 +7004,21 @@ for (int i = 1; i <= ${varName}; i++) {
     if (section === "samplecode") {
       const syntaxQuery = detectTasteSampleSyntaxHelp(userInput);
       if (syntaxQuery) {
+        let sampleProgress = [
+          { stepNumber: 1, title: "Code Prototype", completed: false, current: true }
+        ];
+        if (problemType === "odd-numbers-1-to-50") {
+          sampleProgress = validateOddNumbers1To50SampleCode(userInput, attemptCount).sampleCodeStepProgress;
+        } else if (problemType === "even-numbers-1-to-50") {
+          sampleProgress = validateEvenNumbers1To50SampleCode(userInput, attemptCount).sampleCodeStepProgress;
+        }
         return {
           correct: false,
           feedback: generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType),
           correction: "Write your code using the example syntax provided.",
           suggestedInput: void 0,
-          sampleCodeStepProgress: [
-            { stepNumber: 1, title: "Code Prototype", completed: false, current: true }
-          ]
+          sampleCodeStepProgress: sampleProgress,
+          stepProgress: sampleProgress
         };
       }
       if (problemType === "odd-even") {
