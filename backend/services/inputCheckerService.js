@@ -203,7 +203,177 @@ function detectTasteSampleSyntaxHelp(text) {
 }
 
 function generateTasteSampleSyntaxResponse(syntaxInfo, problemTitle = "", problemType = "") {
-  return "🌟 Coach Maara here! Let's build our code prototype step by step using your verified ingredients! Start by writing the first statement in your code editor.";
+  const normType = (problemType || "").toLowerCase();
+
+  if (syntaxInfo?.mentionsLoop) {
+    if (normType.includes("odd") || normType.includes("even") || normType.includes("50")) {
+      return `🌟 Coach Maara here! Here is the example syntax for a counting **For Loop** from 1 to 50:
+
+\`\`\`javascript
+for (var i = 1; i <= 50; i++) {
+    // statements inside loop
+}
+\`\`\`
+• **Start:** \`var i = 1;\` (initializes counter variable \`i\` to 1)
+• **Stop Condition:** \`i <= 50;\` (runs while \`i\` is less than or equal to 50)
+• **Step Increment:** \`i++\` (increases \`i\` by 1 each round)
+• **Braces:** \`{ ... }\` enclose everything running inside the loop!
+
+💡 *Tip: Write this syntax in your editor and remove any question text before running!*`;
+    }
+    return `🌟 Coach Maara here! Here is the standard syntax for a **For Loop**:
+
+\`\`\`javascript
+for (var i = 1; i <= n; i++) {
+    // code inside loop
+}
+\`\`\`
+• **Start:** \`var i = 1;\` (sets the initial counter)
+• **Stop:** \`i <= n;\` (loop condition)
+• **Step:** \`i++\` (increments counter)
+
+💡 *Tip: Type this loop syntax into your editor!*`;
+  }
+
+  if (syntaxInfo?.mentionsIf) {
+    if (normType.includes("odd")) {
+      return `🌟 Coach Maara here! Here is the example syntax for an **If Condition** testing odd numbers:
+
+\`\`\`javascript
+if (i % 2 == 1) {
+    // action when number is odd
+}
+\`\`\`
+• \`i % 2\`: computes the remainder of \`i\` divided by 2.
+• \`== 1\`: checks if the remainder equals 1 (an odd number).
+• **Parentheses & Braces:** Put the condition inside \`(...)\` and the action inside \`{ ... }\`!`;
+    }
+    if (normType.includes("even")) {
+      return `🌟 Coach Maara here! Here is the example syntax for an **If Condition** testing even numbers:
+
+\`\`\`javascript
+if (i % 2 == 0) {
+    // action when number is even
+}
+\`\`\`
+• \`i % 2\`: computes the remainder of \`i\` divided by 2.
+• \`== 0\`: checks if the remainder equals 0 (an even number).
+• **Parentheses & Braces:** Put the condition inside \`(...)\` and the action inside \`{ ... }\`!`;
+    }
+    if (normType.includes("pin") || normType.includes("atm")) {
+      return `🌟 Coach Maara here! Here is the example syntax for an **If-Else Condition** for ATM PIN:
+
+\`\`\`javascript
+if (entered_pin == 1234) {
+    print("PIN Verified");
+} else {
+    print("Incorrect PIN");
+}
+\`\`\`
+• \`==\`: comparison operator to check if entered PIN matches 1234.
+• \`else\`: fallback executed when PIN does not match!`;
+    }
+    return `🌟 Coach Maara here! Here is the standard syntax for an **If Decision Block**:
+
+\`\`\`javascript
+if (condition) {
+    // code when true
+} else {
+    // code when false
+}
+\`\`\`
+• Use comparison operators like \`==\`, \`!=\`, \`>\`, \`<\`, \`>=\`, \`<=\`.`;
+  }
+
+  if (syntaxInfo?.mentionsPrint) {
+    return `🌟 Coach Maara here! Here is the example syntax for a **Print / Output Statement**:
+
+\`\`\`javascript
+print(i);          // displays the value of variable i (e.g. 1, 3, 5...)
+// or with a text message:
+print("Output message");
+// in standard JavaScript:
+console.log(i);
+\`\`\`
+• To print a variable, put its name inside parentheses: \`print(i);\`
+• To print fixed text, wrap the text in quotes: \`print("Hello");\``;
+  }
+
+  if (syntaxInfo?.mentionsVar) {
+    return `🌟 Coach Maara here! Here is the example syntax for declaring a **Variable**:
+
+\`\`\`javascript
+var n = 10;
+var entered_pin = 1234;
+var sum = 0;
+\`\`\`
+• \`var\` or \`let\` declares the variable name.
+• \`=\` assigns the initial value.`;
+  }
+
+  // General or complete code prototype syntax:
+  if (normType.includes("odd") && normType.includes("50")) {
+    return `🌟 Coach Maara here! Here is the complete example syntax prototype for **Print Odd Numbers from 1 to 50**:
+
+\`\`\`javascript
+for (var i = 1; i <= 50; i++) {
+    if (i % 2 == 1) {
+        print(i);
+    }
+}
+\`\`\`
+• **Loop Header:** \`for (var i = 1; i <= 50; i++) {\` starts the loop from 1 to 50
+• **Decision:** \`if (i % 2 == 1) {\` tests if current number leaves remainder 1 (odd)
+• **Output:** \`print(i);\` displays the odd number
+• **Closing Braces:** \`}\` for both if condition and for loop.
+
+💡 *Tip: Write this clean syntax in your editor and run the code!*`;
+  }
+
+  if (normType.includes("even") && normType.includes("50")) {
+    return `🌟 Coach Maara here! Here is the complete example syntax prototype for **Print Even Numbers from 1 to 50**:
+
+\`\`\`javascript
+for (var i = 1; i <= 50; i++) {
+    if (i % 2 == 0) {
+        print(i);
+    }
+}
+\`\`\`
+• **Loop Header:** \`for (var i = 1; i <= 50; i++) {\` starts the loop from 1 to 50
+• **Decision:** \`if (i % 2 == 0) {\` tests if current number leaves remainder 0 (even)
+• **Output:** \`print(i);\` displays the even number
+• **Closing Braces:** \`}\` for both if condition and for loop.
+
+💡 *Tip: Write this clean syntax in your editor and run the code!*`;
+  }
+
+  if (normType.includes("pin") || normType.includes("atm")) {
+    return `🌟 Coach Maara here! Here is the complete example syntax prototype for **ATM PIN Verification**:
+
+\`\`\`javascript
+var entered_pin = 1234;
+if (entered_pin == 1234) {
+    print("PIN Verified");
+} else {
+    print("Incorrect PIN");
+}
+\`\`\``;
+  }
+
+  return `🌟 Coach Maara here! Here is the general syntax structure for building your code prototype:
+
+\`\`\`javascript
+// Step 1: Input or Loop setup
+for (var i = 1; i <= 50; i++) {
+    // Step 2: Decision condition
+    if (i % 2 == 1) {
+        // Step 3: Output action
+        print(i);
+    }
+}
+\`\`\`
+Assemble your verified ingredients following this syntax pattern in your code editor!`;
 }
 
 function isTasteSampleStructurallyComplete(code, problemType) {
@@ -6544,7 +6714,12 @@ for (int i = 1; i <= ${varName}; i++) {
           // Universal Taste the Sample Multi-Language Structural Exit Gate:
           const syntaxQuery = (section === "samplecode") ? (detectTasteSampleSyntaxHelp(latestInput) || detectTasteSampleSyntaxHelp(userInput)) : null;
 
-          if (section === "samplecode" && !syntaxQuery) {
+          if (section === "samplecode" && syntaxQuery) {
+            parsed.correct = false;
+            parsed.feedback = generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType);
+            parsed.correction = "Write your code using the example syntax provided.";
+            parsed.suggestedInput = void 0;
+          } else if (section === "samplecode" && !syntaxQuery) {
             if (problemType === "odd-even") {
               const sampleVal = validateOddEvenSampleCode(userInput);
               if (!sampleVal.allVerified) {
@@ -6665,8 +6840,8 @@ for (int i = 1; i <= ${varName}; i++) {
       if (syntaxQuery) {
         return {
           correct: false,
-          feedback: "🌟 Coach Maara here! Take your verified ingredients and let's assemble them step by step into your code editor! Start with your first ingredient statement.",
-          correction: "Write the first step of your code prototype.",
+          feedback: generateTasteSampleSyntaxResponse(syntaxQuery, problemTitle, problemType),
+          correction: "Write your code using the example syntax provided.",
           suggestedInput: void 0,
           sampleCodeStepProgress: [
             { stepNumber: 1, title: "Code Prototype", completed: false, current: true }

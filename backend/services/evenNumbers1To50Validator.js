@@ -488,14 +488,105 @@ export function validateEvenNumbers1To50SampleCode(code, attemptCount = 1) {
     { stepNumber: 4, title: "4. Verify output 2 to 50", completed: step4Done, current: step3Done && !step4Done }
   ];
 
-  // STRICT SINGLE-STEP SOCRATIC GUIDANCE:
-  // First, if user has questions in editor:
-  if (hasQuestion) {
+  // Check for plain English notes in code editor
+  const hasPlainEnglishNotes = /\b(?:step\s*\d|use\s*for\s*loop|start\s*[:=]|stop\s*[:=]|next\s*step)\b/i.test(norm) &&
+    !code.includes("for (") && !code.includes("for(") && !code.includes("for var");
+
+  // Check for mismatched/unclosed braces
+  const openBraces = (code.match(/{/g) || []).length;
+  const closeBraces = (code.match(/}/g) || []).length;
+  const hasUnclosedBrace = openBraces > closeBraces && (hasLoop || hasIfKeyword);
+
+  // STRICT SINGLE-STEP SOCRATIC GUIDANCE & SYNTAX EXAMPLES:
+  // If user asks questions or asks for syntax in editor:
+  if (hasQuestion || /\bsyntax\b/i.test(norm)) {
+    let specificSyntaxExample = "";
+    if (/if|condition|check|modulo|%/i.test(norm) || (step1Done && !step2Done)) {
+      specificSyntaxExample = `\n\n📝 **If Condition Syntax Example:**
+\`\`\`javascript
+if (${loopVar} % 2 == 0) {
+    // action when number is even
+}
+\`\`\`
+• **Parentheses:** Put the condition inside \`(...)\`.
+• **Comparison:** Use \`==\` to compare remainder with 0.
+• **Braces:** Put the actions inside \`{ ... }\`.`;
+    } else if (/print|display|output|show/i.test(norm) || (step2Done && !step3Done)) {
+      specificSyntaxExample = `\n\n📝 **Print Output Syntax Example:**
+\`\`\`javascript
+print(${loopVar});
+// or in JavaScript:
+console.log(${loopVar});
+\`\`\`
+• Displays the even number stored in variable \`${loopVar}\`.`;
+    } else if (/for|loop/i.test(norm) || !step1Done) {
+      specificSyntaxExample = `\n\n📝 **For Loop Syntax Example:**
+\`\`\`javascript
+for (var i = 1; i <= 50; i++) {
+    // your code inside the loop
+}
+\`\`\`
+• **Start:** \`var i = 1;\` (initializes counter variable \`i\` to 1)
+• **Stop:** \`i <= 50;\` (runs while \`i\` is less than or equal to 50)
+• **Step:** \`i++\` (increases \`i\` by 1 each round)`;
+    } else {
+      specificSyntaxExample = `\n\n📝 **Complete Prototype Syntax Example:**
+\`\`\`javascript
+for (var i = 1; i <= 50; i++) {
+    if (i % 2 == 0) {
+        print(i);
+    }
+}
+\`\`\``;
+    }
+
     return {
       isFullyVerified: false,
       sampleCodeStepProgress,
-      feedback: "🌟 Coach Maara note: In the code editor, only executable program lines belong! Please remove conversational questions (like 'how to define...') from the editor so the compiler can read your clean code.",
-      correction: "Remove question text from the code editor."
+      feedback: `🌟 Coach Maara here! Here is the example syntax to guide you:${specificSyntaxExample}\n\n💡 *Note: Type this clean syntax in your editor and remove any question lines before clicking Verify & Run!*`,
+      correction: "Write your code using the example syntax provided."
+    };
+  }
+
+  // If user wrote plain English notes instead of code syntax:
+  if (hasPlainEnglishNotes) {
+    return {
+      isFullyVerified: false,
+      sampleCodeStepProgress,
+      feedback: `🌟 Coach Maara syntax tip: You've written plain English notes in the code editor!
+In Taste the Sample, we convert those ingredient notes into real programming syntax.
+
+📝 **Convert your loop note into syntax:**
+Instead of: \`step 1: use for loop start: 1, end: 50\`
+Write:
+\`\`\`javascript
+for (var i = 1; i <= 50; i++) {
+    // code inside loop
+}
+\`\`\`
+Replace your plain English notes with this syntax in your editor!`,
+      correction: "Convert plain English notes into JavaScript syntax: for (var i = 1; i <= 50; i++) {"
+    };
+  }
+
+  // If user has unclosed curly braces:
+  if (hasUnclosedBrace && (step1Done || step2Done)) {
+    return {
+      isFullyVerified: false,
+      sampleCodeStepProgress,
+      feedback: `🌟 Coach Maara syntax alert: You have unclosed curly braces \`{\`!
+Every opening brace \`{\` must have a matching closing brace \`}\`.
+
+📝 **Check your closing braces:**
+\`\`\`javascript
+for (var i = 1; i <= 50; i++) {
+    if (${loopVar} % 2 == 0) {
+        print(${loopVar});
+    } // closes if block
+} // closes for loop
+\`\`\`
+Add the missing closing brace \`}\` to fix your syntax!`,
+      correction: "Add closing curly brace '}' to close your loop or if block."
     };
   }
 
