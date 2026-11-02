@@ -341,17 +341,16 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
   const hasPrint = /\b(?:print|display|console\.log|show|output|write)\b/i.test(norm);
 
   const ingredientsStepProgress = [
-    { stepNumber: 1, title: "1. For loop with Start: 1, Stop: 50 (i <= 50), Step: +1 (or +2)", completed: hasCompleteLoop, current: !hasCompleteLoop },
-    { stepNumber: 2, title: "2. If condition (Left Side: i % 2, Operator: ==, Right Side: 1)", completed: Boolean(hasOddCheck), current: hasCompleteLoop && !hasOddCheck },
+    { stepNumber: 1, title: "1. For loop to iterate from 1 up to 50", completed: hasCompleteLoop, current: !hasCompleteLoop },
+    { stepNumber: 2, title: "2. If condition to check if number is odd", completed: Boolean(hasOddCheck), current: hasCompleteLoop && !hasOddCheck },
     { stepNumber: 3, title: "3. Print statement inside loop to print the odd number", completed: Boolean(hasPrint), current: hasCompleteLoop && hasOddCheck && !hasPrint }
   ];
 
   if (!hasCompleteLoop) {
     const loopHints = [
-      "🌟 Coach Maara note: To find odd numbers between 1 and 50, our first ingredient must be a **Loop** to iterate through all numbers from 1 to 50.\n\nDefine a **For loop** in your worksheet:\n• **Start:** 1\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop from 1 to 50 (Start: 1, Stop: 50, Step: +1)`",
-      "🌟 Coach Maara checking back! For Ingredient 1, define the 3 loop controls clearly in your worksheet:\n• **Start:** 1\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop with Start: 1, Stop: 50, Step: +1`",
-      "🌟 Coach Maara with a fresh tip! Think of a loop like a counter that runs from 1 to 50. In your worksheet, you can write: `Step 1: For loop starting at 1 up to 50 with step +1`.",
-      "🌟 Coach Maara encouraging you! We need a counting loop covering our range. Try writing: `Step 1: For loop from 1 to 50` in your worksheet!"
+      "🌟 Coach Maara here! To inspect numbers from 1 to 50, our first ingredient is a **Counting Loop**.\nThink about the 3 essential loop controls:\n1. Where does our count begin?\n2. Where does our count stop?\n3. By how much does the counter step each round?\nHow would you describe these controls for a For loop in your worksheet?",
+      "🌟 Coach Maara checking back! For a For loop from 1 to 50, state your loop controls clearly in your worksheet:\n• **Start:** What is our beginning number?\n• **Stop:** What is our upper limit?\n• **Step:** How much do we increase on each iteration?\nTry defining your For loop with these 3 controls!",
+      "🌟 Coach Maara encouraging you! We need a counting loop covering our range.\nIn your worksheet, specify the start (1), stop (50), and step (+1) for your For loop.\nTry writing: `Step 1: For loop from 1 to 50 with Start: 1, Stop: 50, Step: +1`."
     ];
     const loopIndex = Math.max(0, attemptCount - 1) % loopHints.length;
     return {
@@ -369,10 +368,10 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
 
   if (!hasOddCheck && !hasStepBy2Shortcut) {
     const oddHints = [
-      "🌟 Coach Maara note: Loop is ready! Now we need Ingredient 2: How do we test if current number `i` is odd inside the loop?\n\nAdd an **If condition**:\n• **Left Side:** `i % 2`\n• **Operator:** `==`\n• **Right Side:** `1` (or Operator: `!=`, Right Side: `0`)",
-      "🌟 Coach Maara checking back! Inside the loop, test if number is odd: Left Side: `i % 2`, Operator: `==`, Right Side: `1`.\n\n👉 Example: `Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1`",
-      "🌟 Coach Maara with a fresh tip! Remember that an odd number divided by 2 leaves remainder 1! In your worksheet, write: `Step 2: If condition (i % 2 == 1)`.",
-      "🌟 Coach Maara encouraging you! To filter odd numbers, check the remainder: `Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1`."
+      "🌟 Coach Maara here! Your counting loop is ready! 👏 Now we need Ingredient 2: A decision step to filter the odd numbers.\nIn our Logic stage, how did we determine whether a counting number is odd?\nThink about what condition or remainder check we need inside our loop to identify odd numbers!",
+      "🌟 Coach Maara checking back! In programming, we check remainders using the modulo operator (`%`).\nTo test if our counter `i` is an odd number:\n• What mathematical expression calculates the remainder when `i` is divided by 2?\n• What remainder value indicates that a number is odd?\nTry framing an **If condition** with your Left Side, Operator, and Right Side!",
+      "🌟 Coach Maara encouraging you! Every odd number leaves a remainder of 1 when divided by 2.\nSet up your Ingredient 2 structure:\n• **Left Side:** remainder expression of `i` divided by 2\n• **Operator:** comparison operator for equality (`==`)\n• **Right Side:** the expected remainder for an odd number (`1`)\nWhat rule will you write in your worksheet?",
+      "🌟 Coach Maara with a direct tip! To filter odd numbers inside the loop, check if dividing `i` by 2 leaves remainder 1:\n`Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1`."
     ];
     const oddIndex = Math.max(0, attemptCount - 1) % oddHints.length;
     return {
@@ -382,17 +381,16 @@ export function validateOddNumbers1To50Ingredients(text, attemptCount = 1) {
       hasPrint,
       ingredientsStepProgress,
       feedback: oddHints[oddIndex],
-      correction: "Add if condition: 'Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1'.",
-      suggestedInput: "Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1\nStep 3: Inside if block: print(i)",
+      correction: "Add an if condition comparing the remainder of dividing i by 2.",
+      suggestedInput: "Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 1",
       matchedFirebaseInput: "step 2 : if condition for odd numbers"
     };
   }
 
   if (!hasPrint) {
     const printHints = [
-      "🌟 Coach Maara note: Loop and odd check are in place! Now, what action do we take when the number is odd?\n\nAdd a **Print statement** inside the if condition to display the number: `print(i)`.",
-      "🌟 Coach Maara checking back! Don't forget to output the number: `Step 3: print(i)` inside the if block.",
-      "🌟 Coach Maara with a fresh tip! When the check passes, we want to see the number on screen. Add: `Step 3: display i`.",
+      "🌟 Coach Maara here! Loop and odd check are in place! 👏 Now, what action should happen when a number is found to be odd?\nWhat statement outputs the current number to the screen?",
+      "🌟 Coach Maara checking back! When our odd condition succeeds, we need to show that number.\nIn your worksheet, write an output instruction (like `print`) inside the if block to display `i`!",
       "🌟 Coach Maara encouraging you! Wrap up Ingredient 3 by outputting the verified odd number: `Step 3: Inside if block: print(i)`."
     ];
     const printIndex = Math.max(0, attemptCount - 1) % printHints.length;

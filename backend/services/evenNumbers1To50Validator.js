@@ -304,18 +304,17 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
   const hasEvenCheck = (hasIfCondition && (hasMod2 || hasEqualsZero)) || (hasMod2 && hasEqualsZero) || hasStepBy2Shortcut || /i\s*%\s*2\s*==\s*0/i.test(norm);
 
   const ingredientsStepProgress = [
-    { stepNumber: 1, title: "1. For loop with Start: 1 (or 2), Stop: 50 (i <= 50), Step: +1 (or +2)", completed: hasCompleteLoop, current: !hasCompleteLoop },
-    { stepNumber: 2, title: "2. If condition (Left Side: i % 2, Operator: ==, Right Side: 0)", completed: Boolean(hasEvenCheck), current: hasCompleteLoop && !hasEvenCheck },
+    { stepNumber: 1, title: "1. For loop to iterate from 1 up to 50", completed: hasCompleteLoop, current: !hasCompleteLoop },
+    { stepNumber: 2, title: "2. If condition to check if number is even", completed: Boolean(hasEvenCheck), current: hasCompleteLoop && !hasEvenCheck },
     { stepNumber: 3, title: "3. Print statement inside loop to print the even number", completed: Boolean(hasPrint), current: hasCompleteLoop && hasEvenCheck && !hasPrint }
   ];
 
   // If user only wrote "for loop" or didn't provide complete loop controls:
   if (!hasCompleteLoop) {
     const loopHints = [
-      "🌟 Coach Maara note: To find even numbers between 1 and 50, our first ingredient must be a **Loop** to iterate through all numbers from 1 to 50.\n\nDefine a **For loop** in your worksheet:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop from 1 to 50 (Start: 1, Stop: 50, Step: +1)`",
-      "🌟 Coach Maara checking back! For Ingredient 1, define the 3 loop controls clearly in your worksheet:\n• **Start:** 1 (or 2)\n• **Stop:** 50 (`i <= 50`)\n• **Step:** +1 (or +2)\n\n👉 Example: `Step 1: For loop with Start: 1, Stop: 50, Step: +1`",
-      "🌟 Coach Maara with a fresh tip! Think of a loop like a counter that runs from 1 to 50. In your worksheet, you can write: `Step 1: For loop starting at 1 up to 50 with step +1`.",
-      "🌟 Coach Maara encouraging you! We need a counting loop covering our range. Try writing: `Step 1: For loop from 1 to 50` in your worksheet!"
+      "🌟 Coach Maara here! To inspect numbers from 1 to 50, our first ingredient is a **Counting Loop**.\nThink about the 3 essential loop controls:\n1. Where does our count begin?\n2. Where does our count stop?\n3. By how much does the counter step each round?\nHow would you describe these controls for a For loop in your worksheet?",
+      "🌟 Coach Maara checking back! For a For loop from 1 to 50, state your loop controls clearly in your worksheet:\n• **Start:** What is our beginning number?\n• **Stop:** What is our upper limit?\n• **Step:** How much do we increase on each iteration?\nTry defining your For loop with these 3 controls!",
+      "🌟 Coach Maara encouraging you! We need a counting loop covering our range.\nIn your worksheet, specify the start (1), stop (50), and step (+1) for your For loop.\nTry writing: `Step 1: For loop from 1 to 50 with Start: 1, Stop: 50, Step: +1`."
     ];
     const loopIndex = Math.max(0, attemptCount - 1) % loopHints.length;
     return {
@@ -333,10 +332,10 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
 
   if (!hasEvenCheck && !hasStepBy2Shortcut) {
     const evenHints = [
-      "🌟 Coach Maara note: Loop is ready! Now we need Ingredient 2: How do we test if the current number `i` is even inside the loop?\n\nAdd an **If condition**:\n• **Left Side:** `i % 2`\n• **Operator:** `==`\n• **Right Side:** `0`",
-      "🌟 Coach Maara checking back! Inside the loop, test if number is even: Left Side: `i % 2`, Operator: `==`, Right Side: `0`.\n\n👉 Example: `Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0`",
-      "🌟 Coach Maara with a fresh tip! Remember that an even number divided by 2 leaves remainder 0! In your worksheet, write: `Step 2: If condition (i % 2 == 0)`.",
-      "🌟 Coach Maara encouraging you! To filter even numbers, compare the remainder: `Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0`."
+      "🌟 Coach Maara here! Your counting loop is ready! 👏 Now we need Ingredient 2: A decision step to filter the even numbers.\nIn our Logic stage, how did we determine whether a counting number is even?\nThink about what condition or remainder check we need inside our loop to identify even numbers!",
+      "🌟 Coach Maara checking back! In programming, we check remainders using the modulo operator (`%`).\nTo test if our counter `i` is an even number:\n• What mathematical expression calculates the remainder when `i` is divided by 2?\n• What remainder value indicates that a number is evenly divisible by 2?\nTry framing an **If condition** with your Left Side, Operator, and Right Side!",
+      "🌟 Coach Maara encouraging you! Every even number leaves a remainder of 0 when divided by 2.\nSet up your Ingredient 2 structure:\n• **Left Side:** remainder expression of `i` divided by 2\n• **Operator:** comparison operator for equality (`==`)\n• **Right Side:** the expected remainder for an even number (`0`)\nWhat rule will you write in your worksheet?",
+      "🌟 Coach Maara with a direct tip! To filter even numbers inside the loop, check if dividing `i` by 2 leaves remainder 0:\n`Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0`."
     ];
     const evenIndex = Math.max(0, attemptCount - 1) % evenHints.length;
     return {
@@ -346,17 +345,16 @@ export function validateEvenNumbers1To50Ingredients(text, attemptCount = 1) {
       hasPrint,
       ingredientsStepProgress,
       feedback: evenHints[evenIndex],
-      correction: "Add if condition: 'Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0'.",
-      suggestedInput: "Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0\nStep 3: Inside if block: print(i)",
+      correction: "Add an if condition comparing the remainder of dividing i by 2.",
+      suggestedInput: "Step 2: If condition with Left Side: i % 2, Operator: ==, Right Side: 0",
       matchedFirebaseInput: "step 2 : if condition for even numbers"
     };
   }
 
   if (!hasPrint) {
     const printHints = [
-      "🌟 Coach Maara note: Loop and even check are in place! Now, what action do we take when the number is even?\n\nAdd a **Print statement** inside the if condition to display the number: `print(i)`.",
-      "🌟 Coach Maara checking back! Don't forget to output the number: `Step 3: print(i)` inside the if block.",
-      "🌟 Coach Maara with a fresh tip! When the check passes, we want to see the number on screen. Add: `Step 3: display i`.",
+      "🌟 Coach Maara here! Loop and even check are in place! 👏 Now, what action should happen when a number is found to be even?\nWhat statement outputs the current number to the screen?",
+      "🌟 Coach Maara checking back! When our even condition succeeds, we need to show that number.\nIn your worksheet, write an output instruction (like `print`) inside the if block to display `i`!",
       "🌟 Coach Maara encouraging you! Wrap up Ingredient 3 by outputting the verified even number: `Step 3: Inside if block: print(i)`."
     ];
     const printIndex = Math.max(0, attemptCount - 1) % printHints.length;
