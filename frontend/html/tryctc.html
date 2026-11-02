@@ -4834,10 +4834,10 @@
 
                     // Check if user has written numbered steps in their worksheet (newlines or inline)
                     const rawLines = userText.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
-                    let userStepLines = rawLines.filter(l => /^(?:step\s*\d+|\d+[\.\:\)\-]|ingredient\s*\d+)/i.test(l));
+                    let userStepLines = rawLines.filter(l => /^(?:step\s*\d+|\d+[\.\:\)\-]|ingredient\s*\d+)/i.test(l) && !/not found in your notes|please write this step/i.test(l));
                     if (userStepLines.length < 2 && userText.length > 0) {
                         const inline = userText.split(/(?=(?:step\s*\d+|\b\d+[\.\:\)\-]|ingredient\s*\d+))/i).map(l => l.trim()).filter(Boolean);
-                        const inlineNumbered = inline.filter(l => /^(?:step\s*\d+|\d+[\.\:\)\-]|ingredient\s*\d+)/i.test(l));
+                        const inlineNumbered = inline.filter(l => /^(?:step\s*\d+|\d+[\.\:\)\-]|ingredient\s*\d+)/i.test(l) && !/not found in your notes|please write this step/i.test(l));
                         if (inlineNumbered.length >= 2) {
                             userStepLines = inlineNumbered;
                         }

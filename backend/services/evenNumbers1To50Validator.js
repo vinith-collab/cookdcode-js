@@ -210,8 +210,8 @@ export function validateEvenNumbers1To50Recipe(text, attemptCount = 1) {
     { stepNumber: 4, title: "4. Repeat until reaching 50", completed: Boolean(hasStep4), current: hasStep1 && hasStep2 && hasStep3 && !hasStep4 }
   ];
 
-  const completedCount = [hasStep1, hasStep2, hasStep3, hasStep4].filter(Boolean).length;
-  const isFullyVerified = hasStep1 && hasStep2 && hasStep3;
+  const hasPlaceholders = (text || "").toLowerCase().includes("not found in your notes") || (text || "").toLowerCase().includes("please write this step");
+  const isFullyVerified = hasStep1 && hasStep2 && hasStep3 && hasStep4 && !hasPlaceholders;
 
   if (isFullyVerified) {
     return {

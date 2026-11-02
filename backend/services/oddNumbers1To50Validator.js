@@ -203,8 +203,10 @@ export function validateOddNumbers1To50Recipe(text, attemptCount = 1) {
   const hasStep3 = /\b(?:display|print|show|output|write|announce)\b/i.test(norm);
 
   // Step 4: Repeat / loop until 50
-  const hasStep4 = /\b(?:repeat|loop|continue|next|until|while|for\s+each|reach(?:ing)?\s*50)\b/i.test(norm) ||
-    /\bstep\s*4\b/i.test(norm);
+  const hasStep4 = /\b(?:repeat|loop|continue|next|until|while|for\s+each|reach(?:ing)?\s*50|one\s+after\s+one|increment)\b/i.test(norm) &&
+    !norm.includes("(not found in your notes");
+
+  const hasPlaceholders = norm.includes("not found in your notes") || norm.includes("please write this step");
 
   const recipeStepProgress = [
     { stepNumber: 1, title: "1. Start counting numbers from 1 up to 50", completed: hasStep1, current: !hasStep1 },
@@ -213,7 +215,7 @@ export function validateOddNumbers1To50Recipe(text, attemptCount = 1) {
     { stepNumber: 4, title: "4. Repeat until reaching 50", completed: hasStep4, current: hasStep1 && hasStep2 && hasStep3 && !hasStep4 }
   ];
 
-  const isFullyVerified = hasStep1 && hasStep2 && hasStep3 && hasStep4;
+  const isFullyVerified = hasStep1 && hasStep2 && hasStep3 && hasStep4 && !hasPlaceholders;
 
   if (isFullyVerified) {
     return {
@@ -236,7 +238,11 @@ export function validateOddNumbers1To50Recipe(text, attemptCount = 1) {
   let correction = "";
   let suggestedInput = "";
 
-  if (!hasStep1) {
+  if (hasPlaceholders) {
+    feedback = "🌟 Coach Maara here! It looks like your worksheet contains placeholder lines like `(Not found in your notes — please write this step)`. Please replace those placeholders with your actual recipe instructions (or delete empty placeholder lines) so we can verify your 4 recipe steps!";
+    correction = "Replace or delete `(Not found in your notes)` lines and write your actual recipe steps.";
+    suggestedInput = "Step 4: Repeat for all numbers until reaching 50.";
+  } else if (!hasStep1) {
     const step1Hints = [
       "🌟 Coach Maara here! Let's think like a chef preparing our recipe steps.\nEvery algorithm starts with a clear starting boundary for our sequence.\nTo inspect every number from 1 to 50, how would you state our starting count?\nTry writing your very first action as `Step 1: Start counting numbers from 1 up to 50` in your worksheet!",
       "🌟 Coach Maara checking back! You are on the right track setting up the recipe.\nBefore we can test each number, we must establish our counting range.\nState our starting and ending limits in simple everyday English.\nIn your worksheet, write: `Step 1: Start counting numbers from 1 up to 50`.",
