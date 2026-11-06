@@ -583,41 +583,57 @@ const PROBLEM_METADATA_MAP = {
   },
   "problem23": {
     id: "problem23",
-    canonicalId: "atm-pin-verification",
-    title: "Challenge: ATM PIN Verification",
-    description: "Write a program to check if an entered PIN matches the correct ATM PIN (1234).",
+    canonicalId: "print-star-patterns",
+    title: "Challenge: Print Star Patterns",
+    description: "Write a program to print a right-angled triangle star pattern for a given number of rows n (e.g., n = 5).",
     phase: "Phase 1",
     problemBadge: "Problem 23",
-    concept: "Conditional Statements & Equality Comparison",
-    objective: "Compare the entered PIN with 1234. If they match, print 'PIN Verified'; otherwise, print 'Incorrect PIN'.",
+    concept: "Nested Loops & Pattern Generation",
+    objective: "Iterate rows from 1 to n with an outer loop, and iterate columns from 1 to i with an inner loop to print stars.",
     specifications: [
-      { label: "Input", desc: "An entered 4-digit PIN (e.g. <code>entered_pin = 1234</code>).", icon: "fa-key", color: "#2563eb" },
-      { label: "Condition", desc: "Check if <code>entered_pin == 1234</code> using an if-else statement.", icon: "fa-bullseye", color: "#7c3aed" },
-      { label: "Output", desc: "Display 'PIN Verified' on success, or 'Incorrect PIN' on failure.", icon: "fa-display", color: "#059669" }
+      { label: "Rows", desc: "Outer loop runs from 1 to n.", icon: "fa-bars", color: "#2563eb" },
+      { label: "Columns", desc: "Inner loop runs from 1 to i for each row.", icon: "fa-star", color: "#7c3aed" },
+      { label: "Output", desc: "Right-angled triangle pattern of stars.", icon: "fa-display", color: "#059669" }
     ],
     examples: [
-      { input: "entered_pin = 1234", output: "PIN Verified" },
-      { input: "entered_pin = 5678", output: "Incorrect PIN" }
+      { input: "n = 5", output: "*\\n**\\n***\\n****\\n*****" }
     ]
   },
-  "atm-pin-verification": {
-    id: "atm-pin-verification",
-    canonicalId: "atm-pin-verification",
-    title: "Challenge: ATM PIN Verification",
-    description: "Write a program to check if an entered PIN matches the correct ATM PIN (1234).",
+  "print-star-patterns": {
+    id: "print-star-patterns",
+    canonicalId: "print-star-patterns",
+    title: "Challenge: Print Star Patterns",
+    description: "Write a program to print a right-angled triangle star pattern for a given number of rows n.",
     phase: "Phase 1",
     problemBadge: "Problem 23",
-    concept: "Conditional Statements & Equality Comparison",
-    objective: "Compare the entered PIN with 1234. If they match, print 'PIN Verified'; otherwise, print 'Incorrect PIN'.",
+    concept: "Nested Loops & Pattern Generation"
+  },
+  "problem24": {
+    id: "problem24",
+    canonicalId: "count-numbers-1-to-n",
+    title: "Challenge: Count Numbers from 1 to N",
+    description: "Write a program to count and display numbers sequentially from 1 up to N.",
+    phase: "Phase 1",
+    problemBadge: "Problem 24",
+    concept: "Sequential Iteration & Counting",
+    objective: "Iterate from 1 up to n and display each count.",
     specifications: [
-      { label: "Input", desc: "An entered 4-digit PIN (e.g. <code>entered_pin = 1234</code>).", icon: "fa-key", color: "#2563eb" },
-      { label: "Condition", desc: "Check if <code>entered_pin == 1234</code> using an if-else statement.", icon: "fa-bullseye", color: "#7c3aed" },
-      { label: "Output", desc: "Display 'PIN Verified' on success, or 'Incorrect PIN' on failure.", icon: "fa-display", color: "#059669" }
+      { label: "Start", desc: "Begin counting at 1.", icon: "fa-play", color: "#2563eb" },
+      { label: "Loop Condition", desc: "Iterate sequentially while i <= n.", icon: "fa-repeat", color: "#7c3aed" },
+      { label: "Output", desc: "Print numbers sequentially from 1 to N.", icon: "fa-display", color: "#059669" }
     ],
     examples: [
-      { input: "entered_pin = 1234", output: "PIN Verified" },
-      { input: "entered_pin = 5678", output: "Incorrect PIN" }
+      { input: "n = 5", output: "1 2 3 4 5" }
     ]
+  },
+  "count-numbers-1-to-n": {
+    id: "count-numbers-1-to-n",
+    canonicalId: "count-numbers-1-to-n",
+    title: "Challenge: Count Numbers from 1 to N",
+    description: "Write a program to count and display numbers sequentially from 1 up to N.",
+    phase: "Phase 1",
+    problemBadge: "Problem 24",
+    concept: "Sequential Iteration & Counting"
   },
   "senior-citizen": {
     id: "senior-citizen",

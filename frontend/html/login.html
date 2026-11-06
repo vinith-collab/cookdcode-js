@@ -428,12 +428,15 @@ btnSubmit.addEventListener("click", async () => {
                 const accountDetails = await Promise.all(
                     matchedKeys.map(async (k) => {
                         try {
-                            const [pwdRes, fnRes, lnRes, nmRes, phRes] = await Promise.all([
+                            const [pwdRes, fnRes, lnRes, nmRes, phRes, schRes, grdRes, distRes] = await Promise.all([
                                 fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/password.json`),
                                 fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/firstname.json`),
                                 fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/lastname.json`),
                                 fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/name.json`),
-                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/phone.json`)
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/phone.json`),
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/schoolName.json`),
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/grade.json`),
+                                fetch(`https://cookdcode-4ce23-default-rtdb.firebaseio.com/users/${k}/district.json`)
                             ]);
 
                             const passVal = (await pwdRes.json()) ?? "";
@@ -441,9 +444,12 @@ btnSubmit.addEventListener("click", async () => {
                             const lastname = (await lnRes.json()) ?? "";
                             const directName = (await nmRes.json()) ?? "";
                             const phone = (await phRes.json()) ?? "";
+                            const schoolName = (await schRes.json()) ?? "";
+                            const grade = (await grdRes.json()) ?? "";
+                            const district = (await distRes.json()) ?? "";
                             const name = directName || `${firstname} ${lastname}`.trim() || "Coder";
 
-                            return { key: k, password: String(passVal), name, phone };
+                            return { key: k, password: String(passVal), name, phone, schoolName, grade, district };
                         } catch (_) {
                             return null;
                         }
@@ -464,6 +470,9 @@ btnSubmit.addEventListener("click", async () => {
                     localStorage.setItem("userId", matchedAccount.key);
                     if (matchedAccount.name) localStorage.setItem("userName", matchedAccount.name);
                     if (matchedAccount.phone) localStorage.setItem("userPhone", matchedAccount.phone);
+                    if (matchedAccount.district) localStorage.setItem("userDistrict", matchedAccount.district);
+                    if (matchedAccount.schoolName) localStorage.setItem("userSchool", matchedAccount.schoolName);
+                    if (matchedAccount.grade) localStorage.setItem("userGrade", matchedAccount.grade);
 
                     showModal("Login Successful! Redirecting to dashboard...", "success");
                     setTimeout(() => {

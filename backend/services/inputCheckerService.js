@@ -25,7 +25,8 @@ import { validateVowelConsonantLogic, validateVowelConsonantRecipe, validateVowe
 import { validateSeniorCitizenLogic, validateSeniorCitizenRecipe, validateSeniorCitizenIngredients, validateSeniorCitizenSampleCode } from "./seniorCitizenValidator.js";
 import { validateEvenNumbers1To50Logic, validateEvenNumbers1To50Recipe, validateEvenNumbers1To50Ingredients, validateEvenNumbers1To50SampleCode } from "./evenNumbers1To50Validator.js";
 import { validateOddNumbers1To50Logic, validateOddNumbers1To50Recipe, validateOddNumbers1To50Ingredients, validateOddNumbers1To50SampleCode } from "./oddNumbers1To50Validator.js";
-import { validateAtmPinVerificationLogic, validateAtmPinVerificationRecipe, validateAtmPinVerificationIngredients, validateAtmPinVerificationSampleCode } from "./atmPinVerificationValidator.js";
+import { validateStarPatternLogic, validateStarPatternRecipe, validateStarPatternIngredients, validateStarPatternSampleCode } from "./starPatternValidator.js";
+import { validateCount1ToNLogic, validateCount1ToNRecipe, validateCount1ToNIngredients, validateCount1ToNSampleCode } from "./count1ToNValidator.js";
 import { getConditionalSpec, generateUniversalIfDirectives } from "./conditionalEngine.js";
 import { detectCrossProblemMismatch } from "./crossProblemDetector.js";
 let genAIClient = null;
@@ -306,22 +307,6 @@ ${nestedInLoop}• **Left Side (\`${loopVar} % 2\`):** Computes the remainder wh
 
 💡 *Tip: Place this if condition inside your loop and remove your question text before running!*`;
     }
-    if (normType.includes("pin") || normType.includes("atm")) {
-      return `🌟 Coach Maara here! Here is the example syntax for an **If-Else Condition** for ATM PIN:
-
-\`\`\`javascript
-if (entered_pin == 1234) {
-    print("PIN Verified");
-} else {
-    print("Incorrect PIN");
-}
-\`\`\`
-• **Left Side (\`entered_pin\`):** Variable storing the user's entered PIN.
-• **Operator (\`==\`):** Comparison operator checking if both sides match.
-• **Right Side (\`1234\`):** The correct secret PIN to match against.
-• **Condition Structure:** \`if (Left Side Operator Right Side)\` ➔ \`if (entered_pin == 1234)\`
-• **Else:** Fallback executed when the PIN does not match!`;
-    }
     return `🌟 Coach Maara here! Here is the standard syntax for an **If Decision Block**:
 
 \`\`\`javascript
@@ -452,17 +437,23 @@ for (var i = 1; i <= 50; i++) {
 💡 *Tip: Write this clean syntax in your editor and run the code!*`;
   }
 
-  if (normType.includes("pin") || normType.includes("atm")) {
-    return `🌟 Coach Maara here! Here is the complete example syntax prototype for **ATM PIN Verification**:
+  if (normType.includes("star") || normType.includes("pattern")) {
+    return `🌟 Coach Maara here! Here is the complete example syntax prototype for **Print Star Patterns**:
 
 \`\`\`javascript
-var entered_pin = 1234;
-if (entered_pin == 1234) {
-    print("PIN Verified");
-} else {
-    print("Incorrect PIN");
+var n = 5;
+for (var i = 1; i <= n; i++) {
+    var row = "";
+    for (var j = 1; j <= i; j++) {
+        row = row + "*";
+    }
+    print(row);
 }
-\`\`\``;
+\`\`\`
+• **Outer Loop (\`for (var i = 1; i <= n; i++)\`):** Controls the rows from 1 to n.
+• **Row String (\`var row = ""\`):** Empties the row string before building each new line.
+• **Inner Loop (\`for (var j = 1; j <= i; j++)\`):** Adds \`i\` stars for the current row.
+• **Print (\`print(row)\`):** Displays the completed row and moves to the next line!`;
   }
 
   return `🌟 Coach Maara here! Here is the general syntax structure for building your code prototype:
@@ -1633,47 +1624,133 @@ Concept: Loop iteration (1 to 50) and modulo odd divisibility (i % 2 == 1 or i %
      }
    - Must have loop up to 50, modulo 2 odd check (or step of 2), and print statement.
 `;
-    } else if (problemType === "atm-pin-verification") {
+    } else if (problemType === "print-star-patterns") {
       problemSpecificDirectives = `
-PROBLEM FOCUS: "ATM PIN Verification" (CTC Pedagogy Matrix)
-Concept: Variable comparison (==) and two-way conditional branching (if-else)
+PROBLEM FOCUS: "Print Star Patterns" (CTC Pedagogy Matrix)
+Concept: Nested Loops (Outer loop for rows 1 to n, inner loop for columns 1 to i).
 
 1. STAGE 1 (LOGIC):
-   - Definition: Compare the entered PIN with the registered PIN (e.g. 1234 or any assumed PIN like 2006).
-   - If the entered PIN equals the registered PIN (matches), output "PIN Verified" (or Valid).
-   - If the entered PIN does not match (otherwise), output "Incorrect PIN" (or Not Valid).
-   - ABSOLUTE SEMANTIC TRUTH RULE: Matching MUST lead to the positive/verified outcome! Mismatch MUST lead to the negative/rejected outcome!
-   - CRITICAL LOGICAL ERROR CHECK: If the student reverses or inverts this relation (e.g. states that matching leads to 'not valid' or mismatch leads to 'valid'), YOU MUST MARK correct: false! Explain: "When the entered PIN matches, it should be Valid/Verified. When it does not match, it should be Invalid/Incorrect. Your logic currently reverses these outcomes!"
-   - CRITICAL CTC RULE: STRICTLY NO PROGRAMMING TOOLS OR CODE SYNTAX IN LOGIC! Do NOT use '==', variable names like 'entered_pin', or code keywords. Use plain everyday English.
-   - Both success ("PIN Verified") and rejection ("Incorrect PIN") outcomes must be stated in correct cause-and-effect alignment.
+   - Definition: A right-angled triangle pattern of n rows where each row i contains exactly i stars.
+   - EXACT 3 ATOMIC STEPS MATCHING TRACKER:
+     Step 1: Triangle pattern definition -> Pick number of rows n (e.g. Let n = 5 rows for our triangle pattern).
+     Step 2: Row-to-star ratio -> In row 1: 1 star, row 2: 2 stars, row 3: 3 stars... row i: i stars.
+     Step 3: Next line after each row -> After printing stars for each row, move to the next line.
+   - CRITICAL STEP INQUIRY RULE (EXACT TARGETED HINTS):
+     * When student asks "give the first step of logic", "what is step 1", "first step":
+       GIVE THE DIRECT ANSWER WITHOUT RAMBLING:
+       "🌟 Coach Maara here! Here is **Step 1 of Logic (Triangle Pattern Definition)**:
+       To build our right-angled star pattern, first specify the total number of rows n for the triangle (for example, let n = 5 rows).
+       ✍️ Write this in your worksheet:
+       Let n = 5 rows for our right-angled star pattern."
+     * When student asks for Step 2 ("second step", "step 2"):
+       GIVE THE DIRECT ANSWER:
+       "🌟 Coach Maara here! Here is **Step 2 of Logic (Row-to-Star Ratio)**:
+       For each row from 1 to n, the number of stars in that row equals the row number:
+       Row 1 has 1 star, Row 2 has 2 stars, Row 3 has 3 stars, Row 4 has 4 stars, Row 5 has 5 stars. For every row i, we print i stars.
+       ✍️ Write this in your worksheet:
+       Row 1 has 1 star, Row 2 has 2 stars, Row 3 has 3 stars, Row 4 has 4 stars, Row 5 has 5 stars."
+     * When student asks for Step 3 ("third step", "step 3"):
+       GIVE THE DIRECT ANSWER:
+       "🌟 Coach Maara here! Here is **Step 3 of Logic (Next Line after each row)**:
+       After printing all stars for each row, move to the next line so the next row starts fresh below it.
+       ✍️ Write this in your worksheet:
+       After printing stars for each row, move to the next line."
+   - STRICTLY FORBIDDEN: DO NOT write wordy rambling filler like "Hello there my friend, I see you are asking for the very first step... Take a moment to imagine setting up a main counter that controls each separate line we announce on the screen...". Be direct, friendly, and give the exact step requested!
+   - STRICTLY NO raw programming tools or code keywords in Logic! Use plain everyday English.
 
 2. STAGE 2 (RECIPE):
-   - 4-STEP ALGORITHM (Natural English without programming keywords):
-     Step 1: Get the entered PIN from the user
-     Step 2: Check if the entered PIN equals 1234
-     Step 3: If it equals 1234, display "PIN Verified"
-     Step 4: Otherwise, display "Incorrect PIN"
-   - Populate 'recipeStepProgress' with all 4 steps.
+   - 5-STEP ALGORITHM:
+     Step 1: Get the number of rows n from the user
+     Step 2: Start an outer loop for rows from 1 to n
+     Step 3: Inside each row, start an inner loop from 1 to the current row number to print stars
+     Step 4: Print a star for each count in the inner loop on the same line
+     Step 5: Move to the next line after completing each row and repeat until row n
+   - If user asks for Step 1, Step 2, Step 3, Step 4, or Step 5, directly answer with that specific step!
+   - Populate 'recipeStepProgress' with all 5 steps.
 
 3. STAGE 3 (INGREDIENTS):
-   - EXACT 5 ATOMIC INGREDIENTS:
-     Step 1: Input variable: entered_pin = 1234
-     Step 2: If condition: Left Side: entered_pin, Operator: ==, Right Side: 1234
-     Step 3: Print statement inside if: print("PIN Verified")
-     Step 4: Else block: NO condition, NO left/right side or operator
-     Step 5: Print statement inside else: print("Incorrect PIN")
-   - Populate 'ingredientsStepProgress' with all 5 steps.
+   - ATOMIC INGREDIENTS:
+     Step 1: Input variable n = 5
+     Step 2: Outer for loop for rows: start = 1, end = n, next step = +1
+     Step 3: Inner for loop for columns: start = 1, end = i, next step = +1
+     Step 4: Print star and newline statements
+   - Populate 'ingredientsStepProgress' with all 4 steps.
 
 4. STAGE 4 (TASTE THE SAMPLE / SAMPLE CODE):
    - Prototype code:
-     let entered_pin = 1234;
-     if (entered_pin == 1234) {
-       console.log("PIN Verified");
-     } else {
-       console.log("Incorrect PIN");
+     var n = 5;
+     for (var i = 1; i <= n; i++) {
+       var row = "";
+       for (var j = 1; j <= i; j++) {
+         row = row + "*";
+       }
+       print(row);
      }
-   - Must have variable assignment, if (entered_pin == 1234), console.log("PIN Verified"), and else { console.log("Incorrect PIN"); }.
-   - If user wrote single '=' in if condition (e.g. if (entered_pin = 1234)), gently remind that '=' is assignment and '==' is comparison.
+   - Must have outer loop for rows, inner loop for columns up to i, star accumulation, and print.
+`;
+    } else if (problemType === "count-numbers-1-to-n") {
+      problemSpecificDirectives = `
+PROBLEM FOCUS: "Count Numbers from 1 to N" (CTC Pedagogy Matrix)
+Concept: Sequential Counting and Looping from 1 to N.
+
+1. STAGE 1 (LOGIC):
+   - Definition: Counting begins at the first natural number 1 and advances one by one (+1) sequentially up to the upper limit N.
+   - EXACT 3 ATOMIC STEPS MATCHING TRACKER:
+     Step 1: Starting number 1 -> Counting starts from 1 for a given upper limit n (e.g. n = 5).
+     Step 2: Step increment (+1) -> For each next number, we add 1 to the current number (+1).
+     Step 3: Stopping limit n -> We continue counting and stop when reaching upper limit n.
+   - CRITICAL STEP INQUIRY RULE (EXACT TARGETED HINTS):
+     * When student asks "give the first step of logic", "what is step 1", "first step":
+       GIVE THE DIRECT ANSWER WITHOUT RAMBLING:
+       "🌟 Coach Maara here! Here is **Step 1 of Logic (Starting Boundary)**:
+       Counting starts from the very first natural number 1 for a given upper limit n (for example, n = 5).
+       ✍️ Write this in your worksheet:
+       Counting starts from 1 for a given limit n."
+     * When student asks for Step 2 ("second step", "step 2"):
+       GIVE THE DIRECT ANSWER:
+       "🌟 Coach Maara here! Here is **Step 2 of Logic (Step Increment)**:
+       For each next number in our count, we add 1 to the current number (+1 each step).
+       ✍️ Write this in your worksheet:
+       For each next number, we add 1 to the current number."
+     * When student asks for Step 3 ("third step", "step 3"):
+       GIVE THE DIRECT ANSWER:
+       "🌟 Coach Maara here! Here is **Step 3 of Logic (Stopping Limit)**:
+       We continue counting sequentially and stop once we reach upper limit n.
+       ✍️ Write this in your worksheet:
+       We continue counting by 1 and stop when reaching n."
+   - STRICTLY FORBIDDEN: DO NOT write wordy rambling filler. Be direct, friendly, and give the exact step requested!
+   - STRICTLY NO raw programming tools or code keywords in Logic! Use plain everyday English.
+
+2. STAGE 2 (RECIPE):
+   - 5-STEP ALGORITHM:
+     Step 1: Get the upper limit number n from the user
+     Step 2: Start counting from number 1
+     Step 3: Display the current number
+     Step 4: Add 1 to the current number
+     Step 5: Repeat steps 3 and 4 until reaching n
+   - If user asks for Step 1, Step 2, Step 3, Step 4, or Step 5, directly answer with that specific step!
+   - Populate 'recipeStepProgress' with all 5 steps.
+
+3. STAGE 3 (INGREDIENTS):
+   - ATOMIC INGREDIENTS:
+     Step 1: Variable n to store upper limit
+     Step 2: For loop configured with start: 1, end: n, next step: +1
+     Step 3: Print statement print(i) inside loop
+   - Populate 'ingredientsStepProgress' with all 3 steps.
+
+4. STAGE 4 (TASTE THE SAMPLE / SAMPLE CODE):
+   - Prototype code:
+     \`\`\`javascript
+     var n = 5;
+     for (var i = 1; i <= n; i++) {
+         print(i);
+     }
+     \`\`\`
+   - EXACT 4 ATOMIC CODE STEPS:
+     Step 1: Declare input variable n
+     Step 2: Setup loop 1 to n
+     Step 3: Print i inside loop
+     Step 4: Verify sequential output
 `;
     } else if (problemType === "even-numbers-1-to-50") {
         if (section === "logic") {
@@ -1747,39 +1824,70 @@ CURRICULUM PEDAGOGY INSIGHT (ODD NUMBERS 1 TO 50 - SAMPLE CODE):
 - INSTRUCTION FOR COACH MAARA: Ensure student writes loop from 1 to 50 with if (i % 2 == 1) and print(i).
 `;
         }
-      } else if (problemType === "atm-pin-verification") {
+      } else if (problemType === "print-star-patterns") {
         if (section === "logic") {
-          const atmLog = validateAtmPinVerificationLogic(userInput);
+          const starLog = validateStarPatternLogic(userInput);
           diagnosticContext = `
-CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - LOGIC):
-- Student Intent: "${atmLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
-- Fully Verified Status: ${atmLog.isFullyVerified}
-- INSTRUCTION FOR COACH MAARA: Verify semantic cause-and-effect: match -> Valid / PIN Verified; mismatch -> Not Valid / Incorrect PIN. If student inverts this (e.g. match -> not valid), REJECT with correct: false and guide them to swap outcomes. STRICTLY NO programming tools or code syntax like '==' or 'entered_pin' in Logic!
+CURRICULUM PEDAGOGY INSIGHT (PRINT STAR PATTERNS - LOGIC):
+- Student Intent: "${starLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Fully Verified Status: ${starLog.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: In a right-angled star pattern, row i prints i stars. Each finished row moves to the next line. Plain English only.
 `;
         } else if (section === "recipe") {
-          const atmRec = validateAtmPinVerificationRecipe(userInput);
+          const starRec = validateStarPatternRecipe(userInput);
           diagnosticContext = `
-CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - RECIPE):
-- Student Intent: "${atmRec.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
-- Progress: Step 1 (Get PIN): ${atmRec.hasStep1}, Step 2 (Check == 1234): ${atmRec.hasStep2}, Step 3 (Display PIN Verified): ${atmRec.hasStep3}, Step 4 (Otherwise Incorrect PIN): ${atmRec.hasStep4}
-- INSTRUCTION FOR COACH MAARA: Deliver in plain everyday English without code keywords.
+CURRICULUM PEDAGOGY INSIGHT (PRINT STAR PATTERNS - RECIPE):
+- Student Intent: "${starRec.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Step 1 (Get n): ${starRec.hasStep1}, Step 2 (Outer Loop 1..n): ${starRec.hasStep2}, Step 3 (Inner Loop 1..i): ${starRec.hasStep3}, Step 4 (Print star): ${starRec.hasStep4}, Step 5 (Next line): ${starRec.hasStep5}
+- INSTRUCTION FOR COACH MAARA: Guide through the 5 steps without code keywords.
 `;
         } else if (section === "ingredients") {
-          const atmIng = validateAtmPinVerificationIngredients(userInput);
+          const starIng = validateStarPatternIngredients(userInput);
           diagnosticContext = `
-CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - INGREDIENTS):
-- Student Intent: "${atmIng.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
-- Progress: Variable: ${atmIng.hasVar}, If: ${atmIng.hasIf}, Print Success: ${atmIng.hasPrintSuccess}, Else: ${atmIng.hasElse}, Print Fail: ${atmIng.hasPrintFail}
-- INSTRUCTION FOR COACH MAARA:
-1. 5 atomic ingredients: entered_pin = 1234, if (entered_pin == 1234), print("PIN Verified"), else, print("Incorrect PIN").
-2. Reminder: else block never has condition.
+CURRICULUM PEDAGOGY INSIGHT (PRINT STAR PATTERNS - INGREDIENTS):
+- Student Intent: "${starIng.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Var N: ${starIng.hasVarN}, Outer Loop: ${starIng.hasOuterLoop}, Inner Loop: ${starIng.hasInnerLoop}, Print Star: ${starIng.hasPrintStar}
+- INSTRUCTION FOR COACH MAARA: Nested loops: outer loop (1 to n), inner loop (1 to i), and print statement.
 `;
         } else if (section === "samplecode") {
-          const atmSample = validateAtmPinVerificationSampleCode(userInput);
+          const starSample = validateStarPatternSampleCode(userInput);
           diagnosticContext = `
-CURRICULUM PEDAGOGY INSIGHT (ATM PIN VERIFICATION - SAMPLE CODE):
-- Verified: ${atmSample.isFullyVerified}
-- INSTRUCTION FOR COACH MAARA: Ensure student writes if (entered_pin == 1234) with print("PIN Verified") and else with print("Incorrect PIN"). Watch for single '=' assignment typo.
+CURRICULUM PEDAGOGY INSIGHT (PRINT STAR PATTERNS - SAMPLE CODE):
+- Verified: ${starSample.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Ensure student writes outer loop 1 to n, inner loop 1 to i, and prints stars with newline.
+`;
+        }
+      } else if (problemType === "count-numbers-1-to-n") {
+        if (section === "logic") {
+          const countLog = validateCount1ToNLogic(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (COUNT 1 TO N - LOGIC):
+- Student Intent: "${countLog.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Fully Verified Status: ${countLog.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Counting begins at 1, steps by +1, and stops at n. Plain English only.
+`;
+        } else if (section === "recipe") {
+          const countRec = validateCount1ToNRecipe(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (COUNT 1 TO N - RECIPE):
+- Student Intent: "${countRec.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Step 1 (Get n): ${countRec.hasStep1}, Step 2 (Start at 1): ${countRec.hasStep2}, Step 3 (Display current): ${countRec.hasStep3}, Step 4 (Add 1): ${countRec.hasStep4}, Step 5 (Repeat until n): ${countRec.hasStep5}
+- INSTRUCTION FOR COACH MAARA: Guide through the 5 steps without code keywords.
+`;
+        } else if (section === "ingredients") {
+          const countIng = validateCount1ToNIngredients(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (COUNT 1 TO N - INGREDIENTS):
+- Student Intent: "${countIng.matchedFirebaseInput || matchedFirebase?.bestPair?.input || latestInput}"
+- Progress: Var N: ${countIng.hasVarN}, Loop: ${countIng.hasLoop}, Print: ${countIng.hasPrint}
+- INSTRUCTION FOR COACH MAARA: List variable n, loop 1 to n with step +1, and print statement.
+`;
+        } else if (section === "samplecode") {
+          const countSample = validateCount1ToNSampleCode(userInput);
+          diagnosticContext = `
+CURRICULUM PEDAGOGY INSIGHT (COUNT 1 TO N - SAMPLE CODE):
+- Verified: ${countSample.isFullyVerified}
+- INSTRUCTION FOR COACH MAARA: Ensure student writes loop 1 to n and prints i inside the loop.
 `;
         }
       } else if (problemType === "prime-number") {
@@ -2687,6 +2795,15 @@ CRITICAL USER DIRECTIVES:
 3. NEVER POLLUTE HINTS ACROSS PROBLEMS:
    - This evaluation is STRICTLY for "${problemTitle}" (${problemType}).
    - NEVER mention odd/even, modulo 2, or 2 table unless the current problem is explicitly "Odd or Even"!
+
+3.5. CRITICAL DIRECT QUESTION & STEP INQUIRY DIRECTIVE (MANDATORY):
+   - When the student asks for a specific step (e.g. "give the first step of logic", "what is step 1", "give me step 1", "what is the first step", "give step 2", "how to write step 1", "what to do for step 1"):
+   - YOU MUST ANSWER THEIR EXACT QUESTION DIRECTLY AND CONCRETELY!
+   - STRICTLY FORBIDDEN: DO NOT write vague, meandering, wordy philosophical filler (NEVER say: "Hello there my friend, I see you are asking for the very first step today... Take a moment to imagine setting up a main counter that controls each separate line we announce on the screen..."). This is confusing and unhelpful!
+   - Always structure your answer directly:
+     1. State the step name clearly: "🌟 Coach Maara here! Here is Step [X] of [Stage]: [Step Name]"
+     2. Explain the step in 1-2 clear, simple sentences.
+     3. Give the student the EXACT text/clue they should write in their worksheet (e.g. "✍️ Write this in your worksheet: ...")!
 
 ${problemSpecificDirectives}
 
@@ -5204,40 +5321,40 @@ for (int i = 1; i <= ${varName}; i++) {
               }
             }
           }
-          if (problemType === "atm-pin-verification") {
+          if (problemType === "print-star-patterns") {
             if (section === "logic") {
-              const atmLog = validateAtmPinVerificationLogic(userInput, attemptCount);
-              parsed.logicStepProgress = atmLog.logicStepProgress;
-              parsed.stepProgress = atmLog.logicStepProgress;
-              if (atmLog.isFullyVerified) {
+              const starLog = validateStarPatternLogic(userInput, attemptCount);
+              parsed.logicStepProgress = starLog.logicStepProgress;
+              parsed.stepProgress = starLog.logicStepProgress;
+              if (starLog.isFullyVerified) {
                 parsed.correct = true;
                 parsed.proofType = "mathematical";
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate") ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount) : atmLog.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate") ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount) : starLog.feedback;
                 parsed.correction = "Proceed to the Recipe stage to sequence the algorithmic steps.";
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
                 const isPremature = /proceed to (?:recipe|ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|logic approved|all \d+ steps completed/i.test(parsed.feedback || "");
-                if (atmLog.feedback.includes("cause-and-effect relationship")) {
-                  parsed.feedback = atmLog.feedback;
+                if (starLog.isStepInquiry) {
+                  parsed.feedback = starLog.feedback;
                 } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount);
                 } else {
-                  parsed.feedback = synthesizeHumanTouch(atmLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
+                  parsed.feedback = synthesizeHumanTouch(starLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
                 }
-                parsed.correction = atmLog.correction || parsed.correction;
-                parsed.suggestedInput = atmLog.suggestedInput || parsed.suggestedInput;
+                parsed.correction = starLog.correction || parsed.correction;
+                parsed.suggestedInput = starLog.suggestedInput || parsed.suggestedInput;
               }
             }
             if (section === "recipe") {
-              const atmRec = validateAtmPinVerificationRecipe(userInput, attemptCount);
-              parsed.recipeStepProgress = atmRec.recipeStepProgress;
+              const starRec = validateStarPatternRecipe(userInput, attemptCount);
+              parsed.recipeStepProgress = starRec.recipeStepProgress;
               const geminiDeclaredRecipeComplete = parsed.correct === true || 
                 /ready to (?:gather ingredients|proceed|move on|advance)|recipe (?:is )?verified|all \d+ steps (?:are )?verified|completed all \d+ recipe steps/i.test(parsed.feedback || "");
 
-              if (!atmRec.feedback.includes("Check your recipe steps carefully") && (atmRec.isFullyVerified || geminiDeclaredRecipeComplete)) {
+              if (starRec.isFullyVerified || geminiDeclaredRecipeComplete) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : atmRec.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : starRec.feedback;
                 parsed.correction = "Proceed to Ingredients stage!";
                 parsed.suggestedInput = void 0;
                 if (parsed.recipeStepProgress) {
@@ -5246,24 +5363,26 @@ for (int i = 1; i <= ${varName}; i++) {
               } else {
                 parsed.correct = false;
                 const isPremature = /proceed to (?:ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
-                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                if (starRec.isStepInquiry) {
+                  parsed.feedback = starRec.feedback;
+                } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount);
                 } else {
-                  parsed.feedback = synthesizeHumanTouch(atmRec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput, attemptCount);
+                  parsed.feedback = synthesizeHumanTouch(starRec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput, attemptCount);
                 }
-                parsed.correction = atmRec.correction || parsed.correction;
-                parsed.suggestedInput = atmRec.suggestedInput || parsed.suggestedInput;
+                parsed.correction = starRec.correction || parsed.correction;
+                parsed.suggestedInput = starRec.suggestedInput || parsed.suggestedInput;
               }
             }
             if (section === "ingredients") {
-              const atmIng = validateAtmPinVerificationIngredients(userInput, attemptCount);
-              parsed.ingredientsStepProgress = atmIng.ingredientsStepProgress;
+              const starIng = validateStarPatternIngredients(userInput, attemptCount);
+              parsed.ingredientsStepProgress = starIng.ingredientsStepProgress;
               const geminiDeclaredIngComplete = parsed.correct === true || 
                 /ready to (?:start cooking|proceed|move on|advance)|gathered all (?:the )?necessary ingredients|all \d+ ingredients (?:are )?verified|officially ready to|ingredients verified/i.test(parsed.feedback || "");
 
-              if (atmIng.isFullyVerified || geminiDeclaredIngComplete) {
+              if (starIng.isFullyVerified || geminiDeclaredIngComplete) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount) : atmIng.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount) : starIng.feedback;
                 parsed.correction = "Proceed to Taste the Sample stage to assemble your code!";
                 parsed.suggestedInput = void 0;
                 if (parsed.ingredientsStepProgress) {
@@ -5275,30 +5394,132 @@ for (int i = 1; i <= ${varName}; i++) {
                 if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount);
                 } else {
-                  parsed.feedback = synthesizeHumanTouch(atmIng.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput, attemptCount);
+                  parsed.feedback = synthesizeHumanTouch(starIng.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput, attemptCount);
                 }
-                parsed.correction = atmIng.correction || parsed.correction;
-                parsed.suggestedInput = atmIng.suggestedInput || parsed.suggestedInput;
+                parsed.correction = starIng.correction || parsed.correction;
+                parsed.suggestedInput = starIng.suggestedInput || parsed.suggestedInput;
               }
             }
             if (section === "samplecode") {
-              const atmSample = validateAtmPinVerificationSampleCode(userInput, attemptCount);
-              parsed.sampleCodeStepProgress = atmSample.sampleCodeStepProgress;
-              parsed.stepProgress = atmSample.sampleCodeStepProgress;
-              if (atmSample.isFullyVerified) {
+              const starSample = validateStarPatternSampleCode(userInput, attemptCount);
+              parsed.sampleCodeStepProgress = starSample.sampleCodeStepProgress;
+              parsed.stepProgress = starSample.sampleCodeStepProgress;
+              if (starSample.isFullyVerified) {
                 parsed.correct = true;
-                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount) : atmSample.feedback;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount) : starSample.feedback;
                 parsed.correction = "All done! Run the code and submit.";
                 parsed.suggestedInput = void 0;
               } else {
                 parsed.correct = false;
                 const isPremature = /proceed to compiler|all \d+ steps completed|ready to run/i.test(parsed.feedback || "");
-                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate") && !atmSample.feedback.includes("single '='") && !atmSample.feedback.includes("Wrong print target")) {
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
                   parsed.feedback = synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount);
                 } else {
-                  parsed.feedback = synthesizeHumanTouch(atmSample.feedback, "samplecode", latestInput, attemptCount);
+                  parsed.feedback = synthesizeHumanTouch(starSample.feedback, "samplecode", latestInput, attemptCount);
                 }
-                parsed.correction = atmSample.correction || parsed.correction;
+                parsed.correction = starSample.correction || parsed.correction;
+              }
+            }
+          }
+          if (problemType === "count-numbers-1-to-n") {
+            if (section === "logic") {
+              const countLog = validateCount1ToNLogic(userInput, attemptCount);
+              parsed.logicStepProgress = countLog.logicStepProgress;
+              parsed.stepProgress = countLog.logicStepProgress;
+              if (countLog.isFullyVerified) {
+                parsed.correct = true;
+                parsed.proofType = "mathematical";
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 && !parsed.feedback.includes("Before we evaluate") ? synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount) : countLog.feedback;
+                parsed.correction = "Proceed to the Recipe stage to sequence the algorithmic steps.";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:recipe|ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|logic approved|all \d+ steps completed/i.test(parsed.feedback || "");
+                if (countLog.isStepInquiry) {
+                  parsed.feedback = countLog.feedback;
+                } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "logic", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(countLog.feedback || matchedFirebase?.bestPair?.hint, "logic", latestInput, attemptCount);
+                }
+                parsed.correction = countLog.correction || parsed.correction;
+                parsed.suggestedInput = countLog.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "recipe") {
+              const countRec = validateCount1ToNRecipe(userInput, attemptCount);
+              parsed.recipeStepProgress = countRec.recipeStepProgress;
+              const geminiDeclaredRecipeComplete = parsed.correct === true || 
+                /ready to (?:gather ingredients|proceed|move on|advance)|recipe (?:is )?verified|all \d+ steps (?:are )?verified|completed all \d+ recipe steps/i.test(parsed.feedback || "");
+
+              if (countRec.isFullyVerified || geminiDeclaredRecipeComplete) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount) : countRec.feedback;
+                parsed.correction = "Proceed to Ingredients stage!";
+                parsed.suggestedInput = void 0;
+                if (parsed.recipeStepProgress) {
+                  parsed.recipeStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:ingredients|taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on)/i.test(parsed.feedback || "");
+                if (countRec.isStepInquiry) {
+                  parsed.feedback = countRec.feedback;
+                } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "recipe", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(countRec.feedback || matchedFirebase?.bestPair?.hint, "recipe", latestInput, attemptCount);
+                }
+                parsed.correction = countRec.correction || parsed.correction;
+                parsed.suggestedInput = countRec.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "ingredients") {
+              const countIng = validateCount1ToNIngredients(userInput, attemptCount);
+              parsed.ingredientsStepProgress = countIng.ingredientsStepProgress;
+              const geminiDeclaredIngComplete = parsed.correct === true || 
+                /ready to (?:start cooking|proceed|move on|advance)|gathered all (?:the )?necessary ingredients|all \d+ ingredients (?:are )?verified|officially ready to|ingredients verified/i.test(parsed.feedback || "");
+
+              if (countIng.isFullyVerified || geminiDeclaredIngComplete) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount) : countIng.feedback;
+                parsed.correction = "Proceed to Taste the Sample stage to assemble your code!";
+                parsed.suggestedInput = void 0;
+                if (parsed.ingredientsStepProgress) {
+                  parsed.ingredientsStepProgress.forEach(s => { s.completed = true; s.current = false; });
+                }
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to (?:taste the sample|sample code|compiler)|congratulations|hurray|kudos|stage completed|all \d+ steps completed|ready to (?:proceed|run|move on|start cooking)/i.test(parsed.feedback || "");
+                if (countIng.isStepInquiry) {
+                  parsed.feedback = countIng.feedback;
+                } else if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "ingredients", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(countIng.feedback || matchedFirebase?.bestPair?.hint, "ingredients", latestInput, attemptCount);
+                }
+                parsed.correction = countIng.correction || parsed.correction;
+                parsed.suggestedInput = countIng.suggestedInput || parsed.suggestedInput;
+              }
+            }
+            if (section === "samplecode") {
+              const countSample = validateCount1ToNSampleCode(userInput, attemptCount);
+              parsed.sampleCodeStepProgress = countSample.sampleCodeStepProgress;
+              parsed.stepProgress = countSample.sampleCodeStepProgress;
+              if (countSample.isFullyVerified) {
+                parsed.correct = true;
+                parsed.feedback = parsed.feedback && parsed.feedback.trim().length > 20 ? synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount) : countSample.feedback;
+                parsed.correction = "All done! Run the code and submit.";
+                parsed.suggestedInput = void 0;
+              } else {
+                parsed.correct = false;
+                const isPremature = /proceed to compiler|all \d+ steps completed|ready to run/i.test(parsed.feedback || "");
+                if (parsed.feedback && parsed.feedback.trim().length > 20 && !isPremature && !parsed.feedback.includes("Before we evaluate")) {
+                  parsed.feedback = synthesizeHumanTouch(parsed.feedback, "samplecode", latestInput, attemptCount);
+                } else {
+                  parsed.feedback = synthesizeHumanTouch(countSample.feedback, "samplecode", latestInput, attemptCount);
+                }
+                parsed.correction = countSample.correction || parsed.correction;
               }
             }
           }
@@ -7404,49 +7625,95 @@ for (int i = 1; i <= ${varName}; i++) {
         };
       }
     }
-    if (problemType === "atm-pin-verification") {
+    if (problemType === "print-star-patterns") {
       if (section === "logic") {
-        const atmLog = validateAtmPinVerificationLogic(userInput, attemptCount);
+        const starLog = validateStarPatternLogic(userInput, attemptCount);
         return {
-          correct: atmLog.isFullyVerified,
-          feedback: synthesizeHumanTouch(atmLog.feedback, "logic", userInput, attemptCount),
-          correction: atmLog.correction,
-          suggestedInput: atmLog.suggestedInput,
-          logicStepProgress: atmLog.logicStepProgress,
-          stepProgress: atmLog.logicStepProgress
+          correct: starLog.isFullyVerified,
+          feedback: synthesizeHumanTouch(starLog.feedback, "logic", userInput, attemptCount),
+          correction: starLog.correction,
+          suggestedInput: starLog.suggestedInput,
+          logicStepProgress: starLog.logicStepProgress,
+          stepProgress: starLog.logicStepProgress
         };
       }
       if (section === "recipe") {
-        const atmRec = validateAtmPinVerificationRecipe(userInput, attemptCount);
+        const starRec = validateStarPatternRecipe(userInput, attemptCount);
         return {
-          correct: atmRec.isFullyVerified,
-          feedback: synthesizeHumanTouch(atmRec.feedback, "recipe", userInput, attemptCount),
-          correction: atmRec.correction,
-          suggestedInput: atmRec.suggestedInput,
-          recipeStepProgress: atmRec.recipeStepProgress,
-          stepProgress: atmRec.recipeStepProgress
+          correct: starRec.isFullyVerified,
+          feedback: synthesizeHumanTouch(starRec.feedback, "recipe", userInput, attemptCount),
+          correction: starRec.correction,
+          suggestedInput: starRec.suggestedInput,
+          recipeStepProgress: starRec.recipeStepProgress,
+          stepProgress: starRec.recipeStepProgress
         };
       }
       if (section === "ingredients") {
-        const atmIng = validateAtmPinVerificationIngredients(userInput, attemptCount);
+        const starIng = validateStarPatternIngredients(userInput, attemptCount);
         return {
-          correct: atmIng.isFullyVerified,
-          feedback: synthesizeHumanTouch(atmIng.feedback, "ingredients", userInput, attemptCount),
-          correction: atmIng.correction,
-          suggestedInput: atmIng.suggestedInput,
-          ingredientsStepProgress: atmIng.ingredientsStepProgress,
-          stepProgress: atmIng.ingredientsStepProgress
+          correct: starIng.isFullyVerified,
+          feedback: synthesizeHumanTouch(starIng.feedback, "ingredients", userInput, attemptCount),
+          correction: starIng.correction,
+          suggestedInput: starIng.suggestedInput,
+          ingredientsStepProgress: starIng.ingredientsStepProgress,
+          stepProgress: starIng.ingredientsStepProgress
         };
       }
       if (section === "samplecode") {
-        const atmSample = validateAtmPinVerificationSampleCode(userInput, attemptCount);
+        const starSample = validateStarPatternSampleCode(userInput, attemptCount);
         return {
-          correct: atmSample.isFullyVerified,
-          feedback: synthesizeHumanTouch(atmSample.feedback, "samplecode", userInput, attemptCount),
-          correction: atmSample.correction,
+          correct: starSample.isFullyVerified,
+          feedback: synthesizeHumanTouch(starSample.feedback, "samplecode", userInput, attemptCount),
+          correction: starSample.correction,
           suggestedInput: void 0,
-          sampleCodeStepProgress: atmSample.sampleCodeStepProgress,
-          stepProgress: atmSample.sampleCodeStepProgress
+          sampleCodeStepProgress: starSample.sampleCodeStepProgress,
+          stepProgress: starSample.sampleCodeStepProgress
+        };
+      }
+    }
+    if (problemType === "count-numbers-1-to-n") {
+      if (section === "logic") {
+        const countLog = validateCount1ToNLogic(userInput, attemptCount);
+        return {
+          correct: countLog.isFullyVerified,
+          feedback: synthesizeHumanTouch(countLog.feedback, "logic", userInput, attemptCount),
+          correction: countLog.correction,
+          suggestedInput: countLog.suggestedInput,
+          logicStepProgress: countLog.logicStepProgress,
+          stepProgress: countLog.logicStepProgress
+        };
+      }
+      if (section === "recipe") {
+        const countRec = validateCount1ToNRecipe(userInput, attemptCount);
+        return {
+          correct: countRec.isFullyVerified,
+          feedback: synthesizeHumanTouch(countRec.feedback, "recipe", userInput, attemptCount),
+          correction: countRec.correction,
+          suggestedInput: countRec.suggestedInput,
+          recipeStepProgress: countRec.recipeStepProgress,
+          stepProgress: countRec.recipeStepProgress
+        };
+      }
+      if (section === "ingredients") {
+        const countIng = validateCount1ToNIngredients(userInput, attemptCount);
+        return {
+          correct: countIng.isFullyVerified,
+          feedback: synthesizeHumanTouch(countIng.feedback, "ingredients", userInput, attemptCount),
+          correction: countIng.correction,
+          suggestedInput: countIng.suggestedInput,
+          ingredientsStepProgress: countIng.ingredientsStepProgress,
+          stepProgress: countIng.ingredientsStepProgress
+        };
+      }
+      if (section === "samplecode") {
+        const countSample = validateCount1ToNSampleCode(userInput, attemptCount);
+        return {
+          correct: countSample.isFullyVerified,
+          feedback: synthesizeHumanTouch(countSample.feedback, "samplecode", userInput, attemptCount),
+          correction: countSample.correction,
+          suggestedInput: void 0,
+          sampleCodeStepProgress: countSample.sampleCodeStepProgress,
+          stepProgress: countSample.sampleCodeStepProgress
         };
       }
     }

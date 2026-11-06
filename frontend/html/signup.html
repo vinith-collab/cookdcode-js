@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/signup.css" />
+  <script src="../public/js/tamilNaduSchoolsData.js"></script>
   <script>
     // Firebase Google Auth requires an authorized domain.
     // In Firebase Console, 127.0.0.1 is authorized while localhost is not.
@@ -98,6 +99,94 @@
                 <input type="text" id="lastname" name="lastname" class="form-input" placeholder="Doe" required>
                 <i class="fas fa-user input-icon"></i>
               </div>
+            </div>
+          </div>
+
+          <!-- District (Tamil Nadu) & Grade / Standard -->
+          <div class="form-row">
+            <div class="form-group half-width" style="flex: 1.4;">
+              <label for="districtSelect" class="form-label">District (Tamil Nadu)</label>
+              <div class="input-container">
+                <select id="districtSelect" name="district" class="form-input" required style="cursor: pointer; background-color: var(--bg-color);">
+                  <option value="" disabled selected>Select District</option>
+                  <option value="Ariyalur">Ariyalur</option>
+                  <option value="Chengalpattu">Chengalpattu</option>
+                  <option value="Chennai">Chennai</option>
+                  <option value="Coimbatore">Coimbatore</option>
+                  <option value="Cuddalore">Cuddalore</option>
+                  <option value="Dharmapuri">Dharmapuri</option>
+                  <option value="Dindigul">Dindigul</option>
+                  <option value="Erode">Erode</option>
+                  <option value="Kallakurichi">Kallakurichi</option>
+                  <option value="Kanchipuram">Kanchipuram</option>
+                  <option value="Kanyakumari">Kanyakumari</option>
+                  <option value="Karur">Karur</option>
+                  <option value="Krishnagiri">Krishnagiri</option>
+                  <option value="Madurai">Madurai</option>
+                  <option value="Mayiladuthurai">Mayiladuthurai</option>
+                  <option value="Nagapattinam">Nagapattinam</option>
+                  <option value="Namakkal">Namakkal</option>
+                  <option value="Nilgiris">Nilgiris</option>
+                  <option value="Perambalur">Perambalur</option>
+                  <option value="Pudukkottai">Pudukkottai</option>
+                  <option value="Ramanathapuram">Ramanathapuram</option>
+                  <option value="Ranipet">Ranipet</option>
+                  <option value="Salem">Salem</option>
+                  <option value="Sivaganga">Sivaganga</option>
+                  <option value="Tenkasi">Tenkasi</option>
+                  <option value="Thanjavur">Thanjavur</option>
+                  <option value="Theni">Theni</option>
+                  <option value="Thoothukudi">Thoothukudi</option>
+                  <option value="Tiruchirappalli (Trichy)">Tiruchirappalli (Trichy)</option>
+                  <option value="Tirunelveli">Tirunelveli</option>
+                  <option value="Tirupathur">Tirupathur</option>
+                  <option value="Tiruppur">Tiruppur</option>
+                  <option value="Tiruvallur">Tiruvallur</option>
+                  <option value="Tiruvannamalai">Tiruvannamalai</option>
+                  <option value="Tiruvarur">Tiruvarur</option>
+                  <option value="Vellore">Vellore</option>
+                  <option value="Viluppuram">Viluppuram</option>
+                  <option value="Virudhunagar">Virudhunagar</option>
+                </select>
+                <i class="fas fa-map-marker-alt input-icon"></i>
+              </div>
+            </div>
+            <div class="form-group half-width" style="flex: 1;">
+              <label for="gradeSelect" class="form-label">Grade / Standard</label>
+              <div class="input-container">
+                <select id="gradeSelect" name="grade" class="form-input" style="cursor: pointer; background-color: var(--bg-color);">
+                  <option value="">Select Grade</option>
+                  <option value="6th Standard">6th Standard</option>
+                  <option value="7th Standard">7th Standard</option>
+                  <option value="8th Standard">8th Standard</option>
+                  <option value="9th Standard">9th Standard</option>
+                  <option value="10th Standard">10th Standard</option>
+                  <option value="11th Standard">11th Standard</option>
+                  <option value="12th Standard">12th Standard</option>
+                  <option value="Other">Other</option>
+                </select>
+                <i class="fas fa-graduation-cap input-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- School / Institute Name (Populated by District) -->
+          <div class="form-group">
+            <label for="schoolSelect" class="form-label">School / Institute Name</label>
+            <div class="input-container">
+              <select id="schoolSelect" name="schoolSelect" class="form-input" required disabled style="cursor: pointer; background-color: var(--bg-color);">
+                <option value="" disabled selected>First select a district above</option>
+              </select>
+              <i class="fas fa-school input-icon"></i>
+            </div>
+          </div>
+
+          <!-- Custom School Name (Visible only when 'Other School' is selected) -->
+          <div class="form-group" id="customSchoolContainer" style="display: none;">
+            <label for="customSchoolInput" class="form-label">Enter Your School / Institute Name</label>
+            <div class="input-container">
+              <input type="text" id="customSchoolInput" name="customSchoolInput" class="form-input" placeholder="Type your school / institute name">
+              <i class="fas fa-pen-fancy input-icon"></i>
             </div>
           </div>
 
@@ -338,6 +427,88 @@
     let otpSent = false;
     let verifiedEmail = "";
 
+    // Setup District & School Cascading Dropdowns
+    const districtSelect = document.getElementById("districtSelect");
+    const schoolSelect = document.getElementById("schoolSelect");
+    const customSchoolContainer = document.getElementById("customSchoolContainer");
+    const customSchoolInput = document.getElementById("customSchoolInput");
+
+    function setupDistrictAndSchools() {
+      const districtsData = window.TAMIL_NADU_DISTRICTS_DATA || {};
+      const districts = Object.keys(districtsData).sort();
+
+      if (districtSelect) {
+        if (districtSelect.options.length <= 1 && districts.length > 0) {
+          districts.forEach(d => {
+            const opt = document.createElement("option");
+            opt.value = d;
+            opt.textContent = d;
+            districtSelect.appendChild(opt);
+          });
+        }
+
+        districtSelect.addEventListener("change", function () {
+          const selDist = this.value;
+          schoolSelect.innerHTML = "";
+
+          if (!selDist || !districtsData[selDist]) {
+            schoolSelect.disabled = true;
+            const defOpt = document.createElement("option");
+            defOpt.value = "";
+            defOpt.textContent = "First select a district above";
+            defOpt.disabled = true;
+            defOpt.selected = true;
+            schoolSelect.appendChild(defOpt);
+            if (customSchoolContainer) customSchoolContainer.style.display = "none";
+            return;
+          }
+
+          schoolSelect.disabled = false;
+          const promptOpt = document.createElement("option");
+          promptOpt.value = "";
+          promptOpt.textContent = `Select School in ${selDist}`;
+          promptOpt.disabled = true;
+          promptOpt.selected = true;
+          schoolSelect.appendChild(promptOpt);
+
+          const schools = (districtsData[selDist] || []).slice().sort((a, b) => a.localeCompare(b));
+          schools.forEach(sch => {
+            const opt = document.createElement("option");
+            opt.value = sch;
+            opt.textContent = sch;
+            schoolSelect.appendChild(opt);
+          });
+
+          // Other Option
+          const otherOpt = document.createElement("option");
+          otherOpt.value = "OTHER_CUSTOM";
+          otherOpt.textContent = "➕ Other School (Type your school name)";
+          schoolSelect.appendChild(otherOpt);
+
+          if (customSchoolContainer) customSchoolContainer.style.display = "none";
+          if (customSchoolInput) customSchoolInput.value = "";
+        });
+      }
+
+      if (schoolSelect) {
+        schoolSelect.addEventListener("change", function () {
+          if (this.value === "OTHER_CUSTOM") {
+            if (customSchoolContainer) customSchoolContainer.style.display = "block";
+            if (customSchoolInput) {
+              customSchoolInput.focus();
+            }
+          } else {
+            if (customSchoolContainer) customSchoolContainer.style.display = "none";
+            if (customSchoolInput) {
+              customSchoolInput.value = "";
+            }
+          }
+        });
+      }
+    }
+
+    setupDistrictAndSchools();
+
     // Resend OTP button handler
     const resendBtn = document.getElementById("resendOtpBtn");
     if (resendBtn) {
@@ -376,9 +547,31 @@
       
       const firstname = document.getElementById("firstname").value.trim();
       const lastname = document.getElementById("lastname").value.trim();
+      const district = document.getElementById("districtSelect") ? document.getElementById("districtSelect").value.trim() : "";
+      const rawSchool = document.getElementById("schoolSelect") ? document.getElementById("schoolSelect").value.trim() : "";
+      const customSchool = document.getElementById("customSchoolInput") ? document.getElementById("customSchoolInput").value.trim() : "";
+      const grade = document.getElementById("gradeSelect") ? document.getElementById("gradeSelect").value.trim() : "";
       const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "user@example.com";
       const password = document.getElementById("password").value;
       const confirm = document.getElementById("confirm_password").value;
+
+      const finalSchoolName = rawSchool === "OTHER_CUSTOM" ? customSchool : rawSchool;
+
+      if (!district) {
+        showModal("Please select your District in Tamil Nadu.", "error");
+        document.getElementById("districtSelect")?.focus();
+        return;
+      }
+
+      if (!finalSchoolName) {
+        showModal("Please select or enter your School / Institute Name.", "error");
+        if (rawSchool === "OTHER_CUSTOM") {
+          document.getElementById("customSchoolInput")?.focus();
+        } else {
+          document.getElementById("schoolSelect")?.focus();
+        }
+        return;
+      }
 
       // 1. Minimum 8 characters validation
       if (!password || password.length < 8) {
@@ -471,6 +664,12 @@
 
             // Lock input fields so they cannot be altered after OTP dispatch
             document.getElementById("email").readOnly = true;
+            if (document.getElementById("firstname")) document.getElementById("firstname").readOnly = true;
+            if (document.getElementById("lastname")) document.getElementById("lastname").readOnly = true;
+            if (document.getElementById("districtSelect")) document.getElementById("districtSelect").disabled = true;
+            if (document.getElementById("schoolSelect")) document.getElementById("schoolSelect").disabled = true;
+            if (document.getElementById("customSchoolInput")) document.getElementById("customSchoolInput").readOnly = true;
+            if (document.getElementById("gradeSelect")) document.getElementById("gradeSelect").disabled = true;
 
             if (submitBtn) {
               submitBtn.disabled = false;
@@ -557,6 +756,10 @@
           lastname,
           email: verifiedEmail,
           password,
+          district,
+          state: "Tamil Nadu",
+          schoolName: finalSchoolName,
+          grade: grade || "",
           tokens: 10,
           createdAt: new Date().toISOString()
         };
@@ -578,6 +781,9 @@
         localStorage.setItem("userId", newUser.key);
         localStorage.setItem("userEmail", verifiedEmail);
         localStorage.setItem("userName", firstname + (lastname ? (" " + lastname) : ""));
+        localStorage.setItem("userDistrict", district);
+        localStorage.setItem("userSchool", finalSchoolName);
+        if (grade) localStorage.setItem("userGrade", grade);
 
         showModal("Account Verified & Created Successfully! Welcome to CookDCode.", "success");
 

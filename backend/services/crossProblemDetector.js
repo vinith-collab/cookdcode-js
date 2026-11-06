@@ -280,19 +280,44 @@ export const PROBLEM_DEFINITIONS = {
     ],
     goalSummary: "iterating numbers from 1 to 50 and printing odd numbers leaving remainder 1 when divided by 2"
   },
+  "print-star-patterns": {
+    id: "print-star-patterns",
+    problemNo: 23,
+    title: "Print Star Patterns",
+    patterns: [
+      /\bstar\s*patterns?\b/i,
+      /\bpatterns?\b/i,
+      /\b\*\b/,
+      /\bprint\s*\(?["']\*["']\)?/i,
+      /\binner\s*loop\b/i,
+      /\bcolumns?\b/i,
+      /right\s*angled/i
+    ],
+    goalSummary: "printing a right-angled triangle star pattern using nested loops"
+  },
+  "count-numbers-1-to-n": {
+    id: "count-numbers-1-to-n",
+    problemNo: 24,
+    title: "Count Numbers from 1 to N",
+    patterns: [
+      /\bcount(?:ing)?\s*(?:numbers?)?\s*(?:from\s*)?1\s*to\s*n\b/i,
+      /\b1\s*to\s*n\b/i,
+      /\bsequential\s*count(?:ing)?\b/i
+    ],
+    goalSummary: "counting and printing numbers sequentially from 1 up to N using a loop"
+  },
   "atm-pin-verification": {
     id: "atm-pin-verification",
-    problemNo: 23,
     title: "ATM PIN Verification",
     patterns: [
-      /\batm\b/i,
       /\bpin\b/i,
+      /\batm\b/i,
       /\b1234\b/,
-      /pin\s*(?:==?|equals?)\s*1234/i,
-      /pin\s*verified/i,
-      /incorrect\s*pin/i
+      /\bsecret\s*pin\b/i,
+      /\bpin\s*(?:verified|valid|incorrect|accepted)\b/i,
+      /\bentered_pin\b/i
     ],
-    goalSummary: "checking if the entered PIN matches 1234, displaying 'PIN Verified' if correct or 'Incorrect PIN' otherwise"
+    goalSummary: "verifying whether an entered ATM PIN matches a registered PIN"
   }
 };
 

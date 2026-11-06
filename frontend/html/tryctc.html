@@ -3611,7 +3611,8 @@
                     if (norm.includes('multiplication') || norm.includes('table') || norm === 'problem05' || norm === 'problem5' || t.includes('table')) return 'problem05';
                     if (norm.includes('even1to50') || norm.includes('even50') || norm === 'problem21' || norm === 'problem021' || t.includes('1 to 50') && t.includes('even') || t.includes('even numbers from 1 to 50')) return 'problem21';
                     if (norm.includes('odd1to50') || norm.includes('odd50') || norm === 'problem22' || norm === 'problem022' || t.includes('1 to 50') && t.includes('odd') || t.includes('odd numbers from 1 to 50')) return 'problem22';
-                    if (norm.includes('atmpin') || norm.includes('pinverification') || norm.includes('atm') || norm === 'problem23' || norm === 'problem023' || (t.includes('atm') && t.includes('pin'))) return 'problem23';
+                    if (norm.includes('starpattern') || norm.includes('printstar') || norm === 'problem23' || norm === 'problem023' || (t.includes('star') && t.includes('pattern'))) return 'problem23';
+                    if (norm.includes('count1ton') || norm.includes('countnumbers') || norm === 'problem24' || norm === 'problem024' || (t.includes('count') && t.includes('n')) || t.includes('count numbers from 1 to n')) return 'problem24';
                     if (norm.includes('nextprime') || norm === 'problem07' || norm === 'problem7' || t.includes('next prime')) return 'problem07';
                     if (norm.includes('prime') && (norm.includes('range') || norm.includes('between')) || norm === 'problem08' || norm === 'problem8' || t.includes('prime numbers in range')) return 'problem08';
                     if (norm.includes('sexy') || norm === 'problem09' || norm === 'problem9' || t.includes('sexy prime')) return 'problem09';
@@ -4069,47 +4070,6 @@
                             context: "Vowel or Consonant (Universal Syntax)",
                             code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> ch = <span style="color: #34d399;">"e"</span>;\n\n<span style="color: #64748b;">// Check vowel membership</span>\n<span style="color: #c084fc;">if</span> (ch == <span style="color: #34d399;">"a"</span> || ch == <span style="color: #34d399;">"e"</span> || ch == <span style="color: #34d399;">"i"</span> || ch == <span style="color: #34d399;">"o"</span> || ch == <span style="color: #34d399;">"u"</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"Vowel"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Consonant"</span>);\n}`
                         }
-                    },
-                    "problem23": {
-                        problemTitle: "ATM PIN Verification",
-                        logic: {
-                            explanation: "Compare the entered PIN with the secret registered PIN (1234) using plain natural logic.",
-                            ruleTitle: "PIN Verification Security Rule",
-                            ruleText: "If the entered PIN equals <strong class=\"text-slate-900 font-bold\">1234</strong>, access is approved (PIN Verified). Otherwise, access is rejected (Incorrect PIN).",
-                            conditionsHtml: `
-                                <div class="ctc-cond-pill true-cond">
-                                    <i class="fas fa-check-circle text-emerald-600 mt-0.5"></i>
-                                    <div><strong class="font-bold">If entered PIN matches 1234:</strong> PIN Verified <span class="font-mono opacity-80">(Access Granted)</span></div>
-                                </div>
-                                <div class="ctc-cond-pill false-cond">
-                                    <i class="fas fa-times-circle text-rose-500 mt-0.5"></i>
-                                    <div><strong class="font-bold">If PIN does not match 1234:</strong> Incorrect PIN <span class="font-mono opacity-80">(Access Denied)</span></div>
-                                </div>
-                            `
-                        },
-                        recipe: {
-                            recipeTitle: "ATM PIN Verification Steps",
-                            steps: [
-                                "Get the entered PIN from the user.",
-                                "Check if the entered PIN equals 1234.",
-                                "If it equals 1234, display 'PIN Verified'.",
-                                "Otherwise, display 'Incorrect PIN'."
-                            ]
-                        },
-                        ingredients: {
-                            context: "ATM PIN Verification Components",
-                            items: [
-                                { label: "Variable", value: "entered_pin = 1234", tagClass: "tag-var", icon: "fa-cube" },
-                                { label: "Condition", value: "entered_pin == 1234", tagClass: "tag-cond", icon: "fa-code-branch" },
-                                { label: "If True", value: "print('PIN Verified')", tagClass: "tag-true", valClass: "text-emerald-700", icon: "fa-check" },
-                                { label: "Else", value: "else", tagClass: "tag-else", icon: "fa-arrows-split-up-and-left" },
-                                { label: "If False", value: "print('Incorrect PIN')", tagClass: "tag-false", valClass: "text-rose-700", icon: "fa-times" }
-                            ]
-                        },
-                        samplecode: {
-                            context: "ATM PIN Verification (Universal Syntax)",
-                            code: `<span style="color: #64748b;">// Variable Declaration</span>\n<span style="color: #f472b6;">var</span> entered_pin = <span style="color: #fbbf24;">1234</span>;\n\n<span style="color: #64748b;">// Check PIN equality</span>\n<span style="color: #c084fc;">if</span> (entered_pin == <span style="color: #fbbf24;">1234</span>) {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #34d399;">"PIN Verified"</span>);\n} <span style="color: #c084fc;">else</span> {\n    <span style="color: #38bdf8;">print</span>(<span style="color: #f87171;">"Incorrect PIN"</span>);\n}`
-                        }
                     }
                 };
 
@@ -4133,7 +4093,9 @@
                         'problem08', 'problem8', 'problem008', 'primebetweenrange', 'primerange',
                         'problem09', 'problem9', 'problem009', 'sexyprime', 'sexyprimenumbers',
                         'problem21', 'problem021',
-                        'problem22', 'problem022'
+                        'problem22', 'problem022',
+                        'problem23', 'problem023',
+                        'problem24', 'problem024'
                     ];
                     if (loopKeys.includes(norm)) return 'for_loop';
 
@@ -4527,32 +4489,62 @@
                     if (key === 'problem23') {
                         if (norm === 'logic') {
                             return [
-                                { stepNumber: 1, title: "1. Registered PIN reference (1234)", completed: false, current: true },
-                                { stepNumber: 2, title: "2. Comparison rule (matches 1234)", completed: false, current: false },
-                                { stepNumber: 3, title: "3. Approved outcome (PIN Verified)", completed: false, current: false },
-                                { stepNumber: 4, title: "4. Rejected outcome (Incorrect PIN)", completed: false, current: false }
+                                { stepNumber: 1, title: "1. Triangle pattern definition", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Row-to-star ratio (row i = i stars)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Next line after each row", completed: false, current: false }
                             ];
                         } else if (norm === 'recipe') {
                             return [
-                                { stepNumber: 1, title: "1. Get entered PIN from user", completed: false, current: true },
-                                { stepNumber: 2, title: "2. Check if entered PIN equals 1234", completed: false, current: false },
-                                { stepNumber: 3, title: "3. If equals 1234, display PIN Verified", completed: false, current: false },
-                                { stepNumber: 4, title: "4. Otherwise display Incorrect PIN", completed: false, current: false }
+                                { stepNumber: 1, title: "1. Get rows count n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop rows 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Loop columns 1 to i for stars", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print star on same line", completed: false, current: false },
+                                { stepNumber: 5, title: "5. Move to next line and repeat", completed: false, current: false }
                             ];
                         } else if (norm === 'ingredients') {
                             return [
-                                { stepNumber: 1, title: "1. Variable: entered_pin = 1234", completed: false, current: true },
-                                { stepNumber: 2, title: "2. Condition: if (entered_pin == 1234)", completed: false, current: false },
-                                { stepNumber: 3, title: "3. Action: print('PIN Verified')", completed: false, current: false },
-                                { stepNumber: 4, title: "4. Else block (without condition)", completed: false, current: false },
-                                { stepNumber: 5, title: "5. Action: print('Incorrect PIN')", completed: false, current: false }
+                                { stepNumber: 1, title: "1. Input variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Outer for loop (1 to n)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Inner for loop (1 to i)", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Print star and newline", completed: false, current: false }
                             ];
                         } else {
                             return [
-                                { stepNumber: 1, title: "1. Declare entered_pin = 1234", completed: false, current: true },
-                                { stepNumber: 2, title: "2. Check if (entered_pin == 1234)", completed: false, current: false },
-                                { stepNumber: 3, title: "3. Print PIN Verified", completed: false, current: false },
-                                { stepNumber: 4, title: "4. Else block with print Incorrect PIN", completed: false, current: false }
+                                { stepNumber: 1, title: "1. Setup input n and outer loop", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Setup inner loop 1 to i", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Build/print star row", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Verify pattern output", completed: false, current: false }
+                            ];
+                        }
+                    }
+
+                    if (key === 'problem24') {
+                        if (norm === 'logic') {
+                            return [
+                                { stepNumber: 1, title: "1. Starting number 1", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Step increment (+1)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Stopping limit n", completed: false, current: false }
+                            ];
+                        } else if (norm === 'recipe') {
+                            return [
+                                { stepNumber: 1, title: "1. Get upper limit n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Start counting from 1", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Display current number", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Add 1 to current number", completed: false, current: false },
+                                { stepNumber: 5, title: "5. Repeat until reaching n", completed: false, current: false }
+                            ];
+                        } else if (norm === 'ingredients') {
+                            return [
+                                { stepNumber: 1, title: "1. Input variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Loop 1 to n (step +1)", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print current number", completed: false, current: false }
+                            ];
+                        } else {
+                            return [
+                                { stepNumber: 1, title: "1. Declare variable n", completed: false, current: true },
+                                { stepNumber: 2, title: "2. Setup loop 1 to n", completed: false, current: false },
+                                { stepNumber: 3, title: "3. Print i inside loop", completed: false, current: false },
+                                { stepNumber: 4, title: "4. Verify sequential output", completed: false, current: false }
                             ];
                         }
                     }
@@ -5675,6 +5667,49 @@
                         return;
                     }
 
+                    // Stale cross-problem cache detection:
+                    // If current problem is Print Star Patterns (problem23), but saved text contains ATM/PIN content from the previously removed problem, wipe the stale cache immediately!
+                    const currentTitleLower = (typeof currentProblemTitle === 'string' ? currentProblemTitle : "").toLowerCase();
+                    const isStarPattern = problemID === 'problem23' || currentTitleLower.includes('star');
+                    if (isStarPattern && progData) {
+                        const allSavedText = ((progData.logic || "") + " " + (progData.recipe || "") + " " + (progData.ingredients || "") + " " + (progData.samplecode || "") + " " + JSON.stringify(progData.inputs || {})).toLowerCase();
+                        if (allSavedText.includes('pin') || allSavedText.includes('atm')) {
+                            console.warn("Detected stale ATM PIN data in problem23. Auto-purging stale cache!");
+                            progData = null;
+                            try {
+                                localStorage.removeItem(`ctc_progress_${category}_${problemID}`);
+                                localStorage.removeItem(`ctc_completed_code_${problemID}`);
+                                localStorage.removeItem(`ctc_compiler_executed_${problemID}`);
+                                localStorage.removeItem(`ctc_saved_samplecode_${problemID}`);
+                                if (currentUid) {
+                                    localStorage.removeItem(`ctc_progress_${currentUid}_${category}_${problemID}`);
+                                    localStorage.removeItem(`ctc_completed_code_${currentUid}_${problemID}`);
+                                    localStorage.removeItem(`ctc_compiler_executed_${currentUid}_${problemID}`);
+                                    localStorage.removeItem(`ctc_saved_samplecode_${currentUid}_${problemID}`);
+                                }
+                                if (currentUid && currentUid !== "guest_user") {
+                                    set(ref(db, `userProgress/${currentUid}/programs/${category}/${problemID}`), null);
+                                }
+                            } catch (e) {}
+
+                            const lInput = document.getElementById("logicInput");
+                            const rInput = document.getElementById("recipeInput");
+                            const iInput = document.getElementById("ingredientsInput");
+                            const sInput = document.getElementById("sampleInput");
+                            if (lInput) lInput.value = "";
+                            if (rInput) rInput.value = "";
+                            if (iInput) iInput.value = "";
+                            if (sInput) sInput.value = "";
+
+                            if (typeof window.renderStepTracker === 'function') {
+                                ['logic', 'recipe', 'ingredients', 'samplecode'].forEach(sec => {
+                                    window.renderStepTracker(sec, window.getProblemSteps(problemID, sec));
+                                });
+                            }
+                            return;
+                        }
+                    }
+
                     window._firebaseSavedProgress = progData;
 
                     // Restore text inputs
@@ -6352,20 +6387,312 @@
                         ]
                     },
                     "problem23": {
-                        title: "ATM PIN Verification",
-                        description: "Write a program to check if an entered PIN matches the correct ATM PIN (1234).",
+                        title: "Print Star Patterns",
+                        description: "Write a program to print a right-angled triangle star pattern for a given number of rows n (e.g., n = 5).",
                         phase: "Phase 1",
                         problemBadge: "Problem 23",
-                        concept: "Conditional Statements & Equality Comparison",
-                        objective: "Compare the entered PIN with 1234. If they match, print 'PIN Verified'; otherwise, print 'Incorrect PIN'.",
+                        concept: "Nested Loops & Pattern Generation",
+                        objective: "Use an outer loop for rows from 1 to n and an inner loop for columns from 1 to i to print stars.",
                         specifications: [
-                            { label: "Input", desc: "An entered 4-digit PIN (e.g. <code>entered_pin = 1234</code>).", icon: "fa-key", color: "#2563eb" },
-                            { label: "Condition", desc: "Check if <code>entered_pin == 1234</code> using an if-else statement.", icon: "fa-bullseye", color: "#7c3aed" },
-                            { label: "Output", desc: "Display 'PIN Verified' on success, or 'Incorrect PIN' on failure.", icon: "fa-display", color: "#059669" }
+                            { label: "Rows", desc: "Outer loop runs from <code>1</code> to <code>n</code>.", icon: "fa-bars", color: "#2563eb" },
+                            { label: "Columns", desc: "Inner loop runs from <code>1</code> to current row <code>i</code>.", icon: "fa-star", color: "#7c3aed" },
+                            { label: "Output", desc: "Right-angled triangle pattern of stars.", icon: "fa-display", color: "#059669" }
                         ],
                         examples: [
-                            { input: "entered_pin = 1234", output: "PIN Verified" },
-                            { input: "entered_pin = 5678", output: "Incorrect PIN" }
+                            { input: "n = 5", output: "*\\n**\\n***\\n****\\n*****" }
+                        ]
+                    },
+                    "problem24": {
+                        title: "Count Numbers from 1 to N",
+                        description: "Write a program to count and display numbers sequentially from 1 up to N.",
+                        phase: "Phase 1",
+                        problemBadge: "Problem 24",
+                        concept: "Looping & Sequential Counting",
+                        objective: "Initialize counting from 1 and iterate sequentially until reaching upper limit N.",
+                        specifications: [
+                            { label: "Start", desc: "Begin counting at <code>1</code>.", icon: "fa-play", color: "#2563eb" },
+                            { label: "Loop Condition", desc: "Continue while <code>i &lt;= n</code>.", icon: "fa-repeat", color: "#7c3aed" },
+                            { label: "Output", desc: "Print each number from 1 to N.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "n = 5", output: "1 2 3 4 5" }
+                        ]
+                    },
+                    "problem25": {
+                        title: "Sum of Digits of a Number",
+                        description: "Write a program to calculate the sum of all digits of a given positive integer.",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 25",
+                        concept: "Looping & Digit Extraction",
+                        objective: "Extract each digit using modulo 10 (% 10), add it to a running sum, and divide by 10 (// 10) until the number becomes 0.",
+                        specifications: [
+                            { label: "Input", desc: "A positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Extraction", desc: "Use <code>digit = n % 10</code> and <code>n = n // 10</code>.", icon: "fa-rotate", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the total sum of all digits.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "123", output: "6" },
+                            { input: "4567", output: "22" }
+                        ]
+                    },
+                    "problem26": {
+                        title: "Reverse of a Number",
+                        description: "Write a program to reverse the digits of a given positive integer.",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 26",
+                        concept: "Looping & Number Reversal",
+                        objective: "Reverse the number by repeatedly extracting the last digit and constructing the reversed number.",
+                        specifications: [
+                            { label: "Input", desc: "A positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Formula", desc: "<code>reversed = (reversed * 10) + (n % 10)</code>.", icon: "fa-calculator", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the reversed number.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "1234", output: "4321" },
+                            { input: "987", output: "789" }
+                        ]
+                    },
+                    "problem27": {
+                        title: "Twin Prime Numbers",
+                        description: "Write a program to check whether two given prime numbers are Twin Primes (prime numbers having a difference of 2).",
+                        phase: "Bundle 3",
+                        problemBadge: "Problem 27",
+                        concept: "Prime Pair Parity & Difference",
+                        objective: "Verify both numbers are prime and check if their absolute difference equals 2.",
+                        specifications: [
+                            { label: "Input", desc: "Two positive integers <code>p1</code> and <code>p2</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Condition", desc: "Both must be prime AND <code>|p1 - p2| == 2</code>.", icon: "fa-check-double", color: "#7c3aed" },
+                            { label: "Output", desc: "Print 'Twin Primes' or 'Not Twin Primes'.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "3 5", output: "Twin Primes" },
+                            { input: "11 13", output: "Twin Primes" },
+                            { input: "7 11", output: "Not Twin Primes" }
+                        ]
+                    },
+                    "problem28": {
+                        title: "Count Primes up to N",
+                        description: "Write a program to count how many prime numbers exist between 2 and N (inclusive).",
+                        phase: "Bundle 3",
+                        problemBadge: "Problem 28",
+                        concept: "Prime Counting & Iteration",
+                        objective: "Loop from 2 to N, check each number for primality, and increment a prime counter.",
+                        specifications: [
+                            { label: "Input", desc: "A positive integer <code>n</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Counter", desc: "Increment count whenever a prime number is encountered.", icon: "fa-arrow-up-1-9", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the total count of prime numbers.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "10", output: "4 (2, 3, 5, 7)" },
+                            { input: "20", output: "8" }
+                        ]
+                    },
+                    "problem29": {
+                        title: "Sum of Prime Numbers in Range",
+                        description: "Write a program to calculate the sum of all prime numbers within a given range [start, end].",
+                        phase: "Bundle 3",
+                        problemBadge: "Problem 29",
+                        concept: "Prime Accumulation in Range",
+                        objective: "Iterate from start to end, test primality, and accumulate all prime numbers into total sum.",
+                        specifications: [
+                            { label: "Input", desc: "Range bounds <code>start</code> and <code>end</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Accumulator", desc: "<code>sum += i</code> for every prime in range.", icon: "fa-plus", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the total sum of prime numbers in range.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "1 10", output: "17 (2 + 3 + 5 + 7)" },
+                            { input: "10 20", output: "60 (11 + 13 + 17 + 19)" }
+                        ]
+                    },
+                    "problem30": {
+                        title: "First N Prime Numbers",
+                        description: "Write a program to generate and display the first N prime numbers starting from 2.",
+                        phase: "Bundle 3",
+                        problemBadge: "Problem 30",
+                        concept: "Sequential Prime Generation",
+                        objective: "Generate primes starting from 2 until exactly N prime numbers have been found and displayed.",
+                        specifications: [
+                            { label: "Input", desc: "An integer <code>n</code> (count of primes needed).", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Condition", desc: "Stop when total found primes reaches <code>n</code>.", icon: "fa-stop", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the first N prime numbers separated by space.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "5", output: "2 3 5 7 11" },
+                            { input: "3", output: "2 3 5" }
+                        ]
+                    },
+                    "problem31": {
+                        title: "Check Co-prime Numbers",
+                        description: "Write a program to check whether two numbers are Co-prime (their Greatest Common Divisor GCD is 1).",
+                        phase: "Bundle 3",
+                        problemBadge: "Problem 31",
+                        concept: "Common Factors & GCD",
+                        objective: "Compute the greatest common divisor of two integers. If GCD is 1, they are co-prime.",
+                        specifications: [
+                            { label: "Input", desc: "Two integers <code>a</code> and <code>b</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Condition", desc: "Check if <code>GCD(a, b) == 1</code>.", icon: "fa-scale-balanced", color: "#7c3aed" },
+                            { label: "Output", desc: "Print 'Co-prime' or 'Not Co-prime'.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "14 15", output: "Co-prime" },
+                            { input: "12 18", output: "Not Co-prime" }
+                        ]
+                    },
+                    "problem32": {
+                        title: "Check Prime or Composite Number",
+                        description: "Write a program to determine whether a given positive integer greater than 1 is Prime or Composite.",
+                        phase: "Bundle 3",
+                        problemBadge: "Problem 32",
+                        concept: "Prime vs Composite Classification",
+                        objective: "Count divisors of N. If exactly 2 divisors (1 and itself), it's Prime; if more than 2 divisors, it's Composite.",
+                        specifications: [
+                            { label: "Input", desc: "A positive integer <code>n &gt; 1</code>.", icon: "fa-right-to-bracket", color: "#2563eb" },
+                            { label: "Rule", desc: "Prime has 2 factors; Composite has more than 2 factors.", icon: "fa-code-branch", color: "#7c3aed" },
+                            { label: "Output", desc: "Print 'Prime' or 'Composite' (or 'Neither' for 1).", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "7", output: "Prime" },
+                            { input: "9", output: "Composite" }
+                        ]
+                    },
+                    "problem33": {
+                        title: "Senior Citizen or Not",
+                        description: "Write a program to check whether a person is a Senior Citizen (age >= 60).",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 33",
+                        concept: "Conditional Comparison",
+                        objective: "Take age as input and check if age >= 60.",
+                        specifications: [
+                            { label: "Input", desc: "An integer representing <code>age</code>.", icon: "fa-user", color: "#2563eb" },
+                            { label: "Condition", desc: "Check if <code>age &gt;= 60</code>.", icon: "fa-scale-balanced", color: "#7c3aed" },
+                            { label: "Output", desc: "Print 'Senior Citizen' or 'Not a Senior Citizen'.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "65", output: "Senior Citizen" },
+                            { input: "42", output: "Not a Senior Citizen" }
+                        ]
+                    },
+                    "problem34": {
+                        title: "Largest of Three Numbers",
+                        description: "Write a program to find the greatest among three given numbers using logical operators.",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 34",
+                        concept: "Compound Logical Operators",
+                        objective: "Compare three integers using 'and' operators to find the maximum value.",
+                        specifications: [
+                            { label: "Input", desc: "Three integers <code>a</code>, <code>b</code>, and <code>c</code>.", icon: "fa-arrow-up-9-1", color: "#2563eb" },
+                            { label: "Condition", desc: "Test <code>a &gt;= b and a &gt;= c</code>, else test <code>b &gt;= c</code>.", icon: "fa-code-branch", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the largest number.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "12 45 23", output: "45" },
+                            { input: "99 5 10", output: "99" }
+                        ]
+                    },
+                    "problem35": {
+                        title: "Valid Triangle by Angles",
+                        description: "Write a program to check whether a triangle is valid given its three internal angles.",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 35",
+                        concept: "Geometric Angle Validation",
+                        objective: "Verify that all three angles are positive (> 0) and their sum equals exactly 180 degrees.",
+                        specifications: [
+                            { label: "Input", desc: "Three angles <code>a</code>, <code>b</code>, <code>c</code>.", icon: "fa-shapes", color: "#2563eb" },
+                            { label: "Condition", desc: "Check <code>a + b + c == 180 and a &gt; 0 and b &gt; 0 and c &gt; 0</code>.", icon: "fa-ruler", color: "#7c3aed" },
+                            { label: "Output", desc: "Print 'Valid Triangle' or 'Invalid Triangle'.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "60 60 60", output: "Valid Triangle" },
+                            { input: "90 45 50", output: "Invalid Triangle" }
+                        ]
+                    },
+                    "problem36": {
+                        title: "Student Grade Calculator",
+                        description: "Write a program to assign a letter grade based on marks (>=90: Grade A, >=75: Grade B, >=50: Grade C, <50: Fail).",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 36",
+                        concept: "Multi-branch If-Elif-Else",
+                        objective: "Evaluate student marks against grade thresholds in sequential descending order.",
+                        specifications: [
+                            { label: "Input", desc: "Student marks (integer <code>0-100</code>).", icon: "fa-graduation-cap", color: "#2563eb" },
+                            { label: "Slabs", desc: "<code>&gt;=90 (A)</code>, <code>&gt;=75 (B)</code>, <code>&gt;=50 (C)</code>, <code>else (Fail)</code>.", icon: "fa-list-ol", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the assigned Grade.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "95", output: "Grade A" },
+                            { input: "82", output: "Grade B" },
+                            { input: "35", output: "Fail" }
+                        ]
+                    },
+                    "problem37": {
+                        title: "Character Type Identifier",
+                        description: "Write a program to determine if a given character is an Uppercase letter, Lowercase letter, Digit, or Special Symbol.",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 37",
+                        concept: "Character Classification & ASCII",
+                        objective: "Inspect character ranges ('A'-'Z', 'a'-'z', '0'-'9') using conditionals.",
+                        specifications: [
+                            { label: "Input", desc: "A single character <code>ch</code>.", icon: "fa-font", color: "#2563eb" },
+                            { label: "Checks", desc: "Test uppercase, lowercase, digit, and fallback to special symbol.", icon: "fa-spell-check", color: "#7c3aed" },
+                            { label: "Output", desc: "Print 'Uppercase', 'Lowercase', 'Digit', or 'Special Symbol'.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "A", output: "Uppercase" },
+                            { input: "7", output: "Digit" },
+                            { input: "#", output: "Special Symbol" }
+                        ]
+                    },
+                    "problem38": {
+                        title: "Electricity Bill Calculator",
+                        description: "Write a program to calculate electricity bill according to consumed units with tiered tariff slabs.",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 38",
+                        concept: "Tiered Tariff Calculations",
+                        objective: "Apply slab rates (e.g., first 100 units free, next 100 units @ Rs. 2, above 200 units @ Rs. 5).",
+                        specifications: [
+                            { label: "Input", desc: "Number of electricity units consumed <code>units</code>.", icon: "fa-bolt", color: "#2563eb" },
+                            { label: "Calculation", desc: "Calculate charges per slab incrementally.", icon: "fa-calculator", color: "#7c3aed" },
+                            { label: "Output", desc: "Print total bill amount.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "80", output: "0" },
+                            { input: "150", output: "100" },
+                            { input: "250", output: "450" }
+                        ]
+                    },
+                    "problem39": {
+                        title: "Quadrant of Coordinates",
+                        description: "Write a program to determine which Cartesian Quadrant a point (x, y) belongs to (Q1, Q2, Q3, Q4, Axis, or Origin).",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 39",
+                        concept: "Coordinate Geometry Signs",
+                        objective: "Evaluate sign of x and y (+/+) -> Q1, (-/+) -> Q2, (-/-) -> Q3, (+/-) -> Q4.",
+                        specifications: [
+                            { label: "Input", desc: "Coordinates <code>x</code> and <code>y</code>.", icon: "fa-crosshairs", color: "#2563eb" },
+                            { label: "Conditions", desc: "Check sign combinations and zero checks for axes/origin.", icon: "fa-compass", color: "#7c3aed" },
+                            { label: "Output", desc: "Print quadrant name or axis location.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "3 4", output: "Quadrant 1" },
+                            { input: "-2 5", output: "Quadrant 2" },
+                            { input: "0 0", output: "Origin" }
+                        ]
+                    },
+                    "problem40": {
+                        title: "Simple Arithmetic Calculator",
+                        description: "Write a program that takes two numbers and an operator (+, -, *, /) and performs the corresponding calculation.",
+                        phase: "Bundle 2",
+                        problemBadge: "Problem 40",
+                        concept: "Operator Dispatching",
+                        objective: "Match the operator using if-elif-else statements and compute result with zero-division guard.",
+                        specifications: [
+                            { label: "Input", desc: "Two numbers <code>num1</code>, <code>num2</code> and operator <code>op</code>.", icon: "fa-calculator", color: "#2563eb" },
+                            { label: "Branching", desc: "Branch on '+', '-', '*', '/' with division by zero check.", icon: "fa-code-branch", color: "#7c3aed" },
+                            { label: "Output", desc: "Print the calculated result or error message.", icon: "fa-display", color: "#059669" }
+                        ],
+                        examples: [
+                            { input: "10 5 +", output: "15" },
+                            { input: "20 4 /", output: "5" }
                         ]
                     }
                 };

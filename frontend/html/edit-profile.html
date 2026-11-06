@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="../css/edit-profile.css" />
   <link rel="stylesheet" href="../css/dashboard.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+  <script src="../public/js/tamilNaduSchoolsData.js"></script>
   <style>
     .cropper-view-box, .cropper-face {
       border-radius: 50%;
@@ -35,6 +36,10 @@
         <a href="completed-programs.html" class="sidebar-link">
           <i class="fas fa-check-circle"></i>
           <span>Completed Programs</span>
+        </a>
+        <a href="leaderboard.html" class="sidebar-link">
+          <i class="fas fa-trophy"></i>
+          <span>Leaderboard</span>
         </a>
         
 
@@ -103,10 +108,81 @@
               <input type="number" id="age" min="1" max="120" placeholder="e.g. 25" required />
             </div>
 
+            <div class="form-group">
+              <label for="districtSelect">District (Tamil Nadu)</label>
+              <select id="districtSelect" style="background: var(--input-bg); padding: 0.875rem 1rem; border-radius: 0.75rem; border: 1px solid transparent; font-size: 0.95rem; cursor: pointer;" required>
+                <option value="" disabled selected>Select District</option>
+                <option value="Ariyalur">Ariyalur</option>
+                <option value="Chengalpattu">Chengalpattu</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Coimbatore">Coimbatore</option>
+                <option value="Cuddalore">Cuddalore</option>
+                <option value="Dharmapuri">Dharmapuri</option>
+                <option value="Dindigul">Dindigul</option>
+                <option value="Erode">Erode</option>
+                <option value="Kallakurichi">Kallakurichi</option>
+                <option value="Kanchipuram">Kanchipuram</option>
+                <option value="Kanyakumari">Kanyakumari</option>
+                <option value="Karur">Karur</option>
+                <option value="Krishnagiri">Krishnagiri</option>
+                <option value="Madurai">Madurai</option>
+                <option value="Mayiladuthurai">Mayiladuthurai</option>
+                <option value="Nagapattinam">Nagapattinam</option>
+                <option value="Namakkal">Namakkal</option>
+                <option value="Nilgiris">Nilgiris</option>
+                <option value="Perambalur">Perambalur</option>
+                <option value="Pudukkottai">Pudukkottai</option>
+                <option value="Ramanathapuram">Ramanathapuram</option>
+                <option value="Ranipet">Ranipet</option>
+                <option value="Salem">Salem</option>
+                <option value="Sivaganga">Sivaganga</option>
+                <option value="Tenkasi">Tenkasi</option>
+                <option value="Thanjavur">Thanjavur</option>
+                <option value="Theni">Theni</option>
+                <option value="Thoothukudi">Thoothukudi</option>
+                <option value="Tiruchirappalli (Trichy)">Tiruchirappalli (Trichy)</option>
+                <option value="Tirunelveli">Tirunelveli</option>
+                <option value="Tirupathur">Tirupathur</option>
+                <option value="Tiruppur">Tiruppur</option>
+                <option value="Tiruvallur">Tiruvallur</option>
+                <option value="Tiruvannamalai">Tiruvannamalai</option>
+                <option value="Tiruvarur">Tiruvarur</option>
+                <option value="Vellore">Vellore</option>
+                <option value="Viluppuram">Viluppuram</option>
+                <option value="Virudhunagar">Virudhunagar</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="gradeSelect">Grade / Standard</label>
+              <select id="gradeSelect" style="background: var(--input-bg); padding: 0.875rem 1rem; border-radius: 0.75rem; border: 1px solid transparent; font-size: 0.95rem; cursor: pointer;">
+                <option value="">Select Grade</option>
+                <option value="6th Standard">6th Standard</option>
+                <option value="7th Standard">7th Standard</option>
+                <option value="8th Standard">8th Standard</option>
+                <option value="9th Standard">9th Standard</option>
+                <option value="10th Standard">10th Standard</option>
+                <option value="11th Standard">11th Standard</option>
+                <option value="12th Standard">12th Standard</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
             <div class="form-group full">
-              <label for="education">Education / University</label>
-              <input type="text" id="education" placeholder="e.g. B.S. Computer Science, Stanford University"
-                required />
+              <label for="schoolSelect">School / Institute Name</label>
+              <select id="schoolSelect" style="background: var(--input-bg); padding: 0.875rem 1rem; border-radius: 0.75rem; border: 1px solid transparent; font-size: 0.95rem; cursor: pointer;" required>
+                <option value="" disabled selected>Select District First</option>
+              </select>
+            </div>
+
+            <div class="form-group full" id="customSchoolContainer" style="display: none;">
+              <label for="customSchoolInput">Specify School Name (if not in list)</label>
+              <input type="text" id="customSchoolInput" placeholder="Type your school / institute name" />
+            </div>
+
+            <div class="form-group full">
+              <label for="education">Education / Degree</label>
+              <input type="text" id="education" placeholder="e.g. High School / Higher Secondary" />
             </div>
           </div>
         </div>
@@ -266,7 +342,7 @@
     let userRef = null;
 
     function setFieldsDisabled(disabled) {
-      const inputs = document.querySelectorAll('.form-grid input');
+      const inputs = document.querySelectorAll('.form-grid input, .form-grid select');
       inputs.forEach(input => input.disabled = disabled);
       const avatarInput = document.getElementById('avatarFile');
       if (avatarInput) avatarInput.disabled = disabled;
@@ -290,13 +366,112 @@
       }
     }
 
+    const districtSelect = document.getElementById("districtSelect");
+    const schoolSelect = document.getElementById("schoolSelect");
+    const customSchoolContainer = document.getElementById("customSchoolContainer");
+    const customSchoolInput = document.getElementById("customSchoolInput");
+
+    function initDistrictDropdown() {
+      const districtsData = window.TAMIL_NADU_DISTRICTS_DATA || {};
+      const districts = Object.keys(districtsData).sort();
+      if (districtSelect && districtSelect.options.length <= 1) {
+        districts.forEach(d => {
+          const opt = document.createElement("option");
+          opt.value = d;
+          opt.textContent = d;
+          districtSelect.appendChild(opt);
+        });
+      }
+    }
+
+    function populateSchoolsForDistrict(dist, selectedSchool) {
+      const districtsData = window.TAMIL_NADU_DISTRICTS_DATA || {};
+      if (!schoolSelect) return;
+
+      schoolSelect.innerHTML = "";
+      if (!dist || !districtsData[dist]) {
+        schoolSelect.disabled = true;
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "Select District First";
+        opt.disabled = true;
+        opt.selected = true;
+        schoolSelect.appendChild(opt);
+        if (customSchoolContainer) customSchoolContainer.style.display = "none";
+        return;
+      }
+
+      schoolSelect.disabled = false;
+      const defOpt = document.createElement("option");
+      defOpt.value = "";
+      defOpt.textContent = `Select School in ${dist}`;
+      defOpt.disabled = true;
+      schoolSelect.appendChild(defOpt);
+
+      const schools = (districtsData[dist] || []).slice().sort((a, b) => a.localeCompare(b));
+      let isKnown = false;
+      schools.forEach(sch => {
+        const opt = document.createElement("option");
+        opt.value = sch;
+        opt.textContent = sch;
+        if (selectedSchool && selectedSchool === sch) {
+          opt.selected = true;
+          isKnown = true;
+        }
+        schoolSelect.appendChild(opt);
+      });
+
+      const otherOpt = document.createElement("option");
+      otherOpt.value = "OTHER_CUSTOM";
+      otherOpt.textContent = "➕ Other School (Type your school name)";
+      if (selectedSchool && !isKnown) {
+        otherOpt.selected = true;
+        if (customSchoolContainer) customSchoolContainer.style.display = "block";
+        if (customSchoolInput) customSchoolInput.value = selectedSchool;
+      }
+      schoolSelect.appendChild(otherOpt);
+
+      if (!selectedSchool) {
+        defOpt.selected = true;
+      }
+    }
+
+    if (districtSelect) {
+      districtSelect.addEventListener("change", function () {
+        populateSchoolsForDistrict(this.value, "");
+      });
+    }
+
+    if (schoolSelect) {
+      schoolSelect.addEventListener("change", function () {
+        if (this.value === "OTHER_CUSTOM") {
+          if (customSchoolContainer) customSchoolContainer.style.display = "block";
+          if (customSchoolInput) customSchoolInput.focus();
+        } else {
+          if (customSchoolContainer) customSchoolContainer.style.display = "none";
+          if (customSchoolInput) customSchoolInput.value = "";
+        }
+      });
+    }
+
     function updateFieldValues(data) {
       if (!data) return;
+      initDistrictDropdown();
+
       const computedName = data.fullname || (data.firstname ? (data.firstname + (data.lastname ? " " + data.lastname : "")).trim() : "");
       document.getElementById("name").value = computedName;
       document.getElementById("phone").value = data.phone || localStorage.getItem("userPhone") || "";
       document.getElementById("age").value = data.age || "";
       document.getElementById("education").value = data.education || "";
+
+      const userDist = data.district || localStorage.getItem("userDistrict") || "";
+      const userSch = data.schoolName || data.instituteName || localStorage.getItem("userSchool") || "";
+      const userGrd = data.grade || data.standard || localStorage.getItem("userGrade") || "";
+
+      if (districtSelect) districtSelect.value = userDist;
+      if (document.getElementById("gradeSelect")) document.getElementById("gradeSelect").value = userGrd;
+
+      populateSchoolsForDistrict(userDist, userSch);
 
       if (data.profileImage) {
         const preview = document.getElementById("avatarPreview");
@@ -350,10 +525,10 @@
           }
 
           const hasBasicInfo = (data.fullname || data.firstname) && data.phone;
-          const isComplete = hasBasicInfo && data.age && data.education;
+          const isComplete = hasBasicInfo && data.age && (data.schoolName || data.instituteName);
 
           if (!isComplete) {
-            // Incomplete profile: allow editing immediately so user can fill age/education
+            // Incomplete profile (e.g. existing user without schoolName): allow editing immediately
             setFieldsDisabled(false);
           } else {
             // Already complete: start in view mode
@@ -388,7 +563,29 @@
         const name = document.getElementById("name").value.trim();
         const phone = document.getElementById("phone").value.trim();
         const age = document.getElementById("age").value.trim();
+        const district = districtSelect ? districtSelect.value.trim() : "";
+        const rawSchool = schoolSelect ? schoolSelect.value.trim() : "";
+        const customSchool = customSchoolInput ? customSchoolInput.value.trim() : "";
+        const grade = document.getElementById("gradeSelect") ? document.getElementById("gradeSelect").value.trim() : "";
         const education = document.getElementById("education").value.trim();
+
+        const finalSchoolName = rawSchool === "OTHER_CUSTOM" ? customSchool : rawSchool;
+
+        if (!district) {
+          showModal("Please select your District in Tamil Nadu.", "error");
+          districtSelect?.focus();
+          return;
+        }
+
+        if (!finalSchoolName) {
+          showModal("Please select or enter your School / Institute Name.", "error");
+          if (rawSchool === "OTHER_CUSTOM") {
+            customSchoolInput?.focus();
+          } else {
+            schoolSelect?.focus();
+          }
+          return;
+        }
 
         try {
           const nameParts = name.split(/\s+/);
@@ -401,6 +598,10 @@
             lastname: lastname,
             phone: phone,
             age: age,
+            district: district,
+            state: "Tamil Nadu",
+            schoolName: finalSchoolName,
+            grade: grade,
             education: education
           };
 
@@ -413,6 +614,9 @@
 
           originalData = { ...originalData, ...updateData };
           localStorage.setItem("userPhone", phone);
+          localStorage.setItem("userDistrict", district);
+          localStorage.setItem("userSchool", finalSchoolName);
+          if (grade) localStorage.setItem("userGrade", grade);
 
           setFieldsDisabled(true);
           setNavigationLocked(false);

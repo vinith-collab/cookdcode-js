@@ -1,8 +1,66 @@
 function detectProblemType(problemId, problemTitle) {
   const normId = (problemId || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   const normTitle = (problemTitle || "").toLowerCase();
-  if (normId.includes("atmpin") || normId.includes("pinverification") || normId === "problem23" || normId === "problem023" || (normTitle.includes("atm") && normTitle.includes("pin")) || normTitle.includes("pin verification")) {
-    return "atm-pin-verification";
+
+  // Intermediate If-Else Additions: Problem 33 to 40
+  if (normId.includes("seniorcitizen") || normId === "problem33" || normId === "problem033" || normTitle.includes("senior citizen")) {
+    return "senior-citizen";
+  }
+  if (normId.includes("largestofthree") || normId === "problem34" || normId === "problem034" || (normTitle.includes("largest") && (normTitle.includes("three") || normTitle.includes("3")))) {
+    return "largest-of-three";
+  }
+  if (normId.includes("validtriangle") || normId === "problem35" || normId === "problem035" || (normTitle.includes("triangle") && normTitle.includes("valid"))) {
+    return "valid-triangle";
+  }
+  if (normId.includes("gradecalculator") || normId.includes("studentgrade") || normId === "problem36" || normId === "problem036" || normTitle.includes("grade")) {
+    return "grade-calculator";
+  }
+  if (normId.includes("charactertype") || normId === "problem37" || normId === "problem037" || normTitle.includes("character type")) {
+    return "character-type";
+  }
+  if (normId.includes("electricitybill") || normId === "problem38" || normId === "problem038" || (normTitle.includes("electricity") || normTitle.includes("electric bill"))) {
+    return "electricity-bill";
+  }
+  if (normId.includes("quadrant") || normId === "problem39" || normId === "problem039" || normTitle.includes("quadrant")) {
+    return "quadrant-finder";
+  }
+  if (normId.includes("simplecalculator") || normId === "problem40" || normId === "problem040" || (normTitle.includes("calculator") && !normTitle.includes("grade"))) {
+    return "simple-calculator";
+  }
+
+  // For Loop additions: Problem 25 & Problem 26
+  if (normId.includes("sumofdigits") || normId === "problem25" || normId === "problem025" || (normTitle.includes("sum") && normTitle.includes("digit"))) {
+    return "sum-of-digits";
+  }
+  if (normId.includes("reversenumber") || normId.includes("reverse") || normId === "problem26" || normId === "problem026" || (normTitle.includes("reverse") && normTitle.includes("number"))) {
+    return "reverse-of-a-number";
+  }
+
+  // Prime Numbers Series additions: Problem 27 to 32
+  if (normId.includes("twinprime") || normId === "problem27" || normId === "problem027" || normTitle.includes("twin prime")) {
+    return "twin-prime-numbers";
+  }
+  if (normId.includes("countprimes") || normId === "problem28" || normId === "problem028" || (normTitle.includes("count") && normTitle.includes("prime"))) {
+    return "count-primes-up-to-n";
+  }
+  if (normId.includes("sumofprimes") || normId === "problem29" || normId === "problem029" || (normTitle.includes("sum") && normTitle.includes("prime"))) {
+    return "sum-of-primes-in-range";
+  }
+  if (normId.includes("firstnprimes") || normId === "problem30" || normId === "problem030" || (normTitle.includes("first") && normTitle.includes("prime"))) {
+    return "first-n-primes";
+  }
+  if (normId.includes("coprime") || normId === "problem31" || normId === "problem031" || normTitle.includes("co-prime") || normTitle.includes("coprime")) {
+    return "check-coprime-numbers";
+  }
+  if (normId.includes("primeorcomposite") || normId.includes("composite") || normId === "problem32" || normId === "problem032" || normTitle.includes("composite")) {
+    return "prime-or-composite-number";
+  }
+
+  if (normId.includes("count1ton") || normId.includes("countnumbers") || normId === "problem24" || normId === "problem024" || (normTitle.includes("count") && (normTitle.includes("1 to n") || normTitle.includes("n")))) {
+    return "count-numbers-1-to-n";
+  }
+  if (normId.includes("starpattern") || normId.includes("printstar") || normId === "problem23" || normId === "problem023" || (normTitle.includes("star") && normTitle.includes("pattern"))) {
+    return "print-star-patterns";
   }
   if (normId.includes("oddnumbers1to50") || normId.includes("odd1to50") || normId.includes("odd50") || (normId.includes("odd") && normId.includes("50")) || normId === "problem22" || normId === "problem022" || (normTitle.includes("odd") && (normTitle.includes("50") || normTitle.includes("1 to 50")))) {
     return "odd-numbers-1-to-50";

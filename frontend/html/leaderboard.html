@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Leaderboard - CookDCode</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <link rel="stylesheet" href="../css/leaderboard.css" />
+</head>
+
+<body>
+  <div class="dashboard-layout">
+    <script>
+      // Global priority dropdown toggle
+      window.toggleDropdown = (e) => {
+        if (e) e.stopPropagation();
+        const dropdown = document.getElementById('dropdownMenu');
+        if (dropdown) {
+          dropdown.classList.toggle('active');
+        }
+      };
+    </script>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-close" id="sidebarClose" aria-label="Close Menu">
+        <i class="fas fa-times"></i>
+      </button>
+      <nav class="sidebar-nav">
+        <a href="ctc.html" class="sidebar-link">
+          <i class="fas fa-th-large"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="ongoingprograms.html" class="sidebar-link">
+          <i class="fas fa-spinner fa-spin-hover"></i>
+          <span>Ongoing Programs</span>
+        </a>
+        <a href="completed-programs.html" class="sidebar-link">
+          <i class="fas fa-check-circle"></i>
+          <span>Completed Programs</span>
+        </a>
+        <a href="leaderboard.html" class="sidebar-link active">
+          <i class="fas fa-trophy"></i>
+          <span>Leaderboard</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <nav class="navbar">
+        <div class="nav-left">
+          <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu" style="display: none;">
+            <i class="fas fa-bars"></i>
+          </button>
+
+          <a href="ctc.html" class="brand">
+            <img src="../Images/logo.png" alt="cookDcode Logo" class="logo" />
+            <span>cookDcode</span>
+          </a>
+        </div>
+
+        <div class="navbar-right">
+          <div class="profile-menu">
+            <button class="avatar-btn" id="avatarBtn" onclick="toggleDropdown(event)" aria-label="User Profile">
+              <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2250%22%20fill%3D%22%23e2e8f0%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2238%22%20r%3D%2218%22%20fill%3D%22%2394a3b8%22%2F%3E%3Cpath%20d%3D%22M%2022%2084%20C%2022%2066%2C%2035%2060%2C%2050%2060%20C%2065%2060%2C%2078%2066%2C%2078%2084%20Z%22%20fill%3D%22%2394a3b8%22%2F%3E%3C%2Fsvg%3E" alt="Profile Avatar" id="userAvatar"
+                onerror="this.onerror=null;this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2250%22%20fill%3D%22%23e2e8f0%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2238%22%20r%3D%2218%22%20fill%3D%22%2394a3b8%22%2F%3E%3Cpath%20d%3D%22M%2022%2084%20C%2022%2066%2C%2035%2060%2C%2050%2060%20C%2065%2060%2C%2078%2066%2C%2078%2084%20Z%22%20fill%3D%22%2394a3b8%22%2F%3E%3C%2Fsvg%3E';" />
+            </button>
+            <div class="dropdown-menu" id="dropdownMenu">
+              <div class="dropdown-header">
+                <span class="dropdown-title">Welcome,</span>
+                <span class="dropdown-email" id="dropdownEmail">User Name</span>
+              </div>
+              <a href="edit-profile.html" class="dropdown-item">
+                <i class="fas fa-user-edit"></i>
+                Edit Profile
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item" onclick="logoutUser()">
+                <i class="fas fa-sign-out-alt"></i>
+                Log Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Leaderboard Page Content -->
+      <main class="leaderboard-container">
+        <!-- Hero Banner -->
+        <section class="lb-hero">
+          <div class="lb-hero-content">
+            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+              <div class="lb-hero-badge" style="margin-bottom: 0;">
+                <i class="fas fa-trophy"></i>
+                Tamil Nadu Inter-School Arena
+              </div>
+              <span class="lb-live-badge">
+                <span class="lb-live-dot"></span>
+                Live Firebase Synced
+              </span>
+            </div>
+            <h1 class="lb-hero-title">Student Coding Leaderboard</h1>
+            <p class="lb-hero-subtitle">
+              Real-time rankings powered 100% by live student progress in Firebase! Solve challenge bundles, level up your rank, and represent your school with pride.
+            </p>
+          </div>
+        </section>
+
+        <!-- Stats Overview Cards -->
+        <section class="lb-stats-grid">
+          <div class="lb-stat-card">
+            <div class="lb-stat-icon blue">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="lb-stat-info">
+              <span class="lb-stat-value" id="statCodersCount">0</span>
+              <span class="lb-stat-label">Active Coders</span>
+            </div>
+          </div>
+
+          <div class="lb-stat-card">
+            <div class="lb-stat-icon emerald">
+              <i class="fas fa-school"></i>
+            </div>
+            <div class="lb-stat-info">
+              <span class="lb-stat-value" id="statSchoolsCount">0</span>
+              <span class="lb-stat-label">Schools Competing</span>
+            </div>
+          </div>
+
+          <div class="lb-stat-card">
+            <div class="lb-stat-icon amber">
+              <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <div class="lb-stat-info">
+              <span class="lb-stat-value" id="statDistrictsCount">0</span>
+              <span class="lb-stat-label">Districts Represented</span>
+            </div>
+          </div>
+
+          <div class="lb-stat-card">
+            <div class="lb-stat-icon purple">
+              <i class="fas fa-code"></i>
+            </div>
+            <div class="lb-stat-info">
+              <span class="lb-stat-value" id="statSolvedTotal">0</span>
+              <span class="lb-stat-label">Challenges Solved</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Filters & Search Toolbar -->
+        <section class="lb-filter-bar">
+          <div class="lb-search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="lb-search-input" placeholder="Search student or school name..." />
+          </div>
+
+          <div class="lb-filter-group">
+            <div class="lb-select-wrap">
+              <i class="fas fa-map-marker-alt prefix-icon"></i>
+              <select id="districtFilter">
+                <option value="ALL">All Districts (Tamil Nadu)</option>
+              </select>
+            </div>
+
+            <div class="lb-select-wrap">
+              <i class="fas fa-layer-group prefix-icon"></i>
+              <select id="bundleFilter">
+                <option value="ALL">All Bundles (40 Problems)</option>
+                <option value="bundle1">Bundle 1: If-Else (Beginner)</option>
+                <option value="bundle2">Bundle 2: If-Else (Intermediate)</option>
+                <option value="bundle3">Bundle 3: For Loop & Iterations</option>
+                <option value="bundle4">Bundle 4: Prime Numbers Series</option>
+              </select>
+            </div>
+
+            <button type="button" class="lb-reset-btn" id="resetBtn" title="Reset all filters">
+              <i class="fas fa-rotate-left"></i>
+              Reset
+            </button>
+
+            <button type="button" class="lb-reset-btn" id="refreshBtn" title="Refresh Live Data from Firebase" style="background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8;">
+              <i class="fas fa-sync-alt" id="refreshIcon"></i>
+              Refresh
+            </button>
+          </div>
+        </section>
+
+        <!-- Top 3 Podium Section -->
+        <section class="lb-podium-section" id="podiumSection" style="display: none;">
+          <!-- Dynamically Rendered Podium Cards (Rank 2, Rank 1, Rank 3) -->
+        </section>
+
+        <!-- Detailed Ranked Table -->
+        <section class="lb-table-card">
+          <div class="lb-table-header">
+            <div class="lb-table-title">
+              <i class="fas fa-list-ol" style="color: #2563eb;"></i>
+              Rankings Roster
+            </div>
+            <span class="lb-table-count" id="tableFilteredCount">0 Students</span>
+          </div>
+
+          <div class="lb-table-responsive">
+            <table class="lb-table">
+              <thead>
+                <tr>
+                  <th style="width: 80px; text-align: center;">Rank</th>
+                  <th>Student</th>
+                  <th>School & District</th>
+                  <th>Progress</th>
+                  <th style="text-align: right;">Tokens</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardTbody">
+                <!-- Dynamically rendered rows from Firebase -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="emptyState" class="lb-empty-state" style="display: none;">
+            <i class="fas fa-database"></i>
+            <h3 id="emptyStateTitle">No Students Found</h3>
+            <p id="emptyStateMsg">No student data found in Firebase for the selected filters. Solve challenges to be the first on the Leaderboard!</p>
+          </div>
+        </section>
+      </main>
+
+      <!-- Sticky "My Rank" Bottom Bar -->
+      <aside class="lb-sticky-rank-bar" id="stickyRankBar" style="display: none;">
+        <div class="lb-sticky-left">
+          <div class="lb-sticky-rank-chip" id="myStickyRankBadge">
+            <i class="fas fa-medal"></i>
+            <span id="myStickyRankNum">#--</span>
+          </div>
+          <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2250%22%20fill%3D%22%23e2e8f0%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2238%22%20r%3D%2218%22%20fill%3D%22%2394a3b8%22%2F%3E%3Cpath%20d%3D%22M%2022%2084%20C%2022%2066%2C%2035%2060%2C%2050%2060%20C%2065%2060%2C%2078%2066%2C%2078%2084%20Z%22%20fill%3D%22%2394a3b8%22%2F%3E%3C%2Fsvg%3E" alt="" class="lb-sticky-avatar" id="myStickyAvatar" onerror="this.onerror=null; this.src=window.DEFAULT_AVATAR;" />
+          <div class="lb-sticky-meta">
+            <span class="lb-sticky-name" id="myStickyName">Your Name</span>
+            <span class="lb-sticky-school" id="myStickySchool">Your School Name</span>
+          </div>
+        </div>
+        <div class="lb-sticky-right">
+          <div class="lb-sticky-stats">
+            <div class="lb-sticky-stat-item">
+              <span class="lb-sticky-stat-val" id="myStickySolved">--</span>
+              <span class="lb-sticky-stat-lbl">Solved</span>
+            </div>
+            <div class="lb-sticky-stat-item">
+              <span class="lb-sticky-stat-val" id="myStickyTokens" style="color: #fbbf24;">--</span>
+              <span class="lb-sticky-stat-lbl">Tokens</span>
+            </div>
+          </div>
+          <button class="lb-sticky-action-btn" id="myStickyJumpBtn">
+            <i class="fas fa-location-arrow"></i>
+            Jump to Me
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Tamil Nadu Schools Dataset (For Districts) -->
+  <script src="../public/js/tamilNaduSchoolsData.js"></script>
+
+  <!-- Fallback Default SVG Avatar -->
+  <script>
+    window.DEFAULT_AVATAR = "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2250%22%20fill%3D%22%23e2e8f0%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2238%22%20r%3D%2218%22%20fill%3D%22%2394a3b8%22%2F%3E%3Cpath%20d%3D%22M%2022%2084%20C%2022%2066%2C%2035%2060%2C%2050%2060%20C%2065%2060%2C%2078%2066%2C%2078%2084%20Z%22%20fill%3D%22%2394a3b8%22%2F%3E%3C%2Fsvg%3E";
+  </script>
+
+  <!-- Firebase & Real-Time Leaderboard Controller -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBoAb7b3DJDMRmNwOSAHTnscM_-JuVnILI",
+      authDomain: "cookdcode-4ce23.firebaseapp.com",
+      databaseURL: "https://cookdcode-4ce23-default-rtdb.firebaseio.com",
+      projectId: "cookdcode-4ce23",
+      storageBucket: "cookdcode-4ce23.appspot.com",
+      messagingSenderId: "419836764054",
+      appId: "1:419836764054:web:ab9968082fb793029f07b7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const currentUid = localStorage.getItem("userId") || localStorage.getItem("uid");
+
+    // Redirect to login if not signed in
+    if (!currentUid || currentUid === "guest_user") {
+      window.location.href = "login.html";
+    }
+
+    // 4 Bundles Problem IDs Definition
+    const BUNDLES_DEF = {
+      bundle1: [
+        'problem01', 'problem10', 'problem12', 'problem13', 'problem17',
+        'problem18', 'problem14', 'problem11', 'problem19', 'problem20'
+      ],
+      bundle2: [
+        'problem15', 'problem16', 'problem33', 'problem34', 'problem35',
+        'problem36', 'problem37', 'problem38', 'problem39', 'problem40'
+      ],
+      bundle3: [
+        'problem24', 'problem02', 'problem21', 'problem22', 'problem05',
+        'problem03', 'problem04', 'problem23', 'problem25', 'problem26'
+      ],
+      bundle4: [
+        'problem06', 'problem07', 'problem08', 'problem09', 'problem27',
+        'problem28', 'problem29', 'problem30', 'problem31', 'problem32'
+      ]
+    };
+
+    // Tamil Nadu 38 Districts List
+    const TN_DISTRICTS = [
+      "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore",
+      "Dharmapuri", "Dindigul", "Erode", "Kallakurichi", "Kanchipuram",
+      "Kanyakumari", "Karur", "Krishnagiri", "Madurai", "Mayiladuthurai",
+      "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai",
+      "Ramanathapuram", "Ranipet", "Salem", "Sivaganga", "Tenkasi",
+      "Thanjavur", "Theni", "Thoothukudi", "Tiruchirappalli", "Tirunelveli",
+      "Tirupathur", "Tiruppur", "Tiruvallur", "Tiruvannamalai", "Tiruvarur",
+      "Vellore", "Viluppuram", "Virudhunagar"
+    ];
+
+    // Populate District Filter Dropdown
+    const districtFilter = document.getElementById("districtFilter");
+    TN_DISTRICTS.forEach(dist => {
+      const opt = document.createElement("option");
+      opt.value = dist;
+      opt.textContent = dist;
+      districtFilter.appendChild(opt);
+    });
+
+    // Populate Top Bar Profile
+    async function loadUserProfile() {
+      if (!currentUid) return;
+      try {
+        const userRef = ref(db, "users/" + currentUid);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          if (data.profileImage && typeof data.profileImage === "string" && data.profileImage.trim().startsWith("http")) {
+            document.getElementById("userAvatar").src = data.profileImage;
+            document.getElementById("myStickyAvatar").src = data.profileImage;
+          } else {
+            document.getElementById("userAvatar").src = window.DEFAULT_AVATAR;
+            document.getElementById("myStickyAvatar").src = window.DEFAULT_AVATAR;
+          }
+          const userName = data.firstname ? (data.firstname + " " + (data.lastname || "")) : (localStorage.getItem("userEmail") || "User");
+          document.getElementById("dropdownEmail").textContent = userName;
+          document.getElementById("myStickyName").textContent = userName;
+          document.getElementById("myStickySchool").textContent = data.schoolName ? `${data.schoolName} (${data.district || 'Tamil Nadu'})` : "Tamil Nadu Student";
+        }
+      } catch (err) {
+        console.error("Profile load error:", err);
+      }
+    }
+    loadUserProfile();
+
+    // Cache of raw Firebase snapshots
+    let rawUsersSnapshot = null;
+    let rawProgressSnapshot = null;
+    let allStudentsData = [];
+    let compileTimer = null;
+
+    function triggerCompile() {
+      if (compileTimer) clearTimeout(compileTimer);
+      compileTimer = setTimeout(() => {
+        compileLeaderboardFromFirebase();
+      }, 100);
+    }
+
+    // Helper: compile student records ONLY from Firebase RTDB
+    function compileLeaderboardFromFirebase() {
+      const usersData = rawUsersSnapshot || {};
+      const progressData = rawProgressSnapshot || {};
+
+      const compiledStudents = [];
+      const seenUids = new Set();
+
+      // Collect all candidate UIDs from both 'users' and 'userProgress' nodes
+      const allUids = new Set([...Object.keys(usersData), ...Object.keys(progressData)]);
+
+      // Guarantee current signed-in user is included even if they just signed up
+      if (currentUid && currentUid !== "guest_user") {
+        allUids.add(currentUid);
+      }
+
+      allUids.forEach(uid => {
+        if (!uid || uid === "guest_user") return;
+        seenUids.add(uid);
+
+        const u = usersData[uid] || {};
+        const pObj = progressData[uid] || {};
+
+        // Extract completed challenges
+        const completedSet = new Set();
+
+        // 1. Structure: userProgress/{uid}/programs/{category}/{problemID}
+        if (pObj.programs && typeof pObj.programs === "object") {
+          for (const cat in pObj.programs) {
+            const catObj = pObj.programs[cat];
+            if (catObj && typeof catObj === "object") {
+              for (const probId in catObj) {
+                const item = catObj[probId];
+                if (item && (item.progress === 100 || item.status === "completed" || item.compilerExecuted === true)) {
+                  completedSet.add(probId.toLowerCase());
+                }
+              }
+            }
+          }
+        }
+
+        // 2. Direct structure: userProgress/{uid}/{problemID}
+        for (const key in pObj) {
+          if (key !== "programs" && pObj[key] && typeof pObj[key] === "object") {
+            const item = pObj[key];
+            if (item.progress === 100 || item.status === "completed" || item.compilerExecuted === true) {
+              completedSet.add(key.toLowerCase());
+            }
+          }
+        }
+
+        // Calculate count per bundle
+        const bundleSolved = { bundle1: 0, bundle2: 0, bundle3: 0, bundle4: 0 };
+        BUNDLES_DEF.bundle1.forEach(p => { if (completedSet.has(p.toLowerCase())) bundleSolved.bundle1++; });
+        BUNDLES_DEF.bundle2.forEach(p => { if (completedSet.has(p.toLowerCase())) bundleSolved.bundle2++; });
+        BUNDLES_DEF.bundle3.forEach(p => { if (completedSet.has(p.toLowerCase())) bundleSolved.bundle3++; });
+        BUNDLES_DEF.bundle4.forEach(p => { if (completedSet.has(p.toLowerCase())) bundleSolved.bundle4++; });
+
+        const isCurrent = (uid === currentUid);
+        const fallbackName = isCurrent ? (localStorage.getItem("userName") || localStorage.getItem("userEmail") || "You (CookDCode Student)") : "Student";
+        const fullName = u.firstname ? `${u.firstname} ${u.lastname || ''}`.trim() : (u.email ? u.email.split('@')[0] : fallbackName);
+
+        const fallbackSchool = isCurrent ? (localStorage.getItem("userSchool") || "School Not Specified") : "School Not Specified";
+        const fallbackDistrict = isCurrent ? (localStorage.getItem("userDistrict") || "Tamil Nadu") : "Tamil Nadu";
+
+        const schoolName = u.schoolName || fallbackSchool;
+        const district = u.district || fallbackDistrict;
+        const grade = u.grade || "Student";
+
+        // Safeguard avatar URL: must be valid http/https or data URI, otherwise use clean SVG
+        let avatarUrl = u.profileImage;
+        if (!avatarUrl || typeof avatarUrl !== "string" || avatarUrl.trim() === "" || avatarUrl.includes("profile.jpg")) {
+          avatarUrl = window.DEFAULT_AVATAR;
+        }
+
+        // Calculate tokens: user tokens in DB or 100 tokens per completed challenge
+        const tokens = u.tokens !== undefined ? Number(u.tokens) : (completedSet.size * 100);
+
+        compiledStudents.push({
+          uid: uid,
+          isCurrentUser: isCurrent,
+          name: fullName,
+          schoolName: schoolName,
+          district: district,
+          grade: grade,
+          avatar: avatarUrl,
+          bundleSolved: bundleSolved,
+          tokens: tokens,
+          totalSolvedOverall: completedSet.size
+        });
+      });
+
+      allStudentsData = compiledStudents;
+      updateStats();
+      applyFiltersAndRender();
+    }
+
+    // Set up real-time Firebase RTDB listeners
+    function setupFirebaseListeners() {
+      // 1. Listen to users
+      const usersRef = ref(db, "users");
+      onValue(usersRef, (snap) => {
+        rawUsersSnapshot = snap.exists() ? snap.val() : {};
+        triggerCompile();
+      }, (err) => {
+        console.warn("Firebase users listener error:", err);
+      });
+
+      // 2. Listen to userProgress
+      const progressRef = ref(db, "userProgress");
+      onValue(progressRef, (snap) => {
+        rawProgressSnapshot = snap.exists() ? snap.val() : {};
+        triggerCompile();
+      }, (err) => {
+        console.warn("Firebase userProgress listener error:", err);
+      });
+    }
+
+    // Update Top Overview Stats
+    function updateStats() {
+      const totalCoders = allStudentsData.length;
+      const schoolsSet = new Set(allStudentsData.map(s => s.schoolName).filter(name => name && name !== "School Not Specified"));
+      const districtsSet = new Set(allStudentsData.map(s => s.district).filter(dist => dist && dist !== "Tamil Nadu" && dist !== "Not Specified"));
+
+      let totalSolvedCount = 0;
+      allStudentsData.forEach(s => {
+        totalSolvedCount += (s.bundleSolved.bundle1 + s.bundleSolved.bundle2 + s.bundleSolved.bundle3 + s.bundleSolved.bundle4);
+      });
+
+      document.getElementById("statCodersCount").textContent = totalCoders;
+      document.getElementById("statSchoolsCount").textContent = schoolsSet.size;
+      document.getElementById("statDistrictsCount").textContent = districtsSet.size;
+      document.getElementById("statSolvedTotal").textContent = totalSolvedCount;
+    }
+
+    // Filter, Rank, and Render
+    function applyFiltersAndRender() {
+      const districtVal = document.getElementById("districtFilter").value;
+      const bundleVal = document.getElementById("bundleFilter").value;
+      const searchVal = document.getElementById("searchInput").value.trim().toLowerCase();
+
+      // Filter
+      let filtered = allStudentsData.filter(student => {
+        // District filter
+        if (districtVal !== "ALL" && (student.district || "").toLowerCase() !== districtVal.toLowerCase()) {
+          return false;
+        }
+
+        // Search query
+        if (searchVal) {
+          const matchName = (student.name || "").toLowerCase().includes(searchVal);
+          const matchSchool = (student.schoolName || "").toLowerCase().includes(searchVal);
+          const matchDistrict = (student.district || "").toLowerCase().includes(searchVal);
+          if (!matchName && !matchSchool && !matchDistrict) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      // Calculate score based on selected bundle
+      const maxProblems = (bundleVal === "ALL") ? 40 : 10;
+
+      filtered.forEach(student => {
+        if (bundleVal === "ALL") {
+          student.currentSolved = student.bundleSolved.bundle1 + student.bundleSolved.bundle2 + student.bundleSolved.bundle3 + student.bundleSolved.bundle4;
+        } else {
+          student.currentSolved = student.bundleSolved[bundleVal] || 0;
+        }
+      });
+
+      // Sort: Solved DESC, Tokens DESC, Name ASC
+      filtered.sort((a, b) => {
+        if (b.currentSolved !== a.currentSolved) {
+          return b.currentSolved - a.currentSolved;
+        }
+        if (b.tokens !== a.tokens) {
+          return b.tokens - a.tokens;
+        }
+        return a.name.localeCompare(b.name);
+      });
+
+      // Assign Rank
+      filtered.forEach((s, idx) => {
+        s.rank = idx + 1;
+      });
+
+      renderPodium(filtered, maxProblems);
+      renderTable(filtered, maxProblems);
+      renderStickyMyRank(filtered, maxProblems);
+    }
+
+    // Render Podium for Top 3
+    function renderPodium(list, maxProblems) {
+      const podiumSection = document.getElementById("podiumSection");
+      if (list.length === 0) {
+        podiumSection.style.display = "none";
+        return;
+      }
+
+      podiumSection.style.display = "flex";
+      const top3 = list.slice(0, 3);
+
+      const rankConfigs = [
+        { rank: 1, icon: '<i class="fas fa-crown"></i>', label: '1st Place', class: 'rank-1' },
+        { rank: 2, icon: '<i class="fas fa-medal"></i>', label: '2nd Place', class: 'rank-2' },
+        { rank: 3, icon: '<i class="fas fa-award"></i>', label: '3rd Place', class: 'rank-3' }
+      ];
+
+      let html = "";
+      // When 3 exist: 2nd place (left), 1st place (center), 3rd place (right)
+      // If 1 or 2 exist, iterate naturally
+      const renderOrder = top3.length === 3 ? [1, 0, 2] : top3.map((_, i) => i);
+
+      renderOrder.forEach(idx => {
+        if (top3[idx]) {
+          const s = top3[idx];
+          const cfg = rankConfigs[idx];
+          const avatarSrc = (s.avatar && (s.avatar.startsWith('http') || s.avatar.startsWith('data:'))) ? s.avatar : window.DEFAULT_AVATAR;
+
+          html += `
+            <div class="lb-podium-card ${cfg.class}">
+              <div class="lb-podium-badge">${cfg.icon}</div>
+              <div class="lb-podium-avatar-wrap">
+                <img src="${avatarSrc}" alt="" class="lb-podium-avatar" onerror="this.onerror=null; this.src=window.DEFAULT_AVATAR;" />
+              </div>
+              <h3 class="lb-podium-name" title="${s.name}">
+                ${s.name} ${s.isCurrentUser ? '<span class="lb-you-badge">YOU</span>' : ''}
+              </h3>
+              <p class="lb-podium-school" title="${s.schoolName}">${s.schoolName}</p>
+              <div class="lb-podium-district-tag">
+                <i class="fas fa-location-dot"></i>
+                ${s.district || 'Tamil Nadu'}
+              </div>
+              <div class="lb-podium-stats">
+                <div class="lb-podium-stat-chip">
+                  <span class="val">${s.currentSolved}/${maxProblems}</span>
+                  <span class="lbl">Solved</span>
+                </div>
+                <div class="lb-podium-stat-chip">
+                  <span class="val" style="color: #d97706;">⚡ ${s.tokens}</span>
+                  <span class="lbl">Tokens</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      podiumSection.innerHTML = html;
+    }
+
+    // Render Full Ranked Table
+    function renderTable(list, maxProblems) {
+      const tbody = document.getElementById("leaderboardTbody");
+      const emptyState = document.getElementById("emptyState");
+      const countEl = document.getElementById("tableFilteredCount");
+
+      countEl.textContent = `${list.length} Student${list.length === 1 ? '' : 's'}`;
+
+      if (list.length === 0) {
+        tbody.innerHTML = "";
+        emptyState.style.display = "block";
+        const districtVal = document.getElementById("districtFilter").value;
+        if (districtVal !== "ALL") {
+          document.getElementById("emptyStateTitle").textContent = `No Students in ${districtVal}`;
+          document.getElementById("emptyStateMsg").textContent = `No registered students from ${districtVal} found in Firebase yet. Encourage classmates to register and compete!`;
+        } else {
+          document.getElementById("emptyStateTitle").textContent = "No Students Found";
+          document.getElementById("emptyStateMsg").textContent = "No students match your search criteria. Try resetting the filters.";
+        }
+        return;
+      }
+
+      emptyState.style.display = "none";
+
+      let rows = "";
+      list.forEach((s) => {
+        const pct = Math.min(100, Math.round((s.currentSolved / maxProblems) * 100));
+        let rankBadgeClass = "lb-rank-badge";
+        if (s.rank === 1) rankBadgeClass += " top-1";
+        else if (s.rank === 2) rankBadgeClass += " top-2";
+        else if (s.rank === 3) rankBadgeClass += " top-3";
+
+        const rowHighlight = s.isCurrentUser ? "current-user-row" : "";
+        const rowId = s.isCurrentUser ? `id="currentUserRow"` : "";
+        const avatarSrc = (s.avatar && (s.avatar.startsWith('http') || s.avatar.startsWith('data:'))) ? s.avatar : window.DEFAULT_AVATAR;
+
+        rows += `
+          <tr class="${rowHighlight}" ${rowId}>
+            <td style="text-align: center;">
+              <span class="${rankBadgeClass}">
+                ${s.rank <= 3 ? (s.rank === 1 ? '🥇' : s.rank === 2 ? '🥈' : '🥉') : '#' + s.rank}
+              </span>
+            </td>
+            <td>
+              <div class="lb-student-cell">
+                <img src="${avatarSrc}" alt="" class="lb-student-avatar" onerror="this.onerror=null; this.src=window.DEFAULT_AVATAR;" />
+                <div class="lb-student-details">
+                  <div class="lb-student-name">
+                    ${s.name}
+                    ${s.isCurrentUser ? '<span class="lb-you-badge">YOU</span>' : ''}
+                  </div>
+                  <span class="lb-student-grade">${s.grade}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="lb-school-cell">
+                <span class="lb-school-name" title="${s.schoolName}">${s.schoolName}</span>
+                <span class="lb-school-district">
+                  <i class="fas fa-map-pin" style="color: #3b82f6;"></i>
+                  ${s.district || 'Tamil Nadu'}
+                </span>
+              </div>
+            </td>
+            <td>
+              <div class="lb-progress-cell">
+                <div class="lb-progress-bar-wrap">
+                  <div class="lb-progress-bar-fill" style="width: ${pct}%;"></div>
+                </div>
+                <span class="lb-progress-text">${s.currentSolved} / ${maxProblems} solved (${pct}%)</span>
+              </div>
+            </td>
+            <td style="text-align: right;">
+              <span class="lb-token-badge">
+                <i class="fas fa-bolt"></i>
+                ${s.tokens}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = rows;
+    }
+
+    // Render Sticky "My Rank" Bar
+    function renderStickyMyRank(list, maxProblems) {
+      const stickyBar = document.getElementById("stickyRankBar");
+      const myStudent = list.find(s => s.isCurrentUser);
+
+      if (!myStudent) {
+        stickyBar.style.display = "none";
+        return;
+      }
+
+      stickyBar.style.display = "flex";
+      document.getElementById("myStickyRankNum").textContent = `#${myStudent.rank}`;
+      document.getElementById("myStickyName").textContent = myStudent.name;
+      document.getElementById("myStickySchool").textContent = `${myStudent.schoolName} (${myStudent.district || 'TN'})`;
+      document.getElementById("myStickySolved").textContent = `${myStudent.currentSolved}/${maxProblems}`;
+      document.getElementById("myStickyTokens").textContent = `⚡ ${myStudent.tokens}`;
+
+      const jumpBtn = document.getElementById("myStickyJumpBtn");
+      jumpBtn.onclick = () => {
+        const row = document.getElementById("currentUserRow");
+        if (row) {
+          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          row.style.transition = 'background-color 0.5s ease';
+          row.style.backgroundColor = '#dbeafe';
+          setTimeout(() => {
+            row.style.backgroundColor = '#eff6ff';
+          }, 1500);
+        }
+      };
+    }
+
+    // Event Listeners for Filters
+    document.getElementById("districtFilter").addEventListener("change", applyFiltersAndRender);
+    document.getElementById("bundleFilter").addEventListener("change", applyFiltersAndRender);
+    document.getElementById("searchInput").addEventListener("input", applyFiltersAndRender);
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      document.getElementById("districtFilter").value = "ALL";
+      document.getElementById("bundleFilter").value = "ALL";
+      document.getElementById("searchInput").value = "";
+      applyFiltersAndRender();
+    });
+
+    // Manual Refresh button
+    const refreshBtn = document.getElementById("refreshBtn");
+    const refreshIcon = document.getElementById("refreshIcon");
+    refreshBtn.addEventListener("click", async () => {
+      refreshIcon.classList.add("fa-spin");
+      try {
+        const [usersSnap, progressSnap] = await Promise.all([
+          get(ref(db, "users")),
+          get(ref(db, "userProgress"))
+        ]);
+        rawUsersSnapshot = usersSnap.exists() ? usersSnap.val() : {};
+        rawProgressSnapshot = progressSnap.exists() ? progressSnap.val() : {};
+        compileLeaderboardFromFirebase();
+      } catch (e) {
+        console.error("Refresh error:", e);
+      } finally {
+        setTimeout(() => {
+          refreshIcon.classList.remove("fa-spin");
+        }, 600);
+      }
+    });
+
+    // Close Dropdown on outside click
+    document.addEventListener("click", (e) => {
+      const dropdown = document.getElementById("dropdownMenu");
+      const btn = document.getElementById("avatarBtn");
+      if (dropdown && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.remove("active");
+      }
+    });
+
+    // Mobile Sidebar Toggle
+    const mobileToggle = document.getElementById("mobileToggle");
+    const sidebarClose = document.getElementById("sidebarClose");
+    const sidebar = document.getElementById("sidebar");
+
+    if (mobileToggle) {
+      mobileToggle.addEventListener("click", () => {
+        sidebar.classList.add("mobile-active");
+      });
+    }
+
+    if (sidebarClose) {
+      sidebarClose.addEventListener("click", () => {
+        sidebar.classList.remove("mobile-active");
+      });
+    }
+
+    // Logout
+    window.logoutUser = () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    };
+
+    // Initialize Real-time Listeners
+    setupFirebaseListeners();
+  </script>
+</body>
+
+</html>

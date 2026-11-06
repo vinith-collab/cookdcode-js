@@ -1687,61 +1687,111 @@ public class Main {
 
   "problem23": {
     id: "problem23",
-    canonicalId: "atm-pin-verification",
-    title: "ATM PIN Verification",
+    canonicalId: "print-star-patterns",
+    title: "Print Star Patterns",
     stdin: "",
     templates: {
-      javascript: `// Problem 23: ATM PIN Verification
-let entered_pin = 1234;
+      javascript: `// Problem 23: Print Star Patterns
+let n = 5;
 
-if (entered_pin == 1234) {
-    console.log("PIN Verified");
-} else {
-    console.log("Incorrect PIN");
+for (let i = 1; i <= n; i++) {
+    let row = "";
+    for (let j = 1; j <= i; j++) {
+        row += "*";
+    }
+    console.log(row);
 }`,
-      python: `# Problem 23: ATM PIN Verification
-entered_pin = 1234
+      python: `# Problem 23: Print Star Patterns
+n = 5
 
-if entered_pin == 1234:
-    print("PIN Verified")
-else:
-    print("Incorrect PIN")`,
-      cpp: `// Problem 23: ATM PIN Verification
+for i in range(1, n + 1):
+    print("*" * i)`,
+      cpp: `// Problem 23: Print Star Patterns
 #include <iostream>
 using namespace std;
 
 int main() {
-    int entered_pin = 1234;
-    
-    if (entered_pin == 1234) {
-        cout << "PIN Verified" << endl;
-    } else {
-        cout << "Incorrect PIN" << endl;
+    int n = 5;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= i; j++) {
+            cout << "*";
+        }
+        cout << endl;
     }
     return 0;
 }`,
-      c: `// Problem 23: ATM PIN Verification
+      c: `// Problem 23: Print Star Patterns
 #include <stdio.h>
 
 int main() {
-    int entered_pin = 1234;
-    
-    if (entered_pin == 1234) {
-        printf("PIN Verified\\n");
-    } else {
-        printf("Incorrect PIN\\n");
+    int n = 5;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= i; j++) {
+            printf("*");
+        }
+        printf("\\n");
     }
     return 0;
 }`,
-      java: `// Problem 23: ATM PIN Verification
+      java: `// Problem 23: Print Star Patterns
 public class Main {
     public static void main(String[] args) {
-        int entered_pin = 1234;
-        
-        if (entered_pin == 1234) {
-            System.out.println("PIN Verified");
-        } else {
-            System.out.println("Incorrect PIN");
+        int n = 5;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= i; j++) {
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+    }
+}`
+    }
+  },
+
+  "problem24": {
+    id: "problem24",
+    canonicalId: "count-numbers-1-to-n",
+    title: "Count Numbers from 1 to N",
+    stdin: "",
+    templates: {
+      javascript: `// Problem 24: Count Numbers from 1 to N
+let n = 5;
+
+for (let i = 1; i <= n; i++) {
+    console.log(i);
+}`,
+      python: `# Problem 24: Count Numbers from 1 to N
+n = 5
+
+for i in range(1, n + 1):
+    print(i)`,
+      cpp: `// Problem 24: Count Numbers from 1 to N
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n = 5;
+    for (int i = 1; i <= n; i++) {
+        cout << i << endl;
+    }
+    return 0;
+}`,
+      c: `// Problem 24: Count Numbers from 1 to N
+#include <stdio.h>
+
+int main() {
+    int n = 5;
+    for (int i = 1; i <= n; i++) {
+        printf("%d\\n", i);
+    }
+    return 0;
+}`,
+      java: `// Problem 24: Count Numbers from 1 to N
+public class Main {
+    public static void main(String[] args) {
+        int n = 5;
+        for (int i = 1; i <= n; i++) {
+            System.out.println(i);
         }
     }
 }`
